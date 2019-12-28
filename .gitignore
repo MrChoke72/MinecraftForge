@@ -20,7 +20,7 @@
 
 #occupational hazards
 /projects/mcp/
-/projects/clean/
+#/projects/clean/
 /projects/forge/
 /projects/**/build/
 /projects/**/out/
