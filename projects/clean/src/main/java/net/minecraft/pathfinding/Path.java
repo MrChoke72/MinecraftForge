@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -27,10 +28,12 @@ public class Path {
    private final float field_224773_g;
    private final boolean field_224774_h;
 
-   public Path(List<PathPoint> p_i51804_1_, BlockPos p_i51804_2_, boolean p_i51804_3_) {
-      this.points = p_i51804_1_;
-      this.target = p_i51804_2_;
-      this.field_224773_g = p_i51804_1_.isEmpty() ? Float.MAX_VALUE : this.points.get(this.points.size() - 1).func_224758_c(this.target);
+   //AH CHANGE REFACTOR
+   public Path(List<PathPoint> points, BlockPos pos, boolean p_i51804_3_) {
+   //public Path(List<PathPoint> p_i51804_1_, BlockPos p_i51804_2_, boolean p_i51804_3_) {
+      this.points = points;
+      this.target = pos;
+      this.field_224773_g = points.isEmpty() ? Float.MAX_VALUE : this.points.get(this.points.size() - 1).func_224758_c(this.target);
       this.field_224774_h = p_i51804_3_;
    }
 
@@ -82,10 +85,38 @@ public class Path {
 
    public Vec3d getVectorFromIndex(Entity entityIn, int index) {
       PathPoint pathpoint = this.points.get(index);
+
+      //AH CHANGE ****** - Fix entityWidth > 1 pathing problem (Iron golem)
+      if(entityIn.getWidth() >= 1.0F)
+      {
+         if(index > 0)
+         {
+            PathPoint prevpoint = this.points.get(index-1);
+            double d0 = (double)pathpoint.x + (((double)((int)(entityIn.getWidth() + 1.0F)) * 0.5D) * Math.signum((pathpoint.x) - prevpoint.x));
+            double d2 = (double)pathpoint.z + (((double)((int)(entityIn.getWidth() + 1.0F)) * 0.5D) * Math.signum((pathpoint.z) - prevpoint.z));
+            return new Vec3d(d0, pathpoint.y, d2);
+         }
+         else
+         {
+            double d0 = (double)pathpoint.x + (double)((int)(entityIn.getWidth() + 1.0F)) * 0.5D;
+            double d2 = (double)pathpoint.z + (double)((int)(entityIn.getWidth() + 1.0F)) * 0.5D;
+            return new Vec3d(d0, pathpoint.y, d2);
+         }
+      }
+      else {
+         double d0 = (double)pathpoint.x + (double)((int)(entityIn.getWidth() + 1.0F)) * 0.5D;
+         double d2 = (double)pathpoint.z + (double)((int)(entityIn.getWidth() + 1.0F)) * 0.5D;
+         return new Vec3d(d0, pathpoint.y, d2);
+      }
+      //AH CHANGE END ******
+      //Vanilla
+      /*
       double d0 = (double)pathpoint.x + (double)((int)(entityIn.getWidth() + 1.0F)) * 0.5D;
       double d1 = (double)pathpoint.y;
       double d2 = (double)pathpoint.z + (double)((int)(entityIn.getWidth() + 1.0F)) * 0.5D;
       return new Vec3d(d0, d1, d2);
+       */
+
    }
 
    public Vec3d getPosition(Entity entityIn) {

@@ -119,11 +119,11 @@ public class PathFinder {
       Stream<Path> stream;
       if (set.stream().anyMatch(FlaggedPathPoint::isKeepPoint)) {
          stream = set.stream().filter(FlaggedPathPoint::isKeepPoint).map((p_224778_2_) -> {
-            return this.func_224780_a(p_224778_2_.getClosestPathPoint(), flagPointMap.get(p_224778_2_), true);
+            return this.createPath(p_224778_2_.getClosestPathPoint(), flagPointMap.get(p_224778_2_), true);
          }).sorted(Comparator.comparingInt(Path::getCurrentPathLength));
       } else {
          stream = set.stream().map((p_224777_2_) -> {
-            return this.func_224780_a(p_224777_2_.getClosestPathPoint(), flagPointMap.get(p_224777_2_), false);
+            return this.createPath(p_224777_2_.getClosestPathPoint(), flagPointMap.get(p_224777_2_), false);
          }).sorted(Comparator.comparingDouble(Path::func_224769_l).thenComparingInt(Path::getCurrentPathLength));
       }
 
@@ -150,16 +150,18 @@ public class PathFinder {
       return f;
    }
 
-   private Path func_224780_a(PathPoint p_224780_1_, BlockPos p_224780_2_, boolean p_224780_3_) {
+   //AH CHANGE REFACTOR
+   private Path createPath(PathPoint closestPoint, BlockPos pos, boolean p_224780_3_) {
+   //private Path func_224780_a(PathPoint p_224780_1_, BlockPos p_224780_2_, boolean p_224780_3_) {
       List<PathPoint> list = Lists.newArrayList();
-      PathPoint pathpoint = p_224780_1_;
-      list.add(0, p_224780_1_);
+      PathPoint pathpoint = closestPoint;
+      list.add(0, closestPoint);
 
       while(pathpoint.previous != null) {
          pathpoint = pathpoint.previous;
          list.add(0, pathpoint);
       }
 
-      return new Path(list, p_224780_2_, p_224780_3_);
+      return new Path(list, pos, p_224780_3_);
    }
 }

@@ -22,7 +22,7 @@ public class ExpirePOITask extends Task<LivingEntity> {
 
    public ExpirePOITask(PointOfInterestType p_i50338_1_, MemoryModuleType<GlobalPos> p_i50338_2_) {
       super(ImmutableMap.of(p_i50338_2_, MemoryModuleStatus.VALUE_PRESENT));
-      this.field_220592_b = p_i50338_1_.func_221045_c();
+      this.field_220592_b = p_i50338_1_.getPoiTypePred();
       this.field_220591_a = p_i50338_2_;
    }
 

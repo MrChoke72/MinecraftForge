@@ -91,7 +91,7 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
    }
 
    private Optional<BlockPos> func_220479_b(ServerWorld p_220479_1_, VillagerEntity p_220479_2_) {
-      return p_220479_1_.func_217443_B().func_219157_a(PointOfInterestType.HOME.func_221045_c(), (p_220481_2_) -> {
+      return p_220479_1_.func_217443_B().func_219157_a(PointOfInterestType.HOME.getPoiTypePred(), (p_220481_2_) -> {
          return this.func_223520_a(p_220479_2_, p_220481_2_);
       }, new BlockPos(p_220479_2_), 48);
    }

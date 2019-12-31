@@ -82,7 +82,9 @@ public class FollowOwnerGoal extends Goal {
       if (--this.timeToRecalcPath <= 0) {
          this.timeToRecalcPath = 10;
          if (!this.tameable.getLeashed() && !this.tameable.isPassenger()) {
-            if (this.tameable.getDistanceSq(this.owner) >= 144.0D) {
+            //AH CHANGE - Increase distance until teleport, 12 is too stupid.  Go 16
+            if (this.tameable.getDistanceSq(this.owner) >= 256.0D) {
+            //if (this.tameable.getDistanceSq(this.owner) >= 144.0D) {
                this.func_226330_g_();
             } else {
                this.navigator.tryMoveToEntityLiving(this.owner, this.followSpeed);

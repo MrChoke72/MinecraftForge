@@ -3,7 +3,6 @@ package net.minecraft.entity.ai.controller;
 import net.minecraft.block.*;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.monster.HuskEntity;
 import net.minecraft.pathfinding.NodeProcessor;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.pathfinding.PathNodeType;
@@ -105,17 +104,15 @@ public class MovementController {
          this.mob.setAIMoveSpeed((float)(this.speed * this.mob.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getValue()));
 
          BlockState blockState = this.mob.getLadderBlockState(0);
-         //BlockState blockStateD = this.mob.getLadderBlockState(-1);
 
-         //AH CHANGE DEBUG OFF
-         /*
-         if(this.mob instanceof HuskEntity && this.mob.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+         //AH CHANGE DEBUG
+         if(this.mob.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
          {
             //System.out.println("BREAK 2");
             System.out.println("in MC, moveTo.  MC.pos=" + posX + "," + posY + "," + posZ + ", entPos=" + mob.getPosX() + "," + mob.getPosY() + "," + mob.getPosZ()
                     + "blockState=" + blockState); // + ", blockStateD=" + blockStateD);
          }
-          */
+
 
          if (blockState != null) {
             Block ladderBlock = blockState.getBlock();

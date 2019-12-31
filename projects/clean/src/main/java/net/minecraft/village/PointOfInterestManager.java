@@ -47,26 +47,34 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
       this.func_219110_e(SectionPos.from(p_219140_1_).asLong()).remove(p_219140_1_);
    }
 
-   public long func_219145_a(Predicate<PointOfInterestType> p_219145_1_, BlockPos p_219145_2_, int p_219145_3_, PointOfInterestManager.Status p_219145_4_) {
-      return this.func_219146_b(p_219145_1_, p_219145_2_, p_219145_3_, p_219145_4_).count();
+   //AH CHANGE REFACTOR
+   public long func_219145_a(Predicate<PointOfInterestType> poiTypePred, BlockPos pos, int p_219145_3_, PointOfInterestManager.Status p_219145_4_) {
+   //public long func_219145_a(Predicate<PointOfInterestType> p_219145_1_, BlockPos p_219145_2_, int p_219145_3_, PointOfInterestManager.Status p_219145_4_) {
+      return this.poiStreamByDist(poiTypePred, pos, p_219145_3_, p_219145_4_).count();
    }
 
-   public Stream<PointOfInterest> func_226353_b_(Predicate<PointOfInterestType> p_226353_1_, BlockPos p_226353_2_, int p_226353_3_, PointOfInterestManager.Status p_226353_4_) {
-      return ChunkPos.getAllInBox(new ChunkPos(p_226353_2_), Math.floorDiv(p_226353_3_, 16)).flatMap((p_226350_3_) -> {
-         return this.func_219137_a(p_226353_1_, p_226350_3_, p_226353_4_);
+   //AH CHANGE REFACTOR
+   public Stream<PointOfInterest> poiStreamByRadius(Predicate<PointOfInterestType> poiTypePred, BlockPos pos, int blockRadius, PointOfInterestManager.Status status) {
+   //public Stream<PointOfInterest> func_226353_b_(Predicate<PointOfInterestType> p_226353_1_, BlockPos p_226353_2_, int p_226353_3_, PointOfInterestManager.Status p_226353_4_) {
+      return ChunkPos.getAllInBox(new ChunkPos(pos), Math.floorDiv(blockRadius, 16)).flatMap((p_226350_3_) -> {
+         return this.func_219137_a(poiTypePred, p_226350_3_, status);
       });
    }
 
-   public Stream<PointOfInterest> func_219146_b(Predicate<PointOfInterestType> p_219146_1_, BlockPos p_219146_2_, int distance, PointOfInterestManager.Status p_219146_4_) {
+   //AH CHANGE REFACTOR
+   public Stream<PointOfInterest> poiStreamByDist(Predicate<PointOfInterestType> poiTypePred, BlockPos pos, int distance, PointOfInterestManager.Status status) {
+   //public Stream<PointOfInterest> func_219146_b(Predicate<PointOfInterestType> p_219146_1_, BlockPos p_219146_2_, int distance, PointOfInterestManager.Status p_219146_4_) {
       int i = distance * distance;
-      return this.func_226353_b_(p_219146_1_, p_219146_2_, distance, p_219146_4_).filter((p_226349_2_) -> {
-         return p_226349_2_.getPos().distanceSq(p_219146_2_) <= (double)i;
+      return this.poiStreamByRadius(poiTypePred, pos, distance, status).filter((p_226349_2_) -> {
+         return p_226349_2_.getPos().distanceSq(pos) <= (double)i;
       });
    }
 
-   public Stream<PointOfInterest> func_219137_a(Predicate<PointOfInterestType> p_219137_1_, ChunkPos p_219137_2_, PointOfInterestManager.Status p_219137_3_) {
+   //AH CHANGE REFACTOR
+   public Stream<PointOfInterest> func_219137_a(Predicate<PointOfInterestType> poiTypePred, ChunkPos chunkPos, PointOfInterestManager.Status status) {
+   //public Stream<PointOfInterest> func_219137_a(Predicate<PointOfInterestType> p_219137_1_, ChunkPos p_219137_2_, PointOfInterestManager.Status p_219137_3_) {
       return IntStream.range(0, 16).boxed().flatMap((p_219149_4_) -> {
-         return this.func_219136_a(p_219137_1_, SectionPos.from(p_219137_2_, p_219149_4_).asLong(), p_219137_3_);
+         return this.func_219136_a(poiTypePred, SectionPos.from(chunkPos, p_219149_4_).asLong(), status);
       });
    }
 
@@ -76,22 +84,26 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
       }).orElseGet(Stream::empty);
    }
 
-   public Stream<BlockPos> func_225399_a(Predicate<PointOfInterestType> p_225399_1_, Predicate<BlockPos> p_225399_2_, BlockPos p_225399_3_, int p_225399_4_, PointOfInterestManager.Status p_225399_5_) {
-      return this.func_219146_b(p_225399_1_, p_225399_3_, p_225399_4_, p_225399_5_).map(PointOfInterest::getPos).filter(p_225399_2_);
+   //AH CHANGE REFACTOR
+   public Stream<BlockPos> poiStreamByDist(Predicate<PointOfInterestType> poiPred, Predicate<BlockPos> posPred, BlockPos pos, int distance, PointOfInterestManager.Status status) {
+   //public Stream<BlockPos> func_225399_a(Predicate<PointOfInterestType> p_225399_1_, Predicate<BlockPos> p_225399_2_, BlockPos p_225399_3_, int p_225399_4_, PointOfInterestManager.Status p_225399_5_) {
+      return this.poiStreamByDist(poiPred, pos, distance, status).map(PointOfInterest::getPos).filter(posPred);
    }
 
    public Optional<BlockPos> func_219127_a(Predicate<PointOfInterestType> p_219127_1_, Predicate<BlockPos> p_219127_2_, BlockPos p_219127_3_, int p_219127_4_, PointOfInterestManager.Status p_219127_5_) {
-      return this.func_225399_a(p_219127_1_, p_219127_2_, p_219127_3_, p_219127_4_, p_219127_5_).findFirst();
+      return this.poiStreamByDist(p_219127_1_, p_219127_2_, p_219127_3_, p_219127_4_, p_219127_5_).findFirst();
    }
 
-   public Optional<BlockPos> func_219147_b(Predicate<PointOfInterestType> p_219147_1_, Predicate<BlockPos> p_219147_2_, BlockPos p_219147_3_, int p_219147_4_, PointOfInterestManager.Status p_219147_5_) {
-      return this.func_219146_b(p_219147_1_, p_219147_3_, p_219147_4_, p_219147_5_).map(PointOfInterest::getPos).sorted(Comparator.comparingDouble((p_219160_1_) -> {
-         return p_219160_1_.distanceSq(p_219147_3_);
-      })).filter(p_219147_2_).findFirst();
+   //AH CHANGE REFACTOR
+   public Optional<BlockPos> getPoiPosInRange(Predicate<PointOfInterestType> poiTypePred, Predicate<BlockPos> posPred, BlockPos pos, int distance, PointOfInterestManager.Status status) {
+   //public Optional<BlockPos> func_219147_b(Predicate<PointOfInterestType> p_219147_1_, Predicate<BlockPos> p_219147_2_, BlockPos p_219147_3_, int p_219147_4_, PointOfInterestManager.Status p_219147_5_) {
+      return this.poiStreamByDist(poiTypePred, pos, distance, status).map(PointOfInterest::getPos).sorted(Comparator.comparingDouble((p_219160_1_) -> {
+         return p_219160_1_.distanceSq(pos);
+      })).filter(posPred).findFirst();
    }
 
    public Optional<BlockPos> func_219157_a(Predicate<PointOfInterestType> p_219157_1_, Predicate<BlockPos> p_219157_2_, BlockPos p_219157_3_, int p_219157_4_) {
-      return this.func_219146_b(p_219157_1_, p_219157_3_, p_219157_4_, PointOfInterestManager.Status.HAS_SPACE).filter((p_219129_1_) -> {
+      return this.poiStreamByDist(p_219157_1_, p_219157_3_, p_219157_4_, PointOfInterestManager.Status.HAS_SPACE).filter((p_219129_1_) -> {
          return p_219157_2_.test(p_219129_1_.getPos());
       }).findFirst().map((p_219152_0_) -> {
          p_219152_0_.claim();
@@ -100,7 +112,7 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    }
 
    public Optional<BlockPos> func_219163_a(Predicate<PointOfInterestType> p_219163_1_, Predicate<BlockPos> p_219163_2_, PointOfInterestManager.Status p_219163_3_, BlockPos p_219163_4_, int p_219163_5_, Random p_219163_6_) {
-      List<PointOfInterest> list = this.func_219146_b(p_219163_1_, p_219163_4_, p_219163_5_, p_219163_3_).collect(Collectors.toList());
+      List<PointOfInterest> list = this.poiStreamByDist(p_219163_1_, p_219163_4_, p_219163_5_, p_219163_3_).collect(Collectors.toList());
       Collections.shuffle(list, p_219163_6_);
       return list.stream().filter((p_219131_1_) -> {
          return p_219163_2_.test(p_219131_1_.getPos());

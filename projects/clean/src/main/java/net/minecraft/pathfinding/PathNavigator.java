@@ -105,8 +105,10 @@ public abstract class PathNavigator {
    }
 
    @Nullable
-   public Path func_225463_a(Stream<BlockPos> p_225463_1_, int p_225463_2_) {
-      return this.findPath(p_225463_1_.collect(Collectors.toSet()), 8, false, p_225463_2_);
+   //AH CHANGE REFACTOR
+   public Path findPath(Stream<BlockPos> posStream, int keepDist) {
+   //public Path func_225463_a(Stream<BlockPos> p_225463_1_, int p_225463_2_) {
+      return this.findPath(posStream.collect(Collectors.toSet()), 8, false, keepDist);
    }
 
    @Nullable
@@ -163,12 +165,12 @@ public abstract class PathNavigator {
       if (pathentityIn == null) {
 
          //AH CHANGE DEBUG
+
          if(this.entity instanceof AbstractVillagerEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
          {
             //System.out.println("BREAK 2");
             System.out.println("in setPath to null.");
          }
-
 
          this.currentPath = null;
          return false;
@@ -221,18 +223,15 @@ public abstract class PathNavigator {
             Vec3d vec3d2 = this.currentPath.getPosition(this.entity);
             BlockPos blockpos = new BlockPos(vec3d2);
 
-            //AH CHANGE DEBUG OFF
-            /*
-            if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+            //AH CHANGE DEBUG
+            if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
             {
                System.out.println("in navigator tick, currPathPos=" + vec3d2.toString());
             }
-            */
 
             this.entity.getMoveHelper().setMoveTo(vec3d2.x, this.world.getBlockState(blockpos.down()).isAir() ? vec3d2.y : WalkNodeProcessor.getGroundY(this.world, blockpos), vec3d2.z, this.speed);
          }
-         //AH CHANGE DEBUG OFF
-         /*
+         //AH CHANGE DEBUG
          else
          {
             if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
@@ -240,7 +239,6 @@ public abstract class PathNavigator {
                System.out.println("in navigator tick, noPath");
             }
          }
-          */
 
       }
    }
@@ -298,14 +296,13 @@ public abstract class PathNavigator {
 
    public void clearPath() {
 
-      //AH CHANGE DEBUG OFF
-      /*
+      //AH CHANGE DEBUG
+
       if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
       {
          //System.out.println("BREAK 2");
          System.out.println("in clearPath to null.");
       }
-       */
 
       this.currentPath = null;
    }

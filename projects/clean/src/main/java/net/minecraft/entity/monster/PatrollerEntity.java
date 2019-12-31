@@ -124,7 +124,9 @@ public abstract class PatrollerEntity extends MonsterEntity {
       return this.patrolling;
    }
 
-   protected void func_226541_s_(boolean p_226541_1_) {
+   //AH CHANGE REFACTOR
+   protected void setPatrolling(boolean p_226541_1_) {
+   //protected void func_226541_s_(boolean p_226541_1_) {
       this.patrolling = p_226541_1_;
    }
 
@@ -159,8 +161,13 @@ public abstract class PatrollerEntity extends MonsterEntity {
          if (pathnavigator.noPath()) {
             List<PatrollerEntity> list = this.func_226544_g_();
             if (this.owner.isPatrolling() && list.isEmpty()) {
-               this.owner.func_226541_s_(false);
-            } else if (flag && this.owner.getPatrolTarget().withinDistance(this.owner.getPositionVec(), 10.0D)) {
+               this.owner.setPatrolling(false);
+
+            //AHJ CHANGE - Beef up chase distance for patrols to 25
+            } else if (flag && this.owner.getPatrolTarget().withinDistance(this.owner.getPositionVec(), 25.0D)) {
+            //} else if (flag && this.owner.getPatrolTarget().withinDistance(this.owner.getPositionVec(), 10.0D)) {
+
+
                this.owner.resetPatrolTarget();
             } else {
                Vec3d vec3d = new Vec3d(this.owner.getPatrolTarget());

@@ -63,8 +63,10 @@ public class GroundPathNavigator extends PathNavigator {
       }
    }
 
-   public Path getPathToEntityLiving(Entity entityIn, int p_75494_2_) {
-      return this.getPathToPos(new BlockPos(entityIn), p_75494_2_);
+   //AH CHANGE REFACTOR
+   public Path getPathToEntityLiving(Entity entityIn, int keepDist) {
+   //public Path getPathToEntityLiving(Entity entityIn, int p_75494_2_) {
+      return this.getPathToPos(new BlockPos(entityIn), keepDist);
    }
 
    private int getPathablePosY() {

@@ -54,12 +54,12 @@ public class GatherPOITask extends Task<CreatureEntity> {
             return true;
          }
       };
-      Stream<BlockPos> stream = pointofinterestmanager.func_225399_a(this.field_220604_a.func_221045_c(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.HAS_SPACE);
-      Path path = entityIn.getNavigator().func_225463_a(stream, this.field_220604_a.func_225478_d());
+      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDist(this.field_220604_a.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.HAS_SPACE);
+      Path path = entityIn.getNavigator().findPath(stream, this.field_220604_a.func_225478_d());
       if (path != null && path.func_224771_h()) {
          BlockPos blockpos = path.func_224770_k();
          pointofinterestmanager.func_219148_c(blockpos).ifPresent((p_225441_5_) -> {
-            pointofinterestmanager.func_219157_a(this.field_220604_a.func_221045_c(), (p_225442_1_) -> {
+            pointofinterestmanager.func_219157_a(this.field_220604_a.getPoiTypePred(), (p_225442_1_) -> {
                return p_225442_1_.equals(blockpos);
             }, blockpos, 1);
             entityIn.getBrain().setMemory(this.field_220605_b, GlobalPos.of(worldIn.getDimension().getType(), blockpos));

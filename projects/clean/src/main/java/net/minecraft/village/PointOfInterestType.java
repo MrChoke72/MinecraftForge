@@ -53,65 +53,87 @@ public class PointOfInterestType {
    public static final PointOfInterestType field_226357_t_ = func_226359_a_("bee_nest", getAllStates(Blocks.field_226905_ma_), 0, 1);
    public static final PointOfInterestType field_226358_u_ = func_226359_a_("nether_portal", getAllStates(Blocks.NETHER_PORTAL), 0, 1);
    private final String name;
-   private final Set<BlockState> field_221075_w;
+
+   //AH CHANGE REFACTOR
+   private final Set<BlockState> stateSet;
+   //private final Set<BlockState> field_221075_w;
+
    private final int maxFreeTickets;
-   private final Predicate<PointOfInterestType> field_221078_z;
-   private final int field_225481_A;
+
+   //AH CHANGE REFACTOR
+   private final Predicate<PointOfInterestType> poiPred;
+   //private final Predicate<PointOfInterestType> field_221078_z;
+
+   //AH CHANGE REFACTOR
+   private final int keepDist;
+   //private final int field_225481_A;
 
    private static Set<BlockState> getAllStates(Block p_221042_0_) {
       return ImmutableSet.copyOf(p_221042_0_.getStateContainer().getValidStates());
    }
 
-   private PointOfInterestType(String p_i225713_1_, Set<BlockState> p_i225713_2_, int p_i225713_3_, Predicate<PointOfInterestType> p_i225713_4_, int p_i225713_5_) {
-      this.name = p_i225713_1_;
-      this.field_221075_w = ImmutableSet.copyOf(p_i225713_2_);
-      this.maxFreeTickets = p_i225713_3_;
-      this.field_221078_z = p_i225713_4_;
-      this.field_225481_A = p_i225713_5_;
+   //AH CHANGE REFACTOR
+   private PointOfInterestType(String name, Set<BlockState> stateSet, int maxFreeTickets, Predicate<PointOfInterestType> poiPred, int keepDist) {
+   //private PointOfInterestType(String p_i225713_1_, Set<BlockState> p_i225713_2_, int p_i225713_3_, Predicate<PointOfInterestType> p_i225713_4_, int p_i225713_5_) {
+      this.name = name;
+      this.stateSet = ImmutableSet.copyOf(stateSet);
+      this.maxFreeTickets = maxFreeTickets;
+      this.poiPred = poiPred;
+      this.keepDist = keepDist;
    }
 
-   private PointOfInterestType(String p_i225712_1_, Set<BlockState> p_i225712_2_, int p_i225712_3_, int p_i225712_4_) {
-      this.name = p_i225712_1_;
-      this.field_221075_w = ImmutableSet.copyOf(p_i225712_2_);
-      this.maxFreeTickets = p_i225712_3_;
-      this.field_221078_z = (p_221046_1_) -> {
+   //AH CHANGE REFACTOR
+   private PointOfInterestType(String name, Set<BlockState> stateSet, int maxFreeTickets, int keepDist) {
+   //private PointOfInterestType(String p_i225712_1_, Set<BlockState> p_i225712_2_, int p_i225712_3_, int p_i225712_4_) {
+      this.name = name;
+      this.stateSet = ImmutableSet.copyOf(stateSet);
+      this.maxFreeTickets = maxFreeTickets;
+      this.poiPred = (p_221046_1_) -> {
          return p_221046_1_ == this;
       };
-      this.field_225481_A = p_i225712_4_;
+      this.keepDist = keepDist;
    }
 
    public int getMaxFreeTickets() {
       return this.maxFreeTickets;
    }
 
-   public Predicate<PointOfInterestType> func_221045_c() {
-      return this.field_221078_z;
+   //AH CHANGE REFACTOR
+   public Predicate<PointOfInterestType> getPoiTypePred() {
+   //public Predicate<PointOfInterestType> func_221045_c() {
+      return this.poiPred;
    }
 
    public int func_225478_d() {
-      return this.field_225481_A;
+      return this.keepDist;
    }
 
    public String toString() {
       return this.name;
    }
 
-   private static PointOfInterestType func_226359_a_(String p_226359_0_, Set<BlockState> p_226359_1_, int p_226359_2_, int p_226359_3_) {
-      return func_221052_a(Registry.POINT_OF_INTEREST_TYPE.register(new ResourceLocation(p_226359_0_), new PointOfInterestType(p_226359_0_, p_226359_1_, p_226359_2_, p_226359_3_)));
+   //AH CHANGE REFACTOR
+   private static PointOfInterestType func_226359_a_(String name, Set<BlockState> stateSet, int maxFreeTickets, int keepDist) {
+   //private static PointOfInterestType func_226359_a_(String p_226359_0_, Set<BlockState> p_226359_1_, int p_226359_2_, int p_226359_3_) {
+      return func_221052_a(Registry.POINT_OF_INTEREST_TYPE.register(new ResourceLocation(name), new PointOfInterestType(name, stateSet, maxFreeTickets, keepDist)));
    }
 
-   private static PointOfInterestType func_226360_a_(String p_226360_0_, Set<BlockState> p_226360_1_, int p_226360_2_, Predicate<PointOfInterestType> p_226360_3_, int p_226360_4_) {
-      return func_221052_a(Registry.POINT_OF_INTEREST_TYPE.register(new ResourceLocation(p_226360_0_), new PointOfInterestType(p_226360_0_, p_226360_1_, p_226360_2_, p_226360_3_, p_226360_4_)));
+   //AH CHANGE REFACTOR
+   private static PointOfInterestType func_226360_a_(String name, Set<BlockState> stateSet, int maxFreeTickets, Predicate<PointOfInterestType> posPred, int keepDist) {
+   //private static PointOfInterestType func_226360_a_(String p_226360_0_, Set<BlockState> p_226360_1_, int p_226360_2_, Predicate<PointOfInterestType> p_226360_3_, int p_226360_4_) {
+      return func_221052_a(Registry.POINT_OF_INTEREST_TYPE.register(new ResourceLocation(name), new PointOfInterestType(name, stateSet, maxFreeTickets, posPred, keepDist)));
    }
 
-   private static PointOfInterestType func_221052_a(PointOfInterestType p_221052_0_) {
-      p_221052_0_.field_221075_w.forEach((p_221040_1_) -> {
-         PointOfInterestType pointofinteresttype = field_221073_u.put(p_221040_1_, p_221052_0_);
+   //AH CHANGE REFACTOR
+   private static PointOfInterestType func_221052_a(PointOfInterestType poiType) {
+   //private static PointOfInterestType func_221052_a(PointOfInterestType p_221052_0_) {
+      poiType.stateSet.forEach((p_221040_1_) -> {
+         PointOfInterestType pointofinteresttype = field_221073_u.put(p_221040_1_, poiType);
          if (pointofinteresttype != null) {
             throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException(String.format("%s is defined in too many tags", p_221040_1_)));
          }
       });
-      return p_221052_0_;
+      return poiType;
    }
 
    public static Optional<PointOfInterestType> forState(BlockState state) {

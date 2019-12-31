@@ -12,7 +12,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.server.ServerWorld;
 
 public class VillagerHostilesSensor extends Sensor<LivingEntity> {
-   private static final ImmutableMap<EntityType<?>, Float> field_220991_b = ImmutableMap.<EntityType<?>, Float>builder().put(EntityType.DROWNED, 8.0F).put(EntityType.EVOKER, 12.0F).put(EntityType.HUSK, 8.0F).put(EntityType.ILLUSIONER, 12.0F).put(EntityType.PILLAGER, 15.0F).put(EntityType.RAVAGER, 12.0F).put(EntityType.VEX, 8.0F).put(EntityType.VINDICATOR, 10.0F).put(EntityType.ZOMBIE, 8.0F).put(EntityType.ZOMBIE_VILLAGER, 8.0F).build();
+
+   //AH CHANGE - Beef up villager hostile range sensor
+   private static final ImmutableMap<EntityType<?>, Float> hostileDistMap = ImmutableMap.<EntityType<?>, Float>builder().put(EntityType.DROWNED, 12.0F).put(EntityType.EVOKER, 16.0F)
+           .put(EntityType.HUSK, 12.0F).put(EntityType.ILLUSIONER, 16.0F).put(EntityType.PILLAGER, 20.0F).put(EntityType.RAVAGER, 16.0F).put(EntityType.VEX, 12.0F)
+           .put(EntityType.VINDICATOR, 14.0F).put(EntityType.ZOMBIE, 12.0F).put(EntityType.ZOMBIE_VILLAGER, 12.0F).build();
+   //private static final ImmutableMap<EntityType<?>, Float> field_220991_b = ImmutableMap.<EntityType<?>, Float>builder().put(EntityType.DROWNED, 8.0F).put(EntityType.EVOKER, 12.0F).put(EntityType.HUSK, 8.0F).put(EntityType.ILLUSIONER, 12.0F).put(EntityType.PILLAGER, 15.0F).put(EntityType.RAVAGER, 12.0F).put(EntityType.VEX, 8.0F).put(EntityType.VINDICATOR, 10.0F).put(EntityType.ZOMBIE, 8.0F).put(EntityType.ZOMBIE_VILLAGER, 8.0F).build();
 
    public Set<MemoryModuleType<?>> getUsedMemories() {
       return ImmutableSet.of(MemoryModuleType.NEAREST_HOSTILE);
@@ -41,11 +46,11 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
    }
 
    private boolean func_220987_a(LivingEntity p_220987_1_, LivingEntity p_220987_2_) {
-      float f = field_220991_b.get(p_220987_2_.getType());
+      float f = hostileDistMap.get(p_220987_2_.getType());
       return p_220987_2_.getDistanceSq(p_220987_1_) <= (double)(f * f);
    }
 
    private boolean func_220988_c(LivingEntity p_220988_1_) {
-      return field_220991_b.containsKey(p_220988_1_.getType());
+      return hostileDistMap.containsKey(p_220988_1_.getType());
    }
 }

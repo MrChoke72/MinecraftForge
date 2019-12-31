@@ -1127,7 +1127,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       private List<BlockPos> func_226489_j_() {
          BlockPos blockpos = new BlockPos(BeeEntity.this);
          PointOfInterestManager pointofinterestmanager = ((ServerWorld)BeeEntity.this.world).func_217443_B();
-         Stream<PointOfInterest> stream = pointofinterestmanager.func_219146_b((p_226486_0_) -> {
+         Stream<PointOfInterest> stream = pointofinterestmanager.poiStreamByDist((p_226486_0_) -> {
             return p_226486_0_ == PointOfInterestType.field_226356_s_ || p_226486_0_ == PointOfInterestType.field_226357_t_;
          }, blockpos, 20, PointOfInterestManager.Status.ANY);
          return stream.map(PointOfInterest::getPos).filter((p_226487_1_) -> {

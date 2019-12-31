@@ -35,7 +35,10 @@ public class WalkToHouseTask extends Task<LivingEntity> {
       } else {
          CreatureEntity creatureentity = (CreatureEntity)owner;
          PointOfInterestManager pointofinterestmanager = worldIn.func_217443_B();
-         Optional<BlockPos> optional = pointofinterestmanager.func_219147_b(PointOfInterestType.HOME.func_221045_c(), (p_220522_0_) -> {
+
+         //AH CHANGE REFACTOR
+         Optional<BlockPos> optional = pointofinterestmanager.getPoiPosInRange(PointOfInterestType.HOME.getPoiTypePred(), (posPred) -> {
+         //Optional<BlockPos> optional = pointofinterestmanager.getPoiPosInRange(PointOfInterestType.HOME.getPoiTypePred(), (p_220522_0_) -> {            
             return true;
          }, new BlockPos(owner), 48, PointOfInterestManager.Status.ANY);
          return optional.isPresent() && !(optional.get().distanceSq(new BlockPos(creatureentity)) <= 4.0D);
@@ -58,8 +61,8 @@ public class WalkToHouseTask extends Task<LivingEntity> {
             return true;
          }
       };
-      Stream<BlockPos> stream = pointofinterestmanager.func_225399_a(PointOfInterestType.HOME.func_221045_c(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.ANY);
-      Path path = creatureentity.getNavigator().func_225463_a(stream, PointOfInterestType.HOME.func_225478_d());
+      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDist(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.ANY);
+      Path path = creatureentity.getNavigator().findPath(stream, PointOfInterestType.HOME.func_225478_d());
       if (path != null && path.func_224771_h()) {
          BlockPos blockpos = path.func_224770_k();
          Optional<PointOfInterestType> optional = pointofinterestmanager.func_219148_c(blockpos);

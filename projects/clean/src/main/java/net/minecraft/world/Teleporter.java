@@ -52,7 +52,7 @@ public class Teleporter {
    public BlockPattern.PortalInfo func_222272_a(BlockPos p_222272_1_, Vec3d p_222272_2_, Direction p_222272_3_, double p_222272_4_, double p_222272_6_, boolean p_222272_8_) {
       PointOfInterestManager pointofinterestmanager = this.world.func_217443_B();
       pointofinterestmanager.func_226347_a_(this.world, p_222272_1_, 128);
-      List<PointOfInterest> list = pointofinterestmanager.func_226353_b_((p_226705_0_) -> {
+      List<PointOfInterest> list = pointofinterestmanager.poiStreamByRadius((p_226705_0_) -> {
          return p_226705_0_ == PointOfInterestType.field_226358_u_;
       }, p_222272_1_, 128, PointOfInterestManager.Status.ANY).collect(Collectors.toList());
       Optional<PointOfInterest> optional = list.stream().min(Comparator.<PointOfInterest>comparingDouble((p_226706_1_) -> {

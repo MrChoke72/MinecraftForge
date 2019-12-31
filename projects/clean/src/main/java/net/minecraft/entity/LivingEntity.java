@@ -1223,7 +1223,7 @@ public abstract class LivingEntity extends Entity {
                return true;
             }
          }
-         else
+         else if(block == Blocks.VINE)
          {
             if(Block.getDirFacingFromState(blockstate) == state.get(TrapDoorBlock.HORIZONTAL_FACING))
             {

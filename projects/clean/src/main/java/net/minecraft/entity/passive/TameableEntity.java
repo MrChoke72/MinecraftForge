@@ -7,6 +7,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -117,8 +118,14 @@ public abstract class TameableEntity extends AnimalEntity {
       byte b0 = this.dataManager.get(TAMED);
       if (tamed) {
          this.dataManager.set(TAMED, (byte)(b0 | 4));
+
+         //AH CHANGE - beef up path follow for tameable mobs.  Default is 16
+         this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48.0D);
       } else {
          this.dataManager.set(TAMED, (byte)(b0 & -5));
+
+         //AH CHANGE - back to default, 16
+         this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(16.0D);
       }
 
       this.setupTamedAI();
