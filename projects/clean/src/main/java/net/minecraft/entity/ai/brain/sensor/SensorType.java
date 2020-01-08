@@ -21,7 +21,9 @@ public class SensorType<U extends Sensor<?>> {
       this.field_221006_j = p_i51500_1_;
    }
 
-   public U func_220995_a() {
+   //AH REFACTOR
+   public U getSensor() {
+   //public U func_220995_a() {
       return (U)(this.field_221006_j.get());
    }
 

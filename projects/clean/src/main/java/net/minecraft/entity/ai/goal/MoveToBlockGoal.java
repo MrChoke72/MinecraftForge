@@ -49,13 +49,16 @@ public abstract class MoveToBlockGoal extends Goal {
    }
 
    public void startExecuting() {
-      this.func_220725_g();
+      this.tryMoveToXYZ();
       this.timeoutCounter = 0;
       this.maxStayTicks = this.creature.getRNG().nextInt(this.creature.getRNG().nextInt(1200) + 1200) + 1200;
    }
 
-   protected void func_220725_g() {
-      this.creature.getNavigator().tryMoveToXYZ((double)((float)this.destinationBlock.getX()) + 0.5D, (double)(this.destinationBlock.getY() + 1), (double)((float)this.destinationBlock.getZ()) + 0.5D, this.movementSpeed);
+   //AH REFACTOR
+   protected void tryMoveToXYZ() {
+   //protected void func_220725_g() {
+      this.creature.getNavigator().tryMoveToXYZ((double)((float)this.destinationBlock.getX()) + 0.5D, (double)(this.destinationBlock.getY() + 1),
+              (double)((float)this.destinationBlock.getZ()) + 0.5D, this.movementSpeed);
    }
 
    public double getTargetDistanceSq() {

@@ -65,7 +65,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.IDebugRenderer {
 
    private static void func_229034_b_(Path p_229034_0_, float p_229034_1_, boolean p_229034_2_, boolean p_229034_3_, double p_229034_4_, double p_229034_6_, double p_229034_8_) {
       func_229031_a_(p_229034_0_, p_229034_4_, p_229034_6_, p_229034_8_);
-      BlockPos blockpos = p_229034_0_.func_224770_k();
+      BlockPos blockpos = p_229034_0_.getTargetPos();
       if (func_229033_a_(blockpos, p_229034_4_, p_229034_6_, p_229034_8_) <= 80.0F) {
          DebugRenderer.func_217730_a((new AxisAlignedBB((double)((float)blockpos.getX() + 0.25F), (double)((float)blockpos.getY() + 0.25F), (double)blockpos.getZ() + 0.25D, (double)((float)blockpos.getX() + 0.75F), (double)((float)blockpos.getY() + 0.75F), (double)((float)blockpos.getZ() + 0.75F))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), 0.0F, 1.0F, 0.0F, 0.5F);
 

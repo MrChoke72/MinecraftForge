@@ -748,7 +748,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       private boolean func_226472_a_(BlockPos p_226472_1_) {
          BeeEntity.this.navigator.setIterMaxMult(10.0F);
          BeeEntity.this.navigator.tryMoveToXYZ((double)p_226472_1_.getX(), (double)p_226472_1_.getY(), (double)p_226472_1_.getZ(), 1.0D);
-         return BeeEntity.this.navigator.getPath() != null && BeeEntity.this.navigator.getPath().func_224771_h();
+         return BeeEntity.this.navigator.getPath() != null && BeeEntity.this.navigator.getPath().isCompletePath();
       }
 
       private boolean func_226473_b_(BlockPos p_226473_1_) {
@@ -786,7 +786,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
             return true;
          } else {
             Path path = BeeEntity.this.navigator.getPath();
-            return path != null && path.func_224770_k().equals(p_226476_1_) && path.func_224771_h() && path.isFinished();
+            return path != null && path.getTargetPos().equals(p_226476_1_) && path.isCompletePath() && path.isFinished();
          }
       }
    }
@@ -1126,8 +1126,8 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
 
       private List<BlockPos> func_226489_j_() {
          BlockPos blockpos = new BlockPos(BeeEntity.this);
-         PointOfInterestManager pointofinterestmanager = ((ServerWorld)BeeEntity.this.world).func_217443_B();
-         Stream<PointOfInterest> stream = pointofinterestmanager.poiStreamByDist((p_226486_0_) -> {
+         PointOfInterestManager pointofinterestmanager = ((ServerWorld)BeeEntity.this.world).getPoiMgr();
+         Stream<PointOfInterest> stream = pointofinterestmanager.poiStreamByDistFiltPos((p_226486_0_) -> {
             return p_226486_0_ == PointOfInterestType.field_226356_s_ || p_226486_0_ == PointOfInterestType.field_226357_t_;
          }, blockpos, 20, PointOfInterestManager.Status.ANY);
          return stream.map(PointOfInterest::getPos).filter((p_226487_1_) -> {

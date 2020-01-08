@@ -43,10 +43,10 @@ public class ShareItemsTask extends Task<VillagerEntity> {
          BrainUtil.func_220618_a(owner, villagerentity);
          owner.func_213746_a(villagerentity, gameTime);
          if (owner.canAbondonItems() && (owner.getVillagerData().getProfession() == VillagerProfession.FARMER || villagerentity.wantsMoreFood())) {
-            func_220586_a(owner, VillagerEntity.field_213788_bA.keySet(), villagerentity);
+            func_220586_a(owner, VillagerEntity.foodNeedMap.keySet(), villagerentity);
          }
 
-         if (!this.field_220588_a.isEmpty() && owner.func_213715_ed().hasAny(this.field_220588_a)) {
+         if (!this.field_220588_a.isEmpty() && owner.getInventory().hasAny(this.field_220588_a)) {
             func_220586_a(owner, this.field_220588_a, villagerentity);
          }
 
@@ -66,7 +66,7 @@ public class ShareItemsTask extends Task<VillagerEntity> {
    }
 
    private static void func_220586_a(VillagerEntity p_220586_0_, Set<Item> p_220586_1_, LivingEntity p_220586_2_) {
-      Inventory inventory = p_220586_0_.func_213715_ed();
+      Inventory inventory = p_220586_0_.getInventory();
       ItemStack itemstack = ItemStack.EMPTY;
       int i = 0;
 

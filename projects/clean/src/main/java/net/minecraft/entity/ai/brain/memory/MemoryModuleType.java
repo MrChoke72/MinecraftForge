@@ -49,7 +49,11 @@ public class MemoryModuleType<U> {
    public static final MemoryModuleType<Long> CANT_REACH_WALK_TARGET_SINCE = register("cant_reach_walk_target_since");
    public static final MemoryModuleType<Long> GOLEM_LAST_SEEN_TIME = register("golem_last_seen_time");
    public static final MemoryModuleType<LongSerializable> LAST_SLEPT = register("last_slept", Optional.of(LongSerializable::deserialize));
-   public static final MemoryModuleType<LongSerializable> field_226332_A_ = register("last_woken", Optional.of(LongSerializable::deserialize));
+
+   //AH REFACTOR
+   public static final MemoryModuleType<LongSerializable> LAST_WOKEN = register("last_woken", Optional.of(LongSerializable::deserialize));
+   //public static final MemoryModuleType<LongSerializable> field_226332_A_ = register("last_woken", Optional.of(LongSerializable::deserialize));
+
    public static final MemoryModuleType<LongSerializable> LAST_WORKED_AT_POI = register("last_worked_at_poi", Optional.of(LongSerializable::deserialize));
    private final Optional<Function<Dynamic<?>, U>> deserializer;
 

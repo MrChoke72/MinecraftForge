@@ -22,7 +22,7 @@ public class AssignProfessionTask extends Task<VillagerEntity> {
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
       GlobalPos globalpos = entityIn.getBrain().getMemory(MemoryModuleType.JOB_SITE).get();
       MinecraftServer minecraftserver = worldIn.getServer();
-      minecraftserver.getWorld(globalpos.getDimension()).func_217443_B().func_219148_c(globalpos.getPos()).ifPresent((p_220390_2_) -> {
+      minecraftserver.getWorld(globalpos.getDimension()).getPoiMgr().getPoiTypeForPos(globalpos.getPos()).ifPresent((p_220390_2_) -> {
          Registry.VILLAGER_PROFESSION.stream().filter((p_220389_1_) -> {
             return p_220389_1_.getPointOfInterest() == p_220390_2_;
          }).findFirst().ifPresent((p_220388_2_) -> {

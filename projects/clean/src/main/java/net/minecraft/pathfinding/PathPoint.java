@@ -65,7 +65,7 @@ public class PathPoint {
    }
 
    //AH CHANGE REFACTOR
-   public float pointDiff(PathPoint point) {
+   public float pointDist(PathPoint point) {
    //public float func_224757_c(PathPoint p_224757_1_) {
       float f = (float)Math.abs(point.x - this.x);
       float f1 = (float)Math.abs(point.y - this.y);
@@ -73,10 +73,12 @@ public class PathPoint {
       return f + f1 + f2;
    }
 
-   public float func_224758_c(BlockPos p_224758_1_) {
-      float f = (float)Math.abs(p_224758_1_.getX() - this.x);
-      float f1 = (float)Math.abs(p_224758_1_.getY() - this.y);
-      float f2 = (float)Math.abs(p_224758_1_.getZ() - this.z);
+   //AH REFACTOR
+   public float pointDist(BlockPos pos) {
+   //public float func_224758_c(BlockPos p_224758_1_) {
+      float f = (float)Math.abs(pos.getX() - this.x);
+      float f1 = (float)Math.abs(pos.getY() - this.y);
+      float f2 = (float)Math.abs(pos.getZ() - this.z);
       return f + f1 + f2;
    }
 

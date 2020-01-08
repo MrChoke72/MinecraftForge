@@ -100,8 +100,10 @@ public abstract class PathNavigator {
    }
 
    @Nullable
-   public final Path func_225466_a(double p_225466_1_, double p_225466_3_, double p_225466_5_, int p_225466_7_) {
-      return this.getPathToPos(new BlockPos(p_225466_1_, p_225466_3_, p_225466_5_), p_225466_7_);
+   //AH REFACTOR
+   public final Path getPathToPos(double x, double y, double z, int keepDist) {
+   //public final Path func_225466_a(double p_225466_1_, double p_225466_3_, double p_225466_5_, int p_225466_7_) {
+      return this.getPathToPos(new BlockPos(x, y, z), keepDist);
    }
 
    @Nullable
@@ -119,13 +121,15 @@ public abstract class PathNavigator {
    }
 
    @Nullable
-   public Path getPathToEntityLiving(Entity entityIn, int p_75494_2_) {
-      return this.findPath(ImmutableSet.of(new BlockPos(entityIn)), 16, true, p_75494_2_);
+   //AH REFACTOR
+   public Path getPathToEntityLiving(Entity entityIn, int keepDist) {
+   //public Path getPathToEntityLiving(Entity entityIn, int p_75494_2_) {
+      return this.findPath(ImmutableSet.of(new BlockPos(entityIn)), 16, true, keepDist);
    }
 
    @Nullable
    //AH CHANGE REFACTOR
-   protected Path findPath(Set<BlockPos> finalTgtSet, int followRangeExtend, boolean p_225464_3_, int keepDist) {
+   protected Path findPath(Set<BlockPos> finalTgtSet, int followRangeExtend, boolean startUp1Block, int keepDist) {
    //protected Path func_225464_a(Set<BlockPos> p_225464_1_, int p_225464_2_, boolean p_225464_3_, int p_225464_4_) {
       if (finalTgtSet.isEmpty()) {
          return null;
@@ -138,13 +142,13 @@ public abstract class PathNavigator {
       } else {
          this.world.getProfiler().startSection("pathfind");
          float f = (float)this.followRange.getValue();
-         BlockPos blockpos = p_225464_3_ ? (new BlockPos(this.entity)).up() : new BlockPos(this.entity);
+         BlockPos blockpos = startUp1Block ? (new BlockPos(this.entity)).up() : new BlockPos(this.entity);
          int i = (int)(f + (float)followRangeExtend);
          Region region = new Region(this.world, blockpos.add(-i, -i, -i), blockpos.add(i, i, i));
          Path path = this.pathFinder.findPath(region, this.entity, finalTgtSet, f, keepDist, this.iterMaxMult);
          this.world.getProfiler().endSection();
-         if (path != null && path.func_224770_k() != null) {
-            this.targetPos = path.func_224770_k();
+         if (path != null && path.getTargetPos() != null) {
+            this.targetPos = path.getTargetPos();
             this.field_225468_r = keepDist;
          }
 
@@ -153,7 +157,7 @@ public abstract class PathNavigator {
    }
 
    public boolean tryMoveToXYZ(double x, double y, double z, double speedIn) {
-      return this.setPath(this.func_225466_a(x, y, z, 1), speedIn);
+      return this.setPath(this.getPathToPos(x, y, z, 1), speedIn);
    }
 
    public boolean tryMoveToEntityLiving(Entity entityIn, double speedIn) {
@@ -164,13 +168,14 @@ public abstract class PathNavigator {
    public boolean setPath(@Nullable Path pathentityIn, double speedIn) {
       if (pathentityIn == null) {
 
-         //AH CHANGE DEBUG
-
+         //AH CHANGE DEBUG OFF
+         /*
          if(this.entity instanceof AbstractVillagerEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
          {
             //System.out.println("BREAK 2");
             System.out.println("in setPath to null.");
          }
+          */
 
          this.currentPath = null;
          return false;
@@ -223,21 +228,25 @@ public abstract class PathNavigator {
             Vec3d vec3d2 = this.currentPath.getPosition(this.entity);
             BlockPos blockpos = new BlockPos(vec3d2);
 
-            //AH CHANGE DEBUG
+            //AH CHANGE DEBUG OFF
+            /*
             if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
             {
                System.out.println("in navigator tick, currPathPos=" + vec3d2.toString());
             }
+             */
 
             this.entity.getMoveHelper().setMoveTo(vec3d2.x, this.world.getBlockState(blockpos.down()).isAir() ? vec3d2.y : WalkNodeProcessor.getGroundY(this.world, blockpos), vec3d2.z, this.speed);
          }
          //AH CHANGE DEBUG
          else
          {
+            /*
             if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
             {
                System.out.println("in navigator tick, noPath");
             }
+             */
          }
 
       }
@@ -296,13 +305,14 @@ public abstract class PathNavigator {
 
    public void clearPath() {
 
-      //AH CHANGE DEBUG
-
+      //AH CHANGE DEBUG OFF
+      /*
       if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
       {
          //System.out.println("BREAK 2");
          System.out.println("in clearPath to null.");
       }
+       */
 
       this.currentPath = null;
    }

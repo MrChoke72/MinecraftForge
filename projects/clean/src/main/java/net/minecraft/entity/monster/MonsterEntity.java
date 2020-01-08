@@ -104,7 +104,7 @@ public abstract class MonsterEntity extends CreatureEntity implements IMob {
    protected void registerAttributes() {
       super.registerAttributes();
 
-      //AH CHANGE - ADD
+      //AH CHANGE - ADD, default is 16
       this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
 
       this.getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);

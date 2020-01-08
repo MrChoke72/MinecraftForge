@@ -60,7 +60,7 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
          } else if (this.field_75376_d.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.field_75376_d.getDistanceSq(this.entity)) {
             return false;
          } else {
-            this.path = this.navigation.func_225466_a(vec3d.x, vec3d.y, vec3d.z, 0);
+            this.path = this.navigation.getPathToPos(vec3d.x, vec3d.y, vec3d.z, 0);
             return this.path != null;
          }
       }

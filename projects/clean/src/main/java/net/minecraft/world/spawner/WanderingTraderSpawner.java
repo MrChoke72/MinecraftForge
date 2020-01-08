@@ -75,7 +75,7 @@ public class WanderingTraderSpawner {
       } else {
          BlockPos blockpos = playerentity.getPosition();
          int i = 48;
-         PointOfInterestManager pointofinterestmanager = this.world.func_217443_B();
+         PointOfInterestManager pointofinterestmanager = this.world.getPoiMgr();
          Optional<BlockPos> optional = pointofinterestmanager.func_219127_a(PointOfInterestType.MEETING.getPoiTypePred(), (p_221241_0_) -> {
             return true;
          }, blockpos, 48, PointOfInterestManager.Status.ANY);

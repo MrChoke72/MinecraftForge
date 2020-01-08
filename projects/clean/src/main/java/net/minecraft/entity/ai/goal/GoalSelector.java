@@ -36,11 +36,11 @@ public class GoalSelector {
    }
 
    public void removeGoal(Goal task) {
-      this.goals.stream().filter((p_220882_1_) -> {
-         return p_220882_1_.getGoal() == task;
+      this.goals.stream().filter((prioritizedGoal) -> {
+         return prioritizedGoal.getGoal() == task;
       }).filter(PrioritizedGoal::isRunning).forEach(PrioritizedGoal::resetTask);
-      this.goals.removeIf((p_220884_1_) -> {
-         return p_220884_1_.getGoal() == task;
+      this.goals.removeIf((prioritizedGoal) -> {
+         return prioritizedGoal.getGoal() == task;
       });
    }
 

@@ -108,7 +108,7 @@ public class MerchantInventory implements IInventory {
 
             if (merchantoffer != null && !merchantoffer.func_222217_o()) {
                this.field_214026_c = merchantoffer;
-               this.setInventorySlotContents(2, merchantoffer.func_222206_f());
+               this.setInventorySlotContents(2, merchantoffer.getSellingStock());
                this.field_214027_e = merchantoffer.func_222210_n();
             } else {
                this.setInventorySlotContents(2, ItemStack.EMPTY);

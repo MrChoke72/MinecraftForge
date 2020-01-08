@@ -86,11 +86,15 @@ public class MerchantOffer {
       return this.sellingStack;
    }
 
-   public void func_222222_e() {
+   //AH REFACTOR
+   public void setDemand() {
+   //public void func_222222_e() {
       this.demand = this.demand + this.uses - (this.maxUses - this.uses);
    }
 
-   public ItemStack func_222206_f() {
+   //AH REFACTOR
+   public ItemStack getSellingStock() {
+   //public ItemStack func_222206_f() {
       return this.sellingStack.copy();
    }
 

@@ -21,20 +21,30 @@ public class Path {
 
    private PathPoint[] openSet = new PathPoint[0];
    private PathPoint[] closedSet = new PathPoint[0];
+
    @OnlyIn(Dist.CLIENT)
-   private Set<FlaggedPathPoint> field_224772_d;
+   //Ah REFACTOR
+   private Set<FlaggedPathPoint> pointSet;
+   //private Set<FlaggedPathPoint> field_224772_d;
+
    private int currentPathIndex;
    private final BlockPos target;
-   private final float field_224773_g;
-   private final boolean field_224774_h;
+
+   //AH REFACTOR
+   private final float finalPointTgtDist;
+   //private final float field_224773_g;
+
+   //Ah REFACTOR
+   private final boolean completePath;
+   //private final boolean field_224774_h;
 
    //AH CHANGE REFACTOR
-   public Path(List<PathPoint> points, BlockPos pos, boolean p_i51804_3_) {
+   public Path(List<PathPoint> points, BlockPos tgtPos, boolean completePath) {
    //public Path(List<PathPoint> p_i51804_1_, BlockPos p_i51804_2_, boolean p_i51804_3_) {
       this.points = points;
-      this.target = pos;
-      this.field_224773_g = points.isEmpty() ? Float.MAX_VALUE : this.points.get(this.points.size() - 1).func_224758_c(this.target);
-      this.field_224774_h = p_i51804_3_;
+      this.target = tgtPos;
+      this.finalPointTgtDist = points.isEmpty() ? Float.MAX_VALUE : this.points.get(this.points.size() - 1).pointDist(this.target);
+      this.completePath = completePath;
    }
 
    public void incrementPathIndex() {
@@ -146,8 +156,10 @@ public class Path {
       }
    }
 
-   public boolean func_224771_h() {
-      return this.field_224774_h;
+   //AH REFACTOR
+   public boolean isCompletePath() {
+   //public boolean func_224771_h() {
+      return this.completePath;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -194,7 +206,7 @@ public class Path {
       Path path = new Path(list, blockpos, flag);
       path.openSet = apathpoint;
       path.closedSet = apathpoint1;
-      path.field_224772_d = set;
+      path.pointSet = set;
       path.currentPathIndex = i;
       return path;
    }
@@ -203,11 +215,14 @@ public class Path {
       return "Path(length=" + this.points.size() + ")";
    }
 
-   public BlockPos func_224770_k() {
+   //AH REFACTOR
+   public BlockPos getTargetPos() {
+   //public BlockPos func_224770_k() {
       return this.target;
    }
 
-   public float func_224769_l() {
-      return this.field_224773_g;
+   //AH REFACTOR
+   public float getFinalPointTgtDist() {
+      return this.finalPointTgtDist;
    }
 }

@@ -32,7 +32,7 @@ public class NearestBedSensor extends Sensor<MobEntity> {
       if (p_212872_2_.isChild()) {
          this.field_225472_b = 0;
          this.field_225473_c = p_212872_1_.getGameTime() + (long)p_212872_1_.getRandom().nextInt(20);
-         PointOfInterestManager pointofinterestmanager = p_212872_1_.func_217443_B();
+         PointOfInterestManager pointofinterestmanager = p_212872_1_.getPoiMgr();
          Predicate<BlockPos> predicate = (p_225469_1_) -> {
             long i = p_225469_1_.toLong();
             if (this.field_225471_a.containsKey(i)) {
@@ -45,15 +45,15 @@ public class NearestBedSensor extends Sensor<MobEntity> {
             }
          };
 
-         //AH CHANGE - Increase range to look for a bed.  was 48
-         Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDist(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(p_212872_2_), 48, PointOfInterestManager.Status.ANY);
+         //AH CHANGE CANCEL - Increase range to look for a bed.  was 48
+         Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(p_212872_2_), 48, PointOfInterestManager.Status.ANY);
          //Stream<BlockPos> stream = pointofinterestmanager.func_225399_a(PointOfInterestType.HOME.func_221045_c(), predicate, new BlockPos(p_212872_2_), 48, PointOfInterestManager.Status.ANY);
 
 
-         Path path = p_212872_2_.getNavigator().findPath(stream, PointOfInterestType.HOME.func_225478_d());
-         if (path != null && path.func_224771_h()) {
-            BlockPos blockpos = path.func_224770_k();
-            Optional<PointOfInterestType> optional = pointofinterestmanager.func_219148_c(blockpos);
+         Path path = p_212872_2_.getNavigator().findPath(stream, PointOfInterestType.HOME.getKeepDist());
+         if (path != null && path.isCompletePath()) {
+            BlockPos blockpos = path.getTargetPos();
+            Optional<PointOfInterestType> optional = pointofinterestmanager.getPoiTypeForPos(blockpos);
             if (optional.isPresent()) {
                p_212872_2_.getBrain().setMemory(MemoryModuleType.NEAREST_BED, blockpos);
             }

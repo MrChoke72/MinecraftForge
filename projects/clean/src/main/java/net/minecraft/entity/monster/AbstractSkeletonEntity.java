@@ -79,6 +79,9 @@ public abstract class AbstractSkeletonEntity extends MonsterEntity implements IR
    protected void registerAttributes() {
       super.registerAttributes();
       this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
+
+      //AH CHANGE - ADD, default is 16, Monster is set to 32.  nerf skeletons a little, 24
+      this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
    }
 
    protected void playStepSound(BlockPos pos, BlockState blockIn) {

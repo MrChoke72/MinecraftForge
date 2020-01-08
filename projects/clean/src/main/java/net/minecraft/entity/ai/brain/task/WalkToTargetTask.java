@@ -18,11 +18,23 @@ import net.minecraft.world.server.ServerWorld;
 
 public class WalkToTargetTask extends Task<MobEntity> {
    @Nullable
-   private Path field_220488_a;
+
+   //AH REFACTOR
+   private Path path;
+   //private Path field_220488_a;
+
    @Nullable
-   private BlockPos field_220489_b;
-   private float field_220490_c;
-   private int field_220491_d;
+   //AH REFACTOR
+   private BlockPos targetPos;
+   //private BlockPos field_220489_b;
+
+   //AH REFACTOR
+   private float targetSpeed;
+   //private float field_220490_c;
+
+   //AH REFACTOR
+   private int tickCount;
+   //private int field_220491_d;
 
    public WalkToTargetTask(int p_i50356_1_) {
       super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_PRESENT), p_i50356_1_);
@@ -31,8 +43,8 @@ public class WalkToTargetTask extends Task<MobEntity> {
    protected boolean shouldExecute(ServerWorld worldIn, MobEntity owner) {
       Brain<?> brain = owner.getBrain();
       WalkTarget walktarget = brain.getMemory(MemoryModuleType.WALK_TARGET).get();
-      if (!this.hasReachedTarget(owner, walktarget) && this.func_220487_a(owner, walktarget, worldIn.getGameTime())) {
-         this.field_220489_b = walktarget.getTarget().getBlockPos();
+      if (!this.hasReachedTarget(owner, walktarget) && this.setPath(owner, walktarget, worldIn.getGameTime())) {
+         this.targetPos = walktarget.getTarget().getBlockPos();
          return true;
       } else {
          brain.removeMemory(MemoryModuleType.WALK_TARGET);
@@ -41,7 +53,7 @@ public class WalkToTargetTask extends Task<MobEntity> {
    }
 
    protected boolean shouldContinueExecuting(ServerWorld worldIn, MobEntity entityIn, long gameTimeIn) {
-      if (this.field_220488_a != null && this.field_220489_b != null) {
+      if (this.path != null && this.targetPos != null) {
          Optional<WalkTarget> optional = entityIn.getBrain().getMemory(MemoryModuleType.WALK_TARGET);
          PathNavigator pathnavigator = entityIn.getNavigator();
          return !pathnavigator.noPath() && optional.isPresent() && !this.hasReachedTarget(entityIn, optional.get());
@@ -54,29 +66,29 @@ public class WalkToTargetTask extends Task<MobEntity> {
       entityIn.getNavigator().clearPath();
       entityIn.getBrain().removeMemory(MemoryModuleType.WALK_TARGET);
       entityIn.getBrain().removeMemory(MemoryModuleType.PATH);
-      this.field_220488_a = null;
+      this.path = null;
    }
 
    protected void startExecuting(ServerWorld worldIn, MobEntity entityIn, long gameTimeIn) {
-      entityIn.getBrain().setMemory(MemoryModuleType.PATH, this.field_220488_a);
-      entityIn.getNavigator().setPath(this.field_220488_a, (double)this.field_220490_c);
-      this.field_220491_d = worldIn.getRandom().nextInt(10);
+      entityIn.getBrain().setMemory(MemoryModuleType.PATH, this.path);
+      entityIn.getNavigator().setPath(this.path, (double)this.targetSpeed);
+      this.tickCount = worldIn.getRandom().nextInt(10);
    }
 
    protected void updateTask(ServerWorld worldIn, MobEntity owner, long gameTime) {
-      --this.field_220491_d;
-      if (this.field_220491_d <= 0) {
+      --this.tickCount;
+      if (this.tickCount <= 0) {
          Path path = owner.getNavigator().getPath();
          Brain<?> brain = owner.getBrain();
-         if (this.field_220488_a != path) {
-            this.field_220488_a = path;
+         if (this.path != path) {
+            this.path = path;
             brain.setMemory(MemoryModuleType.PATH, path);
          }
 
-         if (path != null && this.field_220489_b != null) {
+         if (path != null && this.targetPos != null) {
             WalkTarget walktarget = brain.getMemory(MemoryModuleType.WALK_TARGET).get();
-            if (walktarget.getTarget().getBlockPos().distanceSq(this.field_220489_b) > 4.0D && this.func_220487_a(owner, walktarget, worldIn.getGameTime())) {
-               this.field_220489_b = walktarget.getTarget().getBlockPos();
+            if (walktarget.getTarget().getBlockPos().distanceSq(this.targetPos) > 4.0D && this.setPath(owner, walktarget, worldIn.getGameTime())) {
+               this.targetPos = walktarget.getTarget().getBlockPos();
                this.startExecuting(worldIn, owner, gameTime);
             }
 
@@ -84,27 +96,29 @@ public class WalkToTargetTask extends Task<MobEntity> {
       }
    }
 
-   private boolean func_220487_a(MobEntity p_220487_1_, WalkTarget p_220487_2_, long p_220487_3_) {
-      BlockPos blockpos = p_220487_2_.getTarget().getBlockPos();
-      this.field_220488_a = p_220487_1_.getNavigator().getPathToPos(blockpos, 0);
-      this.field_220490_c = p_220487_2_.getSpeed();
-      if (!this.hasReachedTarget(p_220487_1_, p_220487_2_)) {
-         Brain<?> brain = p_220487_1_.getBrain();
-         boolean flag = this.field_220488_a != null && this.field_220488_a.func_224771_h();
+   //AH REFACTOR
+   private boolean setPath(MobEntity entity, WalkTarget target, long gameTime) {
+   //private boolean func_220487_a(MobEntity p_220487_1_, WalkTarget p_220487_2_, long p_220487_3_) {
+      BlockPos blockpos = target.getTarget().getBlockPos();
+      this.path = entity.getNavigator().getPathToPos(blockpos, 0);
+      this.targetSpeed = target.getSpeed();
+      if (!this.hasReachedTarget(entity, target)) {
+         Brain<?> brain = entity.getBrain();
+         boolean flag = this.path != null && this.path.isCompletePath();
          if (flag) {
             brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, Optional.empty());
          } else if (!brain.hasMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
-            brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, p_220487_3_);
+            brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, gameTime);
          }
 
-         if (this.field_220488_a != null) {
+         if (this.path != null) {
             return true;
          }
 
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards((CreatureEntity)p_220487_1_, 10, 7, new Vec3d(blockpos));
+         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards((CreatureEntity)entity, 10, 7, new Vec3d(blockpos));
          if (vec3d != null) {
-            this.field_220488_a = p_220487_1_.getNavigator().func_225466_a(vec3d.x, vec3d.y, vec3d.z, 0);
-            return this.field_220488_a != null;
+            this.path = entity.getNavigator().getPathToPos(vec3d.x, vec3d.y, vec3d.z, 0);
+            return this.path != null;
          }
       }
 

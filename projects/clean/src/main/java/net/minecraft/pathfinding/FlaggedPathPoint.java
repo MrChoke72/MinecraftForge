@@ -6,7 +6,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class FlaggedPathPoint extends PathPoint {
 
-   //AH CHANGE REFACTOR
+   //AH CHANGE REFACTOR all 3
    private float closestDistToTgt = Float.MAX_VALUE;
    private PathPoint closestPathPoint;
    private boolean keepPoint;
@@ -14,8 +14,10 @@ public class FlaggedPathPoint extends PathPoint {
    //private PathPoint field_224766_n;
    //private boolean field_224767_o;
 
-   public FlaggedPathPoint(PathPoint p_i51802_1_) {
-      super(p_i51802_1_.x, p_i51802_1_.y, p_i51802_1_.z);
+   //AH REFACTOR
+   public FlaggedPathPoint(PathPoint point) {
+   //public FlaggedPathPoint(PathPoint p_i51802_1_) {
+      super(point.x, point.y, point.z);
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -23,10 +25,12 @@ public class FlaggedPathPoint extends PathPoint {
       super(p_i51803_1_, p_i51803_2_, p_i51803_3_);
    }
 
-   public void func_224761_a(float p_224761_1_, PathPoint p_224761_2_) {
-      if (p_224761_1_ < this.closestDistToTgt) {
-         this.closestDistToTgt = p_224761_1_;
-         this.closestPathPoint = p_224761_2_;
+   //AH REFACTOR
+   public void setClosestPoint(float distToTgt, PathPoint point) {
+   //public void func_224761_a(float p_224761_1_, PathPoint p_224761_2_) {
+      if (distToTgt < this.closestDistToTgt) {
+         this.closestDistToTgt = distToTgt;
+         this.closestPathPoint = point;
       }
 
    }

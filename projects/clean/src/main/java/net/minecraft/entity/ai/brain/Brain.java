@@ -35,7 +35,11 @@ import net.minecraft.world.server.ServerWorld;
 public class Brain<E extends LivingEntity> implements IDynamicSerializable {
    private final Map<MemoryModuleType<?>, Optional<?>> memories = Maps.newHashMap();
    private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.newLinkedHashMap();
-   private final Map<Integer, Map<Activity, Set<Task<? super E>>>> field_218232_c = Maps.newTreeMap();
+
+   //AH REFACTOR
+   private final Map<Integer, Map<Activity, Set<Task<? super E>>>> activityTasksMap = Maps.newTreeMap(); //Key is Integer: task execution order
+   //private final Map<Integer, Map<Activity, Set<Task<? super E>>>> field_218232_c = Maps.newTreeMap();
+
    private Schedule schedule = Schedule.EMPTY;
    private final Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryModuleStatus>>> requiredMemoryStates = Maps.newHashMap();
    private Set<Activity> defaultActivities = Sets.newHashSet();
@@ -43,12 +47,14 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
    private Activity fallbackActivity = Activity.IDLE;
    private long lastGameTime = -9999L;
 
-   public <T> Brain(Collection<MemoryModuleType<?>> p_i50378_1_, Collection<SensorType<? extends Sensor<? super E>>> p_i50378_2_, Dynamic<T> p_i50378_3_) {
-      p_i50378_1_.forEach((p_218228_1_) -> {
+   //AH REFACTOR
+   public <T> Brain(Collection<MemoryModuleType<?>> memModules, Collection<SensorType<? extends Sensor<? super E>>> p_i50378_2_, Dynamic<T> p_i50378_3_) {
+   //public <T> Brain(Collection<MemoryModuleType<?>> p_i50378_1_, Collection<SensorType<? extends Sensor<? super E>>> p_i50378_2_, Dynamic<T> p_i50378_3_) {
+      memModules.forEach((p_218228_1_) -> {
          Optional optional = this.memories.put(p_218228_1_, Optional.empty());
       });
       p_i50378_2_.forEach((p_218204_1_) -> {
-         Sensor sensor = this.sensors.put(p_218204_1_, p_218204_1_.func_220995_a());
+         Sensor sensor = this.sensors.put(p_218204_1_, p_218204_1_.getSensor());
       });
       this.sensors.values().forEach((p_218225_1_) -> {
          for(MemoryModuleType<?> memorymoduletype : p_218225_1_.getUsedMemories()) {
@@ -117,10 +123,10 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
 
    @Deprecated
    public Stream<Task<? super E>> getRunningTasks() {
-      return this.field_218232_c.values().stream().flatMap((p_218221_0_) -> {
-         return p_218221_0_.values().stream();
-      }).flatMap(Collection::stream).filter((p_218187_0_) -> {
-         return p_218187_0_.getStatus() == Task.Status.RUNNING;
+      return this.activityTasksMap.values().stream().flatMap((setMap) -> {
+         return setMap.values().stream();
+      }).flatMap(Collection::stream).filter((task) -> {
+         return task.getStatus() == Task.Status.RUNNING;
       });
    }
 
@@ -146,18 +152,22 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
       this.fallbackActivity = newFallbackActivity;
    }
 
-   public void registerActivity(Activity activityIn, ImmutableList<Pair<Integer, ? extends Task<? super E>>> p_218208_2_) {
-      this.registerActivity(activityIn, p_218208_2_, ImmutableSet.of());
+   //AH REFACTOR
+   public void registerActivity(Activity activityIn, ImmutableList<Pair<Integer, ? extends Task<? super E>>> taskList) {
+   //public void registerActivity(Activity activityIn, ImmutableList<Pair<Integer, ? extends Task<? super E>>> p_218208_2_) {
+      this.registerActivity(activityIn, taskList, ImmutableSet.of());
    }
 
-   public void registerActivity(Activity activityIn, ImmutableList<Pair<Integer, ? extends Task<? super E>>> p_218224_2_, Set<Pair<MemoryModuleType<?>, MemoryModuleStatus>> p_218224_3_) {
-      this.requiredMemoryStates.put(activityIn, p_218224_3_);
-      p_218224_2_.forEach((p_218223_2_) -> {
-         this.field_218232_c.computeIfAbsent(p_218223_2_.getFirst(), (p_218212_0_) -> {
+   //AH REFACTOR
+   public void registerActivity(Activity activityIn, ImmutableList<Pair<Integer, ? extends Task<? super E>>> taskList, Set<Pair<MemoryModuleType<?>, MemoryModuleStatus>> memModuleSet) {
+   //public void registerActivity(Activity activityIn, ImmutableList<Pair<Integer, ? extends Task<? super E>>> taskList, Set<Pair<MemoryModuleType<?>, MemoryModuleStatus>> p_218224_3_) {
+      this.requiredMemoryStates.put(activityIn, memModuleSet);
+      taskList.forEach((pair) -> {
+         this.activityTasksMap.computeIfAbsent(pair.getFirst(), (map) -> {
             return Maps.newHashMap();
-         }).computeIfAbsent(activityIn, (p_218195_0_) -> {
+         }).computeIfAbsent(activityIn, (set) -> {
             return Sets.newLinkedHashSet();
-         }).add(p_218223_2_.getSecond());
+         }).add(pair.getSecond());
       });
    }
 
@@ -205,14 +215,14 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
 
    private void startTasks(ServerWorld worldIn, E entityIn) {
       long i = worldIn.getGameTime();
-      this.field_218232_c.values().stream().flatMap((p_218219_0_) -> {
-         return p_218219_0_.entrySet().stream();
-      }).filter((p_218215_1_) -> {
-         return this.activities.contains(p_218215_1_.getKey());
-      }).map(Entry::getValue).flatMap(Collection::stream).filter((p_218194_0_) -> {
-         return p_218194_0_.getStatus() == Task.Status.STOPPED;
-      }).forEach((p_218192_4_) -> {
-         p_218192_4_.start(worldIn, entityIn, i);
+      this.activityTasksMap.values().stream().flatMap((setMap) -> {
+         return setMap.entrySet().stream();
+      }).filter((entry) -> {
+         return this.activities.contains(entry.getKey());
+      }).map(Entry::getValue).flatMap(Collection::stream).filter((task) -> {
+         return task.getStatus() == Task.Status.STOPPED;
+      }).forEach((task) -> {
+         task.start(worldIn, entityIn, i);
       });
    }
 

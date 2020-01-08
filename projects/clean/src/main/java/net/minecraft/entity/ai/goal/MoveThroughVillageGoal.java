@@ -53,14 +53,14 @@ public class MoveThroughVillageGoal extends Goal {
                if (!serverworld.func_217483_b_(p_220734_3_)) {
                   return Double.NEGATIVE_INFINITY;
                } else {
-                  Optional<BlockPos> optional1 = serverworld.func_217443_B().func_219127_a(PointOfInterestType.field_221053_a, this::func_220733_a, p_220734_3_, 10, PointOfInterestManager.Status.IS_OCCUPIED);
+                  Optional<BlockPos> optional1 = serverworld.getPoiMgr().func_219127_a(PointOfInterestType.field_221053_a, this::func_220733_a, p_220734_3_, 10, PointOfInterestManager.Status.IS_OCCUPIED);
                   return !optional1.isPresent() ? Double.NEGATIVE_INFINITY : -optional1.get().distanceSq(blockpos);
                }
             });
             if (vec3d == null) {
                return false;
             } else {
-               Optional<BlockPos> optional = serverworld.func_217443_B().func_219127_a(PointOfInterestType.field_221053_a, this::func_220733_a, new BlockPos(vec3d), 10, PointOfInterestManager.Status.IS_OCCUPIED);
+               Optional<BlockPos> optional = serverworld.getPoiMgr().func_219127_a(PointOfInterestType.field_221053_a, this::func_220733_a, new BlockPos(vec3d), 10, PointOfInterestManager.Status.IS_OCCUPIED);
                if (!optional.isPresent()) {
                   return false;
                } else {
@@ -77,7 +77,7 @@ public class MoveThroughVillageGoal extends Goal {
                      }
 
                      groundpathnavigator.setBreakDoors(this.field_220737_h.getAsBoolean());
-                     this.path = this.entity.getNavigator().func_225466_a(vec3d1.x, vec3d1.y, vec3d1.z, 0);
+                     this.path = this.entity.getNavigator().getPathToPos(vec3d1.x, vec3d1.y, vec3d1.z, 0);
                      groundpathnavigator.setBreakDoors(flag);
                      if (this.path == null) {
                         return false;
@@ -88,7 +88,7 @@ public class MoveThroughVillageGoal extends Goal {
                      PathPoint pathpoint = this.path.getPathPointFromIndex(i);
                      BlockPos blockpos1 = new BlockPos(pathpoint.x, pathpoint.y + 1, pathpoint.z);
                      if (InteractDoorGoal.canInteractDoor(this.entity.world, blockpos1)) {
-                        this.path = this.entity.getNavigator().func_225466_a((double)pathpoint.x, (double)pathpoint.y, (double)pathpoint.z, 0);
+                        this.path = this.entity.getNavigator().getPathToPos((double)pathpoint.x, (double)pathpoint.y, (double)pathpoint.z, 0);
                         break;
                      }
                   }

@@ -18,10 +18,13 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.server.ServerWorld;
 
 public class SleepAtHomeTask extends Task<LivingEntity> {
-   private long field_220552_a;
+
+   //AH REFACTOR
+   private long resetTime;
+   //private long field_220552_a;
 
    public SleepAtHomeTask() {
-      super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleStatus.VALUE_PRESENT, MemoryModuleType.field_226332_A_, MemoryModuleStatus.REGISTERED));
+      super(ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleStatus.VALUE_PRESENT, MemoryModuleType.LAST_WOKEN, MemoryModuleStatus.REGISTERED));
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, LivingEntity owner) {
@@ -33,7 +36,7 @@ public class SleepAtHomeTask extends Task<LivingEntity> {
          if (!Objects.equals(worldIn.getDimension().getType(), globalpos.getDimension())) {
             return false;
          } else {
-            Optional<LongSerializable> optional = brain.getMemory(MemoryModuleType.field_226332_A_);
+            Optional<LongSerializable> optional = brain.getMemory(MemoryModuleType.LAST_WOKEN);
             if (optional.isPresent() && worldIn.getGameTime() - optional.get().func_223461_a() < 100L) {
                return false;
             } else {
@@ -55,7 +58,7 @@ public class SleepAtHomeTask extends Task<LivingEntity> {
    }
 
    protected void startExecuting(ServerWorld worldIn, LivingEntity entityIn, long gameTimeIn) {
-      if (gameTimeIn > this.field_220552_a) {
+      if (gameTimeIn > this.resetTime) {
          entityIn.getBrain().getMemory(MemoryModuleType.OPENED_DOORS).ifPresent((p_225459_2_) -> {
             InteractWithDoorTask.closeOpenedDoors(worldIn, ImmutableList.of(), 0, entityIn, entityIn.getBrain());
          });
@@ -71,7 +74,7 @@ public class SleepAtHomeTask extends Task<LivingEntity> {
    protected void resetTask(ServerWorld worldIn, LivingEntity entityIn, long gameTimeIn) {
       if (entityIn.isSleeping()) {
          entityIn.wakeUp();
-         this.field_220552_a = gameTimeIn + 40L;
+         this.resetTime = gameTimeIn + 40L;
       }
 
    }

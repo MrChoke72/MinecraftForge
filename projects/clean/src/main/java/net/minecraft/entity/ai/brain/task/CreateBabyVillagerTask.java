@@ -65,7 +65,7 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
          if (optional1.isPresent()) {
             this.func_220477_a(p_223521_1_, optional1.get(), optional.get());
          } else {
-            p_223521_1_.func_217443_B().func_219142_b(optional.get());
+            p_223521_1_.getPoiMgr().func_219142_b(optional.get());
             DebugPacketSender.func_218801_c(p_223521_1_, optional.get());
          }
       }
@@ -91,14 +91,14 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
    }
 
    private Optional<BlockPos> func_220479_b(ServerWorld p_220479_1_, VillagerEntity p_220479_2_) {
-      return p_220479_1_.func_217443_B().func_219157_a(PointOfInterestType.HOME.getPoiTypePred(), (p_220481_2_) -> {
+      return p_220479_1_.getPoiMgr().func_219157_a(PointOfInterestType.HOME.getPoiTypePred(), (p_220481_2_) -> {
          return this.func_223520_a(p_220479_2_, p_220481_2_);
       }, new BlockPos(p_220479_2_), 48);
    }
 
    private boolean func_223520_a(VillagerEntity p_223520_1_, BlockPos p_223520_2_) {
-      Path path = p_223520_1_.getNavigator().getPathToPos(p_223520_2_, PointOfInterestType.HOME.func_225478_d());
-      return path != null && path.func_224771_h();
+      Path path = p_223520_1_.getNavigator().getPathToPos(p_223520_2_, PointOfInterestType.HOME.getKeepDist());
+      return path != null && path.isCompletePath();
    }
 
    private Optional<VillagerEntity> func_220480_a(VillagerEntity p_220480_1_, VillagerEntity p_220480_2_) {

@@ -21,10 +21,12 @@ public abstract class Task<E extends LivingEntity> {
       this(p_i51505_1_, p_i51505_2_, p_i51505_2_);
    }
 
-   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> p_i51506_1_, int p_i51506_2_, int p_i51506_3_) {
-      this.durationMin = p_i51506_2_;
-      this.durationMax = p_i51506_3_;
-      this.requiredMemoryState = p_i51506_1_;
+   //AH REFACTOR
+   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> memModuleMap, int durationMin, int durationMax) {
+   //public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> p_i51506_1_, int p_i51506_2_, int p_i51506_3_) {
+      this.durationMin = durationMin;
+      this.durationMax = durationMax;
+      this.requiredMemoryState = memModuleMap;
    }
 
    public Task.Status getStatus() {

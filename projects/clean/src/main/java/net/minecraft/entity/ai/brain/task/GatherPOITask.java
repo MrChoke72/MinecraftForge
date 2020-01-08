@@ -17,57 +17,80 @@ import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.server.ServerWorld;
 
 public class GatherPOITask extends Task<CreatureEntity> {
-   private final PointOfInterestType field_220604_a;
-   private final MemoryModuleType<GlobalPos> field_220605_b;
-   private final boolean field_220606_c;
-   private long field_220607_d;
-   private final Long2LongMap field_223013_e = new Long2LongOpenHashMap();
-   private int field_223014_f;
 
-   public GatherPOITask(PointOfInterestType p_i50374_1_, MemoryModuleType<GlobalPos> p_i50374_2_, boolean p_i50374_3_) {
-      super(ImmutableMap.of(p_i50374_2_, MemoryModuleStatus.VALUE_ABSENT));
-      this.field_220604_a = p_i50374_1_;
-      this.field_220605_b = p_i50374_2_;
-      this.field_220606_c = p_i50374_3_;
+   //AH REFACTOR
+   private final PointOfInterestType poiType;
+   //private final PointOfInterestType field_220604_a;
+
+   //AH REFACTOR
+   private final MemoryModuleType<GlobalPos> memModuleType;
+   //private final MemoryModuleType<GlobalPos> field_220605_b;
+
+
+   //AH REFACTOR
+   private final boolean mustBeAdult;
+   //private final boolean field_220606_c;
+
+
+   //AH REFACTOR
+   private long taskEndTime;
+   //private long field_220607_d;
+
+   //AH REFACTOR
+   private final Long2LongMap posByEndTimeMap = new Long2LongOpenHashMap();    //Key is BlockPos packed
+                                                                              //Value is taskEndTime for it
+   //private final Long2LongMap field_223013_e = new Long2LongOpenHashMap();
+
+   //AH REFACTOR
+   private int field_223014_f;
+   //private int field_223014_f;
+
+   //AH REFACTOR
+   public GatherPOITask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memModuleType, boolean mustBeAdult) {
+   //public GatherPOITask(PointOfInterestType p_i50374_1_, MemoryModuleType<GlobalPos> p_i50374_2_, boolean p_i50374_3_) {
+      super(ImmutableMap.of(memModuleType, MemoryModuleStatus.VALUE_ABSENT));
+      this.poiType = poiType;
+      this.memModuleType = memModuleType;
+      this.mustBeAdult = mustBeAdult;
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, CreatureEntity owner) {
-      if (this.field_220606_c && owner.isChild()) {
+      if (this.mustBeAdult && owner.isChild()) {
          return false;
       } else {
-         return worldIn.getGameTime() - this.field_220607_d >= 20L;
+         return worldIn.getGameTime() - this.taskEndTime >= 20L;
       }
    }
 
    protected void startExecuting(ServerWorld worldIn, CreatureEntity entityIn, long gameTimeIn) {
       this.field_223014_f = 0;
-      this.field_220607_d = worldIn.getGameTime() + (long)worldIn.getRandom().nextInt(20);
-      PointOfInterestManager pointofinterestmanager = worldIn.func_217443_B();
-      Predicate<BlockPos> predicate = (p_220603_1_) -> {
-         long i = p_220603_1_.toLong();
-         if (this.field_223013_e.containsKey(i)) {
+      this.taskEndTime = worldIn.getGameTime() + (long)worldIn.getRandom().nextInt(20);
+      PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
+      Predicate<BlockPos> predicate = (pos) -> {
+         long i = pos.toLong();
+         if (this.posByEndTimeMap.containsKey(i)) {
             return false;
          } else if (++this.field_223014_f >= 5) {
             return false;
          } else {
-            this.field_223013_e.put(i, this.field_220607_d + 40L);
+            this.posByEndTimeMap.put(i, this.taskEndTime + 40L);
             return true;
          }
       };
-      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDist(this.field_220604_a.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.HAS_SPACE);
-      Path path = entityIn.getNavigator().findPath(stream, this.field_220604_a.func_225478_d());
-      if (path != null && path.func_224771_h()) {
-         BlockPos blockpos = path.func_224770_k();
-         pointofinterestmanager.func_219148_c(blockpos).ifPresent((p_225441_5_) -> {
-            pointofinterestmanager.func_219157_a(this.field_220604_a.getPoiTypePred(), (p_225442_1_) -> {
+      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(this.poiType.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.HAS_SPACE);
+      Path path = entityIn.getNavigator().findPath(stream, this.poiType.getKeepDist());
+      if (path != null && path.isCompletePath()) {
+         BlockPos blockpos = path.getTargetPos();
+         pointofinterestmanager.getPoiTypeForPos(blockpos).ifPresent((poiType) -> {
+            pointofinterestmanager.func_219157_a(this.poiType.getPoiTypePred(), (p_225442_1_) -> {
                return p_225442_1_.equals(blockpos);
             }, blockpos, 1);
-            entityIn.getBrain().setMemory(this.field_220605_b, GlobalPos.of(worldIn.getDimension().getType(), blockpos));
+            entityIn.getBrain().setMemory(this.memModuleType, GlobalPos.of(worldIn.getDimension().getType(), blockpos));
             DebugPacketSender.func_218801_c(worldIn, blockpos);
          });
       } else if (this.field_223014_f < 5) {
-         this.field_223013_e.long2LongEntrySet().removeIf((p_223011_1_) -> {
-            return p_223011_1_.getLongValue() < this.field_220607_d;
+         this.posByEndTimeMap.long2LongEntrySet().removeIf((p_223011_1_) -> {
+            return p_223011_1_.getLongValue() < this.taskEndTime;
          });
       }
 

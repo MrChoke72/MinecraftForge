@@ -10,7 +10,10 @@ import net.minecraft.world.Region;
 public abstract class NodeProcessor {
    protected Region blockaccess;
    protected MobEntity entity;
+
+   //AH INFO:  Key is pathpoint Intger "hash"
    protected final Int2ObjectMap<PathPoint> pointMap = new Int2ObjectOpenHashMap<>();
+
    protected int entitySizeX;
    protected int entitySizeY;
    protected int entitySizeZ;
@@ -35,7 +38,7 @@ public abstract class NodeProcessor {
    }
 
    protected PathPoint openPoint(int x, int y, int z) {
-      return this.pointMap.computeIfAbsent(PathPoint.makeHash(x, y, z), (p_215743_3_) -> {
+      return this.pointMap.computeIfAbsent(PathPoint.makeHash(x, y, z), (point) -> {
          return new PathPoint(x, y, z);
       });
    }

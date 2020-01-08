@@ -212,7 +212,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
    protected boolean isCloseToPathTarget() {
       Path path = this.getNavigator().getPath();
       if (path != null) {
-         BlockPos blockpos = path.func_224770_k();
+         BlockPos blockpos = path.getTargetPos();
          if (blockpos != null) {
             double d0 = this.getDistanceSq((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
             if (d0 < 4.0D) {

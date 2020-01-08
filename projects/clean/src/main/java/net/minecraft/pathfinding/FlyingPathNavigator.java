@@ -27,8 +27,8 @@ public class FlyingPathNavigator extends PathNavigator {
       return this.entity.getPositionVec();
    }
 
-   public Path getPathToEntityLiving(Entity entityIn, int p_75494_2_) {
-      return this.getPathToPos(new BlockPos(entityIn), p_75494_2_);
+   public Path getPathToEntityLiving(Entity entityIn, int keepDist) {
+      return this.getPathToPos(new BlockPos(entityIn), keepDist);
    }
 
    public void tick() {

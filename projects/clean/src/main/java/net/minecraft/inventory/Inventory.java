@@ -49,16 +49,18 @@ public class Inventory implements IInventory, IRecipeHelperPopulator {
       return itemstack;
    }
 
-   public ItemStack func_223374_a(Item p_223374_1_, int p_223374_2_) {
-      ItemStack itemstack = new ItemStack(p_223374_1_, 0);
+   //AH REFACTOR
+   public ItemStack growItemToCount(Item item, int count) {
+   //public ItemStack func_223374_a(Item p_223374_1_, int p_223374_2_) {
+      ItemStack itemstack = new ItemStack(item, 0);
 
       for(int i = this.slotsCount - 1; i >= 0; --i) {
          ItemStack itemstack1 = this.getStackInSlot(i);
-         if (itemstack1.getItem().equals(p_223374_1_)) {
-            int j = p_223374_2_ - itemstack.getCount();
+         if (itemstack1.getItem().equals(item)) {
+            int j = count - itemstack.getCount();
             ItemStack itemstack2 = itemstack1.split(j);
             itemstack.grow(itemstack2.getCount());
-            if (itemstack.getCount() == p_223374_2_) {
+            if (itemstack.getCount() == count) {
                break;
             }
          }
@@ -73,11 +75,11 @@ public class Inventory implements IInventory, IRecipeHelperPopulator {
 
    public ItemStack addItem(ItemStack stack) {
       ItemStack itemstack = stack.copy();
-      this.func_223372_c(itemstack);
+      this.addToExistingStack(itemstack);
       if (itemstack.isEmpty()) {
          return ItemStack.EMPTY;
       } else {
-         this.func_223375_b(itemstack);
+         this.addToEmptySlot(itemstack);
          return itemstack.isEmpty() ? ItemStack.EMPTY : itemstack;
       }
    }
@@ -146,24 +148,28 @@ public class Inventory implements IInventory, IRecipeHelperPopulator {
       }).collect(Collectors.toList()).toString();
    }
 
-   private void func_223375_b(ItemStack p_223375_1_) {
+   //AH REFACTOR
+   private void addToEmptySlot(ItemStack stack) {
+   //private void func_223375_b(ItemStack p_223375_1_) {
       for(int i = 0; i < this.slotsCount; ++i) {
          ItemStack itemstack = this.getStackInSlot(i);
          if (itemstack.isEmpty()) {
-            this.setInventorySlotContents(i, p_223375_1_.copy());
-            p_223375_1_.setCount(0);
+            this.setInventorySlotContents(i, stack.copy());
+            stack.setCount(0);
             return;
          }
       }
 
    }
 
-   private void func_223372_c(ItemStack p_223372_1_) {
+   //AH REFACTOR
+   private void addToExistingStack(ItemStack stackIn) {
+   //private void func_223372_c(ItemStack p_223372_1_) {
       for(int i = 0; i < this.slotsCount; ++i) {
          ItemStack itemstack = this.getStackInSlot(i);
-         if (ItemStack.areItemsEqual(itemstack, p_223372_1_)) {
-            this.func_223373_a(p_223372_1_, itemstack);
-            if (p_223372_1_.isEmpty()) {
+         if (ItemStack.areItemsEqual(itemstack, stackIn)) {
+            this.mergeStacks(stackIn, itemstack);
+            if (stackIn.isEmpty()) {
                return;
             }
          }
@@ -171,12 +177,14 @@ public class Inventory implements IInventory, IRecipeHelperPopulator {
 
    }
 
-   private void func_223373_a(ItemStack p_223373_1_, ItemStack p_223373_2_) {
-      int i = Math.min(this.getInventoryStackLimit(), p_223373_2_.getMaxStackSize());
-      int j = Math.min(p_223373_1_.getCount(), i - p_223373_2_.getCount());
+   //Ah REFACTOR
+   private void mergeStacks(ItemStack currStack, ItemStack newStack) {
+   //private void func_223373_a(ItemStack p_223373_1_, ItemStack p_223373_2_) {
+      int i = Math.min(this.getInventoryStackLimit(), newStack.getMaxStackSize());
+      int j = Math.min(currStack.getCount(), i - newStack.getCount());
       if (j > 0) {
-         p_223373_2_.grow(j);
-         p_223373_1_.shrink(j);
+         newStack.grow(j);
+         currStack.shrink(j);
          this.markDirty();
       }
 

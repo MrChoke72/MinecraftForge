@@ -111,27 +111,29 @@ public class ChunkPos {
       return getAllInBox(new ChunkPos(center.x - radius, center.z - radius), new ChunkPos(center.x + radius, center.z + radius));
    }
 
-   public static Stream<ChunkPos> getAllInBox(final ChunkPos p_222239_0_, final ChunkPos p_222239_1_) {
-      int i = Math.abs(p_222239_0_.x - p_222239_1_.x) + 1;
-      int j = Math.abs(p_222239_0_.z - p_222239_1_.z) + 1;
-      final int k = p_222239_0_.x < p_222239_1_.x ? 1 : -1;
-      final int l = p_222239_0_.z < p_222239_1_.z ? 1 : -1;
+   //Ah REFACTOR
+   public static Stream<ChunkPos> getAllInBox(final ChunkPos upLeftChunkPos, final ChunkPos lowRightChunkPos) {
+   //public static Stream<ChunkPos> getAllInBox(final ChunkPos p_222239_0_, final ChunkPos p_222239_1_) {
+      int i = Math.abs(upLeftChunkPos.x - lowRightChunkPos.x) + 1;
+      int j = Math.abs(upLeftChunkPos.z - lowRightChunkPos.z) + 1;
+      final int k = upLeftChunkPos.x < lowRightChunkPos.x ? 1 : -1;
+      final int l = upLeftChunkPos.z < lowRightChunkPos.z ? 1 : -1;
       return StreamSupport.stream(new AbstractSpliterator<ChunkPos>((long)(i * j), 64) {
          @Nullable
          private ChunkPos field_222237_e;
 
          public boolean tryAdvance(Consumer<? super ChunkPos> p_tryAdvance_1_) {
             if (this.field_222237_e == null) {
-               this.field_222237_e = p_222239_0_;
+               this.field_222237_e = upLeftChunkPos;
             } else {
                int i1 = this.field_222237_e.x;
                int j1 = this.field_222237_e.z;
-               if (i1 == p_222239_1_.x) {
-                  if (j1 == p_222239_1_.z) {
+               if (i1 == lowRightChunkPos.x) {
+                  if (j1 == lowRightChunkPos.z) {
                      return false;
                   }
 
-                  this.field_222237_e = new ChunkPos(p_222239_0_.x, j1 + l);
+                  this.field_222237_e = new ChunkPos(upLeftChunkPos.x, j1 + l);
                } else {
                   this.field_222237_e = new ChunkPos(i1 + k, j1);
                }

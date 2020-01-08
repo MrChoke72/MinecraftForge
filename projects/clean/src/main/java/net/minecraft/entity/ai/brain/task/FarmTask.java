@@ -46,7 +46,7 @@ public class FarmTask extends Task<VillagerEntity> {
       } else {
          this.field_220423_b = owner.isFarmItemInInventory();
          this.field_220424_c = false;
-         Inventory inventory = owner.func_213715_ed();
+         Inventory inventory = owner.getInventory();
          int i = inventory.getSizeInventory();
 
          for(int j = 0; j < i; ++j) {
@@ -118,7 +118,7 @@ public class FarmTask extends Task<VillagerEntity> {
          }
 
          if (blockstate.isAir() && block1 instanceof FarmlandBlock && this.field_220423_b) {
-            Inventory inventory = owner.func_213715_ed();
+            Inventory inventory = owner.getInventory();
 
             for(int i = 0; i < inventory.getSizeInventory(); ++i) {
                ItemStack itemstack = inventory.getStackInSlot(i);

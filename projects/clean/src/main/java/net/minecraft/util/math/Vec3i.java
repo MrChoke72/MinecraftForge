@@ -100,11 +100,13 @@ public class Vec3i implements Comparable<Vec3i> {
       return this.distanceSq(p_218138_1_.getX(), p_218138_1_.getY(), p_218138_1_.getZ(), p_218138_2_);
    }
 
-   public double distanceSq(double p_218140_1_, double p_218140_3_, double p_218140_5_, boolean useCenter) {
+   //AH CHANGE REFACTOR
+   public double distanceSq(double x, double y, double z, boolean useCenter) {
+   //public double distanceSq(double p_218140_1_, double p_218140_3_, double p_218140_5_, boolean useCenter) {
       double d0 = useCenter ? 0.5D : 0.0D;
-      double d1 = (double)this.getX() + d0 - p_218140_1_;
-      double d2 = (double)this.getY() + d0 - p_218140_3_;
-      double d3 = (double)this.getZ() + d0 - p_218140_5_;
+      double d1 = (double)this.getX() + d0 - x;
+      double d2 = (double)this.getY() + d0 - y;
+      double d3 = (double)this.getZ() + d0 - z;
       return d1 * d1 + d2 * d2 + d3 * d3;
    }
 

@@ -19,14 +19,28 @@ import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.server.ServerWorld;
 
 public class WalkToHouseTask extends Task<LivingEntity> {
-   private final float field_220524_a;
+
+   //AH REFACTOR
+   private final float moveSpeed;
+   //private final float field_220524_a;
+
+   //AH REFACTOR
+      //Key: Long: BlockPos packed
+      //Value:
    private final Long2LongMap field_225455_b = new Long2LongOpenHashMap();
+   //private final Long2LongMap field_225455_b = new Long2LongOpenHashMap();
+
+   //AH REFACTOR
    private int field_225456_c;
+   //private int field_225456_c;
+   
    private long field_220525_b;
 
-   public WalkToHouseTask(float p_i50353_1_) {
+   //Ah REFACTOR
+   public WalkToHouseTask(float moveSpeed) {
+   //public WalkToHouseTask(float p_i50353_1_) {
       super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleStatus.VALUE_ABSENT));
-      this.field_220524_a = p_i50353_1_;
+      this.moveSpeed = moveSpeed;
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, LivingEntity owner) {
@@ -34,7 +48,7 @@ public class WalkToHouseTask extends Task<LivingEntity> {
          return false;
       } else {
          CreatureEntity creatureentity = (CreatureEntity)owner;
-         PointOfInterestManager pointofinterestmanager = worldIn.func_217443_B();
+         PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
 
          //AH CHANGE REFACTOR
          Optional<BlockPos> optional = pointofinterestmanager.getPoiPosInRange(PointOfInterestType.HOME.getPoiTypePred(), (posPred) -> {
@@ -49,9 +63,9 @@ public class WalkToHouseTask extends Task<LivingEntity> {
       this.field_225456_c = 0;
       this.field_220525_b = worldIn.getGameTime() + (long)worldIn.getRandom().nextInt(20);
       CreatureEntity creatureentity = (CreatureEntity)entityIn;
-      PointOfInterestManager pointofinterestmanager = worldIn.func_217443_B();
-      Predicate<BlockPos> predicate = (p_225453_1_) -> {
-         long i = p_225453_1_.toLong();
+      PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
+      Predicate<BlockPos> predicate = (pos) -> {
+         long i = pos.toLong();
          if (this.field_225455_b.containsKey(i)) {
             return false;
          } else if (++this.field_225456_c >= 5) {
@@ -61,13 +75,13 @@ public class WalkToHouseTask extends Task<LivingEntity> {
             return true;
          }
       };
-      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDist(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.ANY);
-      Path path = creatureentity.getNavigator().findPath(stream, PointOfInterestType.HOME.func_225478_d());
-      if (path != null && path.func_224771_h()) {
-         BlockPos blockpos = path.func_224770_k();
-         Optional<PointOfInterestType> optional = pointofinterestmanager.func_219148_c(blockpos);
+      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.ANY);
+      Path path = creatureentity.getNavigator().findPath(stream, PointOfInterestType.HOME.getKeepDist());
+      if (path != null && path.isCompletePath()) {
+         BlockPos blockpos = path.getTargetPos();
+         Optional<PointOfInterestType> optional = pointofinterestmanager.getPoiTypeForPos(blockpos);
          if (optional.isPresent()) {
-            entityIn.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockpos, this.field_220524_a, 1));
+            entityIn.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockpos, this.moveSpeed, 1));
             DebugPacketSender.func_218801_c(worldIn, blockpos);
          }
       } else if (this.field_225456_c < 5) {

@@ -66,6 +66,7 @@ import net.minecraft.network.play.server.SSpawnMobPacket;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ItemParticleData;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.pathfinding.ClimberPathNavigator;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectUtils;
@@ -1868,26 +1869,44 @@ public abstract class LivingEntity extends Entity {
                      this.setFlag(7, false);
                   }
                } else {
+                  //AH CHANGE ****
+                  boolean bVerticalOverride;
+                  if ((this instanceof CreatureEntity) && (!(((CreatureEntity)this).getNavigator() instanceof ClimberPathNavigator)))
+                  {
+                     bVerticalOverride = true;
+                  }
+                  else
+                  {
+                     bVerticalOverride = false;
+                  }
+                  //AH CHANGE END ****
+
                   BlockPos blockpos = this.getBlockPosDownHalf();
                   float f5 = this.world.getBlockState(blockpos).getBlock().getSlipperiness();
                   float f7 = this.onGround ? f5 * 0.91F : 0.91F;
-                  this.moveRelative(this.func_213335_r(f5), moveVecIn);
-                  this.setMotion(this.ladderCheck(this.getMotion()));
+                  this.moveRelative(this.applySlipperiness(f5), moveVecIn);
+
+                  //AH CHANGE
+                  this.setMotion(this.ladderCheck(this.getMotion(), bVerticalOverride));
+                  //this.setMotion(this.ladderCheck(this.getMotion()));
+
+
                   this.move(MoverType.SELF, this.getMotion());
                   Vec3d vec3d5 = this.getMotion();
 
                   //AH CHANGE
-                  if(!(this instanceof MobEntity))
+                  if(!bVerticalOverride)
                   {
                      if ((this.collidedHorizontally || this.isJumping) && this.isOnLadder()) {
                         vec3d5 = new Vec3d(vec3d5.x, 0.2D, vec3d5.z);
                      }
                   }
+                  //vanilla
                   /*
                   if ((this.collidedHorizontally || this.isJumping) && this.isOnLadder()) {
                      vec3d5 = new Vec3d(vec3d5.x, 0.2D, vec3d5.z);
                   }
-                  */
+                   */
 
                   double d10 = vec3d5.y;
                   if (this.isPotionActive(Effects.LEVITATION)) {
@@ -1981,8 +2000,8 @@ public abstract class LivingEntity extends Entity {
       this.limbSwing += this.limbSwingAmount;
    }
 
-   //AH CHANGE REFACTOR
-   private Vec3d ladderCheck(Vec3d motionVec) {
+   //AH CHANGE
+   private Vec3d ladderCheck(Vec3d motionVec, boolean bVerticalOverride) {
    //private Vec3d func_213362_f(Vec3d p_213362_1_) {
       if (this.isOnLadder()) {
          this.fallDistance = 0.0F;
@@ -1990,29 +2009,28 @@ public abstract class LivingEntity extends Entity {
          double d1 = MathHelper.clamp(motionVec.z, (double)-0.15F, (double)0.15F);
 
          //AH CHANGE ******
-         double d2 = Math.max(motionVec.y, (double)-0.15F);
-         if(this instanceof PlayerEntity)
+         double d2;
+         if(bVerticalOverride)
          {
-            if (d2 < 0.0D && this.getBlockState().getBlock() != Blocks.SCAFFOLDING && this.func_226296_dJ_()) {
-               d2 = 0.0D;
-            }
+           d2 = Math.max(motionVec.y, (double) -0.15F);
+           if (this instanceof PlayerEntity) {
+              if (d2 < 0.0D && this.getBlockState().getBlock() != Blocks.SCAFFOLDING && this.func_226296_dJ_()) {
+                 d2 = 0.0D;
+              }
+           } else {
+              if (this instanceof MobEntity) {
+                 d2 = ((MobEntity) this).moveLadder;
+              }
+           }
          }
          else
          {
-            if(this instanceof MobEntity) {
-               d2 = ((MobEntity)this).moveLadder;
+            //Vanilla
+            d2 = Math.max(motionVec.y, (double)-0.15F);
+            if (d2 < 0.0D && this.getBlockState().getBlock() != Blocks.SCAFFOLDING && this.func_226296_dJ_() && this instanceof PlayerEntity) {
+               d2 = 0.0D;
             }
          }
-         //AH CHANGE END ******
-
-         //Vanilla
-         /*
-         double d2 = Math.max(p_213362_1_.y, (double)-0.15F);
-         if (d2 < 0.0D && this.getBlockState().getBlock() != Blocks.SCAFFOLDING && this.func_226296_dJ_() && this instanceof PlayerEntity) {
-            d2 = 0.0D;
-         }
-          */
-         //AH END ******
 
          motionVec = new Vec3d(d0, d2, d1);
       }
@@ -2020,8 +2038,10 @@ public abstract class LivingEntity extends Entity {
       return motionVec;
    }
 
-   private float func_213335_r(float p_213335_1_) {
-      return this.onGround ? this.getAIMoveSpeed() * (0.21600002F / (p_213335_1_ * p_213335_1_ * p_213335_1_)) : this.jumpMovementFactor;
+   //AH CHANGE REFACTOR
+   private float applySlipperiness(float slipperiness) {
+   //private float func_213335_r(float p_213335_1_) {
+      return this.onGround ? this.getAIMoveSpeed() * (0.21600002F / (slipperiness * slipperiness * slipperiness)) : this.jumpMovementFactor;
    }
 
    public float getAIMoveSpeed() {
@@ -2709,7 +2729,7 @@ public abstract class LivingEntity extends Entity {
       }
    }
 
-   //AH CHANGE REFACTOR
+   //AH CHANGE REFACTOR CANCEL
    public boolean func_226296_dJ_() {
    //public boolean func_226296_dJ_() {
       return this.getSneaking();

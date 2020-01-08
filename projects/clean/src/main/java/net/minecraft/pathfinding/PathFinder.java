@@ -40,15 +40,16 @@ public class PathFinder {
 
       //AH CHANGE DEBUG OFF
       /*
-      if(this.nodeProcessor.entity instanceof HuskEntity && this.nodeProcessor.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+      if(this.nodeProcessor.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
       {
          System.out.println("findPath before getStart");
       }
-      */
+       */
+
 
       PathPoint pathpoint = this.nodeProcessor.getStart();
-      Map<FlaggedPathPoint, BlockPos> map = finalTgtSet.stream().collect(Collectors.toMap((p_224782_1_) -> {
-         return this.nodeProcessor.createFlaggedPathPoint((double)p_224782_1_.getX(), (double)p_224782_1_.getY(), (double)p_224782_1_.getZ());
+      Map<FlaggedPathPoint, BlockPos> map = finalTgtSet.stream().collect(Collectors.toMap((pos) -> {
+         return this.nodeProcessor.createFlaggedPathPoint((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
       }, Function.identity()));
       Path path = this.findPath(pathpoint, map, followRange, keepDist, iterMaxMult);
       this.nodeProcessor.postProcess();
@@ -57,7 +58,7 @@ public class PathFinder {
 
    @Nullable
    //AH CHANGE REFACTOR
-   private Path findPath(PathPoint targetPoint, Map<FlaggedPathPoint, BlockPos> flagPointMap, float followRange, int keepDist, float iterMaxMult) {
+   private Path findPath(PathPoint startPoint, Map<FlaggedPathPoint, BlockPos> tgtPointMap, float followRange, int keepDist, float iterMaxMult) {
    //private Path func_227479_a_(PathPoint p_227479_1_, Map<FlaggedPathPoint, BlockPos> p_227479_2_, float p_227479_3_, int p_227479_4_, float p_227479_5_) {
 
       //AH CHANGE DEBUG OFF
@@ -68,13 +69,13 @@ public class PathFinder {
       }
        */
 
-      Set<FlaggedPathPoint> set = flagPointMap.keySet();
-      targetPoint.totalPathDistance = 0.0F;
-      targetPoint.distanceToNext = this.getClosetDistInSet(targetPoint, set);
-      targetPoint.distanceToTarget = targetPoint.distanceToNext;
+      Set<FlaggedPathPoint> flagPointSet = tgtPointMap.keySet();
+      startPoint.totalPathDistance = 0.0F;
+      startPoint.distanceToNext = this.getClosetDistInSet(startPoint, flagPointSet);
+      startPoint.distanceToTarget = startPoint.distanceToNext;
       this.path.clearPath();
       this.closedSet.clear();
-      this.path.addPoint(targetPoint);
+      this.path.addPoint(startPoint);
       int i = 0;
       int j = (int)((float)this.followRangeMult16 * iterMaxMult);
 
@@ -86,14 +87,14 @@ public class PathFinder {
 
          PathPoint pathpoint = this.path.dequeue();
          pathpoint.visited = true;
-         set.stream().filter((p_224781_2_) -> {
-            return pathpoint.pointDiff(p_224781_2_) <= (float)keepDist;
+         flagPointSet.stream().filter((flagPoint) -> {
+            return pathpoint.pointDist(flagPoint) <= (float)keepDist;
          }).forEach(FlaggedPathPoint::setKeepPoint);
-         if (set.stream().anyMatch(FlaggedPathPoint::isKeepPoint)) {
+         if (flagPointSet.stream().anyMatch(FlaggedPathPoint::isKeepPoint)) {
             break;
          }
 
-         if (!(pathpoint.distanceTo(targetPoint) >= followRange)) {
+         if (!(pathpoint.distanceTo(startPoint) >= followRange)) {
             int k = this.nodeProcessor.findPathOptions(this.pathOptions, pathpoint);
 
             for(int l = 0; l < k; ++l) {
@@ -104,7 +105,7 @@ public class PathFinder {
                if (pathpoint1.accumDistance < followRange && (!pathpoint1.isAssigned() || f1 < pathpoint1.totalPathDistance)) {
                   pathpoint1.previous = pathpoint;
                   pathpoint1.totalPathDistance = f1;
-                  pathpoint1.distanceToNext = this.getClosetDistInSet(pathpoint1, set) * 1.5F;
+                  pathpoint1.distanceToNext = this.getClosetDistInSet(pathpoint1, flagPointSet) * 1.5F;
                   if (pathpoint1.isAssigned()) {
                      this.path.changeDistance(pathpoint1, pathpoint1.totalPathDistance + pathpoint1.distanceToNext);
                   } else {
@@ -116,18 +117,18 @@ public class PathFinder {
          }
       }
 
-      Stream<Path> stream;
-      if (set.stream().anyMatch(FlaggedPathPoint::isKeepPoint)) {
-         stream = set.stream().filter(FlaggedPathPoint::isKeepPoint).map((p_224778_2_) -> {
-            return this.createPath(p_224778_2_.getClosestPathPoint(), flagPointMap.get(p_224778_2_), true);
+      Stream<Path> pathStream;
+      if (flagPointSet.stream().anyMatch(FlaggedPathPoint::isKeepPoint)) {
+         pathStream = flagPointSet.stream().filter(FlaggedPathPoint::isKeepPoint).map((flagPoint) -> {
+            return this.createPath(flagPoint.getClosestPathPoint(), tgtPointMap.get(flagPoint), true);
          }).sorted(Comparator.comparingInt(Path::getCurrentPathLength));
       } else {
-         stream = set.stream().map((p_224777_2_) -> {
-            return this.createPath(p_224777_2_.getClosestPathPoint(), flagPointMap.get(p_224777_2_), false);
-         }).sorted(Comparator.comparingDouble(Path::func_224769_l).thenComparingInt(Path::getCurrentPathLength));
+         pathStream = flagPointSet.stream().map((flagPoint) -> {
+            return this.createPath(flagPoint.getClosestPathPoint(), tgtPointMap.get(flagPoint), false);
+         }).sorted(Comparator.comparingDouble(Path::getFinalPointTgtDist).thenComparingInt(Path::getCurrentPathLength));
       }
 
-      Optional<Path> optional = stream.findFirst();
+      Optional<Path> optional = pathStream.findFirst();
       if (!optional.isPresent()) {
          return null;
       } else {
@@ -137,13 +138,13 @@ public class PathFinder {
    }
 
    //AH CHANGE REFACTOR
-   private float getClosetDistInSet(PathPoint p_224776_1_, Set<FlaggedPathPoint> p_224776_2_) {
+   private float getClosetDistInSet(PathPoint point, Set<FlaggedPathPoint> flagPointSet) {
    //private float func_224776_a(PathPoint p_224776_1_, Set<FlaggedPathPoint> p_224776_2_) {
       float f = Float.MAX_VALUE;
 
-      for(FlaggedPathPoint flaggedpathpoint : p_224776_2_) {
-         float f1 = p_224776_1_.distanceTo(flaggedpathpoint);
-         flaggedpathpoint.func_224761_a(f1, p_224776_1_);
+      for(FlaggedPathPoint flaggedpathpoint : flagPointSet) {
+         float f1 = point.distanceTo(flaggedpathpoint);
+         flaggedpathpoint.setClosestPoint(f1, point);
          f = Math.min(f1, f);
       }
 
@@ -151,7 +152,7 @@ public class PathFinder {
    }
 
    //AH CHANGE REFACTOR
-   private Path createPath(PathPoint closestPoint, BlockPos pos, boolean p_224780_3_) {
+   private Path createPath(PathPoint closestPoint, BlockPos tgtPos, boolean completePath) {
    //private Path func_224780_a(PathPoint p_224780_1_, BlockPos p_224780_2_, boolean p_224780_3_) {
       List<PathPoint> list = Lists.newArrayList();
       PathPoint pathpoint = closestPoint;
@@ -162,6 +163,6 @@ public class PathFinder {
          list.add(0, pathpoint);
       }
 
-      return new Path(list, pos, p_224780_3_);
+      return new Path(list, tgtPos, completePath);
    }
 }

@@ -50,7 +50,7 @@ public class Teleporter {
 
    @Nullable
    public BlockPattern.PortalInfo func_222272_a(BlockPos p_222272_1_, Vec3d p_222272_2_, Direction p_222272_3_, double p_222272_4_, double p_222272_6_, boolean p_222272_8_) {
-      PointOfInterestManager pointofinterestmanager = this.world.func_217443_B();
+      PointOfInterestManager pointofinterestmanager = this.world.getPoiMgr();
       pointofinterestmanager.func_226347_a_(this.world, p_222272_1_, 128);
       List<PointOfInterest> list = pointofinterestmanager.poiStreamByRadius((p_226705_0_) -> {
          return p_226705_0_ == PointOfInterestType.field_226358_u_;

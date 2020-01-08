@@ -41,7 +41,10 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
    private PlayerEntity customer;
    @Nullable
    protected MerchantOffers offers;
-   private final Inventory field_213722_bB = new Inventory(8);
+
+   //AH REFACTOR
+   private final Inventory inventory = new Inventory(8);
+   //private final Inventory field_213722_bB = new Inventory(8);
 
    public AbstractVillagerEntity(EntityType<? extends AbstractVillagerEntity> p_i50185_1_, World p_i50185_2_) {
       super(p_i50185_1_, p_i50185_2_);
@@ -151,8 +154,8 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
 
       ListNBT listnbt = new ListNBT();
 
-      for(int i = 0; i < this.field_213722_bB.getSizeInventory(); ++i) {
-         ItemStack itemstack = this.field_213722_bB.getStackInSlot(i);
+      for(int i = 0; i < this.inventory.getSizeInventory(); ++i) {
+         ItemStack itemstack = this.inventory.getStackInSlot(i);
          if (!itemstack.isEmpty()) {
             listnbt.add(itemstack.write(new CompoundNBT()));
          }
@@ -172,7 +175,7 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
       for(int i = 0; i < listnbt.size(); ++i) {
          ItemStack itemstack = ItemStack.read(listnbt.getCompound(i));
          if (!itemstack.isEmpty()) {
-            this.field_213722_bB.addItem(itemstack);
+            this.inventory.addItem(itemstack);
          }
       }
 
@@ -208,8 +211,10 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
       return false;
    }
 
-   public Inventory func_213715_ed() {
-      return this.field_213722_bB;
+   //AH REFACTOR
+   public Inventory getInventory() {
+   //public Inventory func_213715_ed() {
+      return this.inventory;
    }
 
    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn) {
@@ -217,8 +222,8 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
          return true;
       } else {
          int i = inventorySlot - 300;
-         if (i >= 0 && i < this.field_213722_bB.getSizeInventory()) {
-            this.field_213722_bB.setInventorySlotContents(i, itemStackIn);
+         if (i >= 0 && i < this.inventory.getSizeInventory()) {
+            this.inventory.setInventorySlotContents(i, itemStackIn);
             return true;
          } else {
             return false;

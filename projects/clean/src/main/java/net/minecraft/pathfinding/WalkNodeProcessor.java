@@ -130,6 +130,7 @@ public class WalkNodeProcessor extends NodeProcessor {
       //AH CHANGE NEW ******
       boolean isPassenger = this.entity.isPassenger();
 
+
       //AH CHANGE DEBUG OFF
       /*
       if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
@@ -144,7 +145,7 @@ public class WalkNodeProcessor extends NodeProcessor {
       boolean bOnLadderAbove = false;
       boolean bLadderBelow = false;
       boolean bOnLadder = false;
-      if(!isPassenger) {
+      if(!isPassenger && this.entitySizeX <= 1.0D) {
          BlockPos blockposC = new BlockPos(targetPoint.x, targetPoint.y, targetPoint.z);
          BlockState iblockstateC = this.blockaccess.getBlockState(blockposC);
          bOnLadder = isLadderPathable(this.entity.world, iblockstateC, blockposC, true, canBreakTrapDoors);
@@ -160,14 +161,6 @@ public class WalkNodeProcessor extends NodeProcessor {
          }
       }
       //AH END ******
-
-      //AH CHANGE DEBUG OFF
-      /*
-      if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
-      {
-         System.out.println("targetPoint=" + targetPoint.x + "," + targetPoint.y + "," + targetPoint.z);
-      }
-       */
 
       double d0 = getGroundY(this.blockaccess, new BlockPos(targetPoint.x, targetPoint.y, targetPoint.z));
       PathPoint pathpoint = this.getSafePoint(targetPoint.x, targetPoint.y, targetPoint.z + 1, j, d0, Direction.SOUTH, bLadderBelow);

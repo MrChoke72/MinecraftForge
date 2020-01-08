@@ -27,7 +27,7 @@ public class WalkToPOITask extends Task<VillagerEntity> {
    }
 
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
-      PointOfInterestManager pointofinterestmanager = worldIn.func_217443_B();
+      PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
       int i = pointofinterestmanager.func_219150_a(SectionPos.from(new BlockPos(entityIn)));
       Vec3d vec3d = null;
 

@@ -40,7 +40,16 @@ public class ClimberPathNavigator extends GroundPathNavigator {
          super.tick();
       } else {
          if (this.targetPosition != null) {
-            if (!this.targetPosition.withinDistance(this.entity.getPositionVec(), (double)this.entity.getWidth()) && (!(this.entity.getPosY() > (double)this.targetPosition.getY()) || !(new BlockPos((double)this.targetPosition.getX(), this.entity.getPosY(), (double)this.targetPosition.getZ())).withinDistance(this.entity.getPositionVec(), (double)this.entity.getWidth()))) {
+            //AH CHANGE RE-FORMAT only
+            if (  !this.targetPosition.withinDistance(this.entity.getPositionVec(), (double)this.entity.getWidth())
+                  && (
+                        !(this.entity.getPosY() > (double)this.targetPosition.getY())
+                        || !(new BlockPos((double)this.targetPosition.getX(), this.entity.getPosY(), (double)this.targetPosition.getZ()))
+                              .withinDistance(this.entity.getPositionVec(), (double)this.entity.getWidth())
+                     )
+               )
+            {
+            //if (!this.targetPosition.withinDistance(this.entity.getPositionVec(), (double)this.entity.getWidth()) && (!(this.entity.getPosY() > (double)this.targetPosition.getY()) || !(new BlockPos((double)this.targetPosition.getX(), this.entity.getPosY(), (double)this.targetPosition.getZ())).withinDistance(this.entity.getPositionVec(), (double)this.entity.getWidth()))) {
                this.entity.getMoveHelper().setMoveTo((double)this.targetPosition.getX(), (double)this.targetPosition.getY(), (double)this.targetPosition.getZ(), this.speed);
             } else {
                this.targetPosition = null;

@@ -60,7 +60,7 @@ public class CatSpawner {
 
    private int func_221121_a(ServerWorld p_221121_1_, BlockPos p_221121_2_) {
       int i = 48;
-      if (p_221121_1_.func_217443_B().func_219145_a(PointOfInterestType.HOME.getPoiTypePred(), p_221121_2_, 48, PointOfInterestManager.Status.IS_OCCUPIED) > 4L) {
+      if (p_221121_1_.getPoiMgr().func_219145_a(PointOfInterestType.HOME.getPoiTypePred(), p_221121_2_, 48, PointOfInterestManager.Status.IS_OCCUPIED) > 4L) {
          List<CatEntity> list = p_221121_1_.getEntitiesWithinAABB(CatEntity.class, (new AxisAlignedBB(p_221121_2_)).grow(48.0D, 8.0D, 48.0D));
          if (list.size() < 5) {
             return this.func_221122_a(p_221121_2_, p_221121_1_);

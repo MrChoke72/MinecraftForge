@@ -1237,20 +1237,22 @@ public class ServerWorld extends World {
          BlockPos blockpos = p_217393_1_.toImmutable();
          optional.ifPresent((p_217476_2_) -> {
             this.getServer().execute(() -> {
-               this.func_217443_B().func_219140_a(blockpos);
+               this.getPoiMgr().func_219140_a(blockpos);
                DebugPacketSender.func_218805_b(this, blockpos);
             });
          });
          optional1.ifPresent((p_217457_2_) -> {
             this.getServer().execute(() -> {
-               this.func_217443_B().func_219135_a(blockpos, p_217457_2_);
+               this.getPoiMgr().func_219135_a(blockpos, p_217457_2_);
                DebugPacketSender.func_218799_a(this, blockpos);
             });
          });
       }
    }
 
-   public PointOfInterestManager func_217443_B() {
+   //AH REFACTOR
+   public PointOfInterestManager getPoiMgr() {
+   //public PointOfInterestManager func_217443_B() {
       return this.getChunkProvider().func_217231_i();
    }
 
@@ -1271,7 +1273,7 @@ public class ServerWorld extends World {
    }
 
    public int func_217486_a(SectionPos p_217486_1_) {
-      return this.func_217443_B().func_219150_a(p_217486_1_);
+      return this.getPoiMgr().func_219150_a(p_217486_1_);
    }
 
    public RaidManager getRaids() {

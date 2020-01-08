@@ -32,26 +32,26 @@ public class PointOfInterestType {
       return p_221050_0_.get(BedBlock.PART) == BedPart.HEAD;
    }).collect(ImmutableSet.toImmutableSet());
    private static final Map<BlockState, PointOfInterestType> field_221073_u = Maps.newHashMap();
-   public static final PointOfInterestType UNEMPLOYED = func_226360_a_("unemployed", ImmutableSet.of(), 1, ANY_VILLAGER_WORKSTATION, 1);
-   public static final PointOfInterestType ARMORER = func_226359_a_("armorer", getAllStates(Blocks.BLAST_FURNACE), 1, 1);
-   public static final PointOfInterestType BUTCHER = func_226359_a_("butcher", getAllStates(Blocks.SMOKER), 1, 1);
-   public static final PointOfInterestType CARTOGRAPHER = func_226359_a_("cartographer", getAllStates(Blocks.CARTOGRAPHY_TABLE), 1, 1);
-   public static final PointOfInterestType CLERIC = func_226359_a_("cleric", getAllStates(Blocks.BREWING_STAND), 1, 1);
-   public static final PointOfInterestType FARMER = func_226359_a_("farmer", getAllStates(Blocks.COMPOSTER), 1, 1);
-   public static final PointOfInterestType FISHERMAN = func_226359_a_("fisherman", getAllStates(Blocks.BARREL), 1, 1);
-   public static final PointOfInterestType FLETCHER = func_226359_a_("fletcher", getAllStates(Blocks.FLETCHING_TABLE), 1, 1);
-   public static final PointOfInterestType LEATHERWORKER = func_226359_a_("leatherworker", getAllStates(Blocks.CAULDRON), 1, 1);
-   public static final PointOfInterestType LIBRARIAN = func_226359_a_("librarian", getAllStates(Blocks.LECTERN), 1, 1);
-   public static final PointOfInterestType MASON = func_226359_a_("mason", getAllStates(Blocks.STONECUTTER), 1, 1);
-   public static final PointOfInterestType NITWIT = func_226359_a_("nitwit", ImmutableSet.of(), 1, 1);
-   public static final PointOfInterestType SHEPHERD = func_226359_a_("shepherd", getAllStates(Blocks.LOOM), 1, 1);
-   public static final PointOfInterestType TOOLSMITH = func_226359_a_("toolsmith", getAllStates(Blocks.SMITHING_TABLE), 1, 1);
-   public static final PointOfInterestType WEAPONSMITH = func_226359_a_("weaponsmith", getAllStates(Blocks.GRINDSTONE), 1, 1);
-   public static final PointOfInterestType HOME = func_226359_a_("home", BED_HEADS, 1, 1);
-   public static final PointOfInterestType MEETING = func_226359_a_("meeting", getAllStates(Blocks.BELL), 32, 6);
-   public static final PointOfInterestType field_226356_s_ = func_226359_a_("beehive", getAllStates(Blocks.field_226906_mb_), 0, 1);
-   public static final PointOfInterestType field_226357_t_ = func_226359_a_("bee_nest", getAllStates(Blocks.field_226905_ma_), 0, 1);
-   public static final PointOfInterestType field_226358_u_ = func_226359_a_("nether_portal", getAllStates(Blocks.NETHER_PORTAL), 0, 1);
+   public static final PointOfInterestType UNEMPLOYED = createPoiTypeWPred("unemployed", ImmutableSet.of(), 1, ANY_VILLAGER_WORKSTATION, 1);
+   public static final PointOfInterestType ARMORER = createPoiType("armorer", getAllStates(Blocks.BLAST_FURNACE), 1, 1);
+   public static final PointOfInterestType BUTCHER = createPoiType("butcher", getAllStates(Blocks.SMOKER), 1, 1);
+   public static final PointOfInterestType CARTOGRAPHER = createPoiType("cartographer", getAllStates(Blocks.CARTOGRAPHY_TABLE), 1, 1);
+   public static final PointOfInterestType CLERIC = createPoiType("cleric", getAllStates(Blocks.BREWING_STAND), 1, 1);
+   public static final PointOfInterestType FARMER = createPoiType("farmer", getAllStates(Blocks.COMPOSTER), 1, 1);
+   public static final PointOfInterestType FISHERMAN = createPoiType("fisherman", getAllStates(Blocks.BARREL), 1, 1);
+   public static final PointOfInterestType FLETCHER = createPoiType("fletcher", getAllStates(Blocks.FLETCHING_TABLE), 1, 1);
+   public static final PointOfInterestType LEATHERWORKER = createPoiType("leatherworker", getAllStates(Blocks.CAULDRON), 1, 1);
+   public static final PointOfInterestType LIBRARIAN = createPoiType("librarian", getAllStates(Blocks.LECTERN), 1, 1);
+   public static final PointOfInterestType MASON = createPoiType("mason", getAllStates(Blocks.STONECUTTER), 1, 1);
+   public static final PointOfInterestType NITWIT = createPoiType("nitwit", ImmutableSet.of(), 1, 1);
+   public static final PointOfInterestType SHEPHERD = createPoiType("shepherd", getAllStates(Blocks.LOOM), 1, 1);
+   public static final PointOfInterestType TOOLSMITH = createPoiType("toolsmith", getAllStates(Blocks.SMITHING_TABLE), 1, 1);
+   public static final PointOfInterestType WEAPONSMITH = createPoiType("weaponsmith", getAllStates(Blocks.GRINDSTONE), 1, 1);
+   public static final PointOfInterestType HOME = createPoiType("home", BED_HEADS, 1, 1);
+   public static final PointOfInterestType MEETING = createPoiType("meeting", getAllStates(Blocks.BELL), 32, 6);
+   public static final PointOfInterestType field_226356_s_ = createPoiType("beehive", getAllStates(Blocks.field_226906_mb_), 0, 1);
+   public static final PointOfInterestType field_226357_t_ = createPoiType("bee_nest", getAllStates(Blocks.field_226905_ma_), 0, 1);
+   public static final PointOfInterestType field_226358_u_ = createPoiType("nether_portal", getAllStates(Blocks.NETHER_PORTAL), 0, 1);
    private final String name;
 
    //AH CHANGE REFACTOR
@@ -104,7 +104,9 @@ public class PointOfInterestType {
       return this.poiPred;
    }
 
-   public int func_225478_d() {
+   //Ah REFACTOR
+   public int getKeepDist() {
+   //public int func_225478_d() {
       return this.keepDist;
    }
 
@@ -113,13 +115,13 @@ public class PointOfInterestType {
    }
 
    //AH CHANGE REFACTOR
-   private static PointOfInterestType func_226359_a_(String name, Set<BlockState> stateSet, int maxFreeTickets, int keepDist) {
+   private static PointOfInterestType createPoiType(String name, Set<BlockState> stateSet, int maxFreeTickets, int keepDist) {
    //private static PointOfInterestType func_226359_a_(String p_226359_0_, Set<BlockState> p_226359_1_, int p_226359_2_, int p_226359_3_) {
       return func_221052_a(Registry.POINT_OF_INTEREST_TYPE.register(new ResourceLocation(name), new PointOfInterestType(name, stateSet, maxFreeTickets, keepDist)));
    }
 
    //AH CHANGE REFACTOR
-   private static PointOfInterestType func_226360_a_(String name, Set<BlockState> stateSet, int maxFreeTickets, Predicate<PointOfInterestType> posPred, int keepDist) {
+   private static PointOfInterestType createPoiTypeWPred(String name, Set<BlockState> stateSet, int maxFreeTickets, Predicate<PointOfInterestType> posPred, int keepDist) {
    //private static PointOfInterestType func_226360_a_(String p_226360_0_, Set<BlockState> p_226360_1_, int p_226360_2_, Predicate<PointOfInterestType> p_226360_3_, int p_226360_4_) {
       return func_221052_a(Registry.POINT_OF_INTEREST_TYPE.register(new ResourceLocation(name), new PointOfInterestType(name, stateSet, maxFreeTickets, posPred, keepDist)));
    }
