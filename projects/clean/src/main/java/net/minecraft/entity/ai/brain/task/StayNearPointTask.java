@@ -31,7 +31,7 @@ public class StayNearPointTask extends Task<VillagerEntity> {
 
    private void func_225457_a(VillagerEntity p_225457_1_, long p_225457_2_) {
       Brain<?> brain = p_225457_1_.getBrain();
-      p_225457_1_.func_213742_a(this.field_220548_a);
+      p_225457_1_.removeMemoryPos(this.field_220548_a);
       brain.removeMemory(this.field_220548_a);
       brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, p_225457_2_);
    }

@@ -42,7 +42,7 @@ public class GatherPOITask extends Task<CreatureEntity> {
    //private final Long2LongMap field_223013_e = new Long2LongOpenHashMap();
 
    //AH REFACTOR
-   private int field_223014_f;
+   private int maxPoiPosToCheck;
    //private int field_223014_f;
 
    //AH REFACTOR
@@ -63,14 +63,14 @@ public class GatherPOITask extends Task<CreatureEntity> {
    }
 
    protected void startExecuting(ServerWorld worldIn, CreatureEntity entityIn, long gameTimeIn) {
-      this.field_223014_f = 0;
+      this.maxPoiPosToCheck = 0;
       this.taskEndTime = worldIn.getGameTime() + (long)worldIn.getRandom().nextInt(20);
       PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
       Predicate<BlockPos> predicate = (pos) -> {
          long i = pos.toLong();
          if (this.posByEndTimeMap.containsKey(i)) {
             return false;
-         } else if (++this.field_223014_f >= 5) {
+         } else if (++this.maxPoiPosToCheck >= 5) {
             return false;
          } else {
             this.posByEndTimeMap.put(i, this.taskEndTime + 40L);
@@ -82,13 +82,20 @@ public class GatherPOITask extends Task<CreatureEntity> {
       if (path != null && path.isCompletePath()) {
          BlockPos blockpos = path.getTargetPos();
          pointofinterestmanager.getPoiTypeForPos(blockpos).ifPresent((poiType) -> {
-            pointofinterestmanager.func_219157_a(this.poiType.getPoiTypePred(), (p_225442_1_) -> {
-               return p_225442_1_.equals(blockpos);
+            pointofinterestmanager.claimPoiPos(this.poiType.getPoiTypePred(), (pos) -> {
+               return pos.equals(blockpos);
             }, blockpos, 1);
             entityIn.getBrain().setMemory(this.memModuleType, GlobalPos.of(worldIn.getDimension().getType(), blockpos));
+
+            //AH CHANGE DEBUG
+           if(entityIn.getCustomName() != null && entityIn.getCustomName().getString().equals("Chuck"))
+           {
+               System.out.println("GatherPOITask, claimed: " + blockpos.toString() + ", type=" + this.poiType);
+           }
+
             DebugPacketSender.func_218801_c(worldIn, blockpos);
          });
-      } else if (this.field_223014_f < 5) {
+      } else if (this.maxPoiPosToCheck < 5) {
          this.posByEndTimeMap.long2LongEntrySet().removeIf((p_223011_1_) -> {
             return p_223011_1_.getLongValue() < this.taskEndTime;
          });

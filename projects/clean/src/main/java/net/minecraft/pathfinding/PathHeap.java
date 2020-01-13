@@ -38,8 +38,8 @@ public class PathHeap {
    }
 
    public void changeDistance(PathPoint point, float distance) {
-      float f = point.distanceToTarget;
-      point.distanceToTarget = distance;
+      float f = point.distCloestPlusStart;
+      point.distCloestPlusStart = distance;
       if (distance < f) {
          this.sortBack(point.index);
       } else {
@@ -52,10 +52,10 @@ public class PathHeap {
       PathPoint pathpoint = this.pathPoints[index];
 
       int i;
-      for(float f = pathpoint.distanceToTarget; index > 0; index = i) {
+      for(float f = pathpoint.distCloestPlusStart; index > 0; index = i) {
          i = index - 1 >> 1;
          PathPoint pathpoint1 = this.pathPoints[i];
-         if (!(f < pathpoint1.distanceToTarget)) {
+         if (!(f < pathpoint1.distCloestPlusStart)) {
             break;
          }
 
@@ -69,7 +69,7 @@ public class PathHeap {
 
    private void sortForward(int index) {
       PathPoint pathpoint = this.pathPoints[index];
-      float f = pathpoint.distanceToTarget;
+      float f = pathpoint.distCloestPlusStart;
 
       while(true) {
          int i = 1 + (index << 1);
@@ -79,7 +79,7 @@ public class PathHeap {
          }
 
          PathPoint pathpoint1 = this.pathPoints[i];
-         float f1 = pathpoint1.distanceToTarget;
+         float f1 = pathpoint1.distCloestPlusStart;
          PathPoint pathpoint2;
          float f2;
          if (j >= this.count) {
@@ -87,7 +87,7 @@ public class PathHeap {
             f2 = Float.POSITIVE_INFINITY;
          } else {
             pathpoint2 = this.pathPoints[j];
-            f2 = pathpoint2.distanceToTarget;
+            f2 = pathpoint2.distCloestPlusStart;
          }
 
          if (f1 < f2) {

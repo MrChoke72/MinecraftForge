@@ -40,7 +40,7 @@ public class CatSpawner {
                   return 0;
                } else {
                   if (WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, worldIn, blockpos, EntityType.CAT)) {
-                     if (worldIn.func_217471_a(blockpos, 2)) {
+                     if (worldIn.isPosBelowEQSecLevel(blockpos, 2)) {
                         return this.func_221121_a(worldIn, blockpos);
                      }
 

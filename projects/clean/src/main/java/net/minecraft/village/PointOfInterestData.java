@@ -31,7 +31,10 @@ public class PointOfInterestData implements IDynamicSerializable {
    private final Short2ObjectMap<PointOfInterest> poiLocationMap = new Short2ObjectOpenHashMap<>();   //Key is SectionPos packed
    //private final Short2ObjectMap<PointOfInterest> field_218256_b = new Short2ObjectOpenHashMap<>();
 
-   private final Map<PointOfInterestType, Set<PointOfInterest>> field_218257_c = Maps.newHashMap();
+   //AH REFACTOR
+   private final Map<PointOfInterestType, Set<PointOfInterest>> poiSetsByTypeMap = Maps.newHashMap();
+   //private final Map<PointOfInterestType, Set<PointOfInterest>> field_218257_c = Maps.newHashMap();
+
    private final Runnable onChange;
    private boolean valid;
 
@@ -56,20 +59,24 @@ public class PointOfInterestData implements IDynamicSerializable {
 
    }
 
-   public Stream<PointOfInterest> func_218247_a(Predicate<PointOfInterestType> p_218247_1_, PointOfInterestManager.Status p_218247_2_) {
-      return this.field_218257_c.entrySet().stream().filter((p_218239_1_) -> {
-         return p_218247_1_.test(p_218239_1_.getKey());
-      }).flatMap((p_218246_0_) -> {
-         return p_218246_0_.getValue().stream();
-      }).filter(p_218247_2_.func_221035_a());
+   //AH REFACTOR
+   public Stream<PointOfInterest> poiStreamByPoiTypePredStatus(Predicate<PointOfInterestType> poiTypePred, PointOfInterestManager.Status status) {
+   //public Stream<PointOfInterest> func_218247_a(Predicate<PointOfInterestType> p_218247_1_, PointOfInterestManager.Status p_218247_2_) {
+      return this.poiSetsByTypeMap.entrySet().stream().filter((entry) -> {
+         return poiTypePred.test(entry.getKey());
+      }).flatMap((entry) -> {
+         return entry.getValue().stream();
+      }).filter(status.getPoiPred());
    }
 
-   public void func_218243_a(BlockPos p_218243_1_, PointOfInterestType p_218243_2_) {
-      if (this.addToMap(new PointOfInterest(p_218243_1_, p_218243_2_, this.onChange))) {
+   //AH REFACTOR
+   public void addPoiLocation(BlockPos pos, PointOfInterestType poiType) {
+   //public void func_218243_a(BlockPos p_218243_1_, PointOfInterestType p_218243_2_) {
+      if (this.addToMap(new PointOfInterest(pos, poiType, this.onChange))) {
          LOGGER.debug("Added POI of type {} @ {}", () -> {
-            return p_218243_2_;
+            return poiType;
          }, () -> {
-            return p_218243_1_;
+            return pos;
          });
          this.onChange.run();
       }
@@ -91,7 +98,7 @@ public class PointOfInterestData implements IDynamicSerializable {
          }
       } else {
          this.poiLocationMap.put(short1, poi);
-         this.field_218257_c.computeIfAbsent(pointofinteresttype, (p_218252_0_) -> {
+         this.poiSetsByTypeMap.computeIfAbsent(pointofinteresttype, (p_218252_0_) -> {
             return Sets.newHashSet();
          }).add(poi);
          return true;
@@ -105,7 +112,7 @@ public class PointOfInterestData implements IDynamicSerializable {
       if (pointofinterest == null) {
          LOGGER.error("POI data mismatch: never registered at " + pos);
       } else {
-         this.field_218257_c.get(pointofinterest.getType()).remove(pointofinterest);
+         this.poiSetsByTypeMap.get(pointofinterest.getType()).remove(pointofinterest);
          LOGGER.debug("Removed POI of type {} @ {}", pointofinterest::getType, pointofinterest::getPos);
          this.onChange.run();
       }
@@ -166,7 +173,7 @@ public class PointOfInterestData implements IDynamicSerializable {
 
    private void clear() {
       this.poiLocationMap.clear();
-      this.field_218257_c.clear();
+      this.poiSetsByTypeMap.clear();
    }
 
    boolean func_226355_a_() {

@@ -88,7 +88,7 @@ public class RaidManager extends WorldSavedData {
             return null;
          } else {
             BlockPos blockpos = new BlockPos(p_215170_1_);
-            List<PointOfInterest> list = this.world.getPoiMgr().poiStreamByDistFiltPos(PointOfInterestType.field_221053_a, blockpos, 64, PointOfInterestManager.Status.IS_OCCUPIED).collect(Collectors.toList());
+            List<PointOfInterest> list = this.world.getPoiMgr().poiStreamByDistFiltPos(PointOfInterestType.POI_TYPE_PRED_TRUE, blockpos, 64, PointOfInterestManager.Status.IS_OCCUPIED).collect(Collectors.toList());
             int i = 0;
             Vec3d vec3d = Vec3d.ZERO;
 
@@ -124,7 +124,7 @@ public class RaidManager extends WorldSavedData {
             if (flag) {
                raid.increaseLevel(p_215170_1_);
                p_215170_1_.connection.sendPacket(new SEntityStatusPacket(p_215170_1_, (byte)43));
-               if (!raid.func_221297_c()) {
+               if (!raid.hasGroupsSpawned()) {
                   p_215170_1_.addStat(Stats.RAID_TRIGGER);
                   CriteriaTriggers.VOLUNTARY_EXILE.trigger(p_215170_1_);
                }

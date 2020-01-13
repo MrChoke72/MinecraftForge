@@ -53,7 +53,7 @@ public class Teleporter {
       PointOfInterestManager pointofinterestmanager = this.world.getPoiMgr();
       pointofinterestmanager.func_226347_a_(this.world, p_222272_1_, 128);
       List<PointOfInterest> list = pointofinterestmanager.poiStreamByRadius((p_226705_0_) -> {
-         return p_226705_0_ == PointOfInterestType.field_226358_u_;
+         return p_226705_0_ == PointOfInterestType.NETHER_PORTAL;
       }, p_222272_1_, 128, PointOfInterestManager.Status.ANY).collect(Collectors.toList());
       Optional<PointOfInterest> optional = list.stream().min(Comparator.<PointOfInterest>comparingDouble((p_226706_1_) -> {
          return p_226706_1_.getPos().distanceSq(p_222272_1_);

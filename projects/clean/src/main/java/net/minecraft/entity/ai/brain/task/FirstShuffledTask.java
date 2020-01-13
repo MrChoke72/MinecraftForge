@@ -10,11 +10,11 @@ import net.minecraft.entity.ai.brain.memory.MemoryModuleStatus;
 import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
 
 public class FirstShuffledTask<E extends LivingEntity> extends MultiTask<E> {
-   public FirstShuffledTask(List<Pair<Task<? super E>, Integer>> p_i50354_1_) {
-      this(ImmutableMap.of(), p_i50354_1_);
+   public FirstShuffledTask(List<Pair<Task<? super E>, Integer>> taskList) {
+      this(ImmutableMap.of(), taskList);
    }
 
-   public FirstShuffledTask(Map<MemoryModuleType<?>, MemoryModuleStatus> p_i51502_1_, List<Pair<Task<? super E>, Integer>> p_i51502_2_) {
-      super(p_i51502_1_, ImmutableSet.of(), MultiTask.Ordering.SHUFFLED, MultiTask.RunType.RUN_ONE, p_i51502_2_);
+   public FirstShuffledTask(Map<MemoryModuleType<?>, MemoryModuleStatus> memModuleMap, List<Pair<Task<? super E>, Integer>> taskList) {
+      super(memModuleMap, ImmutableSet.of(), MultiTask.Ordering.SHUFFLED, MultiTask.RunType.RUN_ONE, taskList);
    }
 }

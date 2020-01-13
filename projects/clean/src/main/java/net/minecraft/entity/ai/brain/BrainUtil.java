@@ -70,10 +70,17 @@ public class BrainUtil {
       from.world.addEntity(itementity);
    }
 
-   public static SectionPos func_220617_a(ServerWorld p_220617_0_, SectionPos p_220617_1_, int p_220617_2_) {
-      int i = p_220617_0_.func_217486_a(p_220617_1_);
-      return SectionPos.getAllInBox(p_220617_1_, p_220617_2_).filter((p_220620_2_) -> {
-         return p_220617_0_.func_217486_a(p_220620_2_) < i;
-      }).min(Comparator.comparingInt(p_220617_0_::func_217486_a)).orElse(p_220617_1_);
+   //AH REFACTOR
+   public static SectionPos getSecPosLowerInRadius(ServerWorld world, SectionPos secPosIn, int radius) {
+   //public static SectionPos func_220617_a(ServerWorld p_220617_0_, SectionPos p_220617_1_, int p_220617_2_) {
+      int i = world.getPoiSecPosLevel(secPosIn);
+      return SectionPos.getAllInBox(secPosIn, radius).filter((secPos) -> {
+
+         //AH CHANGE DEBUG
+         int secLevel =  world.getPoiSecPosLevel(secPos);
+         return (secLevel < i);
+         //return world.getPoiSecPosLevel(secPos) < i;
+
+      }).min(Comparator.comparingInt(world::getPoiSecPosLevel)).orElse(secPosIn);
    }
 }

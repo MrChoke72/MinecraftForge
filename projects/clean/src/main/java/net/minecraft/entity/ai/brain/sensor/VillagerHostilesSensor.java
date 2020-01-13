@@ -23,34 +23,34 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
       return ImmutableSet.of(MemoryModuleType.NEAREST_HOSTILE);
    }
 
-   protected void update(ServerWorld p_212872_1_, LivingEntity p_212872_2_) {
-      p_212872_2_.getBrain().setMemory(MemoryModuleType.NEAREST_HOSTILE, this.func_220989_a(p_212872_2_));
+   protected void update(ServerWorld world, LivingEntity entity) {
+      entity.getBrain().setMemory(MemoryModuleType.NEAREST_HOSTILE, this.getNearestHostile(entity));
    }
 
-   private Optional<LivingEntity> func_220989_a(LivingEntity p_220989_1_) {
-      return this.func_220990_b(p_220989_1_).flatMap((p_220984_2_) -> {
-         return p_220984_2_.stream().filter(this::func_220988_c).filter((p_220985_2_) -> {
-            return this.func_220987_a(p_220989_1_, p_220985_2_);
-         }).min((p_220986_2_, p_220986_3_) -> {
-            return this.func_220983_a(p_220989_1_, p_220986_2_, p_220986_3_);
+   private Optional<LivingEntity> getNearestHostile(LivingEntity owner) {
+      return this.getVisibleMobs(owner).flatMap((entityList) -> {
+         return entityList.stream().filter(this::hasEntityType).filter((entity) -> {
+            return this.isEntityClose(owner, entity);
+         }).min((entity1, entity2) -> {
+            return this.getOwnerDistDiff(owner, entity1, entity2);
          });
       });
    }
 
-   private Optional<List<LivingEntity>> func_220990_b(LivingEntity p_220990_1_) {
-      return p_220990_1_.getBrain().getMemory(MemoryModuleType.VISIBLE_MOBS);
+   private Optional<List<LivingEntity>> getVisibleMobs(LivingEntity entity) {
+      return entity.getBrain().getMemory(MemoryModuleType.VISIBLE_MOBS);
    }
 
-   private int func_220983_a(LivingEntity p_220983_1_, LivingEntity p_220983_2_, LivingEntity p_220983_3_) {
-      return MathHelper.floor(p_220983_2_.getDistanceSq(p_220983_1_) - p_220983_3_.getDistanceSq(p_220983_1_));
+   private int getOwnerDistDiff(LivingEntity owner, LivingEntity entity1, LivingEntity entity2) {
+      return MathHelper.floor(entity1.getDistanceSq(owner) - entity2.getDistanceSq(owner));
    }
 
-   private boolean func_220987_a(LivingEntity p_220987_1_, LivingEntity p_220987_2_) {
-      float f = hostileDistMap.get(p_220987_2_.getType());
-      return p_220987_2_.getDistanceSq(p_220987_1_) <= (double)(f * f);
+   private boolean isEntityClose(LivingEntity owner, LivingEntity entity) {
+      float f = hostileDistMap.get(entity.getType());
+      return entity.getDistanceSq(owner) <= (double)(f * f);
    }
 
-   private boolean func_220988_c(LivingEntity p_220988_1_) {
-      return hostileDistMap.containsKey(p_220988_1_.getType());
+   private boolean hasEntityType(LivingEntity entity) {
+      return hostileDistMap.containsKey(entity.getType());
    }
 }

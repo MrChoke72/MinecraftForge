@@ -18,12 +18,13 @@ public class MultiTask<E extends LivingEntity> extends Task<E> {
    private final MultiTask.RunType field_220418_d;
    private final WeightedList<Task<? super E>> field_220419_e = new WeightedList<>();
 
-   public MultiTask(Map<MemoryModuleType<?>, MemoryModuleStatus> p_i51503_1_, Set<MemoryModuleType<?>> p_i51503_2_, MultiTask.Ordering p_i51503_3_, MultiTask.RunType p_i51503_4_, List<Pair<Task<? super E>, Integer>> p_i51503_5_) {
-      super(p_i51503_1_);
-      this.field_220416_b = p_i51503_2_;
-      this.field_220417_c = p_i51503_3_;
-      this.field_220418_d = p_i51503_4_;
-      p_i51503_5_.forEach((p_220411_1_) -> {
+   public MultiTask(Map<MemoryModuleType<?>, MemoryModuleStatus> memModuleMap, Set<MemoryModuleType<?>> memTypeSet, MultiTask.Ordering ordering, MultiTask.RunType runType,
+                    List<Pair<Task<? super E>, Integer>> taskList) {
+      super(memModuleMap);
+      this.field_220416_b = memTypeSet;
+      this.field_220417_c = ordering;
+      this.field_220418_d = runType;
+      taskList.forEach((p_220411_1_) -> {
          this.field_220419_e.func_226313_a_(p_220411_1_.getFirst(), p_220411_1_.getSecond());
       });
    }

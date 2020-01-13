@@ -397,7 +397,7 @@ public abstract class AbstractRaiderEntity extends PatrollerEntity {
       private boolean func_220863_h() {
          ServerWorld serverworld = (ServerWorld)this.field_220864_a.world;
          BlockPos blockpos = new BlockPos(this.field_220864_a);
-         Optional<BlockPos> optional = serverworld.getPoiMgr().func_219163_a((p_220859_0_) -> {
+         Optional<BlockPos> optional = serverworld.getPoiMgr().getRandomPoiPos((p_220859_0_) -> {
             return p_220859_0_ == PointOfInterestType.HOME;
          }, this::func_220860_a, PointOfInterestManager.Status.ANY, blockpos, 48, this.field_220864_a.rand);
          if (!optional.isPresent()) {

@@ -10,14 +10,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.server.ServerWorld;
 
 public class MoveTowardsVillageGoal extends RandomWalkingGoal {
-   public MoveTowardsVillageGoal(CreatureEntity p_i50325_1_, double p_i50325_2_) {
-      super(p_i50325_1_, p_i50325_2_, 10);
+   public MoveTowardsVillageGoal(CreatureEntity entity, double speedIn) {
+      super(entity, speedIn, 10);
    }
 
    public boolean shouldExecute() {
       ServerWorld serverworld = (ServerWorld)this.creature.world;
       BlockPos blockpos = new BlockPos(this.creature);
-      return serverworld.func_217483_b_(blockpos) ? false : super.shouldExecute();
+      return serverworld.isPosBelowEQSecLevel1(blockpos) ? false : super.shouldExecute();
    }
 
    @Nullable
@@ -25,7 +25,25 @@ public class MoveTowardsVillageGoal extends RandomWalkingGoal {
       ServerWorld serverworld = (ServerWorld)this.creature.world;
       BlockPos blockpos = new BlockPos(this.creature);
       SectionPos sectionpos = SectionPos.from(blockpos);
-      SectionPos sectionpos1 = BrainUtil.func_220617_a(serverworld, sectionpos, 2);
+
+      //AH CHANGE DEBUG OFF
+      /*
+      if(this.creature.getCustomName() != null && this.creature.getCustomName().getString().equals("Chuck"))
+      {
+         System.out.println("In MoveTowardsVillageGoal:  secPos=" + sectionpos.toString());
+      }
+       */
+
+      SectionPos sectionpos1 = BrainUtil.getSecPosLowerInRadius(serverworld, sectionpos, 2);
+
+      //AH CHANGE DEBUG OFF
+      /*
+      if(this.creature.getCustomName() != null && this.creature.getCustomName().getString().equals("Chuck"))
+      {
+         System.out.println("In MoveTowardsVillageGoal:  secPos1=" + sectionpos1.toString());
+      }
+       */
+      
       return sectionpos1 != sectionpos ? RandomPositionGenerator.findRandomTargetBlockTowards(this.creature, 10, 7, new Vec3d(sectionpos1.getCenter())) : null;
    }
 }

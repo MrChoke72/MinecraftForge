@@ -36,8 +36,11 @@ public class WalkToTargetTask extends Task<MobEntity> {
    private int tickCount;
    //private int field_220491_d;
 
-   public WalkToTargetTask(int p_i50356_1_) {
-      super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_PRESENT), p_i50356_1_);
+   public WalkToTargetTask(int duration) {
+      super(ImmutableMap.of(
+              MemoryModuleType.PATH, MemoryModuleStatus.VALUE_ABSENT,
+              MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_PRESENT),
+              duration);
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, MobEntity owner) {
@@ -45,6 +48,15 @@ public class WalkToTargetTask extends Task<MobEntity> {
       WalkTarget walktarget = brain.getMemory(MemoryModuleType.WALK_TARGET).get();
       if (!this.hasReachedTarget(owner, walktarget) && this.setPath(owner, walktarget, worldIn.getGameTime())) {
          this.targetPos = walktarget.getTarget().getBlockPos();
+
+
+         //AH CHANGE DEBUG
+         if(owner.getCustomName() != null && owner.getCustomName().getString().equals("Chuck"))
+         {
+            System.out.println("WalkToTargetTask  targetPos=" + targetPos.getX() + "," + targetPos.getY() + "," + targetPos.getZ());
+         }
+
+
          return true;
       } else {
          brain.removeMemory(MemoryModuleType.WALK_TARGET);
@@ -125,7 +137,7 @@ public class WalkToTargetTask extends Task<MobEntity> {
       return false;
    }
 
-   private boolean hasReachedTarget(MobEntity p_220486_1_, WalkTarget p_220486_2_) {
-      return p_220486_2_.getTarget().getBlockPos().manhattanDistance(new BlockPos(p_220486_1_)) <= p_220486_2_.getDistance();
+   private boolean hasReachedTarget(MobEntity p_220486_1_, WalkTarget walkTarget) {
+      return walkTarget.getTarget().getBlockPos().manhattanDistance(new BlockPos(p_220486_1_)) <= walkTarget.getReachDist();
    }
 }

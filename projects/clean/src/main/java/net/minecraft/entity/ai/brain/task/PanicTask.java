@@ -14,11 +14,11 @@ public class PanicTask extends Task<VillagerEntity> {
    }
 
    protected boolean shouldContinueExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
-      return func_220512_b(entityIn) || func_220513_a(entityIn);
+      return hashHurtByMem(entityIn) || hashNearestHostileMem(entityIn);
    }
 
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
-      if (func_220512_b(entityIn) || func_220513_a(entityIn)) {
+      if (hashHurtByMem(entityIn) || hashNearestHostileMem(entityIn)) {
          Brain<?> brain = entityIn.getBrain();
          if (!brain.hasActivity(Activity.PANIC)) {
             brain.removeMemory(MemoryModuleType.PATH);
@@ -27,6 +27,14 @@ public class PanicTask extends Task<VillagerEntity> {
             brain.removeMemory(MemoryModuleType.BREED_TARGET);
             brain.removeMemory(MemoryModuleType.INTERACTION_TARGET);
          }
+
+         //AH CHANGE DEBUG OFF
+         /*
+         if(entityIn.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+         {
+            System.out.println("PanicTask::startExecuting, switching to panic activity");
+         }
+         */
 
          brain.switchTo(Activity.PANIC);
       }
@@ -40,11 +48,11 @@ public class PanicTask extends Task<VillagerEntity> {
 
    }
 
-   public static boolean func_220513_a(LivingEntity p_220513_0_) {
-      return p_220513_0_.getBrain().hasMemory(MemoryModuleType.NEAREST_HOSTILE);
+   public static boolean hashNearestHostileMem(LivingEntity entity) {
+      return entity.getBrain().hasMemory(MemoryModuleType.NEAREST_HOSTILE);
    }
 
-   public static boolean func_220512_b(LivingEntity p_220512_0_) {
-      return p_220512_0_.getBrain().hasMemory(MemoryModuleType.HURT_BY);
+   public static boolean hashHurtByMem(LivingEntity entity) {
+      return entity.getBrain().hasMemory(MemoryModuleType.HURT_BY);
    }
 }

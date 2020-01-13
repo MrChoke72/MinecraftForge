@@ -46,21 +46,21 @@ public class MoveThroughVillageGoal extends Goal {
       } else {
          ServerWorld serverworld = (ServerWorld)this.entity.world;
          BlockPos blockpos = new BlockPos(this.entity);
-         if (!serverworld.func_217471_a(blockpos, 6)) {
+         if (!serverworld.isPosBelowEQSecLevel(blockpos, 6)) {
             return false;
          } else {
             Vec3d vec3d = RandomPositionGenerator.func_221024_a(this.entity, 15, 7, (p_220734_3_) -> {
-               if (!serverworld.func_217483_b_(p_220734_3_)) {
+               if (!serverworld.isPosBelowEQSecLevel1(p_220734_3_)) {
                   return Double.NEGATIVE_INFINITY;
                } else {
-                  Optional<BlockPos> optional1 = serverworld.getPoiMgr().func_219127_a(PointOfInterestType.field_221053_a, this::func_220733_a, p_220734_3_, 10, PointOfInterestManager.Status.IS_OCCUPIED);
+                  Optional<BlockPos> optional1 = serverworld.getPoiMgr().func_219127_a(PointOfInterestType.POI_TYPE_PRED_TRUE, this::func_220733_a, p_220734_3_, 10, PointOfInterestManager.Status.IS_OCCUPIED);
                   return !optional1.isPresent() ? Double.NEGATIVE_INFINITY : -optional1.get().distanceSq(blockpos);
                }
             });
             if (vec3d == null) {
                return false;
             } else {
-               Optional<BlockPos> optional = serverworld.getPoiMgr().func_219127_a(PointOfInterestType.field_221053_a, this::func_220733_a, new BlockPos(vec3d), 10, PointOfInterestManager.Status.IS_OCCUPIED);
+               Optional<BlockPos> optional = serverworld.getPoiMgr().func_219127_a(PointOfInterestType.POI_TYPE_PRED_TRUE, this::func_220733_a, new BlockPos(vec3d), 10, PointOfInterestManager.Status.IS_OCCUPIED);
                if (!optional.isPresent()) {
                   return false;
                } else {

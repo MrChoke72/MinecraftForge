@@ -24,12 +24,14 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
       this(p_i50314_1_, p_i50314_2_, 10, p_i50314_3_, p_i50314_4_, (Predicate<LivingEntity>)null);
    }
 
-   public NearestAttackableTargetGoal(MobEntity p_i50315_1_, Class<T> p_i50315_2_, int p_i50315_3_, boolean p_i50315_4_, boolean p_i50315_5_, @Nullable Predicate<LivingEntity> p_i50315_6_) {
-      super(p_i50315_1_, p_i50315_4_, p_i50315_5_);
-      this.targetClass = p_i50315_2_;
-      this.targetChance = p_i50315_3_;
+   //AH REFACTOR
+   public NearestAttackableTargetGoal(MobEntity entity, Class<T> targetClass, int targetChance, boolean checkSight, boolean nearbyOnly, @Nullable Predicate<LivingEntity> entityPred) {
+   //public NearestAttackableTargetGoal(MobEntity p_i50315_1_, Class<T> p_i50315_2_, int p_i50315_3_, boolean p_i50315_4_, boolean p_i50315_5_, @Nullable Predicate<LivingEntity> p_i50315_6_) {
+      super(entity, checkSight, nearbyOnly);
+      this.targetClass = targetClass;
+      this.targetChance = targetChance;
       this.setMutexFlags(EnumSet.of(Goal.Flag.TARGET));
-      this.targetEntitySelector = (new EntityPredicate()).setDistance(this.getTargetDistance()).setCustomPredicate(p_i50315_6_);
+      this.targetEntitySelector = (new EntityPredicate()).setDistance(this.getTargetDistance()).setCustomPredicate(entityPred);
    }
 
    public boolean shouldExecute() {

@@ -19,7 +19,7 @@ public class Activity {
       this.id = p_i50141_1_;
    }
 
-   public String func_221364_a() {
+   public String getId() {
       return this.id;
    }
 
@@ -28,6 +28,6 @@ public class Activity {
    }
 
    public String toString() {
-      return this.func_221364_a();
+      return this.getId();
    }
 }

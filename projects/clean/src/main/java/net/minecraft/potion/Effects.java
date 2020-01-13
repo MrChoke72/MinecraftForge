@@ -53,7 +53,7 @@ public class Effects {
                return;
             }
 
-            if (serverworld.func_217483_b_(new BlockPos(entityLivingBaseIn))) {
+            if (serverworld.isPosBelowEQSecLevel1(new BlockPos(entityLivingBaseIn))) {
                serverworld.getRaids().badOmenTick(serverplayerentity);
             }
          }

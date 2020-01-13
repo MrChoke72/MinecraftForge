@@ -126,10 +126,10 @@ public class Raid {
    }
 
    public boolean func_221334_b() {
-      return this.func_221297_c() && this.getRaiderCount() == 0 && this.preRaidTicks > 0;
+      return this.hasGroupsSpawned() && this.getRaiderCount() == 0 && this.preRaidTicks > 0;
    }
 
-   public boolean func_221297_c() {
+   public boolean hasGroupsSpawned() {
       return this.groupsSpawned > 0;
    }
 
@@ -223,11 +223,11 @@ public class Raid {
                return;
             }
 
-            if (!this.world.func_217483_b_(this.center)) {
+            if (!this.world.isPosBelowEQSecLevel1(this.center)) {
                this.func_223027_y();
             }
 
-            if (!this.world.func_217483_b_(this.center)) {
+            if (!this.world.isPosBelowEQSecLevel1(this.center)) {
                if (this.groupsSpawned > 0) {
                   this.status = Raid.Status.LOSS;
                } else {
@@ -411,7 +411,7 @@ public class Raid {
                      set.add(abstractraiderentity);
                   }
 
-                  if (!this.world.func_217483_b_(blockpos) && abstractraiderentity.getIdleTime() > 2400) {
+                  if (!this.world.isPosBelowEQSecLevel1(blockpos) && abstractraiderentity.getIdleTime() > 2400) {
                      abstractraiderentity.func_213653_b(abstractraiderentity.func_213661_eo() + 1);
                   }
 
@@ -586,7 +586,7 @@ public class Raid {
          int l = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0F * (float)i) + this.world.rand.nextInt(5);
          int k = this.world.getHeight(Heightmap.Type.WORLD_SURFACE, j, l);
          blockpos$mutable.setPos(j, k, l);
-         if ((!this.world.func_217483_b_(blockpos$mutable) || p_221298_1_ >= 2) && this.world.isAreaLoaded(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10) && this.world.getChunkProvider().isChunkLoaded(new ChunkPos(blockpos$mutable)) && (WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, this.world, blockpos$mutable, EntityType.RAVAGER) || this.world.getBlockState(blockpos$mutable.down()).getBlock() == Blocks.SNOW && this.world.getBlockState(blockpos$mutable).isAir())) {
+         if ((!this.world.isPosBelowEQSecLevel1(blockpos$mutable) || p_221298_1_ >= 2) && this.world.isAreaLoaded(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10) && this.world.getChunkProvider().isChunkLoaded(new ChunkPos(blockpos$mutable)) && (WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, this.world, blockpos$mutable, EntityType.RAVAGER) || this.world.getBlockState(blockpos$mutable.down()).getBlock() == Blocks.SNOW && this.world.getBlockState(blockpos$mutable).isAir())) {
             return blockpos$mutable;
          }
       }

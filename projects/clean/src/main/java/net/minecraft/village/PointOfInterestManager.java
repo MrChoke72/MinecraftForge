@@ -31,20 +31,22 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.storage.RegionSectionCache;
 
 public class PointOfInterestManager extends RegionSectionCache<PointOfInterestData> {
-   private final PointOfInterestManager.DistanceGraph field_219164_a;
+   private final PointOfInterestManager.DistanceGraph distGraph;
    private final LongSet field_226345_b_ = new LongOpenHashSet();
 
    public PointOfInterestManager(File p_i50298_1_, DataFixer p_i50298_2_) {
       super(p_i50298_1_, PointOfInterestData::new, PointOfInterestData::new, p_i50298_2_, DefaultTypeReferences.POI_CHUNK);
-      this.field_219164_a = new PointOfInterestManager.DistanceGraph();
+      this.distGraph = new PointOfInterestManager.DistanceGraph();
    }
 
-   public void func_219135_a(BlockPos p_219135_1_, PointOfInterestType p_219135_2_) {
-      this.func_219110_e(SectionPos.from(p_219135_1_).asLong()).func_218243_a(p_219135_1_, p_219135_2_);
+   //AH REFACTOR
+   public void func_219135_a(BlockPos pos, PointOfInterestType poiType) {
+   //public void func_219135_a(BlockPos p_219135_1_, PointOfInterestType p_219135_2_) {
+      this.getCachedPoiData(SectionPos.from(pos).asLong()).addPoiLocation(pos, poiType);
    }
 
    public void func_219140_a(BlockPos p_219140_1_) {
-      this.func_219110_e(SectionPos.from(p_219140_1_).asLong()).remove(p_219140_1_);
+      this.getCachedPoiData(SectionPos.from(p_219140_1_).asLong()).remove(p_219140_1_);
    }
 
    //AH CHANGE REFACTOR
@@ -57,7 +59,7 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    public Stream<PointOfInterest> poiStreamByRadius(Predicate<PointOfInterestType> poiTypePred, BlockPos centerPos, int blockRadius, PointOfInterestManager.Status status) {
    //public Stream<PointOfInterest> func_226353_b_(Predicate<PointOfInterestType> p_226353_1_, BlockPos p_226353_2_, int p_226353_3_, PointOfInterestManager.Status p_226353_4_) {
       return ChunkPos.getAllInBox(new ChunkPos(centerPos), Math.floorDiv(blockRadius, 16)).flatMap((chunkPos) -> {
-         return this.func_219137_a(poiTypePred, chunkPos, status);
+         return this.poiStreamByPoiTypePredPosStatus(poiTypePred, chunkPos, status);
       });
    }
 
@@ -71,18 +73,18 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    }
 
    //AH CHANGE REFACTOR
-   public Stream<PointOfInterest> func_219137_a(Predicate<PointOfInterestType> poiTypePred, ChunkPos chunkPos, PointOfInterestManager.Status status) {
+   public Stream<PointOfInterest> poiStreamByPoiTypePredPosStatus(Predicate<PointOfInterestType> poiTypePred, ChunkPos chunkPos, PointOfInterestManager.Status status) {
    //public Stream<PointOfInterest> func_219137_a(Predicate<PointOfInterestType> p_219137_1_, ChunkPos p_219137_2_, PointOfInterestManager.Status p_219137_3_) {
       return IntStream.range(0, 16).boxed().flatMap((i) -> {
-         return this.func_219136_a(poiTypePred, SectionPos.from(chunkPos, i).asLong(), status);
+         return this.poiStreamByPoiTypePredPosStatus(poiTypePred, SectionPos.from(chunkPos, i).asLong(), status);
       });
    }
 
    //AH REFACTOR
-   private Stream<PointOfInterest> func_219136_a(Predicate<PointOfInterestType> poiPred, long p_219136_2_, PointOfInterestManager.Status status) {
+   private Stream<PointOfInterest> poiStreamByPoiTypePredPosStatus(Predicate<PointOfInterestType> poiPred, long secPosPacked, PointOfInterestManager.Status status) {
    //private Stream<PointOfInterest> func_219136_a(Predicate<PointOfInterestType> p_219136_1_, long p_219136_2_, PointOfInterestManager.Status p_219136_4_) {
-      return this.func_219113_d(p_219136_2_).map((p_219159_2_) -> {
-         return p_219159_2_.func_218247_a(poiPred, status);
+      return this.func_219113_d(secPosPacked).map((poiData) -> {
+         return poiData.poiStreamByPoiTypePredStatus(poiPred, status);
       }).orElseGet(Stream::empty);
    }
 
@@ -106,27 +108,32 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
       })).filter(posPred).findFirst();
    }
 
-   public Optional<BlockPos> func_219157_a(Predicate<PointOfInterestType> p_219157_1_, Predicate<BlockPos> p_219157_2_, BlockPos p_219157_3_, int p_219157_4_) {
-      return this.poiStreamByDistFiltPos(p_219157_1_, p_219157_3_, p_219157_4_, PointOfInterestManager.Status.HAS_SPACE).filter((p_219129_1_) -> {
-         return p_219157_2_.test(p_219129_1_.getPos());
-      }).findFirst().map((p_219152_0_) -> {
-         p_219152_0_.claim();
-         return p_219152_0_.getPos();
+   //AH REFACTOPR
+   public Optional<BlockPos> claimPoiPos(Predicate<PointOfInterestType> poiPred, Predicate<BlockPos> posPred, BlockPos pos, int distance) {
+   //public Optional<BlockPos> func_219157_a(Predicate<PointOfInterestType> p_219157_1_, Predicate<BlockPos> p_219157_2_, BlockPos p_219157_3_, int p_219157_4_) {
+      return this.poiStreamByDistFiltPos(poiPred, pos, distance, PointOfInterestManager.Status.HAS_SPACE).filter((poi) -> {
+         return posPred.test(poi.getPos());
+      }).findFirst().map((poi) -> {
+         poi.claim();
+         return poi.getPos();
       });
    }
 
-   public Optional<BlockPos> func_219163_a(Predicate<PointOfInterestType> p_219163_1_, Predicate<BlockPos> p_219163_2_, PointOfInterestManager.Status p_219163_3_, BlockPos p_219163_4_, int p_219163_5_, Random p_219163_6_) {
-      List<PointOfInterest> list = this.poiStreamByDistFiltPos(p_219163_1_, p_219163_4_, p_219163_5_, p_219163_3_).collect(Collectors.toList());
-      Collections.shuffle(list, p_219163_6_);
-      return list.stream().filter((p_219131_1_) -> {
-         return p_219163_2_.test(p_219131_1_.getPos());
+   //Ah REFACTOR
+   public Optional<BlockPos> getRandomPoiPos(Predicate<PointOfInterestType> poiPred, Predicate<BlockPos> posPred, PointOfInterestManager.Status status,
+                                             BlockPos pos, int distance, Random rand) {
+   //public Optional<BlockPos> func_219163_a(Predicate<PointOfInterestType> p_219163_1_, Predicate<BlockPos> p_219163_2_, PointOfInterestManager.Status p_219163_3_, BlockPos p_219163_4_, int p_219163_5_, Random p_219163_6_) {
+      List<PointOfInterest> list = this.poiStreamByDistFiltPos(poiPred, pos, distance, status).collect(Collectors.toList());
+      Collections.shuffle(list, rand);
+      return list.stream().filter((poi) -> {
+         return posPred.test(poi.getPos());
       }).findFirst().map(PointOfInterest::getPos);
    }
 
    //AH REFACTOR
-   public boolean func_219142_b(BlockPos pos) {
+   public boolean removePoiLocation(BlockPos pos) {
    //public boolean func_219142_b(BlockPos p_219142_1_) {
-      return this.func_219110_e(SectionPos.from(pos).asLong()).removePoiLocation(pos);
+      return this.getCachedPoiData(SectionPos.from(pos).asLong()).removePoiLocation(pos);
    }
 
    //AH REFACTOR
@@ -140,34 +147,38 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    //Ah REFACTOR
    public Optional<PointOfInterestType> getPoiTypeForPos(BlockPos pos) {
    //public Optional<PointOfInterestType> func_219148_c(BlockPos p_219148_1_) {
-      PointOfInterestData pointofinterestdata = this.func_219110_e(SectionPos.from(pos).asLong());
+      PointOfInterestData pointofinterestdata = this.getCachedPoiData(SectionPos.from(pos).asLong());
       return pointofinterestdata.getPoiTypeForPos(pos);
    }
 
-   public int func_219150_a(SectionPos p_219150_1_) {
-      this.field_219164_a.func_215563_a();
-      return this.field_219164_a.getLevel(p_219150_1_.asLong());
+   //AH REFACTOR
+   public int getPoiSecPosLevel(SectionPos secPos) {
+   //public int func_219150_a(SectionPos p_219150_1_) {
+      this.distGraph.processUpdates();
+      return this.distGraph.getLevel(secPos.asLong());
    }
 
-   private boolean func_219154_f(long p_219154_1_) {
-      Optional<PointOfInterestData> optional = this.func_219106_c(p_219154_1_);
-      return optional == null ? false : optional.map((p_223144_0_) -> {
-         return p_223144_0_.func_218247_a(PointOfInterestType.field_221053_a, PointOfInterestManager.Status.IS_OCCUPIED).count() > 0L;
+   //AH REFACTOR
+   private boolean isPoiAtPosOccupied(long posPacked) {
+   //private boolean func_219154_f(long p_219154_1_) {
+      Optional<PointOfInterestData> optional = this.getPoiDataOptByPos(posPacked);
+      return optional == null ? false : optional.map((poiData) -> {
+         return poiData.poiStreamByPoiTypePredStatus(PointOfInterestType.POI_TYPE_PRED_TRUE, PointOfInterestManager.Status.IS_OCCUPIED).count() > 0L;
       }).orElse(false);
    }
 
    public void func_219115_a(BooleanSupplier p_219115_1_) {
       super.func_219115_a(p_219115_1_);
-      this.field_219164_a.func_215563_a();
+      this.distGraph.processUpdates();
    }
 
    protected void markDirty(long sectionPosIn) {
       super.markDirty(sectionPosIn);
-      this.field_219164_a.updateSourceLevel(sectionPosIn, this.field_219164_a.getSourceLevel(sectionPosIn), false);
+      this.distGraph.updateSourceLevel(sectionPosIn, this.distGraph.getSourceLevel(sectionPosIn), false);
    }
 
-   protected void func_219111_b(long p_219111_1_) {
-      this.field_219164_a.updateSourceLevel(p_219111_1_, this.field_219164_a.getSourceLevel(p_219111_1_), false);
+   protected void updateDistGraphSourceLevel(long secPosPacked) {
+      this.distGraph.updateSourceLevel(secPosPacked, this.distGraph.getSourceLevel(secPosPacked), false);
    }
 
    public void func_219139_a(ChunkPos p_219139_1_, ChunkSection p_219139_2_) {
@@ -181,8 +192,8 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
          });
       }, () -> {
          if (hasAnyPOI(p_219139_2_)) {
-            PointOfInterestData pointofinterestdata = this.func_219110_e(sectionpos.asLong());
-            this.func_219132_a(p_219139_2_, sectionpos, pointofinterestdata::func_218243_a);
+            PointOfInterestData pointofinterestdata = this.getCachedPoiData(sectionpos.asLong());
+            this.func_219132_a(p_219139_2_, sectionpos, pointofinterestdata::addPoiLocation);
          }
 
       });
@@ -216,31 +227,31 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    }
 
    final class DistanceGraph extends SectionDistanceGraph {
-      private final Long2ByteMap field_215565_b = new Long2ByteOpenHashMap();
+      private final Long2ByteMap secPosLevelMap = new Long2ByteOpenHashMap();
 
       protected DistanceGraph() {
          super(7, 16, 256);
-         this.field_215565_b.defaultReturnValue((byte)7);
+         this.secPosLevelMap.defaultReturnValue((byte)7);
       }
 
-      protected int getSourceLevel(long pos) {
-         return PointOfInterestManager.this.func_219154_f(pos) ? 0 : 7;
+      protected int getSourceLevel(long posPacked) {
+         return PointOfInterestManager.this.isPoiAtPosOccupied(posPacked) ? 0 : 7;
       }
 
       protected int getLevel(long sectionPosIn) {
-         return this.field_215565_b.get(sectionPosIn);
+         return this.secPosLevelMap.get(sectionPosIn);
       }
 
       protected void setLevel(long sectionPosIn, int level) {
          if (level > 6) {
-            this.field_215565_b.remove(sectionPosIn);
+            this.secPosLevelMap.remove(sectionPosIn);
          } else {
-            this.field_215565_b.put(sectionPosIn, (byte)level);
+            this.secPosLevelMap.put(sectionPosIn, (byte)level);
          }
 
       }
 
-      public void func_215563_a() {
+      public void processUpdates() {
          super.processUpdates(Integer.MAX_VALUE);
       }
    }
@@ -252,14 +263,18 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
          return true;
       });
 
-      private final Predicate<? super PointOfInterest> field_221037_d;
+      //AH REFACTOR
+      private final Predicate<? super PointOfInterest> poiPred;
+      //private final Predicate<? super PointOfInterest> field_221037_d;
 
       private Status(Predicate<? super PointOfInterest> p_i50192_3_) {
-         this.field_221037_d = p_i50192_3_;
+         this.poiPred = p_i50192_3_;
       }
 
-      public Predicate<? super PointOfInterest> func_221035_a() {
-         return this.field_221037_d;
+      //AH REFACTOR
+      public Predicate<? super PointOfInterest> getPoiPred() {
+      //public Predicate<? super PointOfInterest> func_221035_a() {
+         return this.poiPred;
       }
    }
 }

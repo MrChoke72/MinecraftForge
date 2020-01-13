@@ -25,6 +25,7 @@ import net.minecraft.entity.ai.brain.schedule.Schedule;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.monster.HuskEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.IDynamicSerializable;
@@ -37,7 +38,7 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
    private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.newLinkedHashMap();
 
    //AH REFACTOR
-   private final Map<Integer, Map<Activity, Set<Task<? super E>>>> activityTasksMap = Maps.newTreeMap(); //Key is Integer: task execution order
+   private final Map<Integer, Map<Activity, Set<Task<? super E>>>> activityTasksMap = Maps.newTreeMap(); //Key is Integer: task execution order.  Must match Integer on tasklist pairs
    //private final Map<Integer, Map<Activity, Set<Task<? super E>>>> field_218232_c = Maps.newTreeMap();
 
    private Schedule schedule = Schedule.EMPTY;
@@ -48,26 +49,33 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
    private long lastGameTime = -9999L;
 
    //AH REFACTOR
-   public <T> Brain(Collection<MemoryModuleType<?>> memModules, Collection<SensorType<? extends Sensor<? super E>>> p_i50378_2_, Dynamic<T> p_i50378_3_) {
+   public <T> Brain(Collection<MemoryModuleType<?>> memModules, Collection<SensorType<? extends Sensor<? super E>>> sensorTypes, Dynamic<T> memoriesIn) {
    //public <T> Brain(Collection<MemoryModuleType<?>> p_i50378_1_, Collection<SensorType<? extends Sensor<? super E>>> p_i50378_2_, Dynamic<T> p_i50378_3_) {
-      memModules.forEach((p_218228_1_) -> {
-         Optional optional = this.memories.put(p_218228_1_, Optional.empty());
+      memModules.forEach((memModuleType) -> {
+         Optional optional = this.memories.put(memModuleType, Optional.empty());
       });
-      p_i50378_2_.forEach((p_218204_1_) -> {
-         Sensor sensor = this.sensors.put(p_218204_1_, p_218204_1_.getSensor());
+      sensorTypes.forEach((sensorType) -> {
+         Sensor sensor = this.sensors.put(sensorType, sensorType.getSensor());
       });
-      this.sensors.values().forEach((p_218225_1_) -> {
-         for(MemoryModuleType<?> memorymoduletype : p_218225_1_.getUsedMemories()) {
+      this.sensors.values().forEach((sensor) -> {
+         for(MemoryModuleType<?> memorymoduletype : sensor.getUsedMemories()) {
             this.memories.put(memorymoduletype, Optional.empty());
          }
 
       });
 
-      for(Entry<Dynamic<T>, Dynamic<T>> entry : p_i50378_3_.get("memories").asMap(Function.identity(), Function.identity()).entrySet()) {
+      for(Entry<Dynamic<T>, Dynamic<T>> entry : memoriesIn.get("memories").asMap(Function.identity(), Function.identity()).entrySet()) {
          this.setMemory(Registry.MEMORY_MODULE_TYPE.getOrDefault(new ResourceLocation(entry.getKey().asString(""))), entry.getValue());
       }
 
    }
+
+   //AH CHANGE TEMP FOR DEBUG ONLY ****
+   public Set<Activity> getActivities()
+   {
+      return activities;
+   }
+   //AH CHANGE END ****
 
    public boolean hasMemory(MemoryModuleType<?> p_218191_1_) {
       return this.hasMemory(p_218191_1_, MemoryModuleStatus.VALUE_PRESENT);
@@ -81,16 +89,17 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
       this.setMemory(p_218189_1_, Optional.empty());
    }
 
-   public <U> void setMemory(MemoryModuleType<U> p_218205_1_, @Nullable U p_218205_2_) {
-      this.setMemory(p_218205_1_, Optional.ofNullable(p_218205_2_));
+   public <U> void setMemory(MemoryModuleType<U> memModuleType, @Nullable U u) {
+   //public <U> void setMemory(MemoryModuleType<U> p_218205_1_, @Nullable U p_218205_2_) {
+      this.setMemory(memModuleType, Optional.ofNullable(u));
    }
 
-   public <U> void setMemory(MemoryModuleType<U> p_218226_1_, Optional<U> p_218226_2_) {
-      if (this.memories.containsKey(p_218226_1_)) {
-         if (p_218226_2_.isPresent() && this.isEmptyCollection(p_218226_2_.get())) {
-            this.removeMemory(p_218226_1_);
+   public <U> void setMemory(MemoryModuleType<U> memModuleType, Optional<U> optional) {
+      if (this.memories.containsKey(memModuleType)) {
+         if (optional.isPresent() && this.isEmptyCollection(optional.get())) {
+            this.removeMemory(memModuleType);
          } else {
-            this.memories.put(p_218226_1_, p_218226_2_);
+            this.memories.put(memModuleType, optional);
          }
       }
 
@@ -215,8 +224,8 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
 
    private void startTasks(ServerWorld worldIn, E entityIn) {
       long i = worldIn.getGameTime();
-      this.activityTasksMap.values().stream().flatMap((setMap) -> {
-         return setMap.entrySet().stream();
+      this.activityTasksMap.values().stream().flatMap((activitySetMap) -> {
+         return activitySetMap.entrySet().stream();
       }).filter((entry) -> {
          return this.activities.contains(entry.getKey());
       }).map(Entry::getValue).flatMap(Collection::stream).filter((task) -> {
@@ -228,15 +237,15 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
 
    private void tickTasks(ServerWorld worldIn, E entityIn) {
       long i = worldIn.getGameTime();
-      this.getRunningTasks().forEach((p_218220_4_) -> {
-         p_218220_4_.tick(worldIn, entityIn, i);
+      this.getRunningTasks().forEach((task) -> {
+         task.tick(worldIn, entityIn, i);
       });
    }
 
    private boolean hasRequiredMemories(Activity activityIn) {
-      return this.requiredMemoryStates.get(activityIn).stream().allMatch((p_218190_1_) -> {
-         MemoryModuleType<?> memorymoduletype = p_218190_1_.getFirst();
-         MemoryModuleStatus memorymodulestatus = p_218190_1_.getSecond();
+      return this.requiredMemoryStates.get(activityIn).stream().allMatch((pair) -> {
+         MemoryModuleType<?> memorymoduletype = pair.getFirst();
+         MemoryModuleStatus memorymodulestatus = pair.getSecond();
          return this.hasMemory(memorymoduletype, memorymodulestatus);
       });
    }

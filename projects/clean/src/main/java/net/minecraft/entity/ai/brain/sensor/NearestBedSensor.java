@@ -16,9 +16,19 @@ import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.server.ServerWorld;
 
 public class NearestBedSensor extends Sensor<MobEntity> {
-   private final Long2LongMap field_225471_a = new Long2LongOpenHashMap();
-   private int field_225472_b;
-   private long field_225473_c;
+
+   //AH REFACTOR
+   private final Long2LongMap posByEndTimeMap = new Long2LongOpenHashMap();   //Key is BlockPos packed
+                                                                              //Value is taskEndTime for it
+
+   //AH REFACTOR
+   private int maxPoiPosToCheck;
+   //private int field_225472_b;
+
+
+   //AH REFACTOR
+   private long taskEndTime;
+   //private long field_225473_c;
 
    public NearestBedSensor() {
       super(20);
@@ -28,38 +38,39 @@ public class NearestBedSensor extends Sensor<MobEntity> {
       return ImmutableSet.of(MemoryModuleType.NEAREST_BED);
    }
 
-   protected void update(ServerWorld p_212872_1_, MobEntity p_212872_2_) {
-      if (p_212872_2_.isChild()) {
-         this.field_225472_b = 0;
-         this.field_225473_c = p_212872_1_.getGameTime() + (long)p_212872_1_.getRandom().nextInt(20);
-         PointOfInterestManager pointofinterestmanager = p_212872_1_.getPoiMgr();
-         Predicate<BlockPos> predicate = (p_225469_1_) -> {
-            long i = p_225469_1_.toLong();
-            if (this.field_225471_a.containsKey(i)) {
+   //AH REFACTOR
+   protected void update(ServerWorld world, MobEntity entity) {
+   //protected void update(ServerWorld p_212872_1_, MobEntity p_212872_2_) {
+      if (entity.isChild()) {
+         this.maxPoiPosToCheck = 0;
+         this.taskEndTime = world.getGameTime() + (long)world.getRandom().nextInt(20);
+         PointOfInterestManager pointofinterestmanager = world.getPoiMgr();
+         Predicate<BlockPos> predicate = (pos) -> {
+            long i = pos.toLong();
+            if (this.posByEndTimeMap.containsKey(i)) {
                return false;
-            } else if (++this.field_225472_b >= 5) {
+            } else if (++this.maxPoiPosToCheck >= 5) {
                return false;
             } else {
-               this.field_225471_a.put(i, this.field_225473_c + 40L);
+               this.posByEndTimeMap.put(i, this.taskEndTime + 40L);
                return true;
             }
          };
 
-         //AH CHANGE CANCEL - Increase range to look for a bed.  was 48
-         Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(p_212872_2_), 48, PointOfInterestManager.Status.ANY);
+         //AH CHANGE CANCEL - Increase range to look for a bed.  Default is 48
+         Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entity), 48, PointOfInterestManager.Status.ANY);
          //Stream<BlockPos> stream = pointofinterestmanager.func_225399_a(PointOfInterestType.HOME.func_221045_c(), predicate, new BlockPos(p_212872_2_), 48, PointOfInterestManager.Status.ANY);
 
-
-         Path path = p_212872_2_.getNavigator().findPath(stream, PointOfInterestType.HOME.getKeepDist());
+         Path path = entity.getNavigator().findPath(stream, PointOfInterestType.HOME.getKeepDist());
          if (path != null && path.isCompletePath()) {
             BlockPos blockpos = path.getTargetPos();
             Optional<PointOfInterestType> optional = pointofinterestmanager.getPoiTypeForPos(blockpos);
             if (optional.isPresent()) {
-               p_212872_2_.getBrain().setMemory(MemoryModuleType.NEAREST_BED, blockpos);
+               entity.getBrain().setMemory(MemoryModuleType.NEAREST_BED, blockpos);
             }
-         } else if (this.field_225472_b < 5) {
-            this.field_225471_a.long2LongEntrySet().removeIf((p_225470_1_) -> {
-               return p_225470_1_.getLongValue() < this.field_225473_c;
+         } else if (this.maxPoiPosToCheck < 5) {
+            this.posByEndTimeMap.long2LongEntrySet().removeIf((entry) -> {
+               return entry.getLongValue() < this.taskEndTime;
             });
          }
 

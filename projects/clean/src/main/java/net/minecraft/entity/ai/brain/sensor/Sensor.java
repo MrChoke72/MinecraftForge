@@ -20,10 +20,12 @@ public abstract class Sensor<E extends LivingEntity> {
       this(20);
    }
 
-   public final void tick(ServerWorld p_220973_1_, E p_220973_2_) {
+   //AH REFACTOR
+   public final void tick(ServerWorld world, E entity) {
+   //public final void tick(ServerWorld p_220973_1_, E p_220973_2_) {
       if (--this.counter <= 0L) {
          this.counter = (long)this.interval;
-         this.update(p_220973_1_, p_220973_2_);
+         this.update(world, entity);
       }
 
    }

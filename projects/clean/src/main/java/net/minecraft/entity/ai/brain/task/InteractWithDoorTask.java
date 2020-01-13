@@ -21,7 +21,10 @@ import net.minecraft.world.server.ServerWorld;
 
 public class InteractWithDoorTask extends Task<LivingEntity> {
    public InteractWithDoorTask() {
-      super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleStatus.VALUE_PRESENT, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleStatus.VALUE_PRESENT, MemoryModuleType.OPENED_DOORS, MemoryModuleStatus.REGISTERED));
+      super(ImmutableMap.of(
+              MemoryModuleType.PATH, MemoryModuleStatus.VALUE_PRESENT,
+              MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleStatus.VALUE_PRESENT,
+              MemoryModuleType.OPENED_DOORS, MemoryModuleStatus.REGISTERED));
    }
 
    protected void startExecuting(ServerWorld worldIn, LivingEntity entityIn, long gameTimeIn) {
@@ -39,8 +42,8 @@ public class InteractWithDoorTask extends Task<LivingEntity> {
    //AH CHANGE REFACTOR
    private Set<BlockPos> filterByDimension(ServerWorld world, List<GlobalPos> doorPosList, List<BlockPos> posList) {
    //private Set<BlockPos> func_220436_a(ServerWorld p_220436_1_, List<GlobalPos> p_220436_2_, List<BlockPos> p_220436_3_) {
-      return doorPosList.stream().filter((p_220432_1_) -> {
-         return p_220432_1_.getDimension() == world.getDimension().getType();
+      return doorPosList.stream().filter((globalPos) -> {
+         return globalPos.getDimension() == world.getDimension().getType();
       }).map(GlobalPos::getPos).filter(posList::contains).collect(Collectors.toSet());
    }
 

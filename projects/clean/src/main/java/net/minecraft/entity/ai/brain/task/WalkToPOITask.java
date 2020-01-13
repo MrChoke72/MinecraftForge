@@ -23,20 +23,20 @@ public class WalkToPOITask extends Task<VillagerEntity> {
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, VillagerEntity owner) {
-      return !worldIn.func_217483_b_(new BlockPos(owner));
+      return !worldIn.isPosBelowEQSecLevel1(new BlockPos(owner));
    }
 
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
       PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
-      int i = pointofinterestmanager.func_219150_a(SectionPos.from(new BlockPos(entityIn)));
+      int i = pointofinterestmanager.getPoiSecPosLevel(SectionPos.from(new BlockPos(entityIn)));
       Vec3d vec3d = null;
 
       for(int j = 0; j < 5; ++j) {
          Vec3d vec3d1 = RandomPositionGenerator.func_221024_a(entityIn, 15, 7, (p_225444_1_) -> {
-            return (double)(-worldIn.func_217486_a(SectionPos.from(p_225444_1_)));
+            return (double)(-worldIn.getPoiSecPosLevel(SectionPos.from(p_225444_1_)));
          });
          if (vec3d1 != null) {
-            int k = pointofinterestmanager.func_219150_a(SectionPos.from(new BlockPos(vec3d1)));
+            int k = pointofinterestmanager.getPoiSecPosLevel(SectionPos.from(new BlockPos(vec3d1)));
             if (k < i) {
                vec3d = vec3d1;
                break;

@@ -68,7 +68,7 @@ public class VillageSiege {
       for(PlayerEntity playerentity : p_75529_1_.getPlayers()) {
          if (!playerentity.isSpectator()) {
             BlockPos blockpos = playerentity.getPosition();
-            if (p_75529_1_.func_217483_b_(blockpos) && p_75529_1_.func_226691_t_(blockpos).getCategory() != Biome.Category.MUSHROOM) {
+            if (p_75529_1_.isPosBelowEQSecLevel1(blockpos) && p_75529_1_.func_226691_t_(blockpos).getCategory() != Biome.Category.MUSHROOM) {
                for(int i = 0; i < 10; ++i) {
                   float f = p_75529_1_.rand.nextFloat() * ((float)Math.PI * 2F);
                   this.spawnX = blockpos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F);
@@ -113,7 +113,7 @@ public class VillageSiege {
          int k = p_225476_2_.getZ() + p_225476_1_.rand.nextInt(16) - 8;
          int l = p_225476_1_.getHeight(Heightmap.Type.WORLD_SURFACE, j, k);
          BlockPos blockpos = new BlockPos(j, l, k);
-         if (p_225476_1_.func_217483_b_(blockpos) && MonsterEntity.func_223325_c(EntityType.ZOMBIE, p_225476_1_, SpawnReason.EVENT, blockpos, p_225476_1_.rand)) {
+         if (p_225476_1_.isPosBelowEQSecLevel1(blockpos) && MonsterEntity.func_223325_c(EntityType.ZOMBIE, p_225476_1_, SpawnReason.EVENT, blockpos, p_225476_1_.rand)) {
             return new Vec3d((double)blockpos.getX() + 0.5D, (double)blockpos.getY(), (double)blockpos.getZ() + 0.5D);
          }
       }

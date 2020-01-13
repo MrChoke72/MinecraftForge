@@ -12,9 +12,19 @@ public class PathPoint {
    public final int z;
    private final int hash;
    public int index = -1;
-   public float totalPathDistance;
-   public float distanceToNext;
-   public float distanceToTarget;
+
+   //AH REFACTOR
+   public float distFromStartPlusMalus;
+   //public float totalPathDistance;
+
+   //AH REFACTOR
+   public float closestDistToAnyTgt;
+   //public float distanceToNext;
+
+   //AH REFACTOR
+   public float distCloestPlusStart;   //This is var used for path sorting
+   //public float distanceToTarget;
+
    public PathPoint previous;
    public boolean visited;
 
@@ -35,9 +45,9 @@ public class PathPoint {
    public PathPoint cloneMove(int x, int y, int z) {
       PathPoint pathpoint = new PathPoint(x, y, z);
       pathpoint.index = this.index;
-      pathpoint.totalPathDistance = this.totalPathDistance;
-      pathpoint.distanceToNext = this.distanceToNext;
-      pathpoint.distanceToTarget = this.distanceToTarget;
+      pathpoint.distFromStartPlusMalus = this.distFromStartPlusMalus;
+      pathpoint.closestDistToAnyTgt = this.closestDistToAnyTgt;
+      pathpoint.distCloestPlusStart = this.distCloestPlusStart;
       pathpoint.previous = this.previous;
       pathpoint.visited = this.visited;
       pathpoint.accumDistance = this.accumDistance;
@@ -115,7 +125,7 @@ public class PathPoint {
       pathpoint.costMalus = buf.readFloat();
       pathpoint.visited = buf.readBoolean();
       pathpoint.nodeType = PathNodeType.values()[buf.readInt()];
-      pathpoint.distanceToTarget = buf.readFloat();
+      pathpoint.distCloestPlusStart = buf.readFloat();
       return pathpoint;
    }
 }

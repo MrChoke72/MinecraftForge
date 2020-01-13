@@ -837,7 +837,7 @@ public class FoxEntity extends AnimalEntity {
             } else {
                this.cooldown = 100;
                BlockPos blockpos = new BlockPos(this.creature);
-               return FoxEntity.this.world.isDaytime() && FoxEntity.this.world.func_226660_f_(blockpos) && !((ServerWorld)FoxEntity.this.world).func_217483_b_(blockpos) && this.func_220702_g();
+               return FoxEntity.this.world.isDaytime() && FoxEntity.this.world.func_226660_f_(blockpos) && !((ServerWorld)FoxEntity.this.world).isPosBelowEQSecLevel1(blockpos) && this.func_220702_g();
             }
          } else {
             return false;

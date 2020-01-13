@@ -12,8 +12,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
-import net.minecraft.entity.monster.HuskEntity;
 import net.minecraft.network.DebugPacketSender;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -45,7 +43,10 @@ public abstract class PathNavigator {
    protected long lastTimeUpdated;
    protected NodeProcessor nodeProcessor;
    private BlockPos targetPos;
-   private int field_225468_r;
+
+   //AH REFACTOR
+   private int keepDist;
+   //private int field_225468_r;
 
    //AH CHANGE REFACTOR
    private float iterMaxMult = 1.0F;
@@ -89,7 +90,7 @@ public abstract class PathNavigator {
       if (this.world.getGameTime() - this.lastTimeUpdated > 20L) {
          if (this.targetPos != null) {
             this.currentPath = null;
-            this.currentPath = this.getPathToPos(this.targetPos, this.field_225468_r);
+            this.currentPath = this.getPathToPos(this.targetPos, this.keepDist);
             this.lastTimeUpdated = this.world.getGameTime();
             this.tryUpdatePath = false;
          }
@@ -149,7 +150,7 @@ public abstract class PathNavigator {
          this.world.getProfiler().endSection();
          if (path != null && path.getTargetPos() != null) {
             this.targetPos = path.getTargetPos();
-            this.field_225468_r = keepDist;
+            this.keepDist = keepDist;
          }
 
          return path;
@@ -229,24 +230,20 @@ public abstract class PathNavigator {
             BlockPos blockpos = new BlockPos(vec3d2);
 
             //AH CHANGE DEBUG OFF
-            /*
             if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
             {
                System.out.println("in navigator tick, currPathPos=" + vec3d2.toString());
             }
-             */
 
             this.entity.getMoveHelper().setMoveTo(vec3d2.x, this.world.getBlockState(blockpos.down()).isAir() ? vec3d2.y : WalkNodeProcessor.getGroundY(this.world, blockpos), vec3d2.z, this.speed);
          }
          //AH CHANGE DEBUG
          else
          {
-            /*
-            if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+            if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
             {
                System.out.println("in navigator tick, noPath");
             }
-             */
          }
 
       }
@@ -305,14 +302,13 @@ public abstract class PathNavigator {
 
    public void clearPath() {
 
-      //AH CHANGE DEBUG OFF
-      /*
-      if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+      //AH CHANGE DEBUG
+      if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
       {
          //System.out.println("BREAK 2");
          System.out.println("in clearPath to null.");
       }
-       */
+
 
       this.currentPath = null;
    }

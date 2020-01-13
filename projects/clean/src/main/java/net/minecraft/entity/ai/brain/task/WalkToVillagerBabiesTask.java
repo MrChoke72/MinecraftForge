@@ -48,7 +48,7 @@ public class WalkToVillagerBabiesTask extends Task<CreatureEntity> {
    private void func_220508_a(ServerWorld p_220508_1_, CreatureEntity p_220508_2_, LivingEntity p_220508_3_) {
       for(int i = 0; i < 10; ++i) {
          Vec3d vec3d = RandomPositionGenerator.getLandPos(p_220508_2_, 20, 8);
-         if (vec3d != null && p_220508_1_.func_217483_b_(new BlockPos(vec3d))) {
+         if (vec3d != null && p_220508_1_.isPosBelowEQSecLevel1(new BlockPos(vec3d))) {
             p_220508_2_.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, 0.6F, 0));
             return;
          }

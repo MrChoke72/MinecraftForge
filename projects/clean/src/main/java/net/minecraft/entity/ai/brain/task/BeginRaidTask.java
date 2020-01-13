@@ -21,7 +21,7 @@ public class BeginRaidTask extends Task<LivingEntity> {
       Brain<?> brain = entityIn.getBrain();
       Raid raid = worldIn.findRaid(new BlockPos(entityIn));
       if (raid != null) {
-         if (raid.func_221297_c() && !raid.func_221334_b()) {
+         if (raid.hasGroupsSpawned() && !raid.func_221334_b()) {
             brain.setFallbackActivity(Activity.RAID);
             brain.switchTo(Activity.RAID);
          } else {

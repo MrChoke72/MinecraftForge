@@ -13,12 +13,12 @@ public abstract class Task<E extends LivingEntity> {
    private final int durationMin;
    private final int durationMax;
 
-   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> p_i51504_1_) {
-      this(p_i51504_1_, 60);
+   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> reqMemoryState) {
+      this(reqMemoryState, 60);
    }
 
-   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> p_i51505_1_, int p_i51505_2_) {
-      this(p_i51505_1_, p_i51505_2_, p_i51505_2_);
+   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> reqMemoryState, int duration) {
+      this(reqMemoryState, duration, duration);
    }
 
    //AH REFACTOR

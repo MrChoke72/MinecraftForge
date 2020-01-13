@@ -21,11 +21,11 @@ public class MoveTowardsRaidGoal<T extends AbstractRaiderEntity> extends Goal {
    }
 
    public boolean shouldExecute() {
-      return this.field_220744_a.getAttackTarget() == null && !this.field_220744_a.isBeingRidden() && this.field_220744_a.isRaidActive() && !this.field_220744_a.getRaid().func_221319_a() && !((ServerWorld)this.field_220744_a.world).func_217483_b_(new BlockPos(this.field_220744_a));
+      return this.field_220744_a.getAttackTarget() == null && !this.field_220744_a.isBeingRidden() && this.field_220744_a.isRaidActive() && !this.field_220744_a.getRaid().func_221319_a() && !((ServerWorld)this.field_220744_a.world).isPosBelowEQSecLevel1(new BlockPos(this.field_220744_a));
    }
 
    public boolean shouldContinueExecuting() {
-      return this.field_220744_a.isRaidActive() && !this.field_220744_a.getRaid().func_221319_a() && this.field_220744_a.world instanceof ServerWorld && !((ServerWorld)this.field_220744_a.world).func_217483_b_(new BlockPos(this.field_220744_a));
+      return this.field_220744_a.isRaidActive() && !this.field_220744_a.getRaid().func_221319_a() && this.field_220744_a.world instanceof ServerWorld && !((ServerWorld)this.field_220744_a.world).isPosBelowEQSecLevel1(new BlockPos(this.field_220744_a));
    }
 
    public void tick() {

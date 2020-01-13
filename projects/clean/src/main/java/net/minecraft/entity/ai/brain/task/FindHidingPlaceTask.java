@@ -15,11 +15,17 @@ import net.minecraft.world.server.ServerWorld;
 
 public class FindHidingPlaceTask extends Task<LivingEntity> {
    private final float field_220457_a;
+
+   //AH REFACTOR
    private final int field_220458_b;
+   //private final int field_220458_b;
+
    private final int field_220459_c;
    private Optional<BlockPos> field_220460_d = Optional.empty();
 
+   //AH REFACTOR
    public FindHidingPlaceTask(int p_i50361_1_, float p_i50361_2_, int p_i50361_3_) {
+   //public FindHidingPlaceTask(int p_i50361_1_, float p_i50361_2_, int p_i50361_3_) {
       super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleStatus.REGISTERED, MemoryModuleType.HIDING_PLACE, MemoryModuleStatus.REGISTERED));
       this.field_220458_b = p_i50361_1_;
       this.field_220457_a = p_i50361_2_;
@@ -45,9 +51,9 @@ public class FindHidingPlaceTask extends Task<LivingEntity> {
       Brain<?> brain = entityIn.getBrain();
       Optional<BlockPos> optional = this.field_220460_d;
       if (!optional.isPresent()) {
-         optional = worldIn.getPoiMgr().func_219163_a((p_220453_0_) -> {
-            return p_220453_0_ == PointOfInterestType.HOME;
-         }, (p_220455_0_) -> {
+         optional = worldIn.getPoiMgr().getRandomPoiPos((poiType) -> {
+            return poiType == PointOfInterestType.HOME;
+         }, (pos) -> {
             return true;
          }, PointOfInterestManager.Status.ANY, new BlockPos(entityIn), this.field_220458_b, entityIn.getRNG());
          if (!optional.isPresent()) {

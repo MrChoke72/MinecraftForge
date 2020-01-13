@@ -65,7 +65,7 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
          if (optional1.isPresent()) {
             this.func_220477_a(p_223521_1_, optional1.get(), optional.get());
          } else {
-            p_223521_1_.getPoiMgr().func_219142_b(optional.get());
+            p_223521_1_.getPoiMgr().removePoiLocation(optional.get());
             DebugPacketSender.func_218801_c(p_223521_1_, optional.get());
          }
       }
@@ -91,7 +91,7 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
    }
 
    private Optional<BlockPos> func_220479_b(ServerWorld p_220479_1_, VillagerEntity p_220479_2_) {
-      return p_220479_1_.getPoiMgr().func_219157_a(PointOfInterestType.HOME.getPoiTypePred(), (p_220481_2_) -> {
+      return p_220479_1_.getPoiMgr().claimPoiPos(PointOfInterestType.HOME.getPoiTypePred(), (p_220481_2_) -> {
          return this.func_223520_a(p_220479_2_, p_220481_2_);
       }, new BlockPos(p_220479_2_), 48);
    }

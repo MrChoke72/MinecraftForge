@@ -1256,24 +1256,28 @@ public class ServerWorld extends World {
       return this.getChunkProvider().func_217231_i();
    }
 
-   public boolean func_217483_b_(BlockPos p_217483_1_) {
-      return this.func_217471_a(p_217483_1_, 1);
+   public boolean isPosBelowEQSecLevel1(BlockPos p_217483_1_) {
+      return this.isPosBelowEQSecLevel(p_217483_1_, 1);
    }
 
    public boolean func_222887_a(SectionPos p_222887_1_) {
-      return this.func_217483_b_(p_222887_1_.getCenter());
+      return this.isPosBelowEQSecLevel1(p_222887_1_.getCenter());
    }
 
-   public boolean func_217471_a(BlockPos p_217471_1_, int p_217471_2_) {
-      if (p_217471_2_ > 6) {
+   //AH REFACTOR
+   public boolean isPosBelowEQSecLevel(BlockPos pos, int secLevel) {
+   //public boolean func_217471_a(BlockPos p_217471_1_, int p_217471_2_) {
+      if (secLevel > 6) {
          return false;
       } else {
-         return this.func_217486_a(SectionPos.from(p_217471_1_)) <= p_217471_2_;
+         return this.getPoiSecPosLevel(SectionPos.from(pos)) <= secLevel;
       }
    }
 
-   public int func_217486_a(SectionPos p_217486_1_) {
-      return this.getPoiMgr().func_219150_a(p_217486_1_);
+   //AH REFACTOR
+   public int getPoiSecPosLevel(SectionPos secPos) {
+   //public int func_217486_a(SectionPos p_217486_1_) {
+      return this.getPoiMgr().getPoiSecPosLevel(secPos);
    }
 
    public RaidManager getRaids() {

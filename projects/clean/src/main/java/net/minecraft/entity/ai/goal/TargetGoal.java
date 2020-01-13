@@ -27,10 +27,12 @@ public abstract class TargetGoal extends Goal {
       this(mobIn, checkSight, false);
    }
 
-   public TargetGoal(MobEntity mobIn, boolean checkSight, boolean p_i50309_3_) {
+   //Ah REFACTOR
+   public TargetGoal(MobEntity mobIn, boolean checkSight, boolean nearbyOnly) {
+   //public TargetGoal(MobEntity mobIn, boolean checkSight, boolean p_i50309_3_) {
       this.goalOwner = mobIn;
       this.shouldCheckSight = checkSight;
-      this.nearbyOnly = p_i50309_3_;
+      this.nearbyOnly = nearbyOnly;
    }
 
    public boolean shouldContinueExecuting() {

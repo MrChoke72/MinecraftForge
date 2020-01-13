@@ -39,7 +39,7 @@ public class PatrolSpawner {
                      PlayerEntity playerentity = worldIn.getPlayers().get(random.nextInt(j));
                      if (playerentity.isSpectator()) {
                         return 0;
-                     } else if (worldIn.func_217483_b_(playerentity.getPosition())) {
+                     } else if (worldIn.isPosBelowEQSecLevel1(playerentity.getPosition())) {
                         return 0;
                      } else {
                         int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);

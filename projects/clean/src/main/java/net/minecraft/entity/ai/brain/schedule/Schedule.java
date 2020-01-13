@@ -12,34 +12,41 @@ public class Schedule {
    public static final Schedule EMPTY = register("empty").add(0, Activity.IDLE).build();
    public static final Schedule SIMPLE = register("simple").add(5000, Activity.WORK).add(11000, Activity.REST).build();
    public static final Schedule VILLAGER_BABY = register("villager_baby").add(10, Activity.IDLE).add(3000, Activity.PLAY).add(6000, Activity.IDLE).add(10000, Activity.PLAY).add(12000, Activity.REST).build();
-   public static final Schedule VILLAGER_DEFAULT = register("villager_default").add(10, Activity.IDLE).add(2000, Activity.WORK).add(9000, Activity.MEET).add(11000, Activity.IDLE).add(12000, Activity.REST).build();
-   private final Map<Activity, ScheduleDuties> field_221387_e = Maps.newHashMap();
+   public static final Schedule VILLAGER_DEFAULT = register("villager_default")
+           .add(10, Activity.IDLE)
+           .add(2000, Activity.WORK)
+           .add(9000, Activity.MEET)
+           .add(11000, Activity.IDLE)
+           .add(12000, Activity.REST)
+           .build();
+
+   private final Map<Activity, ScheduleDuties> activityDutyMap = Maps.newHashMap();
 
    protected static ScheduleBuilder register(String key) {
       Schedule schedule = Registry.register(Registry.SCHEDULE, key, new Schedule());
       return new ScheduleBuilder(schedule);
    }
 
-   protected void createDutiesFor(Activity p_221379_1_) {
-      if (!this.field_221387_e.containsKey(p_221379_1_)) {
-         this.field_221387_e.put(p_221379_1_, new ScheduleDuties());
+   protected void createDutiesFor(Activity activity) {
+      if (!this.activityDutyMap.containsKey(activity)) {
+         this.activityDutyMap.put(activity, new ScheduleDuties());
       }
 
    }
 
-   protected ScheduleDuties getDutiesFor(Activity p_221382_1_) {
-      return this.field_221387_e.get(p_221382_1_);
+   protected ScheduleDuties getDutiesFor(Activity activity) {
+      return this.activityDutyMap.get(activity);
    }
 
-   protected List<ScheduleDuties> getAllDutiesExcept(Activity p_221381_1_) {
-      return this.field_221387_e.entrySet().stream().filter((p_221378_1_) -> {
-         return p_221378_1_.getKey() != p_221381_1_;
+   protected List<ScheduleDuties> getAllDutiesExcept(Activity activity) {
+      return this.activityDutyMap.entrySet().stream().filter((entry) -> {
+         return entry.getKey() != activity;
       }).map(Entry::getValue).collect(Collectors.toList());
    }
 
    public Activity getScheduledActivity(int dayTime) {
-      return this.field_221387_e.entrySet().stream().max(Comparator.comparingDouble((p_221376_1_) -> {
-         return (double)p_221376_1_.getValue().func_221392_a(dayTime);
+      return this.activityDutyMap.entrySet().stream().max(Comparator.comparingDouble((dutiesEntry) -> {
+         return (double)dutiesEntry.getValue().isDurationForActivity(dayTime);
       })).map(Entry::getKey).orElse(Activity.IDLE);
    }
 }

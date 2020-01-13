@@ -617,18 +617,18 @@ public class EnderDragonEntity extends MobEntity implements IMob {
       for(int i = 0; i < 24; ++i) {
          PathPoint pathpoint = this.pathPoints[i];
          pathpoint.visited = false;
-         pathpoint.distanceToTarget = 0.0F;
-         pathpoint.totalPathDistance = 0.0F;
-         pathpoint.distanceToNext = 0.0F;
+         pathpoint.distCloestPlusStart = 0.0F;
+         pathpoint.distFromStartPlusMalus = 0.0F;
+         pathpoint.closestDistToAnyTgt = 0.0F;
          pathpoint.previous = null;
          pathpoint.index = -1;
       }
 
       PathPoint pathpoint4 = this.pathPoints[startIdx];
       PathPoint pathpoint5 = this.pathPoints[finishIdx];
-      pathpoint4.totalPathDistance = 0.0F;
-      pathpoint4.distanceToNext = pathpoint4.distanceTo(pathpoint5);
-      pathpoint4.distanceToTarget = pathpoint4.distanceToNext;
+      pathpoint4.distFromStartPlusMalus = 0.0F;
+      pathpoint4.closestDistToAnyTgt = pathpoint4.distanceTo(pathpoint5);
+      pathpoint4.distCloestPlusStart = pathpoint4.closestDistToAnyTgt;
       this.pathFindQueue.clearPath();
       this.pathFindQueue.addPoint(pathpoint4);
       PathPoint pathpoint1 = pathpoint4;
@@ -666,15 +666,15 @@ public class EnderDragonEntity extends MobEntity implements IMob {
             if ((this.neighbors[k] & 1 << i1) > 0) {
                PathPoint pathpoint3 = this.pathPoints[i1];
                if (!pathpoint3.visited) {
-                  float f = pathpoint2.totalPathDistance + pathpoint2.distanceTo(pathpoint3);
-                  if (!pathpoint3.isAssigned() || f < pathpoint3.totalPathDistance) {
+                  float f = pathpoint2.distFromStartPlusMalus + pathpoint2.distanceTo(pathpoint3);
+                  if (!pathpoint3.isAssigned() || f < pathpoint3.distFromStartPlusMalus) {
                      pathpoint3.previous = pathpoint2;
-                     pathpoint3.totalPathDistance = f;
-                     pathpoint3.distanceToNext = pathpoint3.distanceTo(pathpoint5);
+                     pathpoint3.distFromStartPlusMalus = f;
+                     pathpoint3.closestDistToAnyTgt = pathpoint3.distanceTo(pathpoint5);
                      if (pathpoint3.isAssigned()) {
-                        this.pathFindQueue.changeDistance(pathpoint3, pathpoint3.totalPathDistance + pathpoint3.distanceToNext);
+                        this.pathFindQueue.changeDistance(pathpoint3, pathpoint3.distFromStartPlusMalus + pathpoint3.closestDistToAnyTgt);
                      } else {
-                        pathpoint3.distanceToTarget = pathpoint3.totalPathDistance + pathpoint3.distanceToNext;
+                        pathpoint3.distCloestPlusStart = pathpoint3.distFromStartPlusMalus + pathpoint3.closestDistToAnyTgt;
                         this.pathFindQueue.addPoint(pathpoint3);
                      }
                   }

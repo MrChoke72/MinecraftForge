@@ -60,7 +60,7 @@ public class FlaggedPathPoint extends PathPoint {
       flaggedpathpoint.costMalus = p_224760_0_.readFloat();
       flaggedpathpoint.visited = p_224760_0_.readBoolean();
       flaggedpathpoint.nodeType = PathNodeType.values()[p_224760_0_.readInt()];
-      flaggedpathpoint.distanceToTarget = p_224760_0_.readFloat();
+      flaggedpathpoint.distCloestPlusStart = p_224760_0_.readFloat();
       return flaggedpathpoint;
    }
 }

@@ -40,7 +40,7 @@ public class ExpirePOITask extends Task<LivingEntity> {
          brain.removeMemory(this.field_220591_a);
       } else if (this.func_223019_a(serverworld, blockpos, entityIn)) {
          brain.removeMemory(this.field_220591_a);
-         worldIn.getPoiMgr().func_219142_b(blockpos);
+         worldIn.getPoiMgr().removePoiLocation(blockpos);
          DebugPacketSender.func_218801_c(worldIn, blockpos);
       }
 

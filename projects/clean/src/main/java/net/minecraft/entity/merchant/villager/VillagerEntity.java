@@ -124,11 +124,13 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
            MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY,
            MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
            MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME);
+
    private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS,
            SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN);
 
    //AH REFACTOR
-   public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> field_213774_bB = ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, poiType) -> {
+   public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> memPoiPredMap =
+           ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, poiType) -> {
    //public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> field_213774_bB = ImmutableMap.of(MemoryModuleType.HOME, (p_213769_0_, p_213769_1_) -> {
       return poiType == PointOfInterestType.HOME;
    }, MemoryModuleType.JOB_SITE, (villagerEntity, poiType) -> {
@@ -541,20 +543,24 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       LOGGER.info("Villager {} died, message: '{}'", this, cause.getDeathMessage(this).getString());
       Entity entity = cause.getTrueSource();
       if (entity != null) {
-         this.func_223361_a(entity);
+         this.updateReputation(entity);
       }
 
       //AH CHANGE **** - ADD
-      getServer().getPlayerList().sendMessage(new StringTextComponent("Villager got iced at: " + getPosX() + "," + getPosY() + "," + getPosZ()));
+      if(getServer() != null) {
+         getServer().getPlayerList().sendMessage(new StringTextComponent("Villager got iced at: " + Math.floor(getPosX()) + "," + Math.floor(getPosY()) + "," + Math.floor(getPosZ())));
+      }
       //AH CHANGE **** END
 
-      this.func_213742_a(MemoryModuleType.HOME);
-      this.func_213742_a(MemoryModuleType.JOB_SITE);
-      this.func_213742_a(MemoryModuleType.MEETING_POINT);
+      this.removeMemoryPos(MemoryModuleType.HOME);
+      this.removeMemoryPos(MemoryModuleType.JOB_SITE);
+      this.removeMemoryPos(MemoryModuleType.MEETING_POINT);
       super.onDeath(cause);
    }
 
-   private void func_223361_a(Entity p_223361_1_) {
+   //AH REFACTOR
+   private void updateReputation(Entity entity) {
+   //private void func_223361_a(Entity p_223361_1_) {
       if (this.world instanceof ServerWorld) {
          Optional<List<LivingEntity>> optional = this.brain.getMemory(MemoryModuleType.VISIBLE_MOBS);
          if (optional.isPresent()) {
@@ -562,14 +568,14 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
             optional.get().stream().filter((p_223349_0_) -> {
                return p_223349_0_ instanceof IReputationTracking;
             }).forEach((p_223342_2_) -> {
-               serverworld.func_217489_a(IReputationType.VILLAGER_KILLED, p_223361_1_, (IReputationTracking)p_223342_2_);
+               serverworld.func_217489_a(IReputationType.VILLAGER_KILLED, entity, (IReputationTracking)p_223342_2_);
             });
          }
       }
    }
 
    //H REFACTOR
-   public void func_213742_a(MemoryModuleType<GlobalPos> memModType) {
+   public void removeMemoryPos(MemoryModuleType<GlobalPos> memModType) {
    //public void func_213742_a(MemoryModuleType<GlobalPos> p_213742_1_) {
       if (this.world instanceof ServerWorld) {
          MinecraftServer minecraftserver = ((ServerWorld)this.world).getServer();
@@ -577,9 +583,9 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
             ServerWorld serverworld = minecraftserver.getWorld(gPos.getDimension());
             PointOfInterestManager pointofinterestmanager = serverworld.getPoiMgr();
             Optional<PointOfInterestType> optional = pointofinterestmanager.getPoiTypeForPos(gPos.getPos());
-            BiPredicate<VillagerEntity, PointOfInterestType> bipredicate = field_213774_bB.get(memModType);
+            BiPredicate<VillagerEntity, PointOfInterestType> bipredicate = memPoiPredMap.get(memModType);
             if (optional.isPresent() && bipredicate.test(this, optional.get())) {
-               pointofinterestmanager.func_219142_b(gPos.getPos());
+               pointofinterestmanager.removePoiLocation(gPos.getPos());
                DebugPacketSender.func_218801_c(serverworld, gPos.getPos());
             }
 

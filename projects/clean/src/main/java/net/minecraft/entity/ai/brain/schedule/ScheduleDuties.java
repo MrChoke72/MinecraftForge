@@ -6,43 +6,43 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
 import java.util.List;
 
 public class ScheduleDuties {
-   private final List<DutyTime> field_221396_a = Lists.newArrayList();
-   private int field_221397_b;
+   private final List<DutyTime> dutyList = Lists.newArrayList();  //Sorted by start time
+   private int dutyListIdx;
 
-   public ScheduleDuties func_221394_a(int p_221394_1_, float p_221394_2_) {
-      this.field_221396_a.add(new DutyTime(p_221394_1_, p_221394_2_));
-      this.func_221395_b();
+   public ScheduleDuties addDutyTime(int startTime, float durationForActivity) {
+      this.dutyList.add(new DutyTime(startTime, durationForActivity));
+      this.sortDuties();
       return this;
    }
 
-   private void func_221395_b() {
+   private void sortDuties() {
       Int2ObjectSortedMap<DutyTime> int2objectsortedmap = new Int2ObjectAVLTreeMap<>();
-      this.field_221396_a.forEach((p_221393_1_) -> {
-         DutyTime dutytime = int2objectsortedmap.put(p_221393_1_.func_221388_a(), p_221393_1_);
+      this.dutyList.forEach((dutyTime) -> {
+         DutyTime dutytime = int2objectsortedmap.put(dutyTime.getStartTime(), dutyTime);
       });
-      this.field_221396_a.clear();
-      this.field_221396_a.addAll(int2objectsortedmap.values());
-      this.field_221397_b = 0;
+      this.dutyList.clear();
+      this.dutyList.addAll(int2objectsortedmap.values());
+      this.dutyListIdx = 0;
    }
 
-   public float func_221392_a(int p_221392_1_) {
-      if (this.field_221396_a.size() <= 0) {
+   public float isDurationForActivity(int dayTime) {
+      if (this.dutyList.size() <= 0) {
          return 0.0F;
       } else {
-         DutyTime dutytime = this.field_221396_a.get(this.field_221397_b);
-         DutyTime dutytime1 = this.field_221396_a.get(this.field_221396_a.size() - 1);
-         boolean flag = p_221392_1_ < dutytime.func_221388_a();
-         int i = flag ? 0 : this.field_221397_b;
-         float f = flag ? dutytime1.func_221389_b() : dutytime.func_221389_b();
+         DutyTime dutytime = this.dutyList.get(this.dutyListIdx);
+         DutyTime dutytime1 = this.dutyList.get(this.dutyList.size() - 1);
+         boolean flag = dayTime < dutytime.getStartTime();
+         int i = flag ? 0 : this.dutyListIdx;
+         float f = flag ? dutytime1.isDurationForActivity() : dutytime.isDurationForActivity();
 
-         for(int j = i; j < this.field_221396_a.size(); ++j) {
-            DutyTime dutytime2 = this.field_221396_a.get(j);
-            if (dutytime2.func_221388_a() > p_221392_1_) {
+         for(int j = i; j < this.dutyList.size(); ++j) {
+            DutyTime dutytime2 = this.dutyList.get(j);
+            if (dutytime2.getStartTime() > dayTime) {
                break;
             }
 
-            this.field_221397_b = j;
-            f = dutytime2.func_221389_b();
+            this.dutyListIdx = j;
+            f = dutytime2.isDurationForActivity();
          }
 
          return f;
