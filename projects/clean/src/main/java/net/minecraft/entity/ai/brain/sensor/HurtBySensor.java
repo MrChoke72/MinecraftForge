@@ -10,7 +10,7 @@ import net.minecraft.world.server.ServerWorld;
 
 public class 
 HurtBySensor extends Sensor<LivingEntity> {
-   protected void update(ServerWorld p_212872_1_, LivingEntity p_212872_2_) {
+   protected void update(ServerWorld world, LivingEntity p_212872_2_) {
       Brain<?> brain = p_212872_2_.getBrain();
       if (p_212872_2_.getLastDamageSource() != null) {
          brain.setMemory(MemoryModuleType.HURT_BY, p_212872_2_.getLastDamageSource());

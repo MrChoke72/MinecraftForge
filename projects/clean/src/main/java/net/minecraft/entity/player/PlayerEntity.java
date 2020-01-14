@@ -1265,10 +1265,10 @@ public abstract class PlayerEntity extends LivingEntity {
       return Either.right(Unit.INSTANCE);
    }
 
-   public void startSleeping(BlockPos p_213342_1_) {
+   public void startSleeping(BlockPos pos) {
       this.takeStat(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
-      this.func_226560_a_(p_213342_1_, false, true);
-      super.startSleeping(p_213342_1_);
+      this.func_226560_a_(pos, false, true);
+      super.startSleeping(pos);
    }
 
    private boolean bedInRange(BlockPos p_190774_1_, Direction p_190774_2_) {

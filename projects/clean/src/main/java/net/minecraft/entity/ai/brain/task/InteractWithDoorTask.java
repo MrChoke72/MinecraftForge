@@ -34,13 +34,13 @@ public class InteractWithDoorTask extends Task<LivingEntity> {
       List<BlockPos> list1 = path.getPoints().stream().map((point) -> {
          return new BlockPos(point.x, point.y, point.z);
       }).collect(Collectors.toList());
-      Set<BlockPos> set = this.filterByDimension(worldIn, list, list1);
+      Set<BlockPos> set = this.filterByDimensionAndPath(worldIn, list, list1);
       int i = path.getCurrentPathIndex() - 1;
       this.processDoors(worldIn, list1, set, i, entityIn, brain);
    }
 
    //AH CHANGE REFACTOR
-   private Set<BlockPos> filterByDimension(ServerWorld world, List<GlobalPos> doorPosList, List<BlockPos> posList) {
+   private Set<BlockPos> filterByDimensionAndPath(ServerWorld world, List<GlobalPos> doorPosList, List<BlockPos> posList) {
    //private Set<BlockPos> func_220436_a(ServerWorld p_220436_1_, List<GlobalPos> p_220436_2_, List<BlockPos> p_220436_3_) {
       return doorPosList.stream().filter((globalPos) -> {
          return globalPos.getDimension() == world.getDimension().getType();
@@ -61,17 +61,16 @@ public class InteractWithDoorTask extends Task<LivingEntity> {
             if (!brain.getMemory(MemoryModuleType.OPENED_DOORS).isPresent() && flag) {
                brain.setMemory(MemoryModuleType.OPENED_DOORS, Sets.newHashSet(globalpos));
             } else {
-               brain.getMemory(MemoryModuleType.OPENED_DOORS).ifPresent((p_225450_2_) -> {
+               brain.getMemory(MemoryModuleType.OPENED_DOORS).ifPresent((gPosSet) -> {
                   if (flag) {
-                     p_225450_2_.add(globalpos);
+                     gPosSet.add(globalpos);
                   } else {
-                     p_225450_2_.remove(globalpos);
+                     gPosSet.remove(globalpos);
                   }
 
                });
             }
          }
-
       });
       closeOpenedDoors(world, pathPointList, pathIdxMinusOne, entity, brain);
    }
@@ -79,8 +78,8 @@ public class InteractWithDoorTask extends Task<LivingEntity> {
    //AH CHANGE REFACTOR
    public static void closeOpenedDoors(ServerWorld world, List<BlockPos> pathPointList, int pathIdxMinusOne, LivingEntity entity, Brain<?> brain) {
    //public static void func_225449_a(ServerWorld p_225449_0_, List<BlockPos> p_225449_1_, int p_225449_2_, LivingEntity p_225449_3_, Brain<?> p_225449_4_) {
-      brain.getMemory(MemoryModuleType.OPENED_DOORS).ifPresent((p_225451_4_) -> {
-         Iterator<GlobalPos> iterator = p_225451_4_.iterator();
+      brain.getMemory(MemoryModuleType.OPENED_DOORS).ifPresent((gPosSet) -> {
+         Iterator<GlobalPos> iterator = gPosSet.iterator();
 
          while(iterator.hasNext()) {
             GlobalPos globalpos = iterator.next();

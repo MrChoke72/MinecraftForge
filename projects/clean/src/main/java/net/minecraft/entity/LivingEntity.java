@@ -212,8 +212,8 @@ public abstract class LivingEntity extends Entity {
       return this.brain;
    }
 
-   protected Brain<?> createBrain(Dynamic<?> p_213364_1_) {
-      return new Brain<>(ImmutableList.of(), ImmutableList.of(), p_213364_1_);
+   protected Brain<?> createBrain(Dynamic<?> nbtBrain) {
+      return new Brain<>(ImmutableList.of(), ImmutableList.of(), nbtBrain);
    }
 
    public void onKillCommand() {
@@ -271,7 +271,7 @@ public abstract class LivingEntity extends Entity {
    public void baseTick() {
       this.prevSwingProgress = this.swingProgress;
       if (this.firstUpdate) {
-         this.getBedPosition().ifPresent(this::func_213370_a);
+         this.getBedPosition().ifPresent(this::setPosition);
       }
 
       super.baseTick();
@@ -558,7 +558,7 @@ public abstract class LivingEntity extends Entity {
          this.setBedPosition(blockpos);
          this.dataManager.set(POSE, Pose.SLEEPING);
          if (!this.firstUpdate) {
-            this.func_213370_a(blockpos);
+            this.setPosition(blockpos);
          }
       }
 
@@ -2619,7 +2619,7 @@ public abstract class LivingEntity extends Entity {
       super.notifyDataManagerChange(key);
       if (BED_POSITION.equals(key)) {
          if (this.world.isRemote) {
-            this.getBedPosition().ifPresent(this::func_213370_a);
+            this.getBedPosition().ifPresent(this::setPosition);
          }
       } else if (LIVING_FLAGS.equals(key) && this.world.isRemote) {
          if (this.isHandActive() && this.activeItemStack.isEmpty()) {
@@ -2834,25 +2834,25 @@ public abstract class LivingEntity extends Entity {
       return this.getBedPosition().isPresent();
    }
 
-   public void startSleeping(BlockPos p_213342_1_) {
+   public void startSleeping(BlockPos pos) {
       if (this.isPassenger()) {
          this.stopRiding();
       }
 
-      BlockState blockstate = this.world.getBlockState(p_213342_1_);
+      BlockState blockstate = this.world.getBlockState(pos);
       if (blockstate.getBlock() instanceof BedBlock) {
-         this.world.setBlockState(p_213342_1_, blockstate.with(BedBlock.OCCUPIED, Boolean.valueOf(true)), 3);
+         this.world.setBlockState(pos, blockstate.with(BedBlock.OCCUPIED, Boolean.valueOf(true)), 3);
       }
 
       this.setPose(Pose.SLEEPING);
-      this.func_213370_a(p_213342_1_);
-      this.setBedPosition(p_213342_1_);
+      this.setPosition(pos);
+      this.setBedPosition(pos);
       this.setMotion(Vec3d.ZERO);
       this.isAirBorne = true;
    }
 
-   private void func_213370_a(BlockPos p_213370_1_) {
-      this.setPosition((double)p_213370_1_.getX() + 0.5D, (double)((float)p_213370_1_.getY() + 0.6875F), (double)p_213370_1_.getZ() + 0.5D);
+   private void setPosition(BlockPos pos) {
+      this.setPosition((double)pos.getX() + 0.5D, (double)((float)pos.getY() + 0.6875F), (double)pos.getZ() + 0.5D);
    }
 
    private boolean isInValidBed() {

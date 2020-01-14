@@ -15,8 +15,8 @@ public class VillagerBabiesSensor extends Sensor<LivingEntity> {
       return ImmutableSet.of(MemoryModuleType.VISIBLE_VILLAGER_BABIES);
    }
 
-   protected void update(ServerWorld p_212872_1_, LivingEntity p_212872_2_) {
-      p_212872_2_.getBrain().setMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES, this.func_220994_a(p_212872_2_));
+   protected void update(ServerWorld world, LivingEntity entity) {
+      entity.getBrain().setMemory(MemoryModuleType.VISIBLE_VILLAGER_BABIES, this.func_220994_a(entity));
    }
 
    private List<LivingEntity> func_220994_a(LivingEntity p_220994_1_) {

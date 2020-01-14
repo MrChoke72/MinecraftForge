@@ -14,16 +14,16 @@ import net.minecraft.world.server.ServerWorld;
 public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
    private static final EntityPredicate field_220982_b = (new EntityPredicate()).setDistance(16.0D).allowFriendlyFire().setSkipAttackChecks().setLineOfSiteRequired();
 
-   protected void update(ServerWorld p_212872_1_, LivingEntity p_212872_2_) {
-      List<LivingEntity> list = p_212872_1_.getEntitiesWithinAABB(LivingEntity.class, p_212872_2_.getBoundingBox().grow(16.0D, 16.0D, 16.0D), (p_220980_1_) -> {
-         return p_220980_1_ != p_212872_2_ && p_220980_1_.isAlive();
+   protected void update(ServerWorld world, LivingEntity entity) {
+      List<LivingEntity> list = world.getEntitiesWithinAABB(LivingEntity.class, entity.getBoundingBox().grow(16.0D, 16.0D, 16.0D), (p_220980_1_) -> {
+         return p_220980_1_ != entity && p_220980_1_.isAlive();
       });
-      list.sort(Comparator.comparingDouble(p_212872_2_::getDistanceSq));
-      Brain<?> brain = p_212872_2_.getBrain();
+      list.sort(Comparator.comparingDouble(entity::getDistanceSq));
+      Brain<?> brain = entity.getBrain();
       brain.setMemory(MemoryModuleType.MOBS, list);
       brain.setMemory(MemoryModuleType.VISIBLE_MOBS, list.stream().filter((p_220981_1_) -> {
-         return field_220982_b.canTarget(p_212872_2_, p_220981_1_);
-      }).filter(p_212872_2_::canEntityBeSeen).collect(Collectors.toList()));
+         return field_220982_b.canTarget(entity, p_220981_1_);
+      }).filter(entity::canEntityBeSeen).collect(Collectors.toList()));
    }
 
    public Set<MemoryModuleType<?>> getUsedMemories() {

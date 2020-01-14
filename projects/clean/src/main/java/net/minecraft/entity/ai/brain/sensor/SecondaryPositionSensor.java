@@ -17,9 +17,9 @@ public class SecondaryPositionSensor extends Sensor<VillagerEntity> {
       super(40);
    }
 
-   protected void update(ServerWorld p_212872_1_, VillagerEntity p_212872_2_) {
-      DimensionType dimensiontype = p_212872_1_.getDimension().getType();
-      BlockPos blockpos = new BlockPos(p_212872_2_);
+   protected void update(ServerWorld world, VillagerEntity entity) {
+      DimensionType dimensiontype = world.getDimension().getType();
+      BlockPos blockpos = new BlockPos(entity);
       List<GlobalPos> list = Lists.newArrayList();
       int i = 4;
 
@@ -27,14 +27,14 @@ public class SecondaryPositionSensor extends Sensor<VillagerEntity> {
          for(int k = -2; k <= 2; ++k) {
             for(int l = -4; l <= 4; ++l) {
                BlockPos blockpos1 = blockpos.add(j, k, l);
-               if (p_212872_2_.getVillagerData().getProfession().func_221150_d().contains(p_212872_1_.getBlockState(blockpos1).getBlock())) {
+               if (entity.getVillagerData().getProfession().func_221150_d().contains(world.getBlockState(blockpos1).getBlock())) {
                   list.add(GlobalPos.of(dimensiontype, blockpos1));
                }
             }
          }
       }
 
-      Brain<?> brain = p_212872_2_.getBrain();
+      Brain<?> brain = entity.getBrain();
       if (!list.isEmpty()) {
          brain.setMemory(MemoryModuleType.SECONDARY_JOB_SITE, list);
       } else {

@@ -156,8 +156,8 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       return (Brain<VillagerEntity>) super.getBrain();
    }
 
-   protected Brain<?> createBrain(Dynamic<?> p_213364_1_) {
-      Brain<VillagerEntity> brain = new Brain<>(MEMORY_TYPES, SENSOR_TYPES, p_213364_1_);
+   protected Brain<?> createBrain(Dynamic<?> nbtBrain) {
+      Brain<VillagerEntity> brain = new Brain<>(MEMORY_TYPES, SENSOR_TYPES, nbtBrain);
       this.initBrain(brain);
       return brain;
    }
@@ -949,8 +949,8 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       DebugPacketSender.func_218798_a(this);
    }
 
-   public void startSleeping(BlockPos p_213342_1_) {
-      super.startSleeping(p_213342_1_);
+   public void startSleeping(BlockPos pos) {
+      super.startSleeping(pos);
       this.brain.setMemory(MemoryModuleType.LAST_SLEPT, LongSerializable.of(this.world.getGameTime()));
    }
 

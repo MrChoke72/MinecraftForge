@@ -15,19 +15,19 @@ public class SensorType<U extends Sensor<?>> {
    public static final SensorType<VillagerBabiesSensor> VILLAGER_BABIES = register("villager_babies", VillagerBabiesSensor::new);
    public static final SensorType<SecondaryPositionSensor> SECONDARY_POIS = register("secondary_pois", SecondaryPositionSensor::new);
    public static final SensorType<GolemLastSeenSensor> GOLEM_LAST_SEEN = register("golem_last_seen", GolemLastSeenSensor::new);
-   private final Supplier<U> field_221006_j;
+   private final Supplier<U> supplier;
 
-   public SensorType(Supplier<U> p_i51500_1_) {
-      this.field_221006_j = p_i51500_1_;
+   public SensorType(Supplier<U> supplier) {
+      this.supplier = supplier;
    }
 
    //AH REFACTOR
    public U getSensor() {
    //public U func_220995_a() {
-      return (U)(this.field_221006_j.get());
+      return (U)(this.supplier.get());
    }
 
-   private static <U extends Sensor<?>> SensorType<U> register(String key, Supplier<U> p_220996_1_) {
-      return Registry.register(Registry.SENSOR_TYPE, new ResourceLocation(key), new SensorType<>(p_220996_1_));
+   private static <U extends Sensor<?>> SensorType<U> register(String key, Supplier<U> supplier) {
+      return Registry.register(Registry.SENSOR_TYPE, new ResourceLocation(key), new SensorType<>(supplier));
    }
 }

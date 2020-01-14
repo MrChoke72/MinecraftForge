@@ -25,7 +25,6 @@ import net.minecraft.entity.ai.brain.schedule.Schedule;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.monster.HuskEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.IDynamicSerializable;
@@ -77,16 +76,16 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
    }
    //AH CHANGE END ****
 
-   public boolean hasMemory(MemoryModuleType<?> p_218191_1_) {
-      return this.hasMemory(p_218191_1_, MemoryModuleStatus.VALUE_PRESENT);
+   public boolean hasMemory(MemoryModuleType<?> memModuleType) {
+      return this.hasMemory(memModuleType, MemoryModuleStatus.VALUE_PRESENT);
    }
 
-   private <T, U> void setMemory(MemoryModuleType<U> p_218216_1_, Dynamic<T> p_218216_2_) {
-      this.setMemory(p_218216_1_, p_218216_1_.getDeserializer().orElseThrow(RuntimeException::new).apply(p_218216_2_));
+   private <T, U> void setMemory(MemoryModuleType<U> memModuleType, Dynamic<T> p_218216_2_) {
+      this.setMemory(memModuleType, memModuleType.getDeserializer().orElseThrow(RuntimeException::new).apply(p_218216_2_));
    }
 
-   public <U> void removeMemory(MemoryModuleType<U> p_218189_1_) {
-      this.setMemory(p_218189_1_, Optional.empty());
+   public <U> void removeMemory(MemoryModuleType<U> memModuleType) {
+      this.setMemory(memModuleType, Optional.empty());
    }
 
    public <U> void setMemory(MemoryModuleType<U> memModuleType, @Nullable U u) {
@@ -105,8 +104,8 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
 
    }
 
-   public <U> Optional<U> getMemory(MemoryModuleType<U> p_218207_1_) {
-      return (Optional<U>) this.memories.get(p_218207_1_);
+   public <U> Optional<U> getMemory(MemoryModuleType<U> memModuleType) {
+      return (Optional<U>) this.memories.get(memModuleType);
    }
 
    public boolean hasMemory(MemoryModuleType<?> memoryTypeIn, MemoryModuleStatus memoryStatusIn) {
@@ -217,8 +216,8 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
    }
 
    private void updateSensors(ServerWorld worldIn, E entityIn) {
-      this.sensors.values().forEach((p_218201_2_) -> {
-         p_218201_2_.tick(worldIn, entityIn);
+      this.sensors.values().forEach((sensor) -> {
+         sensor.tick(worldIn, entityIn);
       });
    }
 

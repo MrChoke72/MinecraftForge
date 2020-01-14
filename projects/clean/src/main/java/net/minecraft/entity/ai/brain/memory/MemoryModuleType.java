@@ -73,7 +73,7 @@ public class MemoryModuleType<U> {
       return Registry.register(Registry.MEMORY_MODULE_TYPE, new ResourceLocation(key), new MemoryModuleType<>(p_220937_1_));
    }
 
-   private static <U> MemoryModuleType<U> register(String p_223541_0_) {
-      return Registry.register(Registry.MEMORY_MODULE_TYPE, new ResourceLocation(p_223541_0_), new MemoryModuleType<>(Optional.empty()));
+   private static <U> MemoryModuleType<U> register(String name) {
+      return Registry.register(Registry.MEMORY_MODULE_TYPE, new ResourceLocation(name), new MemoryModuleType<>(Optional.empty()));
    }
 }

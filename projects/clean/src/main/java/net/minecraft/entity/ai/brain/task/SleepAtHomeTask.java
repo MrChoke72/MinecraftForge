@@ -59,7 +59,7 @@ public class SleepAtHomeTask extends Task<LivingEntity> {
 
    protected void startExecuting(ServerWorld worldIn, LivingEntity entityIn, long gameTimeIn) {
       if (gameTimeIn > this.resetTime) {
-         entityIn.getBrain().getMemory(MemoryModuleType.OPENED_DOORS).ifPresent((p_225459_2_) -> {
+         entityIn.getBrain().getMemory(MemoryModuleType.OPENED_DOORS).ifPresent((gPosSet) -> {
             InteractWithDoorTask.closeOpenedDoors(worldIn, ImmutableList.of(), 0, entityIn, entityIn.getBrain());
          });
          entityIn.startSleeping(entityIn.getBrain().getMemory(MemoryModuleType.HOME).get().getPos());

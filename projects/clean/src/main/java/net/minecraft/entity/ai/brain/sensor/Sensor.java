@@ -11,9 +11,9 @@ public abstract class Sensor<E extends LivingEntity> {
    private final int interval;
    private long counter;
 
-   public Sensor(int p_i50301_1_) {
-      this.interval = p_i50301_1_;
-      this.counter = (long)RANDOM.nextInt(p_i50301_1_);
+   public Sensor(int interval) {
+      this.interval = interval;
+      this.counter = (long)RANDOM.nextInt(interval);
    }
 
    public Sensor() {
@@ -30,7 +30,7 @@ public abstract class Sensor<E extends LivingEntity> {
 
    }
 
-   protected abstract void update(ServerWorld p_212872_1_, E p_212872_2_);
+   protected abstract void update(ServerWorld world, E entity);
 
    public abstract Set<MemoryModuleType<?>> getUsedMemories();
 }
