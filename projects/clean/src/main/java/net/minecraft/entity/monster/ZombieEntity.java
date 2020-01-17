@@ -515,10 +515,9 @@ public class ZombieEntity extends MonsterEntity {
             }
          }
 
-         //AH CHANGE CANCEL TEMP FOR TESTING
+         //AH CHANGE OFF TEMP FOR TESTING
          //this.setBreakDoorsAItask(true);
          this.setBreakDoorsAItask(this.canBreakDoors() && this.rand.nextFloat() < f * 0.1F);
-
 
          this.setEquipmentBasedOnDifficulty(difficultyIn);
          this.setEnchantmentBasedOnDifficulty(difficultyIn);

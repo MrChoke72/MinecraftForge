@@ -50,11 +50,13 @@ public class WalkToTargetTask extends Task<MobEntity> {
          this.targetPos = walktarget.getTarget().getBlockPos();
 
 
-         //AH CHANGE DEBUG
+         //AH CHANGE DEBUG OFF
+         /*
          if(owner.getCustomName() != null && owner.getCustomName().getString().equals("Chuck"))
          {
             System.out.println("WalkToTargetTask  targetPos=" + targetPos.getX() + "," + targetPos.getY() + "," + targetPos.getZ());
          }
+          */
 
 
          return true;

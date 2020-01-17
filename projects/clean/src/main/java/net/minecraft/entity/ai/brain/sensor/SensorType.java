@@ -15,6 +15,10 @@ public class SensorType<U extends Sensor<?>> {
    public static final SensorType<VillagerBabiesSensor> VILLAGER_BABIES = register("villager_babies", VillagerBabiesSensor::new);
    public static final SensorType<SecondaryPositionSensor> SECONDARY_POIS = register("secondary_pois", SecondaryPositionSensor::new);
    public static final SensorType<GolemLastSeenSensor> GOLEM_LAST_SEEN = register("golem_last_seen", GolemLastSeenSensor::new);
+
+   //AH ADDED
+   public static final SensorType<InteractableTrapDoorsSensor> INTERACTABLE_TRAPDOORS = register("interactable_trapdoors", InteractableTrapDoorsSensor::new);
+
    private final Supplier<U> supplier;
 
    public SensorType(Supplier<U> supplier) {

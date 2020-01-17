@@ -56,7 +56,10 @@ public abstract class InteractDoorGoal extends Goal {
          GroundPathNavigator groundpathnavigator = (GroundPathNavigator)this.entity.getNavigator();
          Path path = groundpathnavigator.getPath();
          if (path != null && !path.isFinished() && groundpathnavigator.getEnterDoors()) {
-            for(int i = 0; i < Math.min(path.getCurrentPathIndex() + 2, path.getCurrentPathLength()); ++i) {
+            //AH CHANGE
+            for(int i = Math.max(0, path.getCurrentPathIndex()- 2); i < Math.min(path.getCurrentPathIndex() + 2, path.getCurrentPathLength()); ++i) {
+            //for(int i = 0; i < Math.min(path.getCurrentPathIndex() + 2, path.getCurrentPathLength()); ++i) {
+
                PathPoint pathpoint = path.getPathPointFromIndex(i);
                this.doorPosition = new BlockPos(pathpoint.x, pathpoint.y + 1, pathpoint.z);
                if (!(this.entity.getDistanceSq((double)this.doorPosition.getX(), this.entity.getPosY(), (double)this.doorPosition.getZ()) > 2.25D)) {

@@ -16,12 +16,12 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
    protected LivingEntity nearestTarget;
    protected EntityPredicate targetEntitySelector;
 
-   public NearestAttackableTargetGoal(MobEntity p_i50313_1_, Class<T> p_i50313_2_, boolean p_i50313_3_) {
-      this(p_i50313_1_, p_i50313_2_, p_i50313_3_, false);
+   public NearestAttackableTargetGoal(MobEntity entity, Class<T> targetClass, boolean checkSight) {
+      this(entity, targetClass, checkSight, false);
    }
 
-   public NearestAttackableTargetGoal(MobEntity p_i50314_1_, Class<T> p_i50314_2_, boolean p_i50314_3_, boolean p_i50314_4_) {
-      this(p_i50314_1_, p_i50314_2_, 10, p_i50314_3_, p_i50314_4_, (Predicate<LivingEntity>)null);
+   public NearestAttackableTargetGoal(MobEntity entity, Class<T> targetClass, boolean checkSight, boolean nearbyOnly) {
+      this(entity, targetClass, 10, checkSight, nearbyOnly, (Predicate<LivingEntity>)null);
    }
 
    //AH REFACTOR
@@ -49,9 +49,11 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
 
    protected void findNearestTarget() {
       if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
-         this.nearestTarget = this.goalOwner.world.<T>func_225318_b(this.targetClass, this.targetEntitySelector, this.goalOwner, this.goalOwner.getPosX(), this.goalOwner.getPosYPlusEyeHeight(), this.goalOwner.getPosZ(), this.getTargetableArea(this.getTargetDistance()));
+         this.nearestTarget = this.goalOwner.world.<T>getClosestEntity(this.targetClass, this.targetEntitySelector, this.goalOwner, this.goalOwner.getPosX(),
+                 this.goalOwner.getPosYPlusEyeHeight(), this.goalOwner.getPosZ(), this.getTargetableArea(this.getTargetDistance()));
       } else {
-         this.nearestTarget = this.goalOwner.world.getClosestPlayer(this.targetEntitySelector, this.goalOwner, this.goalOwner.getPosX(), this.goalOwner.getPosYPlusEyeHeight(), this.goalOwner.getPosZ());
+         this.nearestTarget = this.goalOwner.world.getClosestPlayer(this.targetEntitySelector, this.goalOwner, this.goalOwner.getPosX(),
+                 this.goalOwner.getPosYPlusEyeHeight(), this.goalOwner.getPosZ());
       }
 
    }

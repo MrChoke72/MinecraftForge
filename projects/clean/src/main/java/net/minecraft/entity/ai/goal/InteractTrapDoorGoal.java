@@ -18,9 +18,9 @@ public abstract class InteractTrapDoorGoal extends Goal {
     protected BlockPos doorPosition = BlockPos.ZERO;
     protected boolean doorInteract;
     private boolean hasStoppedDoorInteraction;
-    private float entityPositionX;
+    //private float entityPositionX;
     private float entityPositionY;
-    private float entityPositionZ;
+    //private float entityPositionZ;
 
     public InteractTrapDoorGoal(MobEntity entityIn) {
         this.entity = entityIn;
@@ -60,13 +60,22 @@ public abstract class InteractTrapDoorGoal extends Goal {
         if (!this.entity.collidedVertically) {
             return false;
         } else {
+
+            //AH CHANGE DEBUG OFF
+            /*
+            if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+            {
+                System.out.println("OpenTrapDoorGoal shouldExecute");
+            }
+             */
+
             GroundPathNavigator groundpathnavigator = (GroundPathNavigator)this.entity.getNavigator();
             Path path = groundpathnavigator.getPath();
             if (path != null && !path.isFinished() && groundpathnavigator.getEnterDoors()) {
-                for(int i = 0; i < Math.min(path.getCurrentPathIndex() + 2, path.getCurrentPathLength()); ++i) {
+                for(int i = Math.max(0, path.getCurrentPathIndex()- 2); i < Math.min(path.getCurrentPathIndex() + 2, path.getCurrentPathLength()); ++i) {
                     PathPoint pathpoint = path.getPathPointFromIndex(i);
                     this.doorPosition = new BlockPos(pathpoint.x, pathpoint.y, pathpoint.z);
-                    if (!(this.entity.getDistanceSq((double)this.doorPosition.getX(), this.entity.getPosY(), (double)this.doorPosition.getZ()) > 1.25D)) {  //is 2.25D in DoorInteract
+                    if (!(this.entity.getDistanceSq((double)this.doorPosition.getX(), this.doorPosition.getY(), (double)this.doorPosition.getZ()) > 3.0D)) {  //is 2.25D in DoorInteract
                         this.doorInteract = canInteractTrapDoor(this.entity.world, this.doorPosition);
                         if (this.doorInteract) {
                             return true;
@@ -89,16 +98,17 @@ public abstract class InteractTrapDoorGoal extends Goal {
 
     public void startExecuting() {
         this.hasStoppedDoorInteraction = false;
-        this.entityPositionX = (float)((double)((float)this.doorPosition.getX() + 0.5F) - this.entity.getPosX());
-        this.entityPositionY = (float)((double)((float)this.doorPosition.getY()) - this.entity.getPosY());
-        this.entityPositionZ = (float)((double)((float)this.doorPosition.getZ() + 0.5F) - this.entity.getPosZ());
+        //this.entityPositionX = (float)((double)((float)this.doorPosition.getX() + 0.5F) - this.entity.getPosX());
+        this.entityPositionY = (float)((double)((float)this.doorPosition.getY() + 0.5F) - this.entity.getPosY());
+        //this.entityPositionZ = (float)((double)((float)this.doorPosition.getZ() + 0.5F) - this.entity.getPosZ());
     }
 
     public void tick() {
-        float f = (float)((double)((float)this.doorPosition.getX() + 0.5F) - this.entity.getPosX());
-        float f1 = (float)((double)((float)this.doorPosition.getY() + 1.5F) - this.entity.getPosY());
-        float f2 = (float)((double)((float)this.doorPosition.getZ() + 0.5F) - this.entity.getPosZ());
-        float f3 = this.entityPositionX * f + this.entityPositionY * f1 + this.entityPositionZ * f2;
+        //float f = (float)((double)((float)this.doorPosition.getX() + 0.5F) - this.entity.getPosX());
+        float f1 = (float)((double)((float)this.doorPosition.getY() + 0.5F) - this.entity.getPosY());
+        //float f2 = (float)((double)((float)this.doorPosition.getZ() + 0.5F) - this.entity.getPosZ());
+        float f3 = this.entityPositionY * f1;
+        //float f3 = this.entityPositionX * f + this.entityPositionY * f1 + this.entityPositionZ * f2;
 
         //AH CHANGE DEBUG OFF
         /*

@@ -23,8 +23,8 @@ public interface IEntityReader {
 
    <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter);
 
-   default <T extends Entity> List<T> func_225316_b(Class<? extends T> p_225316_1_, AxisAlignedBB p_225316_2_, @Nullable Predicate<? super T> p_225316_3_) {
-      return this.getEntitiesWithinAABB(p_225316_1_, p_225316_2_, p_225316_3_);
+   default <T extends Entity> List<T> getEntitiesWithinAABBDef(Class<? extends T> entityClass, AxisAlignedBB boundingBox, @Nullable Predicate<? super T> entityPred) {
+      return this.getEntitiesWithinAABB(entityClass, boundingBox, entityPred);
    }
 
    List<? extends PlayerEntity> getPlayers();
@@ -41,12 +41,12 @@ public interface IEntityReader {
       });
    }
 
-   default <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> p_217357_1_, AxisAlignedBB p_217357_2_) {
-      return this.getEntitiesWithinAABB(p_217357_1_, p_217357_2_, EntityPredicates.NOT_SPECTATING);
+   default <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> entityClass, AxisAlignedBB boundingBox) {
+      return this.getEntitiesWithinAABB(entityClass, boundingBox, EntityPredicates.NOT_SPECTATING);
    }
 
-   default <T extends Entity> List<T> func_225317_b(Class<? extends T> p_225317_1_, AxisAlignedBB p_225317_2_) {
-      return this.func_225316_b(p_225317_1_, p_225317_2_, EntityPredicates.NOT_SPECTATING);
+   default <T extends Entity> List<T> getEntitiesWithinAABBNoPred(Class<? extends T> entityClass, AxisAlignedBB boundingBox) {
+      return this.getEntitiesWithinAABBDef(entityClass, boundingBox, EntityPredicates.NOT_SPECTATING);
    }
 
    default Stream<VoxelShape> getEmptyCollisionShapes(@Nullable Entity entityIn, AxisAlignedBB aabb, Set<Entity> entitiesToIgnore) {
@@ -145,18 +145,18 @@ public interface IEntityReader {
    }
 
    @Nullable
-   default <T extends LivingEntity> T func_225318_b(Class<? extends T> p_225318_1_, EntityPredicate p_225318_2_, @Nullable LivingEntity p_225318_3_, double p_225318_4_, double p_225318_6_, double p_225318_8_, AxisAlignedBB p_225318_10_) {
-      return this.getClosestEntity(this.func_225316_b(p_225318_1_, p_225318_10_, (Predicate<T>)null), p_225318_2_, p_225318_3_, p_225318_4_, p_225318_6_, p_225318_8_);
+   default <T extends LivingEntity> T getClosestEntity(Class<? extends T> targetClass, EntityPredicate tgtEntitySelector, @Nullable LivingEntity owner, double x, double y, double z, AxisAlignedBB targetArea) {
+      return this.getClosestEntity(this.getEntitiesWithinAABBDef(targetClass, targetArea, (Predicate<T>)null), tgtEntitySelector, owner, x, y, z);
    }
 
    @Nullable
-   default <T extends LivingEntity> T getClosestEntity(List<? extends T> p_217361_1_, EntityPredicate p_217361_2_, @Nullable LivingEntity p_217361_3_, double p_217361_4_, double p_217361_6_, double p_217361_8_) {
+   default <T extends LivingEntity> T getClosestEntity(List<? extends T> tgtEntityList, EntityPredicate tgtEntitySelector, @Nullable LivingEntity owner, double x, double y, double z) {
       double d0 = -1.0D;
       T t = null;
 
-      for(T t1 : p_217361_1_) {
-         if (p_217361_2_.canTarget(p_217361_3_, t1)) {
-            double d1 = t1.getDistanceSq(p_217361_4_, p_217361_6_, p_217361_8_);
+      for(T t1 : tgtEntityList) {
+         if (tgtEntitySelector.canTarget(owner, t1)) {
+            double d1 = t1.getDistanceSq(x, y, z);
             if (d0 == -1.0D || d1 < d0) {
                d0 = d1;
                t = t1;

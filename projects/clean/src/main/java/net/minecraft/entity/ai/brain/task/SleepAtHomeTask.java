@@ -37,7 +37,7 @@ public class SleepAtHomeTask extends Task<LivingEntity> {
             return false;
          } else {
             Optional<LongSerializable> optional = brain.getMemory(MemoryModuleType.LAST_WOKEN);
-            if (optional.isPresent() && worldIn.getGameTime() - optional.get().func_223461_a() < 100L) {
+            if (optional.isPresent() && worldIn.getGameTime() - optional.get().getValue() < 100L) {
                return false;
             } else {
                BlockState blockstate = worldIn.getBlockState(globalpos.getPos());
@@ -62,6 +62,13 @@ public class SleepAtHomeTask extends Task<LivingEntity> {
          entityIn.getBrain().getMemory(MemoryModuleType.OPENED_DOORS).ifPresent((gPosSet) -> {
             InteractWithDoorTask.closeOpenedDoors(worldIn, ImmutableList.of(), 0, entityIn, entityIn.getBrain());
          });
+
+         //AH ADDED ****
+         entityIn.getBrain().getMemory(MemoryModuleType.OPENED_TRAPDOORS).ifPresent((gPosSet) -> {
+            InteractWithTrapDoorTask.closeOpenedTrapDoors(worldIn, ImmutableList.of(), 0, entityIn, entityIn.getBrain());
+         });
+         //AH ADDED END
+
          entityIn.startSleeping(entityIn.getBrain().getMemory(MemoryModuleType.HOME).get().getPos());
       }
 

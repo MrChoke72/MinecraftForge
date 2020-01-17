@@ -10,32 +10,32 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 
 public class ExpireHidingTask extends Task<LivingEntity> {
-   private final int field_220537_a;
-   private final int field_220538_b;
-   private int field_220539_c;
+   private final int distNearHidingPlace;
+   private final int numTicksToHide;
+   private int tickCountHiding;
 
-   public ExpireHidingTask(int p_i50349_1_, int p_i50349_2_) {
+   public ExpireHidingTask(int secsToHide, int distNearHidingPlace) {
       super(ImmutableMap.of(MemoryModuleType.HIDING_PLACE, MemoryModuleStatus.VALUE_PRESENT, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleStatus.VALUE_PRESENT));
-      this.field_220538_b = p_i50349_1_ * 20;
-      this.field_220539_c = 0;
-      this.field_220537_a = p_i50349_2_;
+      this.numTicksToHide = secsToHide * 20;
+      this.tickCountHiding = 0;
+      this.distNearHidingPlace = distNearHidingPlace;
    }
 
    protected void startExecuting(ServerWorld worldIn, LivingEntity entityIn, long gameTimeIn) {
       Brain<?> brain = entityIn.getBrain();
       Optional<Long> optional = brain.getMemory(MemoryModuleType.HEARD_BELL_TIME);
       boolean flag = optional.get() + 300L <= gameTimeIn;
-      if (this.field_220539_c <= this.field_220538_b && !flag) {
+      if (this.tickCountHiding <= this.numTicksToHide && !flag) {
          BlockPos blockpos = brain.getMemory(MemoryModuleType.HIDING_PLACE).get().getPos();
-         if (blockpos.withinDistance(new BlockPos(entityIn), (double)(this.field_220537_a + 1))) {
-            ++this.field_220539_c;
+         if (blockpos.withinDistance(new BlockPos(entityIn), (double)(this.distNearHidingPlace + 1))) {
+            ++this.tickCountHiding;
          }
 
       } else {
          brain.removeMemory(MemoryModuleType.HEARD_BELL_TIME);
          brain.removeMemory(MemoryModuleType.HIDING_PLACE);
          brain.updateActivity(worldIn.getDayTime(), worldIn.getGameTime());
-         this.field_220539_c = 0;
+         this.tickCountHiding = 0;
       }
    }
 }

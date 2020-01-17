@@ -30,8 +30,8 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   public static Vec3d func_221024_a(CreatureEntity p_221024_0_, int p_221024_1_, int p_221024_2_, ToDoubleFunction<BlockPos> p_221024_3_) {
-      return func_226339_a_(p_221024_0_, p_221024_1_, p_221024_2_, 0, (Vec3d)null, false, 0.0D, p_221024_3_, true, 0, 0, true);
+   public static Vec3d func_221024_a(CreatureEntity entity, int p_221024_1_, int p_221024_2_, ToDoubleFunction<BlockPos> p_221024_3_) {
+      return func_226339_a_(entity, p_221024_1_, p_221024_2_, 0, (Vec3d)null, false, 0.0D, p_221024_3_, true, 0, 0, true);
    }
 
    @Nullable
@@ -70,19 +70,20 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   private static Vec3d func_226339_a_(CreatureEntity p_226339_0_, int p_226339_1_, int p_226339_2_, int p_226339_3_, @Nullable Vec3d p_226339_4_, boolean p_226339_5_, double p_226339_6_, ToDoubleFunction<BlockPos> p_226339_8_, boolean p_226339_9_, int p_226339_10_, int p_226339_11_, boolean p_226339_12_) {
-      PathNavigator pathnavigator = p_226339_0_.getNavigator();
-      Random random = p_226339_0_.getRNG();
+   private static Vec3d func_226339_a_(CreatureEntity entity, int p_226339_1_, int p_226339_2_, int p_226339_3_, @Nullable Vec3d p_226339_4_, boolean p_226339_5_,
+                                       double p_226339_6_, ToDoubleFunction<BlockPos> posDoubleFunc, boolean p_226339_9_, int p_226339_10_, int p_226339_11_, boolean p_226339_12_) {
+      PathNavigator pathnavigator = entity.getNavigator();
+      Random random = entity.getRNG();
       boolean flag;
-      if (p_226339_0_.detachHome()) {
-         flag = p_226339_0_.getHomePosition().withinDistance(p_226339_0_.getPositionVec(), (double)(p_226339_0_.getMaximumHomeDistance() + (float)p_226339_1_) + 1.0D);
+      if (entity.detachHome()) {
+         flag = entity.getHomePosition().withinDistance(entity.getPositionVec(), (double)(entity.getMaximumHomeDistance() + (float)p_226339_1_) + 1.0D);
       } else {
          flag = false;
       }
 
       boolean flag1 = false;
       double d0 = Double.NEGATIVE_INFINITY;
-      BlockPos blockpos = new BlockPos(p_226339_0_);
+      BlockPos blockpos = new BlockPos(entity);
 
       for(int i = 0; i < 10; ++i) {
          BlockPos blockpos1 = func_226343_a_(random, p_226339_1_, p_226339_2_, p_226339_3_, p_226339_4_, p_226339_6_);
@@ -90,33 +91,33 @@ public class RandomPositionGenerator {
             int j = blockpos1.getX();
             int k = blockpos1.getY();
             int l = blockpos1.getZ();
-            if (p_226339_0_.detachHome() && p_226339_1_ > 1) {
-               BlockPos blockpos2 = p_226339_0_.getHomePosition();
-               if (p_226339_0_.getPosX() > (double)blockpos2.getX()) {
+            if (entity.detachHome() && p_226339_1_ > 1) {
+               BlockPos blockpos2 = entity.getHomePosition();
+               if (entity.getPosX() > (double)blockpos2.getX()) {
                   j -= random.nextInt(p_226339_1_ / 2);
                } else {
                   j += random.nextInt(p_226339_1_ / 2);
                }
 
-               if (p_226339_0_.getPosZ() > (double)blockpos2.getZ()) {
+               if (entity.getPosZ() > (double)blockpos2.getZ()) {
                   l -= random.nextInt(p_226339_1_ / 2);
                } else {
                   l += random.nextInt(p_226339_1_ / 2);
                }
             }
 
-            BlockPos blockpos3 = new BlockPos((double)j + p_226339_0_.getPosX(), (double)k + p_226339_0_.getPosY(), (double)l + p_226339_0_.getPosZ());
-            if (blockpos3.getY() >= 0 && blockpos3.getY() <= p_226339_0_.world.getHeight() && (!flag || p_226339_0_.isWithinHomeDistanceFromPosition(blockpos3)) && (!p_226339_12_ || pathnavigator.canEntityStandOnPos(blockpos3))) {
+            BlockPos blockpos3 = new BlockPos((double)j + entity.getPosX(), (double)k + entity.getPosY(), (double)l + entity.getPosZ());
+            if (blockpos3.getY() >= 0 && blockpos3.getY() <= entity.world.getHeight() && (!flag || entity.isWithinHomeDistanceFromPosition(blockpos3)) && (!p_226339_12_ || pathnavigator.canEntityStandOnPos(blockpos3))) {
                if (p_226339_9_) {
-                  blockpos3 = func_226342_a_(blockpos3, random.nextInt(p_226339_10_ + 1) + p_226339_11_, p_226339_0_.world.getHeight(), (p_226341_1_) -> {
-                     return p_226339_0_.world.getBlockState(p_226341_1_).getMaterial().isSolid();
+                  blockpos3 = func_226342_a_(blockpos3, random.nextInt(p_226339_10_ + 1) + p_226339_11_, entity.world.getHeight(), (p_226341_1_) -> {
+                     return entity.world.getBlockState(p_226341_1_).getMaterial().isSolid();
                   });
                }
 
-               if (p_226339_5_ || !p_226339_0_.world.getFluidState(blockpos3).isTagged(FluidTags.WATER)) {
-                  PathNodeType pathnodetype = WalkNodeProcessor.getPathNodeTypeDamage(p_226339_0_.world, blockpos3.getX(), blockpos3.getY(), blockpos3.getZ());
-                  if (p_226339_0_.getPathPriority(pathnodetype) == 0.0F) {
-                     double d1 = p_226339_8_.applyAsDouble(blockpos3);
+               if (p_226339_5_ || !entity.world.getFluidState(blockpos3).isTagged(FluidTags.WATER)) {
+                  PathNodeType pathnodetype = WalkNodeProcessor.getPathNodeTypeDamage(entity.world, blockpos3.getX(), blockpos3.getY(), blockpos3.getZ());
+                  if (entity.getPathPriority(pathnodetype) == 0.0F) {
+                     double d1 = posDoubleFunc.applyAsDouble(blockpos3);
                      if (d1 > d0) {
                         d0 = d1;
                         blockpos = blockpos3;
@@ -132,23 +133,23 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   private static BlockPos func_226343_a_(Random p_226343_0_, int p_226343_1_, int p_226343_2_, int p_226343_3_, @Nullable Vec3d p_226343_4_, double p_226343_5_) {
+   private static BlockPos func_226343_a_(Random random, int p_226343_1_, int p_226343_2_, int p_226343_3_, @Nullable Vec3d p_226343_4_, double p_226343_5_) {
       if (p_226343_4_ != null && !(p_226343_5_ >= Math.PI)) {
          double d3 = MathHelper.atan2(p_226343_4_.z, p_226343_4_.x) - (double)((float)Math.PI / 2F);
-         double d4 = d3 + (double)(2.0F * p_226343_0_.nextFloat() - 1.0F) * p_226343_5_;
-         double d0 = Math.sqrt(p_226343_0_.nextDouble()) * (double)MathHelper.SQRT_2 * (double)p_226343_1_;
+         double d4 = d3 + (double)(2.0F * random.nextFloat() - 1.0F) * p_226343_5_;
+         double d0 = Math.sqrt(random.nextDouble()) * (double)MathHelper.SQRT_2 * (double)p_226343_1_;
          double d1 = -d0 * Math.sin(d4);
          double d2 = d0 * Math.cos(d4);
          if (!(Math.abs(d1) > (double)p_226343_1_) && !(Math.abs(d2) > (double)p_226343_1_)) {
-            int l = p_226343_0_.nextInt(2 * p_226343_2_ + 1) - p_226343_2_ + p_226343_3_;
+            int l = random.nextInt(2 * p_226343_2_ + 1) - p_226343_2_ + p_226343_3_;
             return new BlockPos(d1, (double)l, d2);
          } else {
             return null;
          }
       } else {
-         int i = p_226343_0_.nextInt(2 * p_226343_1_ + 1) - p_226343_1_;
-         int j = p_226343_0_.nextInt(2 * p_226343_2_ + 1) - p_226343_2_ + p_226343_3_;
-         int k = p_226343_0_.nextInt(2 * p_226343_1_ + 1) - p_226343_1_;
+         int i = random.nextInt(2 * p_226343_1_ + 1) - p_226343_1_;
+         int j = random.nextInt(2 * p_226343_2_ + 1) - p_226343_2_ + p_226343_3_;
+         int k = random.nextInt(2 * p_226343_1_ + 1) - p_226343_1_;
          return new BlockPos(i, j, k);
       }
    }

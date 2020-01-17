@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.monster.HuskEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.EntityPredicates;
 
@@ -49,7 +48,7 @@ public class LookAtGoal extends Goal {
          if (this.watchedClass == PlayerEntity.class) {
             this.closestEntity = this.entity.world.getClosestPlayer(this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ());
          } else {
-            this.closestEntity = this.entity.world.func_225318_b(this.watchedClass, this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.maxDistance, 3.0D, (double)this.maxDistance));
+            this.closestEntity = this.entity.world.getClosestEntity(this.watchedClass, this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.maxDistance, 3.0D, (double)this.maxDistance));
          }
 
          return this.closestEntity != null;

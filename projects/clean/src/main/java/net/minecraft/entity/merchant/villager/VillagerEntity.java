@@ -123,10 +123,19 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
            MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH,
            MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY,
            MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
-           MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME);
+           MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME
 
-   private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS,
-           SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN);
+           //AH NEW
+           ,MemoryModuleType.INTERACTABLE_TRAPDOORS, MemoryModuleType.OPENED_TRAPDOORS
+   );
+
+   private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSOR_TYPES = ImmutableList.of(
+           SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES,
+           SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN
+
+            //AH ADDED
+           ,SensorType.INTERACTABLE_TRAPDOORS
+   );
 
    //AH REFACTOR
    public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> memPoiPredMap =
@@ -818,7 +827,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
          this.gossip.func_220912_a(p_213746_1_.gossip, this.rand, 10);
          this.field_213783_bN = p_213746_2_;
          p_213746_1_.field_213783_bN = p_213746_2_;
-         this.func_223358_a(p_213746_2_, 5);
+         this.checkCreateIronGolem(p_213746_2_, 5);
       }
    }
 
@@ -832,45 +841,45 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       }
    }
 
-   public void func_223358_a(long p_223358_1_, int p_223358_3_) {
-      if (this.func_223350_a(p_223358_1_)) {
+   public void checkCreateIronGolem(long gameTime, int numSeenForCreate) {
+      if (this.isGolemLastSeen(gameTime)) {
          AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(10.0D, 10.0D, 10.0D);
          List<VillagerEntity> list = this.world.getEntitiesWithinAABB(VillagerEntity.class, axisalignedbb);
-         List<VillagerEntity> list1 = list.stream().filter((p_226554_2_) -> {
-            return p_226554_2_.func_223350_a(p_223358_1_);
+         List<VillagerEntity> list1 = list.stream().filter((villagerEntity) -> {
+            return villagerEntity.isGolemLastSeen(gameTime);
          }).limit(5L).collect(Collectors.toList());
-         if (list1.size() >= p_223358_3_) {
-            IronGolemEntity irongolementity = this.func_213759_ey();
+         if (list1.size() >= numSeenForCreate) {
+            IronGolemEntity irongolementity = this.createIronGolem();
             if (irongolementity != null) {
-               list.forEach((p_226552_2_) -> {
-                  p_226552_2_.func_223347_b(p_223358_1_);
+               list.forEach((villagerEntity) -> {
+                  villagerEntity.setGolemLastSeen(gameTime);
                });
             }
          }
       }
    }
 
-   private void func_223347_b(long p_223347_1_) {
-      this.brain.setMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME, p_223347_1_);
+   private void setGolemLastSeen(long gameTime) {
+      this.brain.setMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME, gameTime);
    }
 
-   private boolean func_223354_c(long p_223354_1_) {
+   private boolean isGolemSeen30Secs(long gameTime) {
       Optional<Long> optional = this.brain.getMemory(MemoryModuleType.GOLEM_LAST_SEEN_TIME);
       if (!optional.isPresent()) {
          return false;
       } else {
          Long olong = optional.get();
-         return p_223354_1_ - olong <= 600L;
+         return gameTime - olong <= 600L;
       }
    }
 
-   public boolean func_223350_a(long p_223350_1_) {
+   public boolean isGolemLastSeen(long gameTime) {
       VillagerData villagerdata = this.getVillagerData();
       if (villagerdata.getProfession() != VillagerProfession.NONE && villagerdata.getProfession() != VillagerProfession.NITWIT) {
-         if (!this.func_223352_d(this.world.getGameTime())) {
+         if (!this.isRecentSleepOrWork(this.world.getGameTime())) {
             return false;
          } else {
-            return !this.func_223354_c(p_223350_1_);
+            return !this.isGolemSeen30Secs(gameTime);
          }
       } else {
          return false;
@@ -878,7 +887,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
    }
 
    @Nullable
-   private IronGolemEntity func_213759_ey() {
+   private IronGolemEntity createIronGolem() {
       BlockPos blockpos = new BlockPos(this);
 
       for(int i = 0; i < 10; ++i) {
@@ -959,11 +968,11 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       this.brain.setMemory(MemoryModuleType.LAST_WOKEN, LongSerializable.of(this.world.getGameTime()));
    }
 
-   private boolean func_223352_d(long p_223352_1_) {
+   private boolean isRecentSleepOrWork(long gameTime) {
       Optional<LongSerializable> optional = this.brain.getMemory(MemoryModuleType.LAST_SLEPT);
       Optional<LongSerializable> optional1 = this.brain.getMemory(MemoryModuleType.LAST_WORKED_AT_POI);
       if (optional.isPresent() && optional1.isPresent()) {
-         return p_223352_1_ - optional.get().func_223461_a() < 24000L && p_223352_1_ - optional1.get().func_223461_a() < 36000L;
+         return gameTime - optional.get().getValue() < 24000L && gameTime - optional1.get().getValue() < 36000L;
       } else {
          return false;
       }

@@ -28,7 +28,7 @@ public class RingBellTask extends Task<LivingEntity> {
          BlockState blockstate = worldIn.getBlockState(blockpos);
          if (blockstate.getBlock() == Blocks.BELL) {
             BellBlock bellblock = (BellBlock)blockstate.getBlock();
-            bellblock.func_226885_a_(worldIn, blockpos, (Direction)null);
+            bellblock.ringBell(worldIn, blockpos, (Direction)null);
          }
       }
 

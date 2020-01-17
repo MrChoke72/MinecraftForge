@@ -27,16 +27,16 @@ public class WalkToHouseTask extends Task<LivingEntity> {
    //AH REFACTOR
       //Key: Long: BlockPos packed
       //Value:
-   private final Long2LongMap field_225455_b = new Long2LongOpenHashMap();
+   private final Long2LongMap posEndTimeMap = new Long2LongOpenHashMap();
    //private final Long2LongMap field_225455_b = new Long2LongOpenHashMap();
 
    //AH REFACTOR
-   private int field_225456_c;
+   private int findPoiLimit;
    //private int field_225456_c;
    
-   private long field_220525_b;
+   private long startTime;
 
-   //Ah REFACTOR
+   //AH REFACTOR
    public WalkToHouseTask(float moveSpeed) {
    //public WalkToHouseTask(float p_i50353_1_) {
       super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleStatus.VALUE_ABSENT));
@@ -44,7 +44,7 @@ public class WalkToHouseTask extends Task<LivingEntity> {
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, LivingEntity owner) {
-      if (worldIn.getGameTime() - this.field_220525_b < 20L) {
+      if (worldIn.getGameTime() - this.startTime < 20L) {
          return false;
       } else {
          CreatureEntity creatureentity = (CreatureEntity)owner;
@@ -60,18 +60,18 @@ public class WalkToHouseTask extends Task<LivingEntity> {
    }
 
    protected void startExecuting(ServerWorld worldIn, LivingEntity entityIn, long gameTimeIn) {
-      this.field_225456_c = 0;
-      this.field_220525_b = worldIn.getGameTime() + (long)worldIn.getRandom().nextInt(20);
+      this.findPoiLimit = 0;
+      this.startTime = worldIn.getGameTime() + (long)worldIn.getRandom().nextInt(20);
       CreatureEntity creatureentity = (CreatureEntity)entityIn;
       PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
       Predicate<BlockPos> predicate = (pos) -> {
          long i = pos.toLong();
-         if (this.field_225455_b.containsKey(i)) {
+         if (this.posEndTimeMap.containsKey(i)) {
             return false;
-         } else if (++this.field_225456_c >= 5) {
+         } else if (++this.findPoiLimit >= 5) {
             return false;
          } else {
-            this.field_225455_b.put(i, this.field_220525_b + 40L);
+            this.posEndTimeMap.put(i, this.startTime + 40L);
             return true;
          }
       };
@@ -82,11 +82,20 @@ public class WalkToHouseTask extends Task<LivingEntity> {
          Optional<PointOfInterestType> optional = pointofinterestmanager.getPoiTypeForPos(blockpos);
          if (optional.isPresent()) {
             entityIn.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockpos, this.moveSpeed, 1));
+
+            //AH CHANGE DEBUG OFF
+            /*
+            if(entityIn.getCustomName() != null)
+            {
+               System.out.println("WalkToHouseTask, walk target set to: " + blockpos.toString());
+            }
+             */
+
             DebugPacketSender.func_218801_c(worldIn, blockpos);
          }
-      } else if (this.field_225456_c < 5) {
-         this.field_225455_b.long2LongEntrySet().removeIf((p_225454_1_) -> {
-            return p_225454_1_.getLongValue() < this.field_220525_b;
+      } else if (this.findPoiLimit < 5) {
+         this.posEndTimeMap.long2LongEntrySet().removeIf((entry) -> {
+            return entry.getLongValue() < this.startTime;
          });
       }
 

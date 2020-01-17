@@ -89,13 +89,13 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    }
 
    //AH CHANGE REFACTOR
-   public Stream<BlockPos> poiStreamByDistFiltPos(Predicate<PointOfInterestType> poiPred, Predicate<BlockPos> posPred, BlockPos pos, int distance, PointOfInterestManager.Status status) {
+   public Stream<BlockPos> poiStreamByDistFiltPos(Predicate<PointOfInterestType> poiTypePred, Predicate<BlockPos> posPred, BlockPos pos, int distance, PointOfInterestManager.Status status) {
    //public Stream<BlockPos> func_225399_a(Predicate<PointOfInterestType> p_225399_1_, Predicate<BlockPos> p_225399_2_, BlockPos p_225399_3_, int p_225399_4_, PointOfInterestManager.Status p_225399_5_) {
-      return this.poiStreamByDistFiltPos(poiPred, pos, distance, status).map(PointOfInterest::getPos).filter(posPred);
+      return this.poiStreamByDistFiltPos(poiTypePred, pos, distance, status).map(PointOfInterest::getPos).filter(posPred);
    }
 
    //AH REFACTOR
-   public Optional<BlockPos> func_219127_a(Predicate<PointOfInterestType> poiTypePred, Predicate<BlockPos> posPred, BlockPos pos, int distance, PointOfInterestManager.Status status) {
+   public Optional<BlockPos> poiOptByDistFiltPos(Predicate<PointOfInterestType> poiTypePred, Predicate<BlockPos> posPred, BlockPos pos, int distance, PointOfInterestManager.Status status) {
    //public Optional<BlockPos> func_219127_a(Predicate<PointOfInterestType> p_219127_1_, Predicate<BlockPos> p_219127_2_, BlockPos p_219127_3_, int p_219127_4_, PointOfInterestManager.Status p_219127_5_) {
       return this.poiStreamByDistFiltPos(poiTypePred, posPred, pos, distance, status).findFirst();
    }

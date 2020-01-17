@@ -795,11 +795,11 @@ public abstract class World implements IWorld, AutoCloseable {
       return list;
    }
 
-   public <T extends Entity> List<T> func_225316_b(Class<? extends T> p_225316_1_, AxisAlignedBB p_225316_2_, @Nullable Predicate<? super T> p_225316_3_) {
-      int i = MathHelper.floor((p_225316_2_.minX - 2.0D) / 16.0D);
-      int j = MathHelper.ceil((p_225316_2_.maxX + 2.0D) / 16.0D);
-      int k = MathHelper.floor((p_225316_2_.minZ - 2.0D) / 16.0D);
-      int l = MathHelper.ceil((p_225316_2_.maxZ + 2.0D) / 16.0D);
+   public <T extends Entity> List<T> getEntitiesWithinAABBDef(Class<? extends T> entityClass, AxisAlignedBB boundingBox, @Nullable Predicate<? super T> entityPred) {
+      int i = MathHelper.floor((boundingBox.minX - 2.0D) / 16.0D);
+      int j = MathHelper.ceil((boundingBox.maxX + 2.0D) / 16.0D);
+      int k = MathHelper.floor((boundingBox.minZ - 2.0D) / 16.0D);
+      int l = MathHelper.ceil((boundingBox.maxZ + 2.0D) / 16.0D);
       List<T> list = Lists.newArrayList();
       AbstractChunkProvider abstractchunkprovider = this.getChunkProvider();
 
@@ -807,7 +807,7 @@ public abstract class World implements IWorld, AutoCloseable {
          for(int j1 = k; j1 < l; ++j1) {
             Chunk chunk = abstractchunkprovider.func_225313_a(i1, j1);
             if (chunk != null) {
-               chunk.getEntitiesOfTypeWithinAABB(p_225316_1_, p_225316_2_, list, p_225316_3_);
+               chunk.getEntitiesOfTypeWithinAABB(entityClass, boundingBox, list, entityPred);
             }
          }
       }

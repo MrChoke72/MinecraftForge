@@ -20,7 +20,7 @@ public class MeleeAttackGoal extends Goal {
    private double targetY;
    private double targetZ;
    protected final int attackInterval = 20;
-   private long field_220720_k;
+   private long waitBeforeExecTime;
 
    public MeleeAttackGoal(CreatureEntity creature, double speedIn, boolean useLongMemory) {
       this.attacker = creature;
@@ -31,10 +31,10 @@ public class MeleeAttackGoal extends Goal {
 
    public boolean shouldExecute() {
       long i = this.attacker.world.getGameTime();
-      if (i - this.field_220720_k < 20L) {
+      if (i - this.waitBeforeExecTime < 20L) {
          return false;
       } else {
-         this.field_220720_k = i;
+         this.waitBeforeExecTime = i;
          LivingEntity livingentity = this.attacker.getAttackTarget();
          if (livingentity == null) {
             return false;
@@ -43,6 +43,13 @@ public class MeleeAttackGoal extends Goal {
          } else {
             this.path = this.attacker.getNavigator().getPathToEntityLiving(livingentity, 0);
             if (this.path != null) {
+
+               //AH CHANGE DEBUG
+               if(this.attacker.getCustomName() != null && this.attacker.getCustomName().getString().equals("Chuck"))
+               {
+                  System.out.println("MeleeAttackGoal,  shouldExecute.  before loop.  pathLastPoint=" + path.getFinalPathPoint() + ", goal=" + this);
+               }
+
                return true;
             } else {
                return this.getAttackReachSqr(livingentity) >= this.attacker.getDistanceSq(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
@@ -79,6 +86,15 @@ public class MeleeAttackGoal extends Goal {
       }
 
       this.attacker.setAggroed(false);
+
+      //AH CHANGE DEBUG OFF
+      /*
+      if(this.attacker.getCustomName() != null)
+      {
+       System.out.println("MeleeAttackGoal, calling clearPath");
+      }
+       */
+
       this.attacker.getNavigator().clearPath();
    }
 

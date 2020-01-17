@@ -36,6 +36,10 @@ public class MemoryModuleType<U> {
    public static final MemoryModuleType<Path> PATH = register("path");
    public static final MemoryModuleType<List<GlobalPos>> INTERACTABLE_DOORS = register("interactable_doors");
 
+   //AH ADD
+   public static final MemoryModuleType<List<GlobalPos>> INTERACTABLE_TRAPDOORS = register("interactable_trapdoors");
+   public static final MemoryModuleType<Set<GlobalPos>> OPENED_TRAPDOORS = register("opened_trapdoors");
+
    //AH CHANGE REFACTOR
    public static final MemoryModuleType<Set<GlobalPos>> OPENED_DOORS = register("opened_doors");
    //public static final MemoryModuleType<Set<GlobalPos>> field_225462_q = register("opened_doors");

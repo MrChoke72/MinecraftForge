@@ -1068,7 +1068,7 @@ public class PandaEntity extends AnimalEntity {
                if (this.watchedClass == PlayerEntity.class) {
                   this.closestEntity = this.entity.world.getClosestPlayer(this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ());
                } else {
-                  this.closestEntity = this.entity.world.func_225318_b(this.watchedClass, this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.maxDistance, 3.0D, (double)this.maxDistance));
+                  this.closestEntity = this.entity.world.getClosestEntity(this.watchedClass, this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.maxDistance, 3.0D, (double)this.maxDistance));
                }
             }
 

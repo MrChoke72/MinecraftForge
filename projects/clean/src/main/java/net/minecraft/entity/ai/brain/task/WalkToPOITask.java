@@ -32,8 +32,8 @@ public class WalkToPOITask extends Task<VillagerEntity> {
       Vec3d vec3d = null;
 
       for(int j = 0; j < 5; ++j) {
-         Vec3d vec3d1 = RandomPositionGenerator.func_221024_a(entityIn, 15, 7, (p_225444_1_) -> {
-            return (double)(-worldIn.getPoiSecPosLevel(SectionPos.from(p_225444_1_)));
+         Vec3d vec3d1 = RandomPositionGenerator.func_221024_a(entityIn, 15, 7, (pos) -> {
+            return (double)(-worldIn.getPoiSecPosLevel(SectionPos.from(pos)));
          });
          if (vec3d1 != null) {
             int k = pointofinterestmanager.getPoiSecPosLevel(SectionPos.from(new BlockPos(vec3d1)));

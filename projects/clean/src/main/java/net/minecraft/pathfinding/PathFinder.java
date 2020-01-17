@@ -39,11 +39,12 @@ public class PathFinder {
       this.nodeProcessor.init(region, entity);
 
       //AH CHANGE DEBUG OFF
+      /*
       if(this.nodeProcessor.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
       {
          System.out.println("findPath before getStart");
       }
-
+      */
 
       PathPoint pathpoint = this.nodeProcessor.getStart();
       Map<FlaggedPathPoint, BlockPos> map = finalTgtSet.stream().collect(Collectors.toMap((pos) -> {
@@ -59,15 +60,15 @@ public class PathFinder {
    private Path findPath(PathPoint startPoint, Map<FlaggedPathPoint, BlockPos> tgtPointMap, float followRange, int keepDist, float iterMaxMult) {
    //private Path func_227479_a_(PathPoint p_227479_1_, Map<FlaggedPathPoint, BlockPos> p_227479_2_, float p_227479_3_, int p_227479_4_, float p_227479_5_) {
 
-      //AH CHANGE DEBUG OFF
-      /*
+      Set<FlaggedPathPoint> flagPointSet = tgtPointMap.keySet();
+
+      //AH CHANGE DEBUG
       if(this.nodeProcessor.entity.getCustomName() != null && this.nodeProcessor.entity.getCustomName().getString().equals("Chuck"))
       {
-         System.out.println("findPath before loop.  finalTgtPoint=" + startPoint.x + "," + startPoint.y + "," + startPoint.z);
+         System.out.println("findPath before loop.  finalTgtPoint=" + tgtPointMap.toString());
       }
-       */
 
-      Set<FlaggedPathPoint> flagPointSet = tgtPointMap.keySet();
+
       startPoint.distFromStartPlusMalus = 0.0F;
       startPoint.closestDistToAnyTgt = this.getClosestDistInSet(startPoint, flagPointSet);
       startPoint.distCloestPlusStart = startPoint.closestDistToAnyTgt;

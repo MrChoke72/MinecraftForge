@@ -130,7 +130,6 @@ public class WalkNodeProcessor extends NodeProcessor {
       //AH CHANGE NEW ******
       boolean isPassenger = this.entity.isPassenger();
 
-
       //AH CHANGE DEBUG OFF
       /*
       if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
@@ -139,8 +138,7 @@ public class WalkNodeProcessor extends NodeProcessor {
       }
        */
 
-
-      boolean canBreakTrapDoors = this.canEnterDoors && this.canOpenDoors && !(entity instanceof AbstractVillagerEntity);
+      boolean canBreakTrapDoors = this.canEnterDoors && this.canOpenDoors;
 
       boolean bOnLadderAbove = false;
       boolean bLadderBelow = false;
@@ -522,7 +520,7 @@ public class WalkNodeProcessor extends NodeProcessor {
       }
 
       //AH CHANGE ADD ******
-      if (pathNodeType == PathNodeType.TRAPDOOR_CLOSED && (canOpenDoorsIn && canEnterDoorsIn && !(entity instanceof AbstractVillagerEntity))) {
+      if (pathNodeType == PathNodeType.TRAPDOOR_CLOSED && (canOpenDoorsIn && canEnterDoorsIn)) {
          pathNodeType = PathNodeType.WALKABLE;
       }
       //AH CHANGE END ******

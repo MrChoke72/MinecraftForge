@@ -59,6 +59,13 @@ public abstract class TargetGoal extends Goal {
                   if (this.goalOwner.getEntitySenses().canSee(livingentity)) {
                      this.targetUnseenTicks = 0;
                   } else if (++this.targetUnseenTicks > this.unseenMemoryTicks) {
+
+                     //AH CHANGE DEBUG
+                     if(this.goalOwner.getCustomName() != null)
+                     {
+                        System.out.println("TargetGoal, targetUnseenTicks=" + targetUnseenTicks + ", unseenMemoryTicks=" + unseenMemoryTicks);
+                     }
+
                      return false;
                   }
                }
@@ -86,6 +93,15 @@ public abstract class TargetGoal extends Goal {
    }
 
    public void resetTask() {
+
+      //AH CHANGE DEBUG OFF
+      /*
+      if(this.goalOwner.getCustomName() != null)
+      {
+         System.out.println("TargetGoal, clearing AttackTarget");
+      }
+       */
+
       this.goalOwner.setAttackTarget((LivingEntity)null);
       this.target = null;
    }
@@ -119,6 +135,23 @@ public abstract class TargetGoal extends Goal {
    private boolean canEasilyReach(LivingEntity target) {
       this.targetSearchDelay = 10 + this.goalOwner.getRNG().nextInt(5);
       Path path = this.goalOwner.getNavigator().getPathToEntityLiving(target, 0);
+
+      //AH CHANGE DEBUG
+      if(this.goalOwner.getCustomName() != null && this.goalOwner.getCustomName().getString().equals("Chuck"))
+      {
+         //AH DEBUG OFF
+         /*
+         if(this.goalOwner.getNavigator().getPath() != null)
+         {
+            System.out.println("TargetGoal,  canEasilyReach.  lastPathPoint=" + this.goalOwner.getNavigator().getPath().getFinalPathPoint());
+         }
+         else
+         {
+            System.out.println("TargetGoal,  canEasilyReach. no path");
+         }
+          */
+      }
+
       if (path == null) {
          return false;
       } else {

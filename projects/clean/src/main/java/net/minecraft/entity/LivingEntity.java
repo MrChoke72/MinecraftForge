@@ -1200,11 +1200,26 @@ public abstract class LivingEntity extends Entity {
       } else {
          BlockState blockstate = this.getBlockState();
          Block block = blockstate.getBlock();
+
+         //AH CHANGE ****
+         if (block == Blocks.LADDER || block == Blocks.VINE && block == Blocks.SCAFFOLDING) {
+            return true;
+         }
+         else if(block instanceof TrapDoorBlock)
+         {
+            return this.canGoThroughtTrapDoorOnLadder(new BlockPos(this), blockstate);
+         }
+         else
+         {
+            return false;
+         }
+         //Vanilla
+         /*
          if (block != Blocks.LADDER && block != Blocks.VINE && block != Blocks.SCAFFOLDING) {
             return block instanceof TrapDoorBlock && this.canGoThroughtTrapDoorOnLadder(new BlockPos(this), blockstate);
          } else {
             return true;
-         }
+         }*/
       }
    }
 
@@ -1218,18 +1233,9 @@ public abstract class LivingEntity extends Entity {
 
          //AH CHANGE ******
          Block block = blockstate.getBlock();
-         if(block == Blocks.LADDER)
+         if(block == Blocks.LADDER || block == Blocks.VINE)
          {
-            if (blockstate.get(LadderBlock.FACING) == state.get(TrapDoorBlock.HORIZONTAL_FACING)) {
-               return true;
-            }
-         }
-         else if(block == Blocks.VINE)
-         {
-            if(Block.getDirFacingFromState(blockstate) == state.get(TrapDoorBlock.HORIZONTAL_FACING))
-            {
-               return true;
-            }
+            return true;
          }
          //AH CHANGE END
          //Vanilla

@@ -230,14 +230,18 @@ public abstract class PathNavigator {
             BlockPos blockpos = new BlockPos(vec3d2);
 
             //AH CHANGE DEBUG OFF
+            /*
             if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
             {
-               System.out.println("in navigator tick, currPathPos=" + vec3d2.toString());
+               System.out.println("in navigator tick, currPathPos=" + vec3d2.toString() + "currPathIdx=" + currentPath.getCurrentPathIndex() + ", pathSize=" + this.currentPath.getCurrentPathLength() + ", lastPoint=" + getPath().getFinalPathPoint());
             }
+            */
+
 
             this.entity.getMoveHelper().setMoveTo(vec3d2.x, this.world.getBlockState(blockpos.down()).isAir() ? vec3d2.y : WalkNodeProcessor.getGroundY(this.world, blockpos), vec3d2.z, this.speed);
          }
-         //AH CHANGE DEBUG
+         //AH CHANGE DEBUG OFF
+         /*
          else
          {
             if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
@@ -245,6 +249,7 @@ public abstract class PathNavigator {
                System.out.println("in navigator tick, noPath");
             }
          }
+          */
 
       }
    }
@@ -263,6 +268,13 @@ public abstract class PathNavigator {
    protected void checkForStuck(Vec3d positionVec3) {
       if (this.totalTicks - this.ticksAtLastPos > 100) {
          if (positionVec3.squareDistanceTo(this.lastPosCheck) < 2.25D) {
+
+            //AH CHANGE DEBUG
+            if(this.entity.getCustomName() != null)
+            {
+               System.out.println("checkForStuck 1, calling clearPath");
+            }
+
             this.clearPath();
          }
 
@@ -284,6 +296,15 @@ public abstract class PathNavigator {
             this.timeoutCachedNode = Vec3d.ZERO;
             this.timeoutTimer = 0L;
             this.timeoutLimit = 0.0D;
+
+
+            //AH CHANGE DEBUG
+            if(this.entity.getCustomName() != null)
+            {
+               System.out.println("checkForStuck 2, calling clearPath");
+            }
+
+
             this.clearPath();
          }
 
@@ -296,19 +317,20 @@ public abstract class PathNavigator {
       return this.currentPath == null || this.currentPath.isFinished();
    }
 
-   public boolean func_226337_n_() {
+   public boolean hasPath() {
       return !this.noPath();
    }
 
    public void clearPath() {
 
-      //AH CHANGE DEBUG
+      //AH CHANGE DEBUG OFF
+      /*
       if(this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
       {
          //System.out.println("BREAK 2");
          System.out.println("in clearPath to null.");
       }
-
+      */
 
       this.currentPath = null;
    }

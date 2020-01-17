@@ -59,7 +59,7 @@ public class HurtByTargetGoal extends TargetGoal {
 
    protected void alertOthers() {
       double d0 = this.getTargetDistance();
-      List<MobEntity> list = this.goalOwner.world.func_225317_b(this.goalOwner.getClass(), (new AxisAlignedBB(this.goalOwner.getPosX(), this.goalOwner.getPosY(), this.goalOwner.getPosZ(), this.goalOwner.getPosX() + 1.0D, this.goalOwner.getPosY() + 1.0D, this.goalOwner.getPosZ() + 1.0D)).grow(d0, 10.0D, d0));
+      List<MobEntity> list = this.goalOwner.world.getEntitiesWithinAABBNoPred(this.goalOwner.getClass(), (new AxisAlignedBB(this.goalOwner.getPosX(), this.goalOwner.getPosY(), this.goalOwner.getPosZ(), this.goalOwner.getPosX() + 1.0D, this.goalOwner.getPosY() + 1.0D, this.goalOwner.getPosZ() + 1.0D)).grow(d0, 10.0D, d0));
       Iterator iterator = list.iterator();
 
       while(true) {

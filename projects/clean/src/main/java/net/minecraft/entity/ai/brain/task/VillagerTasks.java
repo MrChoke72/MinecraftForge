@@ -21,6 +21,10 @@ public class VillagerTasks {
       return ImmutableList.of(
               Pair.of(0, new SwimTask(0.4F, 0.8F)),
               Pair.of(0, new InteractWithDoorTask()),
+
+              //AH ADDED
+              Pair.of(0, new InteractWithTrapDoorTask()),
+
               Pair.of(0, new LookTask(45, 90)),
               Pair.of(0, new PanicTask()),
               Pair.of(0, new WakeUpTask()),
@@ -174,8 +178,10 @@ public class VillagerTasks {
    }
 
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> hide(VillagerProfession profession, float moveSpeed) {
-      int i = 2;
-      return ImmutableList.of(Pair.of(0, new ExpireHidingTask(15, 2)), Pair.of(1, new FindHidingPlaceTask(32, moveSpeed * 1.25F, 2)), lookTasks());
+      return ImmutableList.of(
+              Pair.of(0, new ExpireHidingTask(15, 2)),
+              Pair.of(1, new FindHidingPlaceTask(32, moveSpeed * 1.25F, 2)),
+              lookTasks());
    }
 
    private static Pair<Integer, Task<LivingEntity>> lookAtEntityTasks() {
@@ -194,8 +200,8 @@ public class VillagerTasks {
    private static Pair<Integer, Task<LivingEntity>> lookTasks() {
    //private static Pair<Integer, Task<LivingEntity>> func_220646_b() {
       return Pair.of(5, new FirstShuffledTask<>(ImmutableList.of(
-              Pair.of(new LookAtEntityTask(EntityType.VILLAGER, 8.0F), 2),
-              Pair.of(new LookAtEntityTask(EntityType.PLAYER, 8.0F), 2),
-              Pair.of(new DummyTask(30, 60), 8))));
+                  Pair.of(new LookAtEntityTask(EntityType.VILLAGER, 8.0F), 2),
+                  Pair.of(new LookAtEntityTask(EntityType.PLAYER, 8.0F), 2),
+                  Pair.of(new DummyTask(30, 60), 8))));
    }
 }

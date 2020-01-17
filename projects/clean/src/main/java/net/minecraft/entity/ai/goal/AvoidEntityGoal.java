@@ -50,7 +50,7 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
    }
 
    public boolean shouldExecute() {
-      this.field_75376_d = this.entity.world.func_225318_b(this.classToAvoid, this.field_220872_k, this.entity, this.entity.getPosX(), this.entity.getPosY(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.avoidDistance, 3.0D, (double)this.avoidDistance));
+      this.field_75376_d = this.entity.world.getClosestEntity(this.classToAvoid, this.field_220872_k, this.entity, this.entity.getPosX(), this.entity.getPosY(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.avoidDistance, 3.0D, (double)this.avoidDistance));
       if (this.field_75376_d == null) {
          return false;
       } else {

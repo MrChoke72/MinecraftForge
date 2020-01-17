@@ -88,9 +88,9 @@ public class GatherPOITask extends Task<CreatureEntity> {
             entityIn.getBrain().setMemory(this.memModuleType, GlobalPos.of(worldIn.getDimension().getType(), blockpos));
 
             //AH CHANGE DEBUG
-           if(entityIn.getCustomName() != null && entityIn.getCustomName().getString().equals("Chuck"))
+           if(entityIn.getCustomName() != null)
            {
-               System.out.println("GatherPOITask, claimed: " + blockpos.toString() + ", type=" + this.poiType);
+               System.out.println("GatherPOITask, memory set at: " + blockpos.toString() + " for " + this.poiType);
            }
 
             DebugPacketSender.func_218801_c(worldIn, blockpos);

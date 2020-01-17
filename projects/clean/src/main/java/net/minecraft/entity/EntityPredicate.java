@@ -43,8 +43,8 @@ public class EntityPredicate {
       return this;
    }
 
-   public EntityPredicate setCustomPredicate(@Nullable Predicate<LivingEntity> p_221012_1_) {
-      this.customPredicate = p_221012_1_;
+   public EntityPredicate setCustomPredicate(@Nullable Predicate<LivingEntity> entityPred) {
+      this.customPredicate = entityPred;
       return this;
    }
 

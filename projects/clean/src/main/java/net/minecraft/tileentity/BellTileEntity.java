@@ -32,7 +32,7 @@ public class BellTileEntity extends TileEntity implements ITickableTileEntity {
 
    public boolean receiveClientEvent(int id, int type) {
       if (id == 1) {
-         this.func_213941_c();
+         this.setVillagersHearBell();
          this.field_213949_j = 0;
          this.field_213945_c = Direction.byIndex(type);
          this.field_213943_a = 0;
@@ -86,7 +86,7 @@ public class BellTileEntity extends TileEntity implements ITickableTileEntity {
       this.world.addBlockEvent(blockpos, this.getBlockState().getBlock(), 1, p_213939_1_.getIndex());
    }
 
-   private void func_213941_c() {
+   private void setVillagersHearBell() {
       BlockPos blockpos = this.getPos();
       if (this.world.getGameTime() > this.ringTime + 60L || this.entitiesAtRing == null) {
          this.ringTime = this.world.getGameTime();

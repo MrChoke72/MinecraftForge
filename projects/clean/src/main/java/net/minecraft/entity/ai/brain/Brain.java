@@ -113,7 +113,8 @@ public class Brain<E extends LivingEntity> implements IDynamicSerializable {
       if (optional == null) {
          return false;
       } else {
-         return memoryStatusIn == MemoryModuleStatus.REGISTERED || memoryStatusIn == MemoryModuleStatus.VALUE_PRESENT && optional.isPresent() || memoryStatusIn == MemoryModuleStatus.VALUE_ABSENT && !optional.isPresent();
+         return memoryStatusIn == MemoryModuleStatus.REGISTERED || memoryStatusIn == MemoryModuleStatus.VALUE_PRESENT && optional.isPresent() ||
+                 memoryStatusIn == MemoryModuleStatus.VALUE_ABSENT && !optional.isPresent();
       }
    }
 

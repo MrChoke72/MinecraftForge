@@ -143,11 +143,16 @@ public class MovementController {
             this.mob.setMoveLadder(moveFactor);
 
             //Apply rotation
-            if ((!BlockTags.WOODEN_TRAPDOORS.contains(ladderBlock) && ladderBlock != Blocks.SCAFFOLDING) && d2 != 0.0D && Math.abs(d0) < 0.03D && Math.abs(d1) < 0.03D) {
+            //!BlockTags.WOODEN_TRAPDOORS.contains(ladderBlock)
+            if ((ladderBlock != Blocks.SCAFFOLDING) && d2 != 0.0D && Math.abs(d0) < 0.03D && Math.abs(d1) < 0.03D) {
                Direction dirFacing = null;
                if(ladderBlock instanceof LadderBlock)
                {
                   dirFacing = blockState.get(LadderBlock.FACING);
+               }
+               else if(ladderBlock instanceof TrapDoorBlock)
+               {
+                  dirFacing = blockState.get(TrapDoorBlock.HORIZONTAL_FACING);
                }
                else
                {
@@ -156,6 +161,7 @@ public class MovementController {
                }
 
                float rotation;
+               //these are to face opposite block facing (block faces outward)
                if (dirFacing == Direction.SOUTH) {
                   rotation =  180.0F;
                } else if (dirFacing == Direction.WEST) {

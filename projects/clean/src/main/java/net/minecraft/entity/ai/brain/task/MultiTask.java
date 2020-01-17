@@ -88,11 +88,11 @@ public class MultiTask<E extends LivingEntity> extends Task<E> {
 
    static enum RunType {
       RUN_ONE {
-         public <E extends LivingEntity> void func_220630_a(WeightedList<Task<? super E>> p_220630_1_, ServerWorld p_220630_2_, E p_220630_3_, long p_220630_4_) {
+         public <E extends LivingEntity> void func_220630_a(WeightedList<Task<? super E>> p_220630_1_, ServerWorld world, E p_220630_3_, long p_220630_4_) {
             p_220630_1_.func_220655_b().filter((p_220634_0_) -> {
                return p_220634_0_.getStatus() == Task.Status.STOPPED;
             }).filter((p_220633_4_) -> {
-               return p_220633_4_.start(p_220630_2_, p_220630_3_, p_220630_4_);
+               return p_220633_4_.start(world, p_220630_3_, p_220630_4_);
             }).findFirst();
          }
       },

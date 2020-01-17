@@ -14,34 +14,37 @@ import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.server.ServerWorld;
 
 public class FindHidingPlaceTask extends Task<LivingEntity> {
-   private final float field_220457_a;
+   private final float moveSpeed;
 
    //AH REFACTOR
-   private final int field_220458_b;
+   private final int distLookForHome;
    //private final int field_220458_b;
 
-   private final int field_220459_c;
-   private Optional<BlockPos> field_220460_d = Optional.empty();
+   private final int distNearHome;
+   private Optional<BlockPos> hidePlacePos = Optional.empty();
 
    //AH REFACTOR
-   public FindHidingPlaceTask(int p_i50361_1_, float p_i50361_2_, int p_i50361_3_) {
+   public FindHidingPlaceTask(int distLookForHome, float moveSpeed, int distNearHome) {
    //public FindHidingPlaceTask(int p_i50361_1_, float p_i50361_2_, int p_i50361_3_) {
-      super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleStatus.REGISTERED, MemoryModuleType.HIDING_PLACE, MemoryModuleStatus.REGISTERED));
-      this.field_220458_b = p_i50361_1_;
-      this.field_220457_a = p_i50361_2_;
-      this.field_220459_c = p_i50361_3_;
+      super(ImmutableMap.of(
+              MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT,
+              MemoryModuleType.HOME, MemoryModuleStatus.REGISTERED,
+              MemoryModuleType.HIDING_PLACE, MemoryModuleStatus.REGISTERED));
+      this.distLookForHome = distLookForHome;
+      this.moveSpeed = moveSpeed;
+      this.distNearHome = distNearHome;
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, LivingEntity owner) {
-      Optional<BlockPos> optional = worldIn.getPoiMgr().func_219127_a((p_220454_0_) -> {
-         return p_220454_0_ == PointOfInterestType.HOME;
-      }, (p_220456_0_) -> {
+      Optional<BlockPos> optional = worldIn.getPoiMgr().poiOptByDistFiltPos((poiType) -> {
+         return poiType == PointOfInterestType.HOME;
+      }, (pos) -> {
          return true;
-      }, new BlockPos(owner), this.field_220459_c + 1, PointOfInterestManager.Status.ANY);
-      if (optional.isPresent() && optional.get().withinDistance(owner.getPositionVec(), (double)this.field_220459_c)) {
-         this.field_220460_d = optional;
+      }, new BlockPos(owner), this.distNearHome + 1, PointOfInterestManager.Status.ANY);
+      if (optional.isPresent() && optional.get().withinDistance(owner.getPositionVec(), (double)this.distNearHome)) {
+         this.hidePlacePos = optional;
       } else {
-         this.field_220460_d = Optional.empty();
+         this.hidePlacePos = Optional.empty();
       }
 
       return true;
@@ -49,13 +52,13 @@ public class FindHidingPlaceTask extends Task<LivingEntity> {
 
    protected void startExecuting(ServerWorld worldIn, LivingEntity entityIn, long gameTimeIn) {
       Brain<?> brain = entityIn.getBrain();
-      Optional<BlockPos> optional = this.field_220460_d;
+      Optional<BlockPos> optional = this.hidePlacePos;
       if (!optional.isPresent()) {
          optional = worldIn.getPoiMgr().getRandomPoiPos((poiType) -> {
             return poiType == PointOfInterestType.HOME;
          }, (pos) -> {
             return true;
-         }, PointOfInterestManager.Status.ANY, new BlockPos(entityIn), this.field_220458_b, entityIn.getRNG());
+         }, PointOfInterestManager.Status.ANY, new BlockPos(entityIn), this.distLookForHome, entityIn.getRNG());
          if (!optional.isPresent()) {
             Optional<GlobalPos> optional1 = brain.getMemory(MemoryModuleType.HOME);
             if (optional1.isPresent()) {
@@ -70,8 +73,8 @@ public class FindHidingPlaceTask extends Task<LivingEntity> {
          brain.removeMemory(MemoryModuleType.BREED_TARGET);
          brain.removeMemory(MemoryModuleType.INTERACTION_TARGET);
          brain.setMemory(MemoryModuleType.HIDING_PLACE, GlobalPos.of(worldIn.getDimension().getType(), optional.get()));
-         if (!optional.get().withinDistance(entityIn.getPositionVec(), (double)this.field_220459_c)) {
-            brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(optional.get(), this.field_220457_a, this.field_220459_c));
+         if (!optional.get().withinDistance(entityIn.getPositionVec(), (double)this.distNearHome)) {
+            brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(optional.get(), this.moveSpeed, this.distNearHome));
          }
       }
 

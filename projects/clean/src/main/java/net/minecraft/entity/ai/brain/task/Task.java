@@ -39,6 +39,15 @@ public abstract class Task<E extends LivingEntity> {
          int i = this.durationMin + worldIn.getRandom().nextInt(this.durationMax + 1 - this.durationMin);
          this.stopTime = gameTime + (long)i;
          this.startExecuting(worldIn, owner, gameTime);
+
+         //AH CHANGE DEBUG OFF
+         /*
+         if(owner.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+         {
+            System.out.println("Task::start.  task=" + toString());
+         }
+          */
+
          return true;
       } else {
          return false;
@@ -85,9 +94,9 @@ public abstract class Task<E extends LivingEntity> {
    }
 
    private boolean hasRequiredMemories(E owner) {
-      return this.requiredMemoryState.entrySet().stream().allMatch((p_220379_1_) -> {
-         MemoryModuleType<?> memorymoduletype = p_220379_1_.getKey();
-         MemoryModuleStatus memorymodulestatus = p_220379_1_.getValue();
+      return this.requiredMemoryState.entrySet().stream().allMatch((entry) -> {
+         MemoryModuleType<?> memorymoduletype = entry.getKey();
+         MemoryModuleStatus memorymodulestatus = entry.getValue();
          return owner.getBrain().hasMemory(memorymoduletype, memorymodulestatus);
       });
    }

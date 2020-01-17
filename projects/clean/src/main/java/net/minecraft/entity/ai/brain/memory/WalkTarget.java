@@ -13,18 +13,18 @@ public class WalkTarget {
    private final int reachDist;
    //private final int distance;
 
-   public WalkTarget(BlockPos targetIn, float speedIn, int distanceIn) {
-      this(new BlockPosWrapper(targetIn), speedIn, distanceIn);
+   public WalkTarget(BlockPos targetIn, float speedIn, int reachDist) {
+      this(new BlockPosWrapper(targetIn), speedIn, reachDist);
    }
 
-   public WalkTarget(Vec3d targetIn, float speedIn, int distanceIn) {
-      this(new BlockPosWrapper(new BlockPos(targetIn)), speedIn, distanceIn);
+   public WalkTarget(Vec3d targetIn, float speedIn, int reachDist) {
+      this(new BlockPosWrapper(new BlockPos(targetIn)), speedIn, reachDist);
    }
 
-   public WalkTarget(IPosWrapper targetIn, float speedIn, int distanceIn) {
+   public WalkTarget(IPosWrapper targetIn, float speedIn, int reachDist) {
       this.target = targetIn;
       this.speed = speedIn;
-      this.reachDist = distanceIn;
+      this.reachDist = reachDist;
    }
 
    public IPosWrapper getTarget() {

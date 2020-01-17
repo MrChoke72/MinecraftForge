@@ -23,7 +23,7 @@ public class OpenDoorGoal extends InteractDoorGoal {
 
    public void resetTask() {
 
-      //AH CHANGE - THIS LOOKS BUGGED..  WANT TO CHECK for closeDoor befor eit clsoes
+      //AH CHANGE - THIS LOOKS BUGGED..  WANT TO CHECK for closeDoor before it closes
       if(closeDoor)
       {
          this.toggleDoor(false);

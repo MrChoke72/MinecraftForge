@@ -723,7 +723,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
             ++this.field_226468_c_;
             if (this.field_226468_c_ > 600) {
                this.func_226478_k_();
-            } else if (!BeeEntity.this.navigator.func_226337_n_()) {
+            } else if (!BeeEntity.this.navigator.hasPath()) {
                if (!BeeEntity.this.func_226401_b_(BeeEntity.this.field_226369_bI_, 16)) {
                   if (BeeEntity.this.func_226437_j_(BeeEntity.this.field_226369_bI_)) {
                      this.func_226479_l_();
@@ -822,7 +822,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
             ++this.field_226481_c_;
             if (this.field_226481_c_ > 600) {
                BeeEntity.this.field_226368_bH_ = null;
-            } else if (!BeeEntity.this.navigator.func_226337_n_()) {
+            } else if (!BeeEntity.this.navigator.hasPath()) {
                if (BeeEntity.this.func_226437_j_(BeeEntity.this.field_226368_bH_)) {
                   BeeEntity.this.field_226368_bH_ = null;
                } else {
@@ -1148,7 +1148,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       }
 
       public boolean shouldContinueExecuting() {
-         return BeeEntity.this.navigator.func_226337_n_();
+         return BeeEntity.this.navigator.hasPath();
       }
 
       public void startExecuting() {

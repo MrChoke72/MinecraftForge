@@ -37,11 +37,13 @@ public class OpenTrapDoorGoal extends InteractTrapDoorGoal {
     public void tick() {
         --this.closeDoorTemporisation;
 
-        //AH CHANGE DEBUG
+        //AH CHANGE DEBUG OFF
+        /*
         if(this.entity instanceof HuskEntity && this.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
         {
             System.out.println("OpenTrapDoorGoal tick.  closeDoorTemporisation=" + closeDoorTemporisation);
         }
+         */
 
         super.tick();
     }
