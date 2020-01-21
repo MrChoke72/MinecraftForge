@@ -24,31 +24,31 @@ public class GiftLootTables implements Consumer<BiConsumer<ResourceLocation, Loo
       p_accept_1_.accept(LootTables.GAMEPLAY_HERO_OF_THE_VILLAGE_CLERIC_GIFT, LootTable.builder().addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(Items.REDSTONE)).addEntry(ItemLootEntry.builder(Items.LAPIS_LAZULI))));
       p_accept_1_.accept(LootTables.GAMEPLAY_HERO_OF_THE_VILLAGE_FARMER_GIFT, LootTable.builder().addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(Items.BREAD)).addEntry(ItemLootEntry.builder(Items.PUMPKIN_PIE)).addEntry(ItemLootEntry.builder(Items.COOKIE))));
       p_accept_1_.accept(LootTables.GAMEPLAY_HERO_OF_THE_VILLAGE_FISHERMAN_GIFT, LootTable.builder().addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(Items.COD)).addEntry(ItemLootEntry.builder(Items.SALMON))));
-      p_accept_1_.accept(LootTables.GAMEPLAY_HERO_OF_THE_VILLAGE_FLETCHER_GIFT, LootTable.builder().addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(Items.ARROW).weight(26)).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218596_0_) -> {
+      p_accept_1_.accept(LootTables.GAMEPLAY_HERO_OF_THE_VILLAGE_FLETCHER_GIFT, LootTable.builder().addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(Items.ARROW).weight(26)).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218596_0_) -> {
          p_218596_0_.putString("Potion", "minecraft:swiftness");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218597_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218597_0_) -> {
          p_218597_0_.putString("Potion", "minecraft:slowness");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218608_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218608_0_) -> {
          p_218608_0_.putString("Potion", "minecraft:strength");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218606_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218606_0_) -> {
          p_218606_0_.putString("Potion", "minecraft:healing");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218603_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218603_0_) -> {
          p_218603_0_.putString("Potion", "minecraft:harming");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218607_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218607_0_) -> {
          p_218607_0_.putString("Potion", "minecraft:leaping");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218601_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218601_0_) -> {
          p_218601_0_.putString("Potion", "minecraft:regeneration");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218600_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218600_0_) -> {
          p_218600_0_.putString("Potion", "minecraft:fire_resistance");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218599_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218599_0_) -> {
          p_218599_0_.putString("Potion", "minecraft:water_breathing");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218598_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218598_0_) -> {
          p_218598_0_.putString("Potion", "minecraft:invisibility");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218605_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218605_0_) -> {
          p_218605_0_.putString("Potion", "minecraft:night_vision");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218602_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218602_0_) -> {
          p_218602_0_.putString("Potion", "minecraft:weakness");
-      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.func_215932_a(RandomValueRange.func_215837_a(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218604_0_) -> {
+      })))).addEntry(ItemLootEntry.builder(Items.TIPPED_ARROW).acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F))).acceptFunction(SetNBT.func_215952_a(Util.make(new CompoundNBT(), (p_218604_0_) -> {
          p_218604_0_.putString("Potion", "minecraft:poison");
       }))))));
       p_accept_1_.accept(LootTables.GAMEPLAY_HERO_OF_THE_VILLAGE_LEATHERWORKER_GIFT, LootTable.builder().addLootPool(LootPool.builder().rolls(ConstantRange.of(1)).addEntry(ItemLootEntry.builder(Items.LEATHER))));

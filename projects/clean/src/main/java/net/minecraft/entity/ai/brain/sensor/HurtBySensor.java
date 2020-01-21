@@ -10,10 +10,10 @@ import net.minecraft.world.server.ServerWorld;
 
 public class 
 HurtBySensor extends Sensor<LivingEntity> {
-   protected void update(ServerWorld world, LivingEntity p_212872_2_) {
-      Brain<?> brain = p_212872_2_.getBrain();
-      if (p_212872_2_.getLastDamageSource() != null) {
-         brain.setMemory(MemoryModuleType.HURT_BY, p_212872_2_.getLastDamageSource());
+   protected void update(ServerWorld world, LivingEntity owner) {
+      Brain<?> brain = owner.getBrain();
+      if (owner.getLastDamageSource() != null) {
+         brain.setMemory(MemoryModuleType.HURT_BY, owner.getLastDamageSource());
          Entity entity = brain.getMemory(MemoryModuleType.HURT_BY).get().getTrueSource();
          if (entity instanceof LivingEntity) {
             brain.setMemory(MemoryModuleType.HURT_BY_ENTITY, (LivingEntity)entity);

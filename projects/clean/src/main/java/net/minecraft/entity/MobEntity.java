@@ -666,9 +666,9 @@ public abstract class MobEntity extends LivingEntity {
       return angle + f;
    }
 
-   public static boolean func_223315_a(EntityType<? extends MobEntity> p_223315_0_, IWorld p_223315_1_, SpawnReason p_223315_2_, BlockPos p_223315_3_, Random p_223315_4_) {
-      BlockPos blockpos = p_223315_3_.down();
-      return p_223315_2_ == SpawnReason.SPAWNER || p_223315_1_.getBlockState(blockpos).canEntitySpawn(p_223315_1_, blockpos, p_223315_0_);
+   public static boolean canEntitySpawn(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason reason, BlockPos pos, Random rand) {
+      BlockPos blockpos = pos.down();
+      return reason == SpawnReason.SPAWNER || world.getBlockState(blockpos).canEntitySpawn(world, blockpos, entityType);
    }
 
    public boolean canSpawn(IWorld worldIn, SpawnReason spawnReasonIn) {
@@ -1211,7 +1211,7 @@ public abstract class MobEntity extends LivingEntity {
       if (this.world.isDaytime() && !this.world.isRemote) {
          float f = this.getBrightness();
          BlockPos blockpos = this.getRidingEntity() instanceof BoatEntity ? (new BlockPos(this.getPosX(), (double)Math.round(this.getPosY()), this.getPosZ())).up() : new BlockPos(this.getPosX(), (double)Math.round(this.getPosY()), this.getPosZ());
-         if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.func_226660_f_(blockpos)) {
+         if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.isMaxLightLevel(blockpos)) {
             return true;
          }
       }

@@ -2430,8 +2430,8 @@ public class WorldRenderer implements AutoCloseable, IResourceManagerReloadListe
       if (p_228420_1_.func_227035_k_()) {
          return 15728880;
       } else {
-         int i = p_228420_0_.func_226658_a_(LightType.SKY, p_228420_2_);
-         int j = p_228420_0_.func_226658_a_(LightType.BLOCK, p_228420_2_);
+         int i = p_228420_0_.getLightLevel(LightType.SKY, p_228420_2_);
+         int j = p_228420_0_.getLightLevel(LightType.BLOCK, p_228420_2_);
          int k = p_228420_1_.getLightValue();
          if (j < k) {
             j = k;

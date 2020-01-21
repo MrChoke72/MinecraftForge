@@ -32,7 +32,7 @@ public class LightDebugRenderer implements DebugRenderer.IDebugRenderer {
       LongSet longset = new LongOpenHashSet();
 
       for(BlockPos blockpos1 : BlockPos.getAllInBoxMutable(blockpos.add(-10, -10, -10), blockpos.add(10, 10, 10))) {
-         int i = world.func_226658_a_(LightType.SKY, blockpos1);
+         int i = world.getLightLevel(LightType.SKY, blockpos1);
          float f = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
          int j = MathHelper.hsvToRGB(f, 0.9F, 0.9F);
          long k = SectionPos.worldToSection(blockpos1.toLong());

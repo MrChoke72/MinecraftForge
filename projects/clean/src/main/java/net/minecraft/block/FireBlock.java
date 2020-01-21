@@ -438,7 +438,7 @@ public class FireBlock extends Block {
       fireblock.setFireInfo(Blocks.LECTERN, 30, 20);
       fireblock.setFireInfo(Blocks.COMPOSTER, 5, 20);
       fireblock.setFireInfo(Blocks.SWEET_BERRY_BUSH, 60, 100);
-      fireblock.setFireInfo(Blocks.field_226906_mb_, 5, 20);
-      fireblock.setFireInfo(Blocks.field_226905_ma_, 30, 20);
+      fireblock.setFireInfo(Blocks.BEEHIVE, 5, 20);
+      fireblock.setFireInfo(Blocks.BEE_NEST, 30, 20);
    }
 }

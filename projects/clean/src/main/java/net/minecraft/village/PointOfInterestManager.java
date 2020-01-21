@@ -40,19 +40,19 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    }
 
    //AH REFACTOR
-   public void func_219135_a(BlockPos pos, PointOfInterestType poiType) {
+   public void addLocation(BlockPos pos, PointOfInterestType poiType) {
    //public void func_219135_a(BlockPos p_219135_1_, PointOfInterestType p_219135_2_) {
       this.getCachedPoiData(SectionPos.from(pos).asLong()).addPoiLocation(pos, poiType);
    }
 
-   public void func_219140_a(BlockPos p_219140_1_) {
-      this.getCachedPoiData(SectionPos.from(p_219140_1_).asLong()).remove(p_219140_1_);
+   public void removeLocation(BlockPos pos) {
+      this.getCachedPoiData(SectionPos.from(pos).asLong()).remove(pos);
    }
 
    //AH CHANGE REFACTOR
-   public long func_219145_a(Predicate<PointOfInterestType> poiTypePred, BlockPos pos, int p_219145_3_, PointOfInterestManager.Status p_219145_4_) {
+   public long poiByDistCount(Predicate<PointOfInterestType> poiTypePred, BlockPos pos, int distance, PointOfInterestManager.Status status) {
    //public long func_219145_a(Predicate<PointOfInterestType> p_219145_1_, BlockPos p_219145_2_, int p_219145_3_, PointOfInterestManager.Status p_219145_4_) {
-      return this.poiStreamByDistFiltPos(poiTypePred, pos, p_219145_3_, p_219145_4_).count();
+      return this.poiStreamByDistFiltPos(poiTypePred, pos, distance, status).count();
    }
 
    //AH CHANGE REFACTOR
@@ -83,7 +83,7 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    //AH REFACTOR
    private Stream<PointOfInterest> poiStreamByPoiTypePredPosStatus(Predicate<PointOfInterestType> poiPred, long secPosPacked, PointOfInterestManager.Status status) {
    //private Stream<PointOfInterest> func_219136_a(Predicate<PointOfInterestType> p_219136_1_, long p_219136_2_, PointOfInterestManager.Status p_219136_4_) {
-      return this.func_219113_d(secPosPacked).map((poiData) -> {
+      return this.checkPoiDataOptByPos(secPosPacked).map((poiData) -> {
          return poiData.poiStreamByPoiTypePredStatus(poiPred, status);
       }).orElseGet(Stream::empty);
    }
@@ -139,7 +139,7 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    //AH REFACTOR
    public boolean isPoiValid(BlockPos pos, Predicate<PointOfInterestType> poiTypePred) {
    //public boolean func_219138_a(BlockPos p_219138_1_, Predicate<PointOfInterestType> p_219138_2_) {
-      return this.func_219113_d(SectionPos.from(pos).asLong()).map((poiData) -> {
+      return this.checkPoiDataOptByPos(SectionPos.from(pos).asLong()).map((poiData) -> {
          return poiData.isPoiValid(pos, poiTypePred);
       }).orElse(false);
    }
@@ -181,19 +181,19 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
       this.distGraph.updateSourceLevel(secPosPacked, this.distGraph.getSourceLevel(secPosPacked), false);
    }
 
-   public void func_219139_a(ChunkPos p_219139_1_, ChunkSection p_219139_2_) {
-      SectionPos sectionpos = SectionPos.from(p_219139_1_, p_219139_2_.getYLocation() >> 4);
-      Util.acceptOrElse(this.func_219113_d(sectionpos.asLong()), (p_219130_3_) -> {
+   public void func_219139_a(ChunkPos chunkPos, ChunkSection chunkSection) {
+      SectionPos sectionpos = SectionPos.from(chunkPos, chunkSection.getYLocation() >> 4);
+      Util.acceptOrElse(this.checkPoiDataOptByPos(sectionpos.asLong()), (p_219130_3_) -> {
          p_219130_3_.func_218240_a((p_219141_3_) -> {
-            if (hasAnyPOI(p_219139_2_)) {
-               this.func_219132_a(p_219139_2_, sectionpos, p_219141_3_);
+            if (hasAnyPOI(chunkSection)) {
+               this.func_219132_a(chunkSection, sectionpos, p_219141_3_);
             }
 
          });
       }, () -> {
-         if (hasAnyPOI(p_219139_2_)) {
+         if (hasAnyPOI(chunkSection)) {
             PointOfInterestData pointofinterestdata = this.getCachedPoiData(sectionpos.asLong());
-            this.func_219132_a(p_219139_2_, sectionpos, pointofinterestdata::addPoiLocation);
+            this.func_219132_a(chunkSection, sectionpos, pointofinterestdata::addPoiLocation);
          }
 
       });
@@ -203,18 +203,18 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
       return PointOfInterestType.getAllStates().anyMatch(p_219151_0_::contains);
    }
 
-   private void func_219132_a(ChunkSection p_219132_1_, SectionPos p_219132_2_, BiConsumer<BlockPos, PointOfInterestType> p_219132_3_) {
-      p_219132_2_.allBlocksWithin().forEach((p_219143_2_) -> {
-         BlockState blockstate = p_219132_1_.getBlockState(SectionPos.mask(p_219143_2_.getX()), SectionPos.mask(p_219143_2_.getY()), SectionPos.mask(p_219143_2_.getZ()));
+   private void func_219132_a(ChunkSection chunkSection, SectionPos secPos, BiConsumer<BlockPos, PointOfInterestType> posByPoiConsumer) {
+      secPos.allBlocksWithin().forEach((pos) -> {
+         BlockState blockstate = chunkSection.getBlockState(SectionPos.mask(pos.getX()), SectionPos.mask(pos.getY()), SectionPos.mask(pos.getZ()));
          PointOfInterestType.forState(blockstate).ifPresent((p_219161_2_) -> {
-            p_219132_3_.accept(p_219143_2_, p_219161_2_);
+            posByPoiConsumer.accept(pos, p_219161_2_);
          });
       });
    }
 
    public void func_226347_a_(IWorldReader p_226347_1_, BlockPos p_226347_2_, int p_226347_3_) {
       SectionPos.func_229421_b_(new ChunkPos(p_226347_2_), Math.floorDiv(p_226347_3_, 16)).map((p_226354_1_) -> {
-         return Pair.of(p_226354_1_, this.func_219113_d(p_226354_1_.asLong()));
+         return Pair.of(p_226354_1_, this.checkPoiDataOptByPos(p_226354_1_.asLong()));
       }).filter((p_226352_0_) -> {
          return !p_226352_0_.getSecond().map(PointOfInterestData::func_226355_a_).orElse(false);
       }).map((p_226348_0_) -> {
@@ -227,7 +227,7 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    }
 
    final class DistanceGraph extends SectionDistanceGraph {
-      private final Long2ByteMap secPosLevelMap = new Long2ByteOpenHashMap();
+      private final Long2ByteMap secPosLevelMap = new Long2ByteOpenHashMap(); //Key SectionPos packed,  value:  level of section (lower means more POIs)
 
       protected DistanceGraph() {
          super(7, 16, 256);
@@ -259,7 +259,7 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    public static enum Status {
       HAS_SPACE(PointOfInterest::hasSpace),
       IS_OCCUPIED(PointOfInterest::isOccupied),
-      ANY((p_221036_0_) -> {
+      ANY((poi) -> {
          return true;
       });
 

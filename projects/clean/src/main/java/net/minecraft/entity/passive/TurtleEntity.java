@@ -66,8 +66,8 @@ public class TurtleEntity extends AnimalEntity {
    private static final DataParameter<Boolean> GOING_HOME = EntityDataManager.createKey(TurtleEntity.class, DataSerializers.BOOLEAN);
    private static final DataParameter<Boolean> TRAVELLING = EntityDataManager.createKey(TurtleEntity.class, DataSerializers.BOOLEAN);
    private int isDigging;
-   public static final Predicate<LivingEntity> TARGET_DRY_BABY = (p_213616_0_) -> {
-      return p_213616_0_.isChild() && !p_213616_0_.isInWater();
+   public static final Predicate<LivingEntity> TARGET_DRY_BABY = (entity) -> {
+      return entity.isChild() && !entity.isInWater();
    };
 
    public TurtleEntity(EntityType<? extends TurtleEntity> type, World worldIn) {

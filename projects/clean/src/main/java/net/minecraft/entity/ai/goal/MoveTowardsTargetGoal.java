@@ -8,7 +8,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class MoveTowardsTargetGoal extends Goal {
    private final CreatureEntity creature;
-   private LivingEntity field_75429_b;
+   private LivingEntity targetEntity;
    private double movePosX;
    private double movePosY;
    private double movePosZ;
@@ -23,13 +23,13 @@ public class MoveTowardsTargetGoal extends Goal {
    }
 
    public boolean shouldExecute() {
-      this.field_75429_b = this.creature.getAttackTarget();
-      if (this.field_75429_b == null) {
+      this.targetEntity = this.creature.getAttackTarget();
+      if (this.targetEntity == null) {
          return false;
-      } else if (this.field_75429_b.getDistanceSq(this.creature) > (double)(this.maxTargetDistance * this.maxTargetDistance)) {
+      } else if (this.targetEntity.getDistanceSq(this.creature) > (double)(this.maxTargetDistance * this.maxTargetDistance)) {
          return false;
       } else {
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.creature, 16, 7, this.field_75429_b.getPositionVec());
+         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.creature, 16, 7, this.targetEntity.getPositionVec());
          if (vec3d == null) {
             return false;
          } else {
@@ -42,11 +42,11 @@ public class MoveTowardsTargetGoal extends Goal {
    }
 
    public boolean shouldContinueExecuting() {
-      return !this.creature.getNavigator().noPath() && this.field_75429_b.isAlive() && this.field_75429_b.getDistanceSq(this.creature) < (double)(this.maxTargetDistance * this.maxTargetDistance);
+      return !this.creature.getNavigator().noPath() && this.targetEntity.isAlive() && this.targetEntity.getDistanceSq(this.creature) < (double)(this.maxTargetDistance * this.maxTargetDistance);
    }
 
    public void resetTask() {
-      this.field_75429_b = null;
+      this.targetEntity = null;
    }
 
    public void startExecuting() {

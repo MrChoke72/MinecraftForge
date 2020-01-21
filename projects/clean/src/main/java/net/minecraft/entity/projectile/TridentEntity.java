@@ -144,7 +144,7 @@ public class TridentEntity extends AbstractArrowEntity {
       float f1 = 1.0F;
       if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.thrownStack)) {
          BlockPos blockpos = entity.getPosition();
-         if (this.world.func_226660_f_(blockpos)) {
+         if (this.world.isMaxLightLevel(blockpos)) {
             LightningBoltEntity lightningboltentity = new LightningBoltEntity(this.world, (double)blockpos.getX() + 0.5D, (double)blockpos.getY(), (double)blockpos.getZ() + 0.5D, false);
             lightningboltentity.setCaster(entity1 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity1 : null);
             ((ServerWorld)this.world).addLightningBolt(lightningboltentity);

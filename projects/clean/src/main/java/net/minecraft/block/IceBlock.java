@@ -38,7 +38,7 @@ public class IceBlock extends BreakableBlock {
    }
 
    public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_2_.func_226658_a_(LightType.BLOCK, p_225534_3_) > 11 - p_225534_1_.getOpacity(p_225534_2_, p_225534_3_)) {
+      if (p_225534_2_.getLightLevel(LightType.BLOCK, p_225534_3_) > 11 - p_225534_1_.getOpacity(p_225534_2_, p_225534_3_)) {
          this.turnIntoWater(p_225534_1_, p_225534_2_, p_225534_3_);
       }
 

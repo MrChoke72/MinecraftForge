@@ -27,7 +27,7 @@ public class SecondaryPositionSensor extends Sensor<VillagerEntity> {
          for(int k = -2; k <= 2; ++k) {
             for(int l = -4; l <= 4; ++l) {
                BlockPos blockpos1 = blockpos.add(j, k, l);
-               if (entity.getVillagerData().getProfession().func_221150_d().contains(world.getBlockState(blockpos1).getBlock())) {
+               if (entity.getVillagerData().getProfession().getWorkBlockSet().contains(world.getBlockState(blockpos1).getBlock())) {
                   list.add(GlobalPos.of(dimensiontype, blockpos1));
                }
             }

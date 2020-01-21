@@ -62,10 +62,10 @@ public interface IWorldReader extends ILightReader, ICollisionReader, BiomeManag
 
    default boolean canBlockSeeSky(BlockPos pos) {
       if (pos.getY() >= this.getSeaLevel()) {
-         return this.func_226660_f_(pos);
+         return this.isMaxLightLevel(pos);
       } else {
          BlockPos blockpos = new BlockPos(pos.getX(), this.getSeaLevel(), pos.getZ());
-         if (!this.func_226660_f_(blockpos)) {
+         if (!this.isMaxLightLevel(blockpos)) {
             return false;
          } else {
             for(BlockPos blockpos1 = blockpos.down(); blockpos1.getY() > pos.getY(); blockpos1 = blockpos1.down()) {

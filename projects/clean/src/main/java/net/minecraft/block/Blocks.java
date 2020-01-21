@@ -691,12 +691,12 @@ public class Blocks {
    public static final Block CAMPFIRE = register("campfire", new CampfireBlock(Block.Properties.create(Material.WOOD, MaterialColor.OBSIDIAN).hardnessAndResistance(2.0F).sound(SoundType.WOOD).lightValue(15).tickRandomly().func_226896_b_()));
    public static final Block SWEET_BERRY_BUSH = register("sweet_berry_bush", new SweetBerryBushBlock(Block.Properties.create(Material.PLANTS).tickRandomly().doesNotBlockMovement().sound(SoundType.SWEET_BERRY_BUSH)));
    public static final Block STRUCTURE_BLOCK = register("structure_block", new StructureBlock(Block.Properties.create(Material.IRON, MaterialColor.LIGHT_GRAY).hardnessAndResistance(-1.0F, 3600000.0F).noDrops()));
-   public static final Block field_226904_lY_ = register("jigsaw", new JigsawBlock(Block.Properties.create(Material.IRON, MaterialColor.LIGHT_GRAY).hardnessAndResistance(-1.0F, 3600000.0F).noDrops()));
+   public static final Block JIGSAW = register("jigsaw", new JigsawBlock(Block.Properties.create(Material.IRON, MaterialColor.LIGHT_GRAY).hardnessAndResistance(-1.0F, 3600000.0F).noDrops()));
    public static final Block COMPOSTER = register("composter", new ComposterBlock(Block.Properties.create(Material.WOOD).hardnessAndResistance(0.6F).sound(SoundType.WOOD)));
-   public static final Block field_226905_ma_ = register("bee_nest", new BeehiveBlock(Block.Properties.create(Material.WOOD).hardnessAndResistance(0.3F).sound(SoundType.WOOD)));
-   public static final Block field_226906_mb_ = register("beehive", new BeehiveBlock(Block.Properties.create(Material.WOOD).hardnessAndResistance(0.6F).sound(SoundType.WOOD)));
-   public static final Block field_226907_mc_ = register("honey_block", new HoneyBlock(Block.Properties.create(Material.CLAY, MaterialColor.ADOBE).func_226897_b_(0.4F).func_226898_c_(0.5F).func_226896_b_().sound(SoundType.field_226947_m_)));
-   public static final Block field_226908_md_ = register("honeycomb_block", new Block(Block.Properties.create(Material.CLAY, MaterialColor.ADOBE).hardnessAndResistance(0.6F).sound(SoundType.CORAL)));
+   public static final Block BEE_NEST = register("bee_nest", new BeehiveBlock(Block.Properties.create(Material.WOOD).hardnessAndResistance(0.3F).sound(SoundType.WOOD)));
+   public static final Block BEEHIVE = register("beehive", new BeehiveBlock(Block.Properties.create(Material.WOOD).hardnessAndResistance(0.6F).sound(SoundType.WOOD)));
+   public static final Block HONEY_BLOCK = register("honey_block", new HoneyBlock(Block.Properties.create(Material.CLAY, MaterialColor.ADOBE).func_226897_b_(0.4F).func_226898_c_(0.5F).func_226896_b_().sound(SoundType.field_226947_m_)));
+   public static final Block HONEYCOMB_BLOCK = register("honeycomb_block", new Block(Block.Properties.create(Material.CLAY, MaterialColor.ADOBE).hardnessAndResistance(0.6F).sound(SoundType.CORAL)));
 
    private static Block register(String key, Block p_222382_1_) {
       return Registry.register(Registry.BLOCK, key, p_222382_1_);

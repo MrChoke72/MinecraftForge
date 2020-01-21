@@ -42,12 +42,13 @@ public class VillagerTasks {
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> work(VillagerProfession profession, float moveSpeed) {
       return ImmutableList.of(
               lookTasks(),
-              Pair.of(5, new FirstShuffledTask<>(ImmutableList.of(
-                      Pair.of(new SpawnGolemTask(), 7),
-                      Pair.of(new WorkTask(MemoryModuleType.JOB_SITE, 4), 2),
-                      Pair.of(new WalkTowardsPosTask(MemoryModuleType.JOB_SITE, 1, 10), 5),
-                      Pair.of(new WalkTowardsRandomSecondaryPosTask(MemoryModuleType.SECONDARY_JOB_SITE, 0.4F, 1, 6, MemoryModuleType.JOB_SITE), 5),
-                      Pair.of(new FarmTask(), profession == VillagerProfession.FARMER ? 2 : 5)))
+              Pair.of(5, new FirstShuffledTask<>(
+                      ImmutableList.of(
+                        Pair.of(new SpawnGolemTask(), 7),
+                        Pair.of(new WorkTask(MemoryModuleType.JOB_SITE, 4), 2),
+                        Pair.of(new WalkTowardsPosTask(MemoryModuleType.JOB_SITE, 1, 10), 5),
+                        Pair.of(new WalkTowardsRandomSecondaryPosTask(MemoryModuleType.SECONDARY_JOB_SITE, 0.4F, 1, 6, MemoryModuleType.JOB_SITE), 5),
+                        Pair.of(new FarmTask(), profession == VillagerProfession.FARMER ? 2 : 5)))
               ),
               Pair.of(10, new ShowWaresTask(400, 1600)),
               Pair.of(10, new FindInteractionAndLookTargetTask(EntityType.PLAYER, 4)),
@@ -57,7 +58,7 @@ public class VillagerTasks {
               Pair.of(99, new UpdateActivityTask()));
    }
 
-   public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> play(float p_220645_0_) {
+   public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> play(float moveSpeed) {
       return ImmutableList.of(
               Pair.of(0, new WalkToTargetTask(100)),
               lookAtEntityTasks(),
@@ -66,11 +67,11 @@ public class VillagerTasks {
                       ImmutableMap.of(
                               MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleStatus.VALUE_ABSENT),
                       ImmutableList.of(
-                              Pair.of(InteractWithEntityTask.func_220445_a(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, p_220645_0_, 2), 2),
-                              Pair.of(InteractWithEntityTask.func_220445_a(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, p_220645_0_, 2), 1),
-                              Pair.of(new FindWalkTargetTask(p_220645_0_), 1),
-                              Pair.of(new WalkTowardsLookTargetTask(p_220645_0_, 2), 1),
-                              Pair.of(new JumpOnBedTask(p_220645_0_), 2),
+                              Pair.of(InteractWithEntityTask.func_220445_a(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, moveSpeed, 2), 2),
+                              Pair.of(InteractWithEntityTask.func_220445_a(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, moveSpeed, 2), 1),
+                              Pair.of(new FindWalkTargetTask(moveSpeed), 1),
+                              Pair.of(new WalkTowardsLookTargetTask(moveSpeed, 2), 1),
+                              Pair.of(new JumpOnBedTask(moveSpeed), 2),
                               Pair.of(new DummyTask(20, 40), 2)))),
               Pair.of(99, new UpdateActivityTask()));
    }
@@ -94,7 +95,7 @@ public class VillagerTasks {
               Pair.of(99, new UpdateActivityTask()));
    }
 
-   public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> meet(VillagerProfession p_220637_0_, float moveSpeed) {
+   public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> meet(VillagerProfession profession, float moveSpeed) {
       return ImmutableList.of(
               Pair.of(2, new FirstShuffledTask<>(ImmutableList.of(
                       Pair.of(new WorkTask(MemoryModuleType.MEETING_POINT, 40), 2),
@@ -122,7 +123,8 @@ public class VillagerTasks {
                               Pair.of(InteractWithEntityTask.func_220445_a(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, moveSpeed, 2), 2),
                               Pair.of(new InteractWithEntityTask<>(EntityType.VILLAGER, 8, VillagerEntity::canBreed, VillagerEntity::canBreed, MemoryModuleType.BREED_TARGET, moveSpeed, 2), 1),
                               Pair.of(InteractWithEntityTask.func_220445_a(EntityType.CAT, 8, MemoryModuleType.INTERACTION_TARGET, moveSpeed, 2), 1),
-                              Pair.of(new FindWalkTargetTask(moveSpeed), 1), Pair.of(new WalkTowardsLookTargetTask(moveSpeed, 2), 1),
+                              Pair.of(new FindWalkTargetTask(moveSpeed), 1),
+                              Pair.of(new WalkTowardsLookTargetTask(moveSpeed, 2), 1),
                               Pair.of(new JumpOnBedTask(moveSpeed), 1),
                               Pair.of(new DummyTask(30, 60), 1)))),
               Pair.of(3, new GiveHeroGiftsTask(100)),

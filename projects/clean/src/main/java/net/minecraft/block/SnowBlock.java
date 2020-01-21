@@ -56,7 +56,7 @@ public class SnowBlock extends Block {
       BlockState blockstate = worldIn.getBlockState(pos.down());
       Block block = blockstate.getBlock();
       if (block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER) {
-         if (block != Blocks.field_226907_mc_ && block != Blocks.SOUL_SAND) {
+         if (block != Blocks.HONEY_BLOCK && block != Blocks.SOUL_SAND) {
             return Block.doesSideFillSquare(blockstate.getCollisionShape(worldIn, pos.down()), Direction.UP) || block == this && blockstate.get(LAYERS) == 8;
          } else {
             return true;
@@ -71,7 +71,7 @@ public class SnowBlock extends Block {
    }
 
    public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_2_.func_226658_a_(LightType.BLOCK, p_225534_3_) > 11) {
+      if (p_225534_2_.getLightLevel(LightType.BLOCK, p_225534_3_) > 11) {
          spawnDrops(p_225534_1_, p_225534_2_, p_225534_3_);
          p_225534_2_.removeBlock(p_225534_3_, false);
       }

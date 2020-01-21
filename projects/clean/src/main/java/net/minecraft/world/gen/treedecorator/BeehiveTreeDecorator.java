@@ -43,7 +43,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
          BlockPos blockpos = list.get(p_225576_2_.nextInt(list.size()));
          BlockPos blockpos1 = blockpos.offset(direction);
          if (AbstractTreeFeature.isAir(p_225576_1_, blockpos1) && AbstractTreeFeature.isAir(p_225576_1_, blockpos1.offset(Direction.SOUTH))) {
-            BlockState blockstate = Blocks.field_226905_ma_.getDefaultState().with(BeehiveBlock.field_226872_b_, Direction.SOUTH);
+            BlockState blockstate = Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.field_226872_b_, Direction.SOUTH);
             this.func_227423_a_(p_225576_1_, blockpos1, blockstate, p_225576_5_, p_225576_6_);
             TileEntity tileentity = p_225576_1_.getTileEntity(blockpos1);
             if (tileentity instanceof BeehiveTileEntity) {

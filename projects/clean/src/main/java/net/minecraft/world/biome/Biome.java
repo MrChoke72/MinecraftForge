@@ -196,7 +196,7 @@ public abstract class Biome {
       if (this.func_225486_c(water) >= 0.15F) {
          return false;
       } else {
-         if (water.getY() >= 0 && water.getY() < 256 && worldIn.func_226658_a_(LightType.BLOCK, water) < 10) {
+         if (water.getY() >= 0 && water.getY() < 256 && worldIn.getLightLevel(LightType.BLOCK, water) < 10) {
             BlockState blockstate = worldIn.getBlockState(water);
             IFluidState ifluidstate = worldIn.getFluidState(water);
             if (ifluidstate.getFluid() == Fluids.WATER && blockstate.getBlock() instanceof FlowingFluidBlock) {
@@ -219,7 +219,7 @@ public abstract class Biome {
       if (this.func_225486_c(pos) >= 0.15F) {
          return false;
       } else {
-         if (pos.getY() >= 0 && pos.getY() < 256 && worldIn.func_226658_a_(LightType.BLOCK, pos) < 10) {
+         if (pos.getY() >= 0 && pos.getY() < 256 && worldIn.getLightLevel(LightType.BLOCK, pos) < 10) {
             BlockState blockstate = worldIn.getBlockState(pos);
             if (blockstate.isAir() && Blocks.SNOW.getDefaultState().isValidPosition(worldIn, pos)) {
                return true;

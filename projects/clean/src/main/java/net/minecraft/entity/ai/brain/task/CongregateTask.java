@@ -15,14 +15,20 @@ import net.minecraft.world.server.ServerWorld;
 
 public class CongregateTask extends Task<LivingEntity> {
    public CongregateTask() {
-      super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.MEETING_POINT, MemoryModuleStatus.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleStatus.VALUE_PRESENT, MemoryModuleType.INTERACTION_TARGET, MemoryModuleStatus.VALUE_ABSENT));
+      super(ImmutableMap.of(
+              MemoryModuleType.WALK_TARGET, MemoryModuleStatus.REGISTERED,
+              MemoryModuleType.LOOK_TARGET, MemoryModuleStatus.REGISTERED,
+              MemoryModuleType.MEETING_POINT, MemoryModuleStatus.VALUE_PRESENT,
+              MemoryModuleType.VISIBLE_MOBS, MemoryModuleStatus.VALUE_PRESENT,
+              MemoryModuleType.INTERACTION_TARGET, MemoryModuleStatus.VALUE_ABSENT));
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, LivingEntity owner) {
       Brain<?> brain = owner.getBrain();
       Optional<GlobalPos> optional = brain.getMemory(MemoryModuleType.MEETING_POINT);
-      return worldIn.getRandom().nextInt(100) == 0 && optional.isPresent() && Objects.equals(worldIn.getDimension().getType(), optional.get().getDimension()) && optional.get().getPos().withinDistance(owner.getPositionVec(), 4.0D) && brain.getMemory(MemoryModuleType.VISIBLE_MOBS).get().stream().anyMatch((p_220570_0_) -> {
-         return EntityType.VILLAGER.equals(p_220570_0_.getType());
+      return worldIn.getRandom().nextInt(100) == 0 && optional.isPresent() && Objects.equals(worldIn.getDimension().getType(), optional.get().getDimension())
+              && optional.get().getPos().withinDistance(owner.getPositionVec(), 4.0D) && brain.getMemory(MemoryModuleType.VISIBLE_MOBS).get().stream().anyMatch((entity) -> {
+         return EntityType.VILLAGER.equals(entity.getType());
       });
    }
 

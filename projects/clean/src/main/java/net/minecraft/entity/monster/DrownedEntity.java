@@ -90,7 +90,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
 
    public static boolean func_223332_b(EntityType<DrownedEntity> p_223332_0_, IWorld p_223332_1_, SpawnReason p_223332_2_, BlockPos p_223332_3_, Random p_223332_4_) {
       Biome biome = p_223332_1_.func_226691_t_(p_223332_3_);
-      boolean flag = p_223332_1_.getDifficulty() != Difficulty.PEACEFUL && func_223323_a(p_223332_1_, p_223332_3_, p_223332_4_) && (p_223332_2_ == SpawnReason.SPAWNER || p_223332_1_.getFluidState(p_223332_3_).isTagged(FluidTags.WATER));
+      boolean flag = p_223332_1_.getDifficulty() != Difficulty.PEACEFUL && isLightSpawnable(p_223332_1_, p_223332_3_, p_223332_4_) && (p_223332_2_ == SpawnReason.SPAWNER || p_223332_1_.getFluidState(p_223332_3_).isTagged(FluidTags.WATER));
       if (biome != Biomes.RIVER && biome != Biomes.FROZEN_RIVER) {
          return p_223332_4_.nextInt(40) == 0 && func_223333_a(p_223332_1_, p_223332_3_) && flag;
       } else {
@@ -274,7 +274,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
 
       protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
          BlockPos blockpos = pos.up();
-         return worldIn.isAirBlock(blockpos) && worldIn.isAirBlock(blockpos.up()) ? worldIn.getBlockState(pos).func_215682_a(worldIn, pos, this.drowned) : false;
+         return worldIn.isAirBlock(blockpos) && worldIn.isAirBlock(blockpos.up()) ? worldIn.getBlockState(pos).isUpSideFilled(worldIn, pos, this.drowned) : false;
       }
 
       public void startExecuting() {

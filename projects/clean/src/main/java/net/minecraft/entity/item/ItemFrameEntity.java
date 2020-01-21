@@ -103,7 +103,7 @@ public class ItemFrameEntity extends HangingEntity {
    }
 
    public boolean onValidSurface() {
-      if (!this.world.func_226669_j_(this)) {
+      if (!this.world.isEntityNoCollide(this)) {
          return false;
       } else {
          BlockState blockstate = this.world.getBlockState(this.hangingPosition.offset(this.facingDirection.getOpposite()));

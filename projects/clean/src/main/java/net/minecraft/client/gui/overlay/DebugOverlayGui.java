@@ -210,8 +210,8 @@ public class DebugOverlayGui extends AbstractGui {
                   list.add("Waiting for chunk...");
                } else {
                   int i = this.mc.world.getChunkProvider().getLightManager().func_227470_b_(blockpos, 0);
-                  int j = this.mc.world.func_226658_a_(LightType.SKY, blockpos);
-                  int k = this.mc.world.func_226658_a_(LightType.BLOCK, blockpos);
+                  int j = this.mc.world.getLightLevel(LightType.SKY, blockpos);
+                  int k = this.mc.world.getLightLevel(LightType.BLOCK, blockpos);
                   list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
                   Chunk chunk1 = this.func_212919_h();
                   if (chunk1 != null) {

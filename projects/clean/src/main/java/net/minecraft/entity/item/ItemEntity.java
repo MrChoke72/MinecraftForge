@@ -86,7 +86,7 @@ public class ItemEntity extends Entity {
          if (this.world.isRemote) {
             this.noClip = false;
          } else {
-            this.noClip = !this.world.func_226669_j_(this);
+            this.noClip = !this.world.isEntityNoCollide(this);
             if (this.noClip) {
                this.pushOutOfBlocks(this.getPosX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getPosZ());
             }

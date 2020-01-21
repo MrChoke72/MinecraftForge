@@ -39,6 +39,10 @@ public final class SnowyMountainsBiome extends Biome {
       this.addSpawn(EntityClassification.MONSTER, new Biome.SpawnListEntry(EntityType.WITCH, 5, 1, 1));
       this.addSpawn(EntityClassification.MONSTER, new Biome.SpawnListEntry(EntityType.SKELETON, 20, 4, 4));
       this.addSpawn(EntityClassification.MONSTER, new Biome.SpawnListEntry(EntityType.STRAY, 80, 4, 4));
+
+      //AH ADD ****
+      this.addSpawn(EntityClassification.MONSTER, new Biome.SpawnListEntry(EntityType.ZOMBIE_NASTY, 5, 1, 1));
+      //AH END ****
    }
 
    public float getSpawningChance() {

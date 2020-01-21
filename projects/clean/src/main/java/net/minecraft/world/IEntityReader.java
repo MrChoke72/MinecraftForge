@@ -130,8 +130,8 @@ public interface IEntityReader {
    }
 
    @Nullable
-   default PlayerEntity getClosestPlayer(EntityPredicate p_217372_1_, LivingEntity p_217372_2_, double p_217372_3_, double p_217372_5_, double p_217372_7_) {
-      return this.getClosestEntity(this.getPlayers(), p_217372_1_, p_217372_2_, p_217372_3_, p_217372_5_, p_217372_7_);
+   default PlayerEntity getClosestPlayer(EntityPredicate entityPred, LivingEntity entityIn, double x, double y, double z) {
+      return this.getClosestEntity(this.getPlayers(), entityPred, entityIn, x, y, z);
    }
 
    @Nullable

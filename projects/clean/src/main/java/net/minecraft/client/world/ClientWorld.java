@@ -261,7 +261,7 @@ public class ClientWorld extends World {
             double d0 = blockpos.distanceSq(blockpos1);
             if (d0 >= 4.0D && d0 <= 256.0D) {
                BlockState blockstate = this.getBlockState(blockpos1);
-               if (blockstate.isAir() && this.func_226659_b_(blockpos1, 0) <= this.rand.nextInt(8) && this.func_226658_a_(LightType.SKY, blockpos1) <= 0) {
+               if (blockstate.isAir() && this.func_226659_b_(blockpos1, 0) <= this.rand.nextInt(8) && this.getLightLevel(LightType.SKY, blockpos1) <= 0) {
                   this.playSound((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, SoundEvents.AMBIENT_CAVE, SoundCategory.AMBIENT, 0.7F, 0.8F + this.rand.nextFloat() * 0.2F, false);
                   this.ambienceTicks = this.rand.nextInt(12000) + 6000;
                }

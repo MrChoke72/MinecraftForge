@@ -130,6 +130,6 @@ public class FlyingPathNavigator extends PathNavigator {
    }
 
    public boolean canEntityStandOnPos(BlockPos pos) {
-      return this.world.getBlockState(pos).func_215682_a(this.world, pos, this.entity);
+      return this.world.getBlockState(pos).isUpSideFilled(this.world, pos, this.entity);
    }
 }

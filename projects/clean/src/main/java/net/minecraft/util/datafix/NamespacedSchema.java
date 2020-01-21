@@ -16,6 +16,15 @@ public class NamespacedSchema extends Schema {
    }
 
    public Type<?> getChoiceType(TypeReference p_getChoiceType_1_, String p_getChoiceType_2_) {
-      return super.getChoiceType(p_getChoiceType_1_, ensureNamespaced(p_getChoiceType_2_));
+
+      //AH CHNGFE FIX crash, no custom mobs in datafixer
+      try {
+         //Vanilla
+         return super.getChoiceType(p_getChoiceType_1_, ensureNamespaced(p_getChoiceType_2_));
+      } catch (IllegalArgumentException ex) {
+         throw new IllegalStateException(ex);
+      }
+      //Vanilla
+      //return super.getChoiceType(p_getChoiceType_1_, ensureNamespaced(p_getChoiceType_2_));
    }
 }

@@ -103,7 +103,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    private final ThreadTaskExecutor<Runnable> mainThread;
    private final ChunkGenerator<?> generator;
    private final Supplier<DimensionSavedDataManager> field_219259_m;
-   private final PointOfInterestManager field_219260_n;
+   private final PointOfInterestManager poiMgr;
    private final LongSet field_219261_o = new LongOpenHashSet();
    private boolean field_219262_p;
    private final ChunkTaskPriorityQueueSorter field_219263_q;
@@ -136,7 +136,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       this.lightManager = new ServerWorldLightManager(p_i51538_7_, this, this.world.getDimension().hasSkyLight(), delegatedtaskexecutor1, this.field_219263_q.func_219087_a(delegatedtaskexecutor1, false));
       this.ticketManager = new ChunkManager.ProxyTicketManager(p_i51538_5_, p_i51538_6_);
       this.field_219259_m = p_i51538_10_;
-      this.field_219260_n = new PointOfInterestManager(new File(this.field_219270_x, "poi"), p_i51538_3_);
+      this.poiMgr = new PointOfInterestManager(new File(this.field_219270_x, "poi"), p_i51538_3_);
       this.setViewDistance(p_i51538_11_);
    }
 
@@ -308,7 +308,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    public void close() throws IOException {
       try {
          this.field_219263_q.close();
-         this.field_219260_n.close();
+         this.poiMgr.close();
       } finally {
          super.close();
       }
@@ -364,7 +364,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    protected void tick(BooleanSupplier hasMoreTime) {
       IProfiler iprofiler = this.world.getProfiler();
       iprofiler.startSection("poi");
-      this.field_219260_n.func_219115_a(hasMoreTime);
+      this.poiMgr.func_219115_a(hasMoreTime);
       iprofiler.endStartSection("chunk_unload");
       if (!this.world.isSaveDisabled()) {
          this.scheduleUnloads(hasMoreTime);
@@ -479,7 +479,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
             if (compoundnbt != null) {
                boolean flag = compoundnbt.contains("Level", 10) && compoundnbt.getCompound("Level").contains("Status", 8);
                if (flag) {
-                  IChunk ichunk = ChunkSerializer.read(this.world, this.field_219269_w, this.field_219260_n, p_223172_1_, compoundnbt);
+                  IChunk ichunk = ChunkSerializer.read(this.world, this.field_219269_w, this.poiMgr, p_223172_1_, compoundnbt);
                   ichunk.setLastSaveTime(this.world.getGameTime());
                   return Either.left(ichunk);
                }
@@ -645,7 +645,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    }
 
    private boolean func_219229_a(IChunk chunkIn) {
-      this.field_219260_n.saveIfDirty(chunkIn.getPos());
+      this.poiMgr.saveIfDirty(chunkIn.getPos());
       if (!chunkIn.isModified()) {
          return false;
       } else {
@@ -1041,8 +1041,8 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
 
    }
 
-   protected PointOfInterestManager func_219189_h() {
-      return this.field_219260_n;
+   protected PointOfInterestManager getPoiMgr() {
+      return this.poiMgr;
    }
 
    public CompletableFuture<Void> func_222973_a(Chunk p_222973_1_) {

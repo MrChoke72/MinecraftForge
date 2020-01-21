@@ -7,6 +7,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+
+import com.mrchoke.entity.monster.ZombieNasty;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.effect.LightningBoltEntity;
@@ -240,6 +242,12 @@ public class EntityType<T extends Entity> {
    public static final EntityType<LightningBoltEntity> LIGHTNING_BOLT = register("lightning_bolt", EntityType.Builder.<LightningBoltEntity>create(EntityClassification.MISC).disableSerialization().size(0.0F, 0.0F));
    public static final EntityType<PlayerEntity> PLAYER = register("player", EntityType.Builder.<PlayerEntity>create(EntityClassification.MISC).disableSerialization().disableSummoning().size(0.6F, 1.8F));
    public static final EntityType<FishingBobberEntity> FISHING_BOBBER = register("fishing_bobber", EntityType.Builder.<FishingBobberEntity>create(EntityClassification.MISC).disableSerialization().disableSummoning().size(0.25F, 0.25F));
+
+   //AH ADD ****
+   public static final EntityType<ZombieNasty> ZOMBIE_NASTY = register("zombienasty", EntityType.Builder.<ZombieNasty>create(ZombieNasty::new, EntityClassification.MONSTER).size(0.6F, 1.95F));
+   //AH END
+
+
    private final EntityType.IFactory<T> factory;
    private final EntityClassification classification;
    private final boolean serializable;

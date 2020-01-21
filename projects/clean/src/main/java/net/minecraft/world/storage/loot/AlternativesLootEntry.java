@@ -56,7 +56,7 @@ public class AlternativesLootEntry extends ParentedLootEntry {
 
       }
 
-      protected AlternativesLootEntry.Builder func_212845_d_() {
+      protected AlternativesLootEntry.Builder builder() {
          return this;
       }
 

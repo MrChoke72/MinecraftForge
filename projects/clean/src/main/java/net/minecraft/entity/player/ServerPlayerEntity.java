@@ -3,11 +3,8 @@ package net.minecraft.entity.player;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.OptionalInt;
-import java.util.Random;
+
+import java.util.*;
 import javax.annotation.Nullable;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.PlayerAdvancements;
@@ -118,6 +115,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerPlayerEntity extends PlayerEntity implements IContainerListener {
    private static final Logger LOGGER = LogManager.getLogger();
+
    private String language = "en_US";
    public ServerPlayNetHandler connection;
    public final MinecraftServer server;
@@ -192,7 +190,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
             BlockPos blockpos1 = p_205734_1_.getDimension().findSpawn(blockpos.getX() + j2 - i, blockpos.getZ() + k2 - i, false);
             if (blockpos1 != null) {
                this.moveToBlockPosAndAngles(blockpos1, 0.0F, 0.0F);
-               if (p_205734_1_.func_226669_j_(this)) {
+               if (p_205734_1_.isEntityNoCollide(this)) {
                   break;
                }
             }
@@ -200,7 +198,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       } else {
          this.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
 
-         while(!p_205734_1_.func_226669_j_(this) && this.getPosY() < 255.0D) {
+         while(!p_205734_1_.isEntityNoCollide(this) && this.getPosY() < 255.0D) {
             this.setPosition(this.getPosX(), this.getPosY() + 1.0D, this.getPosZ());
          }
       }
@@ -231,10 +229,26 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
          this.recipeBook.read(compound.getCompound("recipeBook"));
       }
 
+
+      //AH ADD ****
+      int playerPathSize = compound.getInt("PlayerPathSize");
+      if(playerPathSize > 0) {
+         playerPath = new LinkedList<>();
+         playerPathMap.put(this, playerPath);
+         for (int i = 0; i < playerPathSize; i++) {
+            int x = compound.getInt("posX_" + i);
+            int y = compound.getInt("posY_" + i);
+            int z = compound.getInt("posZ_" + i);
+
+            BlockPos pos = new BlockPos(x, y, z);
+            playerPath.add(pos);
+         }
+      }
+      //AH ADD END ****
+
       if (this.isSleeping()) {
          this.wakeUp();
       }
-
    }
 
    public void writeAdditional(CompoundNBT compound) {
@@ -261,6 +275,18 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       }
 
       compound.put("recipeBook", this.recipeBook.write());
+
+      //AH ADD ****
+      compound.putInt("PlayerPathSize", playerPath.size());
+      for(int i = 0; i < playerPath.size(); i++)
+      {
+         BlockPos pos = playerPath.get(i);
+         compound.putInt("posX_"+i, pos.getX());
+         compound.putInt("posY_"+i, pos.getY());
+         compound.putInt("posZ_"+i, pos.getZ());
+      }
+      //AH ADD END ****
+
    }
 
    public void func_195394_a(int p_195394_1_) {

@@ -73,7 +73,7 @@ public class SingleJigsawPiece extends JigsawPiece {
 
    public List<Template.BlockInfo> func_214849_a(TemplateManager p_214849_1_, BlockPos p_214849_2_, Rotation p_214849_3_, Random p_214849_4_) {
       Template template = p_214849_1_.getTemplateDefaulted(this.location);
-      List<Template.BlockInfo> list = template.func_215386_a(p_214849_2_, (new PlacementSettings()).setRotation(p_214849_3_), Blocks.field_226904_lY_, true);
+      List<Template.BlockInfo> list = template.func_215386_a(p_214849_2_, (new PlacementSettings()).setRotation(p_214849_3_), Blocks.JIGSAW, true);
       Collections.shuffle(list, p_214849_4_);
       return list;
    }

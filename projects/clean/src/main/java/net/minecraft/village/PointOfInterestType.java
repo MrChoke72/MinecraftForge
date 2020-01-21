@@ -20,8 +20,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class PointOfInterestType {
-   private static final Predicate<PointOfInterestType> ANY_VILLAGER_WORKSTATION = (p_221041_0_) -> {
-      return Registry.VILLAGER_PROFESSION.stream().map(VillagerProfession::getPointOfInterest).collect(Collectors.toSet()).contains(p_221041_0_);
+   private static final Predicate<PointOfInterestType> ANY_VILLAGER_WORKSTATION = (poiType) -> {
+      return Registry.VILLAGER_PROFESSION.stream().map(VillagerProfession::getPointOfInterest).collect(Collectors.toSet()).contains(poiType);
    };
 
    //AH REFACTOR
@@ -57,8 +57,8 @@ public class PointOfInterestType {
    public static final PointOfInterestType WEAPONSMITH = createPoiType("weaponsmith", getAllStates(Blocks.GRINDSTONE), 1, 1);
    public static final PointOfInterestType HOME = createPoiType("home", BED_HEADS, 1, 1);
    public static final PointOfInterestType MEETING = createPoiType("meeting", getAllStates(Blocks.BELL), 32, 6);
-   public static final PointOfInterestType BEEHIVE = createPoiType("beehive", getAllStates(Blocks.field_226906_mb_), 0, 1);
-   public static final PointOfInterestType BEE_NEST = createPoiType("bee_nest", getAllStates(Blocks.field_226905_ma_), 0, 1);
+   public static final PointOfInterestType BEEHIVE = createPoiType("beehive", getAllStates(Blocks.BEEHIVE), 0, 1);
+   public static final PointOfInterestType BEE_NEST = createPoiType("bee_nest", getAllStates(Blocks.BEE_NEST), 0, 1);
    public static final PointOfInterestType NETHER_PORTAL = createPoiType("nether_portal", getAllStates(Blocks.NETHER_PORTAL), 0, 1);
    private final String name;
 

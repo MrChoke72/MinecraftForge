@@ -40,7 +40,7 @@ public class WalkToTargetTask extends Task<MobEntity> {
       super(ImmutableMap.of(
               MemoryModuleType.PATH, MemoryModuleStatus.VALUE_ABSENT,
               MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_PRESENT),
-              duration);
+      duration);
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, MobEntity owner) {
@@ -139,7 +139,7 @@ public class WalkToTargetTask extends Task<MobEntity> {
       return false;
    }
 
-   private boolean hasReachedTarget(MobEntity p_220486_1_, WalkTarget walkTarget) {
-      return walkTarget.getTarget().getBlockPos().manhattanDistance(new BlockPos(p_220486_1_)) <= walkTarget.getReachDist();
+   private boolean hasReachedTarget(MobEntity entity, WalkTarget walkTarget) {
+      return walkTarget.getTarget().getBlockPos().manhattanDistance(new BlockPos(entity)) <= walkTarget.getReachDist();
    }
 }

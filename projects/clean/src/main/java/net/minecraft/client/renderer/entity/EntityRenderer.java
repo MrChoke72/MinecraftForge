@@ -27,11 +27,11 @@ public abstract class EntityRenderer<T extends Entity> {
    }
 
    public final int func_229100_c_(T p_229100_1_, float p_229100_2_) {
-      return LightTexture.func_228451_a_(this.func_225624_a_(p_229100_1_, p_229100_2_), p_229100_1_.world.func_226658_a_(LightType.SKY, new BlockPos(p_229100_1_.getEyePosition(p_229100_2_))));
+      return LightTexture.func_228451_a_(this.func_225624_a_(p_229100_1_, p_229100_2_), p_229100_1_.world.getLightLevel(LightType.SKY, new BlockPos(p_229100_1_.getEyePosition(p_229100_2_))));
    }
 
    protected int func_225624_a_(T p_225624_1_, float p_225624_2_) {
-      return p_225624_1_.isBurning() ? 15 : p_225624_1_.world.func_226658_a_(LightType.BLOCK, new BlockPos(p_225624_1_.getEyePosition(p_225624_2_)));
+      return p_225624_1_.isBurning() ? 15 : p_225624_1_.world.getLightLevel(LightType.BLOCK, new BlockPos(p_225624_1_.getEyePosition(p_225624_2_)));
    }
 
    public boolean func_225626_a_(T p_225626_1_, ClippingHelperImpl p_225626_2_, double p_225626_3_, double p_225626_5_, double p_225626_7_) {

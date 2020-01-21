@@ -103,8 +103,8 @@ public class ChunkRenderCache implements ILightReader {
       return this.fluidStates[this.getIndex(pos)];
    }
 
-   public WorldLightManager func_225524_e_() {
-      return this.world.func_225524_e_();
+   public WorldLightManager getLightMgr() {
+      return this.world.getLightMgr();
    }
 
    @Nullable

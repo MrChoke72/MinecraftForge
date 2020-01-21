@@ -8,8 +8,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Direction;
 
 public class SectionPos extends Vec3i {
-   private SectionPos(int p_i50794_1_, int p_i50794_2_, int p_i50794_3_) {
-      super(p_i50794_1_, p_i50794_2_, p_i50794_3_);
+   private SectionPos(int chunkX, int chunkY, int chunkZ) {
+      super(chunkX, chunkY, chunkZ);
    }
 
    public static SectionPos of(int chunkX, int chunkY, int chunkZ) {
@@ -144,11 +144,11 @@ public class SectionPos extends Vec3i {
       return BlockPos.getAllInBox(this.getWorldStartX(), this.getWorldStartY(), this.getWorldStartZ(), this.getWorldEndX(), this.getWorldEndY(), this.getWorldEndZ());
    }
 
-   public static Stream<SectionPos> getAllInBox(SectionPos center, int radius) {
+   public static Stream<SectionPos> getAllInBox(SectionPos center, int secRadius) {
       int i = center.getSectionX();
       int j = center.getSectionY();
       int k = center.getSectionZ();
-      return getAllInBox(i - radius, j - radius, k - radius, i + radius, j + radius, k + radius);
+      return getAllInBox(i - secRadius, j - secRadius, k - secRadius, i + secRadius, j + secRadius, k + secRadius);
    }
 
    public static Stream<SectionPos> func_229421_b_(ChunkPos p_229421_0_, int p_229421_1_) {

@@ -15,8 +15,8 @@ public class Activity {
    public static final Activity HIDE = register("hide");
    private final String id;
 
-   public Activity(String p_i50141_1_) {
-      this.id = p_i50141_1_;
+   public Activity(String id) {
+      this.id = id;
    }
 
    public String getId() {

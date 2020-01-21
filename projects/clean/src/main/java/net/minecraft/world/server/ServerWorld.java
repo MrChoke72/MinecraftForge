@@ -485,7 +485,7 @@ public class ServerWorld extends World {
       BlockPos blockpos = this.getHeight(Heightmap.Type.MOTION_BLOCKING, pos);
       AxisAlignedBB axisalignedbb = (new AxisAlignedBB(blockpos, new BlockPos(blockpos.getX(), this.getHeight(), blockpos.getZ()))).grow(3.0D);
       List<LivingEntity> list = this.getEntitiesWithinAABB(LivingEntity.class, axisalignedbb, (p_217463_1_) -> {
-         return p_217463_1_ != null && p_217463_1_.isAlive() && this.func_226660_f_(p_217463_1_.getPosition());
+         return p_217463_1_ != null && p_217463_1_.isAlive() && this.isMaxLightLevel(p_217463_1_.getPosition());
       });
       if (!list.isEmpty()) {
          return list.get(this.rand.nextInt(list.size())).getPosition();
@@ -1230,20 +1230,20 @@ public class ServerWorld extends World {
       return this.players;
    }
 
-   public void func_217393_a(BlockPos p_217393_1_, BlockState p_217393_2_, BlockState p_217393_3_) {
-      Optional<PointOfInterestType> optional = PointOfInterestType.forState(p_217393_2_);
-      Optional<PointOfInterestType> optional1 = PointOfInterestType.forState(p_217393_3_);
+   public void updatePoiMgr(BlockPos pos, BlockState oldState, BlockState newState) {
+      Optional<PointOfInterestType> optional = PointOfInterestType.forState(oldState);
+      Optional<PointOfInterestType> optional1 = PointOfInterestType.forState(newState);
       if (!Objects.equals(optional, optional1)) {
-         BlockPos blockpos = p_217393_1_.toImmutable();
+         BlockPos blockpos = pos.toImmutable();
          optional.ifPresent((p_217476_2_) -> {
             this.getServer().execute(() -> {
-               this.getPoiMgr().func_219140_a(blockpos);
+               this.getPoiMgr().removeLocation(blockpos);
                DebugPacketSender.func_218805_b(this, blockpos);
             });
          });
          optional1.ifPresent((p_217457_2_) -> {
             this.getServer().execute(() -> {
-               this.getPoiMgr().func_219135_a(blockpos, p_217457_2_);
+               this.getPoiMgr().addLocation(blockpos, p_217457_2_);
                DebugPacketSender.func_218799_a(this, blockpos);
             });
          });
@@ -1256,8 +1256,8 @@ public class ServerWorld extends World {
       return this.getChunkProvider().func_217231_i();
    }
 
-   public boolean isPosBelowEQSecLevel1(BlockPos p_217483_1_) {
-      return this.isPosBelowEQSecLevel(p_217483_1_, 1);
+   public boolean isPosBelowEQSecLevel1(BlockPos pos) {
+      return this.isPosBelowEQSecLevel(pos, 1);
    }
 
    public boolean func_222887_a(SectionPos p_222887_1_) {

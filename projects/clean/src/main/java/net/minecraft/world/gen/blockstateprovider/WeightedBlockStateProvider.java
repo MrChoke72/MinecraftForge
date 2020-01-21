@@ -27,7 +27,7 @@ public class WeightedBlockStateProvider extends BlockStateProvider {
    }
 
    public WeightedBlockStateProvider func_227407_a_(BlockState p_227407_1_, int p_227407_2_) {
-      this.field_227406_b_.func_226313_a_(p_227407_1_, p_227407_2_);
+      this.field_227406_b_.addToList(p_227407_1_, p_227407_2_);
       return this;
    }
 

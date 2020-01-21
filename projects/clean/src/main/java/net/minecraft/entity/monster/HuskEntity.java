@@ -22,7 +22,7 @@ public class HuskEntity extends ZombieEntity {
    }
 
    public static boolean func_223334_b(EntityType<HuskEntity> p_223334_0_, IWorld p_223334_1_, SpawnReason p_223334_2_, BlockPos p_223334_3_, Random p_223334_4_) {
-      return func_223325_c(p_223334_0_, p_223334_1_, p_223334_2_, p_223334_3_, p_223334_4_) && (p_223334_2_ == SpawnReason.SPAWNER || p_223334_1_.func_226660_f_(p_223334_3_));
+      return spawnPred(p_223334_0_, p_223334_1_, p_223334_2_, p_223334_3_, p_223334_4_) && (p_223334_2_ == SpawnReason.SPAWNER || p_223334_1_.isMaxLightLevel(p_223334_3_));
    }
 
    protected boolean shouldBurnInDay() {

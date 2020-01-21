@@ -268,7 +268,7 @@ public class IronGolemEntity extends GolemEntity {
       BlockPos blockpos = new BlockPos(this);
       BlockPos blockpos1 = blockpos.down();
       BlockState blockstate = worldIn.getBlockState(blockpos1);
-      if (!blockstate.func_215682_a(worldIn, blockpos1, this)) {
+      if (!blockstate.isUpSideFilled(worldIn, blockpos1, this)) {
          return false;
       } else {
          for(int i = 1; i < 3; ++i) {

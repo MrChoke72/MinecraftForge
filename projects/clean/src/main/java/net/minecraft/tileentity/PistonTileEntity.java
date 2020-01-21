@@ -184,7 +184,7 @@ public class PistonTileEntity extends TileEntity implements ITickableTileEntity 
    }
 
    private boolean func_227025_y_() {
-      return this.pistonState.getBlock() == Blocks.field_226907_mc_;
+      return this.pistonState.getBlock() == Blocks.HONEY_BLOCK;
    }
 
    public Direction getMotionDirection() {

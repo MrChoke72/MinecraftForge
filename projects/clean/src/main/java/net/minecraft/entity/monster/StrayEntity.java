@@ -21,7 +21,7 @@ public class StrayEntity extends AbstractSkeletonEntity {
    }
 
    public static boolean func_223327_b(EntityType<StrayEntity> p_223327_0_, IWorld p_223327_1_, SpawnReason p_223327_2_, BlockPos p_223327_3_, Random p_223327_4_) {
-      return func_223325_c(p_223327_0_, p_223327_1_, p_223327_2_, p_223327_3_, p_223327_4_) && (p_223327_2_ == SpawnReason.SPAWNER || p_223327_1_.func_226660_f_(p_223327_3_));
+      return spawnPred(p_223327_0_, p_223327_1_, p_223327_2_, p_223327_3_, p_223327_4_) && (p_223327_2_ == SpawnReason.SPAWNER || p_223327_1_.isMaxLightLevel(p_223327_3_));
    }
 
    protected SoundEvent getAmbientSound() {

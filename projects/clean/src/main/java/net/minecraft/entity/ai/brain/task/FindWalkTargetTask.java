@@ -27,15 +27,15 @@ public class FindWalkTargetTask extends Task<CreatureEntity> {
    private final int randY;
    //private final int field_223526_c;
 
-   public FindWalkTargetTask(float p_i50336_1_) {
-      this(p_i50336_1_, 10, 7);
+   public FindWalkTargetTask(float moveSpeed) {
+      this(moveSpeed, 10, 7);
    }
 
-   public FindWalkTargetTask(float speedIn, int p_i51526_2_, int p_i51526_3_) {
+   public FindWalkTargetTask(float speedIn, int xz, int y) {
       super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT));
       this.speed = speedIn;
-      this.randXZ = p_i51526_2_;
-      this.randY = p_i51526_3_;
+      this.randXZ = xz;
+      this.randY = y;
    }
 
    protected void startExecuting(ServerWorld worldIn, CreatureEntity entityIn, long gameTimeIn) {
@@ -58,16 +58,16 @@ public class FindWalkTargetTask extends Task<CreatureEntity> {
    private void findBlockTowardPos(CreatureEntity entity, SectionPos secPos) {
    //private void func_220594_a(CreatureEntity p_220594_1_, SectionPos p_220594_2_) {
       Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.findRandomTargetBlockTowards(entity, this.randXZ, this.randY, new Vec3d(secPos.getCenter())));
-      entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((p_220596_1_) -> {
-         return new WalkTarget(p_220596_1_, this.speed, 0);
+      entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((vec3d) -> {
+         return new WalkTarget(vec3d, this.speed, 0);
       }));
    }
 
    private void findLandPosition(CreatureEntity entity) {
    //private void func_220593_a(CreatureEntity p_220593_1_) {
       Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.getLandPos(entity, this.randXZ, this.randY));
-      entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((p_220595_1_) -> {
-         return new WalkTarget(p_220595_1_, this.speed, 0);
+      entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((vec3d) -> {
+         return new WalkTarget(vec3d, this.speed, 0);
       }));
    }
 }

@@ -50,6 +50,14 @@ public class RandomWalkingGoal extends Goal {
             this.z = vec3d.z;
             this.mustUpdate = false;
 
+            //AH CHANGE DEBUG OFF
+            /*
+            if(this.creature.getCustomName() != null && this.creature.getCustomName().getString().equals("Chuck"))
+            {
+               System.out.println("In RandomWalkingGoal, shouldExecute.  Will start. entPos=" + creature.getPosition() + ", tgtPos=" + x + "," + y + "," + z);
+            }
+             */
+
             return true;
          }
       }
@@ -65,10 +73,10 @@ public class RandomWalkingGoal extends Goal {
    }
 
    public void startExecuting() {
-
       this.creature.getNavigator().tryMoveToXYZ(this.x, this.y, this.z, this.speed);
 
-      //AH CHANGE DEBUG
+      //AH CHANGE DEBUG OFF
+      /*
       if(this.creature.getCustomName() != null && this.creature.getCustomName().getString().equals("Chuck"))
       {
          if(this.creature.getNavigator().getPath() != null)
@@ -80,18 +88,20 @@ public class RandomWalkingGoal extends Goal {
             System.out.println("RandomWalkingGoal,  startExecuting.  no path");
          }
       }
+       */
 
 
    }
 
    public void resetTask() {
 
-      //AH CHANGE DEBUG
+      //AH CHANGE DEBUG OFF
+      /*
       if(this.creature.getCustomName() != null)
       {
-         System.out.println("RandomWalkingGoal, calling clearPath");
+         System.out.println("RandomWalkingGoal, reset. Calling clearPath");
       }
-
+       */
 
       this.creature.getNavigator().clearPath();
       super.resetTask();

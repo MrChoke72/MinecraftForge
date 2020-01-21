@@ -20,7 +20,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HoneyBlock;
-import net.minecraft.block.LadderBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.TrapDoorBlock;
 import net.minecraft.command.arguments.EntityAnchorArgument;
@@ -1714,20 +1713,20 @@ public abstract class LivingEntity extends Entity {
                AxisAlignedBB axisalignedbb2 = axisalignedbb3.offset(d9, 0.0D, d10);
                if (this.world.isCollisionBoxesEmpty(this, axisalignedbb2)) {
                   BlockPos blockpos2 = new BlockPos(d11, this.getPosY(), d12);
-                  if (this.world.getBlockState(blockpos2).func_215682_a(this.world, blockpos2, this)) {
+                  if (this.world.getBlockState(blockpos2).isUpSideFilled(this.world, blockpos2, this)) {
                      this.setPositionAndUpdate(d11, this.getPosY() + 1.0D, d12);
                      return;
                   }
 
                   BlockPos blockpos1 = new BlockPos(d11, this.getPosY() - 1.0D, d12);
-                  if (this.world.getBlockState(blockpos1).func_215682_a(this.world, blockpos1, this) || this.world.getFluidState(blockpos1).isTagged(FluidTags.WATER)) {
+                  if (this.world.getBlockState(blockpos1).isUpSideFilled(this.world, blockpos1, this) || this.world.getFluidState(blockpos1).isTagged(FluidTags.WATER)) {
                      d1 = d11;
                      d13 = this.getPosY() + 1.0D;
                      d3 = d12;
                   }
                } else {
                   BlockPos blockpos = new BlockPos(d11, this.getPosY() + 1.0D, d12);
-                  if (this.world.isCollisionBoxesEmpty(this, axisalignedbb2.offset(0.0D, 1.0D, 0.0D)) && this.world.getBlockState(blockpos).func_215682_a(this.world, blockpos, this)) {
+                  if (this.world.isCollisionBoxesEmpty(this, axisalignedbb2.offset(0.0D, 1.0D, 0.0D)) && this.world.getBlockState(blockpos).isUpSideFilled(this.world, blockpos, this)) {
                      d1 = d11;
                      d13 = this.getPosY() + 2.0D;
                      d3 = d12;
@@ -1765,7 +1764,7 @@ public abstract class LivingEntity extends Entity {
 
          for(int j = 0; j < i; ++j) {
             double d8 = d2 + d7;
-            if (this.world.func_226662_a_(this, axisalignedbb1.offset(d5, d8, d6), immutableset)) {
+            if (this.world.isEntityNoCollide(this, axisalignedbb1.offset(d5, d8, d6), immutableset)) {
                this.setPosition(d5, d8, d6);
                return;
             }
@@ -2487,6 +2486,14 @@ public abstract class LivingEntity extends Entity {
       return this.world.rayTraceBlocks(new RayTraceContext(vec3d, vec3d1, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this)).getType() == RayTraceResult.Type.MISS;
    }
 
+   //AH ADD ****
+   public boolean canSeePos(BlockPos pos) {
+      Vec3d vec3d = new Vec3d(this.getPosX(), this.getPosYPlusEyeHeight(), this.getPosZ());
+      Vec3d vec3d1 = new Vec3d(pos);
+      return this.world.rayTraceBlocks(new RayTraceContext(vec3d, vec3d1, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this)).getType() == RayTraceResult.Type.MISS;
+   }
+   //AH ADD END ****
+
    public float getYaw(float partialTicks) {
       return partialTicks == 1.0F ? this.rotationYawHead : MathHelper.lerp(partialTicks, this.prevRotationYawHead, this.rotationYawHead);
    }
@@ -2778,7 +2785,7 @@ public abstract class LivingEntity extends Entity {
 
          if (flag1) {
             this.setPositionAndUpdate(p_213373_1_, d3, p_213373_5_);
-            if (world.func_226669_j_(this) && !world.containsAnyLiquid(this.getBoundingBox())) {
+            if (world.isEntityNoCollide(this) && !world.containsAnyLiquid(this.getBoundingBox())) {
                flag = true;
             }
          }

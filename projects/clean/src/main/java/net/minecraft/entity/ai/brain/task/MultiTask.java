@@ -13,27 +13,27 @@ import net.minecraft.util.WeightedList;
 import net.minecraft.world.server.ServerWorld;
 
 public class MultiTask<E extends LivingEntity> extends Task<E> {
-   private final Set<MemoryModuleType<?>> field_220416_b;
-   private final MultiTask.Ordering field_220417_c;
-   private final MultiTask.RunType field_220418_d;
-   private final WeightedList<Task<? super E>> field_220419_e = new WeightedList<>();
+   private final Set<MemoryModuleType<?>> memModuleSet;
+   private final MultiTask.Ordering ordering;
+   private final MultiTask.RunType runType;
+   private final WeightedList<Task<? super E>> taskWeightedList = new WeightedList<>();
 
-   public MultiTask(Map<MemoryModuleType<?>, MemoryModuleStatus> memModuleMap, Set<MemoryModuleType<?>> memTypeSet, MultiTask.Ordering ordering, MultiTask.RunType runType,
+   public MultiTask(Map<MemoryModuleType<?>, MemoryModuleStatus> requiredMemoryState, Set<MemoryModuleType<?>> memModuleSet, MultiTask.Ordering ordering, MultiTask.RunType runType,
                     List<Pair<Task<? super E>, Integer>> taskList) {
-      super(memModuleMap);
-      this.field_220416_b = memTypeSet;
-      this.field_220417_c = ordering;
-      this.field_220418_d = runType;
-      taskList.forEach((p_220411_1_) -> {
-         this.field_220419_e.func_226313_a_(p_220411_1_.getFirst(), p_220411_1_.getSecond());
+      super(requiredMemoryState);
+      this.memModuleSet = memModuleSet;
+      this.ordering = ordering;
+      this.runType = runType;
+      taskList.forEach((pair) -> {
+         this.taskWeightedList.addToList(pair.getFirst(), pair.getSecond());
       });
    }
 
    protected boolean shouldContinueExecuting(ServerWorld worldIn, E entityIn, long gameTimeIn) {
-      return this.field_220419_e.func_220655_b().filter((p_220414_0_) -> {
-         return p_220414_0_.getStatus() == Task.Status.RUNNING;
-      }).anyMatch((p_220413_4_) -> {
-         return p_220413_4_.shouldContinueExecuting(worldIn, entityIn, gameTimeIn);
+      return this.taskWeightedList.entStream().filter((task) -> {
+         return task.getStatus() == Task.Status.RUNNING;
+      }).anyMatch((task) -> {
+         return task.shouldContinueExecuting(worldIn, entityIn, gameTimeIn);
       });
    }
 
@@ -42,66 +42,66 @@ public class MultiTask<E extends LivingEntity> extends Task<E> {
    }
 
    protected void startExecuting(ServerWorld worldIn, E entityIn, long gameTimeIn) {
-      this.field_220417_c.func_220628_a(this.field_220419_e);
-      this.field_220418_d.func_220630_a(this.field_220419_e, worldIn, entityIn, gameTimeIn);
+      this.ordering.applyOrderingToList(this.taskWeightedList);
+      this.runType.runTasks(this.taskWeightedList, worldIn, entityIn, gameTimeIn);
    }
 
    protected void updateTask(ServerWorld worldIn, E owner, long gameTime) {
-      this.field_220419_e.func_220655_b().filter((p_220408_0_) -> {
-         return p_220408_0_.getStatus() == Task.Status.RUNNING;
-      }).forEach((p_220409_4_) -> {
-         p_220409_4_.tick(worldIn, owner, gameTime);
+      this.taskWeightedList.entStream().filter((task) -> {
+         return task.getStatus() == Task.Status.RUNNING;
+      }).forEach((task) -> {
+         task.tick(worldIn, owner, gameTime);
       });
    }
 
    protected void resetTask(ServerWorld worldIn, E entityIn, long gameTimeIn) {
-      this.field_220419_e.func_220655_b().filter((p_220407_0_) -> {
-         return p_220407_0_.getStatus() == Task.Status.RUNNING;
-      }).forEach((p_220412_4_) -> {
-         p_220412_4_.stop(worldIn, entityIn, gameTimeIn);
+      this.taskWeightedList.entStream().filter((task) -> {
+         return task.getStatus() == Task.Status.RUNNING;
+      }).forEach((task) -> {
+         task.stop(worldIn, entityIn, gameTimeIn);
       });
-      this.field_220416_b.forEach(entityIn.getBrain()::removeMemory);
+      this.memModuleSet.forEach(entityIn.getBrain()::removeMemory);
    }
 
    public String toString() {
-      Set<? extends Task<? super E>> set = this.field_220419_e.func_220655_b().filter((p_220410_0_) -> {
-         return p_220410_0_.getStatus() == Task.Status.RUNNING;
+      Set<? extends Task<? super E>> set = this.taskWeightedList.entStream().filter((task) -> {
+         return task.getStatus() == Task.Status.RUNNING;
       }).collect(Collectors.toSet());
       return "(" + this.getClass().getSimpleName() + "): " + set;
    }
 
    static enum Ordering {
-      ORDERED((p_220627_0_) -> {
+      ORDERED((list) -> {
       }),
-      SHUFFLED(WeightedList::func_226309_a_);
+      SHUFFLED(WeightedList::getWeighedList);
 
-      private final Consumer<WeightedList<?>> field_220629_c;
+      private final Consumer<WeightedList<?>> consumer;
 
-      private Ordering(Consumer<WeightedList<?>> p_i50849_3_) {
-         this.field_220629_c = p_i50849_3_;
+      private Ordering(Consumer<WeightedList<?>> consumer) {
+         this.consumer = consumer;
       }
 
-      public void func_220628_a(WeightedList<?> p_220628_1_) {
-         this.field_220629_c.accept(p_220628_1_);
+      public void applyOrderingToList(WeightedList<?> weightedList) {
+         this.consumer.accept(weightedList);
       }
    }
 
    static enum RunType {
       RUN_ONE {
-         public <E extends LivingEntity> void func_220630_a(WeightedList<Task<? super E>> p_220630_1_, ServerWorld world, E p_220630_3_, long p_220630_4_) {
-            p_220630_1_.func_220655_b().filter((p_220634_0_) -> {
-               return p_220634_0_.getStatus() == Task.Status.STOPPED;
-            }).filter((p_220633_4_) -> {
-               return p_220633_4_.start(world, p_220630_3_, p_220630_4_);
+         public <E extends LivingEntity> void runTasks(WeightedList<Task<? super E>> taskList, ServerWorld world, E entityIn, long gameTime) {
+            taskList.entStream().filter((task) -> {
+               return task.getStatus() == Task.Status.STOPPED;
+            }).filter((task) -> {
+               return task.start(world, entityIn, gameTime);
             }).findFirst();
          }
       },
       TRY_ALL {
-         public <E extends LivingEntity> void func_220630_a(WeightedList<Task<? super E>> p_220630_1_, ServerWorld p_220630_2_, E p_220630_3_, long p_220630_4_) {
-            p_220630_1_.func_220655_b().filter((p_220632_0_) -> {
-               return p_220632_0_.getStatus() == Task.Status.STOPPED;
-            }).forEach((p_220631_4_) -> {
-               p_220631_4_.start(p_220630_2_, p_220630_3_, p_220630_4_);
+         public <E extends LivingEntity> void runTasks(WeightedList<Task<? super E>> taskList, ServerWorld world, E entityIn, long gameTime) {
+            taskList.entStream().filter((task) -> {
+               return task.getStatus() == Task.Status.STOPPED;
+            }).forEach((task) -> {
+               task.start(world, entityIn, gameTime);
             });
          }
       };
@@ -109,6 +109,6 @@ public class MultiTask<E extends LivingEntity> extends Task<E> {
       private RunType() {
       }
 
-      public abstract <E extends LivingEntity> void func_220630_a(WeightedList<Task<? super E>> p_220630_1_, ServerWorld p_220630_2_, E p_220630_3_, long p_220630_4_);
+      public abstract <E extends LivingEntity> void runTasks(WeightedList<Task<? super E>> p_220630_1_, ServerWorld world, E entityIn, long gameTime);
    }
 }

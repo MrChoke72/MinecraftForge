@@ -195,7 +195,7 @@ public class BatEntity extends AmbientEntity {
             return false;
          }
 
-         return i > p_223369_4_.nextInt(j) ? false : func_223315_a(p_223369_0_, p_223369_1_, p_223369_2_, p_223369_3_, p_223369_4_);
+         return i > p_223369_4_.nextInt(j) ? false : canEntitySpawn(p_223369_0_, p_223369_1_, p_223369_2_, p_223369_3_, p_223369_4_);
       }
    }
 

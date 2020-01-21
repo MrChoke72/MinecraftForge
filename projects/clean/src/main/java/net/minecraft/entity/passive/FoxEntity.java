@@ -679,7 +679,7 @@ public class FoxEntity extends AnimalEntity {
 
       protected boolean func_220813_g() {
          BlockPos blockpos = new BlockPos(FoxEntity.this);
-         return !FoxEntity.this.world.func_226660_f_(blockpos) && FoxEntity.this.getBlockPathWeight(blockpos) >= 0.0F;
+         return !FoxEntity.this.world.isMaxLightLevel(blockpos) && FoxEntity.this.getBlockPathWeight(blockpos) >= 0.0F;
       }
 
       protected boolean func_220814_h() {
@@ -837,7 +837,7 @@ public class FoxEntity extends AnimalEntity {
             } else {
                this.cooldown = 100;
                BlockPos blockpos = new BlockPos(this.creature);
-               return FoxEntity.this.world.isDaytime() && FoxEntity.this.world.func_226660_f_(blockpos) && !((ServerWorld)FoxEntity.this.world).isPosBelowEQSecLevel1(blockpos) && this.func_220702_g();
+               return FoxEntity.this.world.isDaytime() && FoxEntity.this.world.isMaxLightLevel(blockpos) && !((ServerWorld)FoxEntity.this.world).isPosBelowEQSecLevel1(blockpos) && this.func_220702_g();
             }
          } else {
             return false;

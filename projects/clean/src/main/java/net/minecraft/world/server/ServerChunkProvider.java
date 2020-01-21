@@ -359,7 +359,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
                         if (entityclassification != EntityClassification.MISC && (!entityclassification.getPeacefulCreature() || this.spawnPassives) && (entityclassification.getPeacefulCreature() || this.spawnHostiles) && (!entityclassification.getAnimal() || flag2)) {
                            int i1 = entityclassification.getMaxNumberOfCreature() * l / field_217238_b;
                            if (object2intmap.getInt(entityclassification) <= i1) {
-                              WorldEntitySpawner.func_226701_a_(entityclassification, this.world, chunk, blockpos);
+                              WorldEntitySpawner.spawnEntities(entityclassification, this.world, chunk, blockpos);
                            }
                         }
                      }
@@ -471,7 +471,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
    }
 
    public PointOfInterestManager func_217231_i() {
-      return this.chunkManager.func_219189_h();
+      return this.chunkManager.getPoiMgr();
    }
 
    final class ChunkExecutor extends ThreadTaskExecutor<Runnable> {

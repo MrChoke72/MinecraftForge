@@ -529,7 +529,7 @@ public class Items {
    public static final Item REPEATER = register(Blocks.REPEATER, ItemGroup.REDSTONE);
    public static final Item COMPARATOR = register(Blocks.COMPARATOR, ItemGroup.REDSTONE);
    public static final Item STRUCTURE_BLOCK = register(new OperatorOnlyItem(Blocks.STRUCTURE_BLOCK, (new Item.Properties()).rarity(Rarity.EPIC)));
-   public static final Item field_226633_iW_ = register(new OperatorOnlyItem(Blocks.field_226904_lY_, (new Item.Properties()).rarity(Rarity.EPIC)));
+   public static final Item field_226633_iW_ = register(new OperatorOnlyItem(Blocks.JIGSAW, (new Item.Properties()).rarity(Rarity.EPIC)));
    public static final Item COMPOSTER = register(Blocks.COMPOSTER, ItemGroup.MISC);
    public static final Item TURTLE_HELMET = register("turtle_helmet", new ArmorItem(ArmorMaterial.TURTLE, EquipmentSlotType.HEAD, (new Item.Properties()).group(ItemGroup.COMBAT)));
    public static final Item SCUTE = register("scute", new Item((new Item.Properties()).group(ItemGroup.MATERIALS)));
@@ -892,11 +892,17 @@ public class Items {
    public static final Item SWEET_BERRIES = register("sweet_berries", new BlockNamedItem(Blocks.SWEET_BERRY_BUSH, (new Item.Properties()).group(ItemGroup.FOOD).food(Foods.SWEET_BERRIES)));
    public static final Item CAMPFIRE = register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
    public static final Item field_226635_pU_ = register("honeycomb", new Item((new Item.Properties()).group(ItemGroup.MATERIALS)));
-   public static final Item field_226636_pV_ = register(Blocks.field_226905_ma_, ItemGroup.DECORATIONS);
-   public static final Item field_226637_pW_ = register(Blocks.field_226906_mb_, ItemGroup.DECORATIONS);
+   public static final Item field_226636_pV_ = register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
+   public static final Item field_226637_pW_ = register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
    public static final Item field_226638_pX_ = register("honey_bottle", new HoneyBottleItem((new Item.Properties()).containerItem(GLASS_BOTTLE).food(Foods.field_226604_w_).group(ItemGroup.FOOD).maxStackSize(16)));
-   public static final Item field_226639_pY_ = register(Blocks.field_226907_mc_, ItemGroup.DECORATIONS);
-   public static final Item field_226640_pZ_ = register(Blocks.field_226908_md_, ItemGroup.DECORATIONS);
+   public static final Item field_226639_pY_ = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
+   public static final Item field_226640_pZ_ = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
+
+   //AH ADD ****
+   public static final Item ZOMBIENASTY_SPAWN_EGG = register("choke:zombienasty_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_NASTY, 14680064, 12607488, (new Item.Properties()).group(ItemGroup.MISC)));
+   //AH END ****
+
+
 
    private static Item register(Block p_221545_0_) {
       return register(new BlockItem(p_221545_0_, new Item.Properties()));

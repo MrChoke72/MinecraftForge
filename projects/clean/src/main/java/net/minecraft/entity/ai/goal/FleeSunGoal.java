@@ -31,7 +31,7 @@ public class FleeSunGoal extends Goal {
          return false;
       } else if (!this.creature.isBurning()) {
          return false;
-      } else if (!this.world.func_226660_f_(new BlockPos(this.creature))) {
+      } else if (!this.world.isMaxLightLevel(new BlockPos(this.creature))) {
          return false;
       } else {
          return !this.creature.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty() ? false : this.func_220702_g();
@@ -65,7 +65,7 @@ public class FleeSunGoal extends Goal {
 
       for(int i = 0; i < 10; ++i) {
          BlockPos blockpos1 = blockpos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-         if (!this.world.func_226660_f_(blockpos1) && this.creature.getBlockPathWeight(blockpos1) < 0.0F) {
+         if (!this.world.isMaxLightLevel(blockpos1) && this.creature.getBlockPathWeight(blockpos1) < 0.0F) {
             return new Vec3d(blockpos1);
          }
       }

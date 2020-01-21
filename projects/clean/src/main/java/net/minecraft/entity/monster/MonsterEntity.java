@@ -3,8 +3,6 @@ package net.minecraft.entity.monster;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -13,13 +11,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShootableItem;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
@@ -39,11 +35,11 @@ public abstract class MonsterEntity extends CreatureEntity implements IMob {
 
    public void livingTick() {
       this.updateArmSwingProgress();
-      this.func_213623_ec();
+      this.incrementIdleTime();
       super.livingTick();
    }
 
-   protected void func_213623_ec() {
+   protected void incrementIdleTime() {
       float f = this.getBrightness();
       if (f > 0.5F) {
          this.idleTime += 2;
@@ -83,21 +79,21 @@ public abstract class MonsterEntity extends CreatureEntity implements IMob {
       return 0.5F - worldIn.getBrightness(pos);
    }
 
-   public static boolean func_223323_a(IWorld p_223323_0_, BlockPos p_223323_1_, Random p_223323_2_) {
-      if (p_223323_0_.func_226658_a_(LightType.SKY, p_223323_1_) > p_223323_2_.nextInt(32)) {
+   public static boolean isLightSpawnable(IWorld world, BlockPos pos, Random rand) {
+      if (world.getLightLevel(LightType.SKY, pos) > rand.nextInt(32)) {
          return false;
       } else {
-         int i = p_223323_0_.getWorld().isThundering() ? p_223323_0_.getNeighborAwareLightSubtracted(p_223323_1_, 10) : p_223323_0_.getLight(p_223323_1_);
-         return i <= p_223323_2_.nextInt(8);
+         int i = world.getWorld().isThundering() ? world.getNeighborAwareLightSubtracted(pos, 10) : world.getLight(pos);
+         return i <= rand.nextInt(8);
       }
    }
 
-   public static boolean func_223325_c(EntityType<? extends MonsterEntity> p_223325_0_, IWorld p_223325_1_, SpawnReason p_223325_2_, BlockPos p_223325_3_, Random p_223325_4_) {
-      return p_223325_1_.getDifficulty() != Difficulty.PEACEFUL && func_223323_a(p_223325_1_, p_223325_3_, p_223325_4_) && func_223315_a(p_223325_0_, p_223325_1_, p_223325_2_, p_223325_3_, p_223325_4_);
+   public static boolean spawnPred(EntityType<? extends MonsterEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random rand) {
+      return world.getDifficulty() != Difficulty.PEACEFUL && isLightSpawnable(world, pos, rand) && canEntitySpawn(entityType, world, spawnReason, pos, rand);
    }
 
    public static boolean func_223324_d(EntityType<? extends MonsterEntity> p_223324_0_, IWorld p_223324_1_, SpawnReason p_223324_2_, BlockPos p_223324_3_, Random p_223324_4_) {
-      return p_223324_1_.getDifficulty() != Difficulty.PEACEFUL && func_223315_a(p_223324_0_, p_223324_1_, p_223324_2_, p_223324_3_, p_223324_4_);
+      return p_223324_1_.getDifficulty() != Difficulty.PEACEFUL && canEntitySpawn(p_223324_0_, p_223324_1_, p_223324_2_, p_223324_3_, p_223324_4_);
    }
 
    //AH CHANGE

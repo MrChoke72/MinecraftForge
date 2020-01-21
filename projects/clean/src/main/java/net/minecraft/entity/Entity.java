@@ -294,7 +294,7 @@ public abstract class Entity implements INameable, ICommandSource {
       if (this.world != null) {
          for(double d0 = this.getPosY(); d0 > 0.0D && d0 < 256.0D; ++d0) {
             this.setPosition(this.getPosX(), d0, this.getPosZ());
-            if (this.world.func_226669_j_(this)) {
+            if (this.world.isEntityNoCollide(this)) {
                break;
             }
          }

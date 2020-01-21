@@ -64,7 +64,7 @@ public class RegionSectionCache<R extends IDynamicSerializable> implements AutoC
       return this.data.get(posPacked);
    }
 
-   protected Optional<R> func_219113_d(long secPosPacked) {
+   protected Optional<R> checkPoiDataOptByPos(long secPosPacked) {
       SectionPos sectionpos = SectionPos.from(secPosPacked);
       if (this.isYOutOfBounds(sectionpos)) {
          return Optional.empty();
@@ -89,7 +89,7 @@ public class RegionSectionCache<R extends IDynamicSerializable> implements AutoC
    }
 
    protected R getCachedPoiData(long secPosPacked) {
-      Optional<R> optional = this.func_219113_d(secPosPacked);
+      Optional<R> optional = this.checkPoiDataOptByPos(secPosPacked);
       if (optional.isPresent()) {
          return (R)(optional.get());
       } else {

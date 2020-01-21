@@ -98,7 +98,7 @@ public abstract class HangingEntity extends Entity {
    }
 
    public boolean onValidSurface() {
-      if (!this.world.func_226669_j_(this)) {
+      if (!this.world.isEntityNoCollide(this)) {
          return false;
       } else {
          int i = Math.max(1, this.getWidthPixels() / 16);

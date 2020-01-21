@@ -19,7 +19,7 @@ public class BlockPosWrapper implements IPosWrapper {
       return this.field_220613_b;
    }
 
-   public boolean isVisibleTo(LivingEntity p_220610_1_) {
+   public boolean isVisibleTo(LivingEntity entity) {
       return true;
    }
 

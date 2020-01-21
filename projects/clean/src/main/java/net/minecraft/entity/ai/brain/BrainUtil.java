@@ -16,13 +16,13 @@ import net.minecraft.world.server.ServerWorld;
 
 public class BrainUtil {
    public static void func_220618_a(LivingEntity p_220618_0_, LivingEntity p_220618_1_) {
-      func_220616_b(p_220618_0_, p_220618_1_);
-      func_220626_d(p_220618_0_, p_220618_1_);
+      lookAtEachOther(p_220618_0_, p_220618_1_);
+      approachEachOther(p_220618_0_, p_220618_1_);
    }
 
-   public static boolean canSee(Brain<?> p_220619_0_, LivingEntity p_220619_1_) {
-      return p_220619_0_.getMemory(MemoryModuleType.VISIBLE_MOBS).filter((p_220614_1_) -> {
-         return p_220614_1_.contains(p_220619_1_);
+   public static boolean canSee(Brain<?> brain, LivingEntity entity) {
+      return brain.getMemory(MemoryModuleType.VISIBLE_MOBS).filter((p_220614_1_) -> {
+         return p_220614_1_.contains(entity);
       }).isPresent();
    }
 
@@ -34,19 +34,19 @@ public class BrainUtil {
       }).isPresent();
    }
 
-   public static void func_220616_b(LivingEntity p_220616_0_, LivingEntity p_220616_1_) {
-      lookAt(p_220616_0_, p_220616_1_);
-      lookAt(p_220616_1_, p_220616_0_);
+   public static void lookAtEachOther(LivingEntity ent1, LivingEntity ent2) {
+      lookAt(ent1, ent2);
+      lookAt(ent2, ent1);
    }
 
-   public static void lookAt(LivingEntity p_220625_0_, LivingEntity p_220625_1_) {
-      p_220625_0_.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(p_220625_1_));
+   public static void lookAt(LivingEntity owner, LivingEntity lookTgt) {
+      owner.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(lookTgt));
    }
 
-   public static void func_220626_d(LivingEntity p_220626_0_, LivingEntity p_220626_1_) {
+   public static void approachEachOther(LivingEntity ent1, LivingEntity ent2) {
       int i = 2;
-      approach(p_220626_0_, p_220626_1_, 2);
-      approach(p_220626_1_, p_220626_0_, 2);
+      approach(ent1, ent2, 2);
+      approach(ent2, ent1, 2);
    }
 
    public static void approach(LivingEntity living, LivingEntity target, int targetDistance) {
@@ -71,16 +71,11 @@ public class BrainUtil {
    }
 
    //AH REFACTOR
-   public static SectionPos getSecPosLowerInRadius(ServerWorld world, SectionPos secPosIn, int radius) {
+   public static SectionPos getSecPosLowerInRadius(ServerWorld world, SectionPos secPosIn, int secRadius) {
    //public static SectionPos func_220617_a(ServerWorld p_220617_0_, SectionPos p_220617_1_, int p_220617_2_) {
       int i = world.getPoiSecPosLevel(secPosIn);
-      return SectionPos.getAllInBox(secPosIn, radius).filter((secPos) -> {
-
-         //AH CHANGE DEBUG
-         int secLevel =  world.getPoiSecPosLevel(secPos);
-         return (secLevel < i);
-         //return world.getPoiSecPosLevel(secPos) < i;
-
+      return SectionPos.getAllInBox(secPosIn, secRadius).filter((secPos) -> {
+         return world.getPoiSecPosLevel(secPos) < i;
       }).min(Comparator.comparingInt(world::getPoiSecPosLevel)).orElse(secPosIn);
    }
 }

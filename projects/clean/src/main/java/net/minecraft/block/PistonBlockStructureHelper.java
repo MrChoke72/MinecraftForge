@@ -58,13 +58,13 @@ public class PistonBlockStructureHelper {
    }
 
    private static boolean func_227029_a_(Block p_227029_0_) {
-      return p_227029_0_ == Blocks.SLIME_BLOCK || p_227029_0_ == Blocks.field_226907_mc_;
+      return p_227029_0_ == Blocks.SLIME_BLOCK || p_227029_0_ == Blocks.HONEY_BLOCK;
    }
 
    private static boolean func_227030_a_(Block p_227030_0_, Block p_227030_1_) {
-      if (p_227030_0_ == Blocks.field_226907_mc_ && p_227030_1_ == Blocks.SLIME_BLOCK) {
+      if (p_227030_0_ == Blocks.HONEY_BLOCK && p_227030_1_ == Blocks.SLIME_BLOCK) {
          return false;
-      } else if (p_227030_0_ == Blocks.SLIME_BLOCK && p_227030_1_ == Blocks.field_226907_mc_) {
+      } else if (p_227030_0_ == Blocks.SLIME_BLOCK && p_227030_1_ == Blocks.HONEY_BLOCK) {
          return false;
       } else {
          return func_227029_a_(p_227030_0_) || func_227029_a_(p_227030_1_);

@@ -10,5 +10,5 @@ public interface IRandomRange {
 
    int generateInt(Random rand);
 
-   ResourceLocation func_215830_a();
+   ResourceLocation getLocation();
 }

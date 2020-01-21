@@ -234,7 +234,7 @@ public class RenderTypeLookup {
       p_228395_0_.put(Blocks.RED_STAINED_GLASS_PANE, rendertype2);
       p_228395_0_.put(Blocks.BLACK_STAINED_GLASS_PANE, rendertype2);
       p_228395_0_.put(Blocks.SLIME_BLOCK, rendertype2);
-      p_228395_0_.put(Blocks.field_226907_mc_, rendertype2);
+      p_228395_0_.put(Blocks.HONEY_BLOCK, rendertype2);
       p_228395_0_.put(Blocks.FROSTED_ICE, rendertype2);
       p_228395_0_.put(Blocks.BUBBLE_COLUMN, rendertype2);
    });

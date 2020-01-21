@@ -41,7 +41,7 @@ public class PhantomSpawner {
                for(PlayerEntity playerentity : worldIn.getPlayers()) {
                   if (!playerentity.isSpectator()) {
                      BlockPos blockpos = new BlockPos(playerentity);
-                     if (!worldIn.dimension.hasSkyLight() || blockpos.getY() >= worldIn.getSeaLevel() && worldIn.func_226660_f_(blockpos)) {
+                     if (!worldIn.dimension.hasSkyLight() || blockpos.getY() >= worldIn.getSeaLevel() && worldIn.isMaxLightLevel(blockpos)) {
                         DifficultyInstance difficultyinstance = worldIn.getDifficultyForLocation(blockpos);
                         if (difficultyinstance.isHarderThan(random.nextFloat() * 3.0F)) {
                            ServerStatisticsManager serverstatisticsmanager = ((ServerPlayerEntity)playerentity).getStats();

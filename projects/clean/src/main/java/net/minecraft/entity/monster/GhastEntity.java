@@ -111,7 +111,7 @@ public class GhastEntity extends FlyingEntity implements IMob {
    }
 
    public static boolean func_223368_b(EntityType<GhastEntity> p_223368_0_, IWorld p_223368_1_, SpawnReason p_223368_2_, BlockPos p_223368_3_, Random p_223368_4_) {
-      return p_223368_1_.getDifficulty() != Difficulty.PEACEFUL && p_223368_4_.nextInt(20) == 0 && func_223315_a(p_223368_0_, p_223368_1_, p_223368_2_, p_223368_3_, p_223368_4_);
+      return p_223368_1_.getDifficulty() != Difficulty.PEACEFUL && p_223368_4_.nextInt(20) == 0 && canEntitySpawn(p_223368_0_, p_223368_1_, p_223368_2_, p_223368_3_, p_223368_4_);
    }
 
    public int getMaxSpawnedInChunk() {

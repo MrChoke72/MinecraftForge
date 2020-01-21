@@ -66,7 +66,7 @@ public abstract class StandaloneLootEntry extends LootEntry {
 
       public T acceptFunction(ILootFunction.IBuilder functionBuilder) {
          this.functions.add(functionBuilder.build());
-         return (T)(this.func_212845_d_());
+         return (T)(this.builder());
       }
 
       protected ILootFunction[] getFunctions() {
@@ -75,12 +75,12 @@ public abstract class StandaloneLootEntry extends LootEntry {
 
       public T weight(int weightIn) {
          this.weight = weightIn;
-         return (T)(this.func_212845_d_());
+         return (T)(this.builder());
       }
 
       public T quality(int qualityIn) {
          this.quality = qualityIn;
-         return (T)(this.func_212845_d_());
+         return (T)(this.builder());
       }
    }
 
@@ -91,7 +91,7 @@ public abstract class StandaloneLootEntry extends LootEntry {
          this.field_216090_c = p_i50485_1_;
       }
 
-      protected StandaloneLootEntry.BuilderImpl func_212845_d_() {
+      protected StandaloneLootEntry.BuilderImpl builder() {
          return this;
       }
 

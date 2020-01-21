@@ -31,12 +31,13 @@ public class InteractWithEntityTask<E extends LivingEntity, T extends LivingEnti
       this.field_220452_g = p_i50363_5_;
    }
 
-   public static <T extends LivingEntity> InteractWithEntityTask<LivingEntity, T> func_220445_a(EntityType<? extends T> p_220445_0_, int p_220445_1_, MemoryModuleType<T> p_220445_2_, float p_220445_3_, int p_220445_4_) {
-      return new InteractWithEntityTask<>(p_220445_0_, p_220445_1_, (p_220441_0_) -> {
+   public static <T extends LivingEntity> InteractWithEntityTask<LivingEntity, T> func_220445_a(EntityType<? extends T> entityType, int p_220445_1_, MemoryModuleType<T> memModuleType,
+                                                                                                float p_220445_3_, int p_220445_4_) {
+      return new InteractWithEntityTask<>(entityType, p_220445_1_, (p_220441_0_) -> {
          return true;
       }, (p_220442_0_) -> {
          return true;
-      }, p_220445_2_, p_220445_3_, p_220445_4_);
+      }, memModuleType, p_220445_3_, p_220445_4_);
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, E owner) {

@@ -13,62 +13,62 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.village.PointOfInterestType;
 
 public class VillagerProfession {
-   public static final VillagerProfession NONE = func_226556_a_("none", PointOfInterestType.UNEMPLOYED, (SoundEvent)null);
-   public static final VillagerProfession ARMORER = func_226556_a_("armorer", PointOfInterestType.ARMORER, SoundEvents.ENTITY_VILLAGER_WORK_ARMORER);
-   public static final VillagerProfession BUTCHER = func_226556_a_("butcher", PointOfInterestType.BUTCHER, SoundEvents.ENTITY_VILLAGER_WORK_BUTCHER);
-   public static final VillagerProfession CARTOGRAPHER = func_226556_a_("cartographer", PointOfInterestType.CARTOGRAPHER, SoundEvents.ENTITY_VILLAGER_WORK_CARTOGRAPHER);
-   public static final VillagerProfession CLERIC = func_226556_a_("cleric", PointOfInterestType.CLERIC, SoundEvents.ENTITY_VILLAGER_WORK_CLERIC);
-   public static final VillagerProfession FARMER = func_226557_a_("farmer", PointOfInterestType.FARMER, ImmutableSet.of(Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS), ImmutableSet.of(Blocks.FARMLAND), SoundEvents.ENTITY_VILLAGER_WORK_FARMER);
-   public static final VillagerProfession FISHERMAN = func_226556_a_("fisherman", PointOfInterestType.FISHERMAN, SoundEvents.ENTITY_VILLAGER_WORK_FISHERMAN);
-   public static final VillagerProfession FLETCHER = func_226556_a_("fletcher", PointOfInterestType.FLETCHER, SoundEvents.ENTITY_VILLAGER_WORK_FLETCHER);
-   public static final VillagerProfession LEATHERWORKER = func_226556_a_("leatherworker", PointOfInterestType.LEATHERWORKER, SoundEvents.ENTITY_VILLAGER_WORK_LEATHERWORKER);
-   public static final VillagerProfession LIBRARIAN = func_226556_a_("librarian", PointOfInterestType.LIBRARIAN, SoundEvents.ENTITY_VILLAGER_WORK_LIBRARIAN);
-   public static final VillagerProfession MASON = func_226556_a_("mason", PointOfInterestType.MASON, SoundEvents.ENTITY_VILLAGER_WORK_MASON);
-   public static final VillagerProfession NITWIT = func_226556_a_("nitwit", PointOfInterestType.NITWIT, (SoundEvent)null);
-   public static final VillagerProfession SHEPHERD = func_226556_a_("shepherd", PointOfInterestType.SHEPHERD, SoundEvents.ENTITY_VILLAGER_WORK_SHEPHERD);
-   public static final VillagerProfession TOOLSMITH = func_226556_a_("toolsmith", PointOfInterestType.TOOLSMITH, SoundEvents.ENTITY_VILLAGER_WORK_TOOLSMITH);
-   public static final VillagerProfession WEAPONSMITH = func_226556_a_("weaponsmith", PointOfInterestType.WEAPONSMITH, SoundEvents.ENTITY_VILLAGER_WORK_WEAPONSMITH);
+   public static final VillagerProfession NONE = registerProfession("none", PointOfInterestType.UNEMPLOYED, (SoundEvent)null);
+   public static final VillagerProfession ARMORER = registerProfession("armorer", PointOfInterestType.ARMORER, SoundEvents.ENTITY_VILLAGER_WORK_ARMORER);
+   public static final VillagerProfession BUTCHER = registerProfession("butcher", PointOfInterestType.BUTCHER, SoundEvents.ENTITY_VILLAGER_WORK_BUTCHER);
+   public static final VillagerProfession CARTOGRAPHER = registerProfession("cartographer", PointOfInterestType.CARTOGRAPHER, SoundEvents.ENTITY_VILLAGER_WORK_CARTOGRAPHER);
+   public static final VillagerProfession CLERIC = registerProfession("cleric", PointOfInterestType.CLERIC, SoundEvents.ENTITY_VILLAGER_WORK_CLERIC);
+   public static final VillagerProfession FARMER = registerProfession("farmer", PointOfInterestType.FARMER, ImmutableSet.of(Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS), ImmutableSet.of(Blocks.FARMLAND), SoundEvents.ENTITY_VILLAGER_WORK_FARMER);
+   public static final VillagerProfession FISHERMAN = registerProfession("fisherman", PointOfInterestType.FISHERMAN, SoundEvents.ENTITY_VILLAGER_WORK_FISHERMAN);
+   public static final VillagerProfession FLETCHER = registerProfession("fletcher", PointOfInterestType.FLETCHER, SoundEvents.ENTITY_VILLAGER_WORK_FLETCHER);
+   public static final VillagerProfession LEATHERWORKER = registerProfession("leatherworker", PointOfInterestType.LEATHERWORKER, SoundEvents.ENTITY_VILLAGER_WORK_LEATHERWORKER);
+   public static final VillagerProfession LIBRARIAN = registerProfession("librarian", PointOfInterestType.LIBRARIAN, SoundEvents.ENTITY_VILLAGER_WORK_LIBRARIAN);
+   public static final VillagerProfession MASON = registerProfession("mason", PointOfInterestType.MASON, SoundEvents.ENTITY_VILLAGER_WORK_MASON);
+   public static final VillagerProfession NITWIT = registerProfession("nitwit", PointOfInterestType.NITWIT, (SoundEvent)null);
+   public static final VillagerProfession SHEPHERD = registerProfession("shepherd", PointOfInterestType.SHEPHERD, SoundEvents.ENTITY_VILLAGER_WORK_SHEPHERD);
+   public static final VillagerProfession TOOLSMITH = registerProfession("toolsmith", PointOfInterestType.TOOLSMITH, SoundEvents.ENTITY_VILLAGER_WORK_TOOLSMITH);
+   public static final VillagerProfession WEAPONSMITH = registerProfession("weaponsmith", PointOfInterestType.WEAPONSMITH, SoundEvents.ENTITY_VILLAGER_WORK_WEAPONSMITH);
    private final String name;
    private final PointOfInterestType pointOfInterest;
-   private final ImmutableSet<Item> field_221168_r;
-   private final ImmutableSet<Block> field_221169_s;
+   private final ImmutableSet<Item> itemSet;
+   private final ImmutableSet<Block> workBlockSet;
    @Nullable
-   private final SoundEvent field_226555_t_;
+   private final SoundEvent soundEvent;
 
-   private VillagerProfession(String p_i225734_1_, PointOfInterestType p_i225734_2_, ImmutableSet<Item> p_i225734_3_, ImmutableSet<Block> p_i225734_4_, @Nullable SoundEvent p_i225734_5_) {
-      this.name = p_i225734_1_;
-      this.pointOfInterest = p_i225734_2_;
-      this.field_221168_r = p_i225734_3_;
-      this.field_221169_s = p_i225734_4_;
-      this.field_226555_t_ = p_i225734_5_;
+   private VillagerProfession(String name, PointOfInterestType poiType, ImmutableSet<Item> itemSet, ImmutableSet<Block> workBlockSet, @Nullable SoundEvent soundEvent) {
+      this.name = name;
+      this.pointOfInterest = poiType;
+      this.itemSet = itemSet;
+      this.workBlockSet = workBlockSet;
+      this.soundEvent = soundEvent;
    }
 
    public PointOfInterestType getPointOfInterest() {
       return this.pointOfInterest;
    }
 
-   public ImmutableSet<Item> func_221146_c() {
-      return this.field_221168_r;
+   public ImmutableSet<Item> getItemSet() {
+      return this.itemSet;
    }
 
-   public ImmutableSet<Block> func_221150_d() {
-      return this.field_221169_s;
+   public ImmutableSet<Block> getWorkBlockSet() {
+      return this.workBlockSet;
    }
 
    @Nullable
-   public SoundEvent func_226558_e_() {
-      return this.field_226555_t_;
+   public SoundEvent getSoundEvent() {
+      return this.soundEvent;
    }
 
    public String toString() {
       return this.name;
    }
 
-   static VillagerProfession func_226556_a_(String p_226556_0_, PointOfInterestType p_226556_1_, @Nullable SoundEvent p_226556_2_) {
-      return func_226557_a_(p_226556_0_, p_226556_1_, ImmutableSet.of(), ImmutableSet.of(), p_226556_2_);
+   static VillagerProfession registerProfession(String name, PointOfInterestType poiType, @Nullable SoundEvent soundEvent) {
+      return registerProfession(name, poiType, ImmutableSet.of(), ImmutableSet.of(), soundEvent);
    }
 
-   static VillagerProfession func_226557_a_(String p_226557_0_, PointOfInterestType p_226557_1_, ImmutableSet<Item> p_226557_2_, ImmutableSet<Block> p_226557_3_, @Nullable SoundEvent p_226557_4_) {
-      return Registry.register(Registry.VILLAGER_PROFESSION, new ResourceLocation(p_226557_0_), new VillagerProfession(p_226557_0_, p_226557_1_, p_226557_2_, p_226557_3_, p_226557_4_));
+   static VillagerProfession registerProfession(String name, PointOfInterestType poiType, ImmutableSet<Item> itemList, ImmutableSet<Block> workBlockSet, @Nullable SoundEvent soundEvent) {
+      return Registry.register(Registry.VILLAGER_PROFESSION, new ResourceLocation(name), new VillagerProfession(name, poiType, itemList, workBlockSet, soundEvent));
    }
 }

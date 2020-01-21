@@ -402,7 +402,7 @@ public abstract class PlayerList {
          }
       }
 
-      while(!serverworld.func_226669_j_(serverplayerentity) && serverplayerentity.getPosY() < 256.0D) {
+      while(!serverworld.isEntityNoCollide(serverplayerentity) && serverplayerentity.getPosY() < 256.0D) {
          serverplayerentity.setPosition(serverplayerentity.getPosX(), serverplayerentity.getPosY() + 1.0D, serverplayerentity.getPosZ());
       }
 

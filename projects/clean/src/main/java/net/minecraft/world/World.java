@@ -192,7 +192,7 @@ public abstract class World implements IWorld, AutoCloseable {
                   newState.updateDiagonalNeighbors(this, pos, i);
                }
 
-               this.func_217393_a(pos, blockstate, blockstate1);
+               this.updatePoiMgr(pos, blockstate, blockstate1);
             }
 
             return true;
@@ -200,7 +200,7 @@ public abstract class World implements IWorld, AutoCloseable {
       }
    }
 
-   public void func_217393_a(BlockPos p_217393_1_, BlockState p_217393_2_, BlockState p_217393_3_) {
+   public void updatePoiMgr(BlockPos p_217393_1_, BlockState p_217393_2_, BlockState p_217393_3_) {
    }
 
    public boolean removeBlock(BlockPos pos, boolean isMoving) {
@@ -313,7 +313,7 @@ public abstract class World implements IWorld, AutoCloseable {
       return i;
    }
 
-   public WorldLightManager func_225524_e_() {
+   public WorldLightManager getLightMgr() {
       return this.getChunkProvider().getLightManager();
    }
 
@@ -698,12 +698,12 @@ public abstract class World implements IWorld, AutoCloseable {
       return isOutsideBuildHeight(pos) ? false : this.chunkProvider.chunkExists(pos.getX() >> 4, pos.getZ() >> 4);
    }
 
-   public boolean func_217400_a(BlockPos p_217400_1_, Entity p_217400_2_) {
-      if (isOutsideBuildHeight(p_217400_1_)) {
+   public boolean func_217400_a(BlockPos pos, Entity entity) {
+      if (isOutsideBuildHeight(pos)) {
          return false;
       } else {
-         IChunk ichunk = this.getChunk(p_217400_1_.getX() >> 4, p_217400_1_.getZ() >> 4, ChunkStatus.FULL, false);
-         return ichunk == null ? false : ichunk.getBlockState(p_217400_1_).func_215682_a(this, p_217400_1_, p_217400_2_);
+         IChunk ichunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
+         return ichunk == null ? false : ichunk.getBlockState(pos).isUpSideFilled(this, pos, entity);
       }
    }
 
@@ -1013,7 +1013,7 @@ public abstract class World implements IWorld, AutoCloseable {
    public boolean isRainingAt(BlockPos position) {
       if (!this.isRaining()) {
          return false;
-      } else if (!this.func_226660_f_(position)) {
+      } else if (!this.isMaxLightLevel(position)) {
          return false;
       } else if (this.getHeight(Heightmap.Type.MOTION_BLOCKING, position).getY() > position.getY()) {
          return false;

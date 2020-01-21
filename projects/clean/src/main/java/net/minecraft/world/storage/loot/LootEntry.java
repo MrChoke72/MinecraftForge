@@ -33,15 +33,15 @@ public abstract class LootEntry implements ILootEntry {
    public abstract static class Builder<T extends LootEntry.Builder<T>> implements ILootConditionConsumer<T> {
       private final List<ILootCondition> field_216082_a = Lists.newArrayList();
 
-      protected abstract T func_212845_d_();
+      protected abstract T builder();
 
       public T acceptCondition(ILootCondition.IBuilder conditionBuilder) {
          this.field_216082_a.add(conditionBuilder.build());
-         return (T)this.func_212845_d_();
+         return (T)this.builder();
       }
 
       public final T cast() {
-         return (T)this.func_212845_d_();
+         return (T)this.builder();
       }
 
       protected ILootCondition[] func_216079_f() {

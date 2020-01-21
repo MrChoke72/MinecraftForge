@@ -374,8 +374,8 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       this.dataManager.set(field_226375_bx_, p_226453_1_);
    }
 
-   private boolean func_226435_i_(BlockPos p_226435_1_) {
-      TileEntity tileentity = this.world.getTileEntity(p_226435_1_);
+   private boolean func_226435_i_(BlockPos pos) {
+      TileEntity tileentity = this.world.getTileEntity(pos);
       if (tileentity instanceof BeehiveTileEntity) {
          return !((BeehiveTileEntity)tileentity).func_226970_h_();
       } else {
@@ -1127,11 +1127,11 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       private List<BlockPos> func_226489_j_() {
          BlockPos blockpos = new BlockPos(BeeEntity.this);
          PointOfInterestManager pointofinterestmanager = ((ServerWorld)BeeEntity.this.world).getPoiMgr();
-         Stream<PointOfInterest> stream = pointofinterestmanager.poiStreamByDistFiltPos((p_226486_0_) -> {
-            return p_226486_0_ == PointOfInterestType.BEEHIVE || p_226486_0_ == PointOfInterestType.BEE_NEST;
+         Stream<PointOfInterest> stream = pointofinterestmanager.poiStreamByDistFiltPos((poiType) -> {
+            return poiType == PointOfInterestType.BEEHIVE || poiType == PointOfInterestType.BEE_NEST;
          }, blockpos, 20, PointOfInterestManager.Status.ANY);
-         return stream.map(PointOfInterest::getPos).filter((p_226487_1_) -> {
-            return BeeEntity.this.func_226435_i_(p_226487_1_);
+         return stream.map(PointOfInterest::getPos).filter((pos) -> {
+            return BeeEntity.this.func_226435_i_(pos);
          }).sorted(Comparator.comparingDouble((p_226488_1_) -> {
             return p_226488_1_.distanceSq(blockpos);
          })).collect(Collectors.toList());

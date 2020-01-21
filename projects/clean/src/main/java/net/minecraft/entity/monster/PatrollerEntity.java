@@ -82,7 +82,7 @@ public abstract class PatrollerEntity extends MonsterEntity {
    }
 
    public static boolean func_223330_b(EntityType<? extends PatrollerEntity> p_223330_0_, IWorld p_223330_1_, SpawnReason p_223330_2_, BlockPos p_223330_3_, Random p_223330_4_) {
-      return p_223330_1_.func_226658_a_(LightType.BLOCK, p_223330_3_) > 8 ? false : func_223324_d(p_223330_0_, p_223330_1_, p_223330_2_, p_223330_3_, p_223330_4_);
+      return p_223330_1_.getLightLevel(LightType.BLOCK, p_223330_3_) > 8 ? false : func_223324_d(p_223330_0_, p_223330_1_, p_223330_2_, p_223330_3_, p_223330_4_);
    }
 
    public boolean canDespawn(double distanceToClosestPlayer) {

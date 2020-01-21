@@ -46,8 +46,13 @@ public class GiveHeroGiftsTask extends Task<VillagerEntity> {
    private boolean done;
    private long startTime;
 
-   public GiveHeroGiftsTask(int p_i50366_1_) {
-      super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.INTERACTION_TARGET, MemoryModuleStatus.REGISTERED, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleStatus.VALUE_PRESENT), p_i50366_1_);
+   public GiveHeroGiftsTask(int duration) {
+      super(ImmutableMap.of(
+              MemoryModuleType.WALK_TARGET, MemoryModuleStatus.REGISTERED,
+              MemoryModuleType.LOOK_TARGET, MemoryModuleStatus.REGISTERED,
+              MemoryModuleType.INTERACTION_TARGET, MemoryModuleStatus.REGISTERED,
+              MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleStatus.VALUE_PRESENT),
+         duration);
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, VillagerEntity owner) {
@@ -94,21 +99,23 @@ public class GiveHeroGiftsTask extends Task<VillagerEntity> {
       entityIn.getBrain().removeMemory(MemoryModuleType.LOOK_TARGET);
    }
 
-   private void giveGifts(VillagerEntity p_220398_1_, LivingEntity p_220398_2_) {
-      for(ItemStack itemstack : this.getGifts(p_220398_1_)) {
-         BrainUtil.throwItemAt(p_220398_1_, itemstack, p_220398_2_);
+   private void giveGifts(VillagerEntity owner, LivingEntity receiver) {
+      for(ItemStack itemstack : this.getGifts(owner)) {
+         BrainUtil.throwItemAt(owner, itemstack, receiver);
       }
 
    }
 
-   private List<ItemStack> getGifts(VillagerEntity p_220399_1_) {
-      if (p_220399_1_.isChild()) {
+   private List<ItemStack> getGifts(VillagerEntity villagerEntity) {
+      if (villagerEntity.isChild()) {
          return ImmutableList.of(new ItemStack(Items.POPPY));
       } else {
-         VillagerProfession villagerprofession = p_220399_1_.getVillagerData().getProfession();
+         VillagerProfession villagerprofession = villagerEntity.getVillagerData().getProfession();
          if (GIFTS.containsKey(villagerprofession)) {
-            LootTable loottable = p_220399_1_.world.getServer().getLootTableManager().getLootTableFromLocation(GIFTS.get(villagerprofession));
-            LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)p_220399_1_.world)).withParameter(LootParameters.POSITION, new BlockPos(p_220399_1_)).withParameter(LootParameters.THIS_ENTITY, p_220399_1_).withRandom(p_220399_1_.getRNG());
+            LootTable loottable = villagerEntity.world.getServer().getLootTableManager().getLootTableFromLocation(GIFTS.get(villagerprofession));
+            LootContext.Builder lootcontext$builder = (
+                    new LootContext.Builder((ServerWorld)villagerEntity.world)).withParameter(LootParameters.POSITION, new BlockPos(villagerEntity))
+                        .withParameter(LootParameters.THIS_ENTITY, villagerEntity).withRandom(villagerEntity.getRNG());
             return loottable.generate(lootcontext$builder.build(LootParameterSets.GIFT));
          } else {
             return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
@@ -116,25 +123,25 @@ public class GiveHeroGiftsTask extends Task<VillagerEntity> {
       }
    }
 
-   private boolean hasNearestPlayer(VillagerEntity p_220396_1_) {
-      return this.getNearestPlayer(p_220396_1_).isPresent();
+   private boolean hasNearestPlayer(VillagerEntity villagerEntity) {
+      return this.getNearestPlayer(villagerEntity).isPresent();
    }
 
-   private Optional<PlayerEntity> getNearestPlayer(VillagerEntity p_220400_1_) {
-      return p_220400_1_.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER).filter(this::isHero);
+   private Optional<PlayerEntity> getNearestPlayer(VillagerEntity villagerEntity) {
+      return villagerEntity.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER).filter(this::isHero);
    }
 
-   private boolean isHero(PlayerEntity p_220402_1_) {
-      return p_220402_1_.isPotionActive(Effects.HERO_OF_THE_VILLAGE);
+   private boolean isHero(PlayerEntity player) {
+      return player.isPotionActive(Effects.HERO_OF_THE_VILLAGE);
    }
 
-   private boolean isCloseEnough(VillagerEntity p_220401_1_, PlayerEntity p_220401_2_) {
-      BlockPos blockpos = new BlockPos(p_220401_2_);
-      BlockPos blockpos1 = new BlockPos(p_220401_1_);
+   private boolean isCloseEnough(VillagerEntity owner, PlayerEntity player) {
+      BlockPos blockpos = new BlockPos(player);
+      BlockPos blockpos1 = new BlockPos(owner);
       return blockpos1.withinDistance(blockpos, 5.0D);
    }
 
-   private static int getNextCooldown(ServerWorld p_220397_0_) {
-      return 600 + p_220397_0_.rand.nextInt(6001);
+   private static int getNextCooldown(ServerWorld world) {
+      return 600 + world.rand.nextInt(6001);
    }
 }

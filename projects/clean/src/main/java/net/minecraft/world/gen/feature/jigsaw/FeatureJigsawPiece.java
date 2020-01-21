@@ -55,7 +55,7 @@ public class FeatureJigsawPiece extends JigsawPiece {
 
    public List<Template.BlockInfo> func_214849_a(TemplateManager p_214849_1_, BlockPos p_214849_2_, Rotation p_214849_3_, Random p_214849_4_) {
       List<Template.BlockInfo> list = Lists.newArrayList();
-      list.add(new Template.BlockInfo(p_214849_2_, Blocks.field_226904_lY_.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.field_214871_b));
+      list.add(new Template.BlockInfo(p_214849_2_, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.field_214871_b));
       return list;
    }
 

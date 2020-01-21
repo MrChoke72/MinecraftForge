@@ -209,7 +209,7 @@ public class BlockState extends StateHolder<Block, BlockState> implements IState
       return this.getBlock().getRaytraceShape(this, worldIn, pos);
    }
 
-   public final boolean func_215682_a(IBlockReader reader, BlockPos pos, Entity entityIn) {
+   public final boolean isUpSideFilled(IBlockReader reader, BlockPos pos, Entity entityIn) {
       return Block.doesSideFillSquare(this.getCollisionShape(reader, pos, ISelectionContext.forEntity(entityIn)), Direction.UP);
    }
 

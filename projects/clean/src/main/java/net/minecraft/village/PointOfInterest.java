@@ -15,15 +15,15 @@ public class PointOfInterest implements IDynamicSerializable {
    private int freeTickets;
    private final Runnable onChange;
 
-   private PointOfInterest(BlockPos p_i50295_1_, PointOfInterestType p_i50295_2_, int p_i50295_3_, Runnable p_i50295_4_) {
-      this.pos = p_i50295_1_.toImmutable();
-      this.type = p_i50295_2_;
-      this.freeTickets = p_i50295_3_;
-      this.onChange = p_i50295_4_;
+   private PointOfInterest(BlockPos pos, PointOfInterestType poiType, int freeTickets, Runnable onChange) {
+      this.pos = pos.toImmutable();
+      this.type = poiType;
+      this.freeTickets = freeTickets;
+      this.onChange = onChange;
    }
 
-   public PointOfInterest(BlockPos p_i50296_1_, PointOfInterestType p_i50296_2_, Runnable p_i50296_3_) {
-      this(p_i50296_1_, p_i50296_2_, p_i50296_2_.getMaxFreeTickets(), p_i50296_3_);
+   public PointOfInterest(BlockPos pos, PointOfInterestType poiType, Runnable onChange) {
+      this(pos, poiType, poiType.getMaxFreeTickets(), onChange);
    }
 
    public <T> PointOfInterest(Dynamic<T> p_i50297_1_, Runnable p_i50297_2_) {

@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Region;
@@ -40,11 +41,12 @@ public class PathFinder {
 
       //AH CHANGE DEBUG OFF
       /*
-      if(this.nodeProcessor.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
+      if(this.nodeProcessor.entity instanceof ZombieNasty || this.nodeProcessor.entity.getCustomName() != null) // && this.entity.getCustomName().getString().equals("Chuck"))
       {
          System.out.println("findPath before getStart");
       }
-      */
+       */
+
 
       PathPoint pathpoint = this.nodeProcessor.getStart();
       Map<FlaggedPathPoint, BlockPos> map = finalTgtSet.stream().collect(Collectors.toMap((pos) -> {
@@ -62,11 +64,13 @@ public class PathFinder {
 
       Set<FlaggedPathPoint> flagPointSet = tgtPointMap.keySet();
 
-      //AH CHANGE DEBUG
+      //AH CHANGE DEBUG OFF
+      /*
       if(this.nodeProcessor.entity.getCustomName() != null && this.nodeProcessor.entity.getCustomName().getString().equals("Chuck"))
       {
          System.out.println("findPath before loop.  finalTgtPoint=" + tgtPointMap.toString());
       }
+       */
 
 
       startPoint.distFromStartPlusMalus = 0.0F;

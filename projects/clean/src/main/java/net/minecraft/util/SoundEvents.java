@@ -814,6 +814,15 @@ public class SoundEvents {
    public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_HURT = register("entity.zombie_villager.hurt");
    public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP = register("entity.zombie_villager.step");
 
+   //AH ADD ****
+   public static final SoundEvent ENTITY_ZOMBIENASTY_AMBIENT = register("choke:entity.zombienasty.ambient");
+   public static final SoundEvent ENTITY_ZOMBIENASTY_DEATH = register("choke:entity.zombienasty.death");
+   public static final SoundEvent ENTITY_ZOMBIENASTY_HURT = register("choke:entity.zombienasty.hurt");
+   public static final SoundEvent ENTITY_ZOMBIENASTY_STEP = register("choke:entity.zombienasty.step");
+   public static final SoundEvent ENTITY_PARROT_IMITATE_ZOMBIE_NASTY = register("choke:entity.parrot.imitate.zombienasty");
+   //AH ADD END ****
+
+
    private static SoundEvent register(String key) {
       return Registry.register(Registry.SOUND_EVENT, key, new SoundEvent(new ResourceLocation(key)));
    }

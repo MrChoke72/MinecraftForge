@@ -50,6 +50,10 @@ public final class FrozenOceanBiome extends Biome {
       this.addSpawn(EntityClassification.MONSTER, new Biome.SpawnListEntry(EntityType.SLIME, 100, 4, 4));
       this.addSpawn(EntityClassification.MONSTER, new Biome.SpawnListEntry(EntityType.ENDERMAN, 10, 1, 4));
       this.addSpawn(EntityClassification.MONSTER, new Biome.SpawnListEntry(EntityType.WITCH, 5, 1, 1));
+
+      //AH ADD ****
+      this.addSpawn(EntityClassification.MONSTER, new Biome.SpawnListEntry(EntityType.ZOMBIE_NASTY, 5, 1, 1));
+      //AH END ****
    }
 
    public float getTemperature(BlockPos pos) {

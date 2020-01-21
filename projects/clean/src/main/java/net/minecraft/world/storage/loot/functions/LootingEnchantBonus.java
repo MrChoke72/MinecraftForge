@@ -54,8 +54,8 @@ public class LootingEnchantBonus extends LootFunction {
       return stack;
    }
 
-   public static LootingEnchantBonus.Builder func_215915_a(RandomValueRange p_215915_0_) {
-      return new LootingEnchantBonus.Builder(p_215915_0_);
+   public static LootingEnchantBonus.Builder createLootBuilder(RandomValueRange randRange) {
+      return new LootingEnchantBonus.Builder(randRange);
    }
 
    public static class Builder extends LootFunction.Builder<LootingEnchantBonus.Builder> {

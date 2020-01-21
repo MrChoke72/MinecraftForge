@@ -158,8 +158,8 @@ public class WorldGenRegion implements IWorld {
       return this.world.func_225604_a_(p_225604_1_, p_225604_2_, p_225604_3_);
    }
 
-   public WorldLightManager func_225524_e_() {
-      return this.world.func_225524_e_();
+   public WorldLightManager getLightMgr() {
+      return this.world.getLightMgr();
    }
 
    public boolean func_225521_a_(BlockPos p_225521_1_, boolean p_225521_2_, @Nullable Entity p_225521_3_) {
@@ -214,7 +214,7 @@ public class WorldGenRegion implements IWorld {
       IChunk ichunk = this.getChunk(pos);
       BlockState blockstate = ichunk.setBlockState(pos, newState, false);
       if (blockstate != null) {
-         this.world.func_217393_a(pos, blockstate, newState);
+         this.world.updatePoiMgr(pos, blockstate, newState);
       }
 
       Block block = newState.getBlock();

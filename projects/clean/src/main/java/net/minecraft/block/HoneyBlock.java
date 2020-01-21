@@ -116,7 +116,7 @@ public class HoneyBlock extends BreakableBlock {
    @OnlyIn(Dist.CLIENT)
    private static void func_226932_a_(Entity p_226932_0_, int p_226932_1_) {
       if (p_226932_0_.world.isRemote) {
-         BlockState blockstate = Blocks.field_226907_mc_.getDefaultState();
+         BlockState blockstate = Blocks.HONEY_BLOCK.getDefaultState();
 
          for(int i = 0; i < p_226932_1_; ++i) {
             p_226932_0_.world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockstate), p_226932_0_.getPosX(), p_226932_0_.getPosY(), p_226932_0_.getPosZ(), 0.0D, 0.0D, 0.0D);

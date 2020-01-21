@@ -11,15 +11,15 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 
 public class HurtByTargetGoal extends TargetGoal {
-   private static final EntityPredicate field_220795_a = (new EntityPredicate()).setLineOfSiteRequired().setUseInvisibilityCheck();
+   private static final EntityPredicate ENTITY_PRED = (new EntityPredicate()).setLineOfSiteRequired().setUseInvisibilityCheck();
    private boolean entityCallsForHelp;
    private int revengeTimerOld;
    private final Class<?>[] excludedReinforcementTypes;
-   private Class<?>[] field_220797_i;
+   private Class<?>[] reinforceClasses;
 
-   public HurtByTargetGoal(CreatureEntity creatureIn, Class<?>... p_i50317_2_) {
+   public HurtByTargetGoal(CreatureEntity creatureIn, Class<?>... excludeTypes) {
       super(creatureIn, true);
-      this.excludedReinforcementTypes = p_i50317_2_;
+      this.excludedReinforcementTypes = excludeTypes;
       this.setMutexFlags(EnumSet.of(Goal.Flag.TARGET));
    }
 
@@ -33,15 +33,15 @@ public class HurtByTargetGoal extends TargetGoal {
             }
          }
 
-         return this.isSuitableTarget(livingentity, field_220795_a);
+         return this.isSuitableTarget(livingentity, ENTITY_PRED);
       } else {
          return false;
       }
    }
 
-   public HurtByTargetGoal setCallsForHelp(Class<?>... p_220794_1_) {
+   public HurtByTargetGoal setCallsForHelp(Class<?>... reinforceClasses) {
       this.entityCallsForHelp = true;
-      this.field_220797_i = p_220794_1_;
+      this.reinforceClasses = reinforceClasses;
       return this;
    }
 
@@ -55,6 +55,15 @@ public class HurtByTargetGoal extends TargetGoal {
       }
 
       super.startExecuting();
+
+      //AH CHANGE DEBUG OFF
+      /*
+      if(this.goalOwner.getCustomName() != null && this.goalOwner.getCustomName().getString().equals("Chuck"))
+      {
+         System.out.println("In HurtByTargetGoal, startExecute.  entPos=" + goalOwner.getPosition());
+      }
+       */
+
    }
 
    protected void alertOthers() {
@@ -71,13 +80,13 @@ public class HurtByTargetGoal extends TargetGoal {
 
             mobentity = (MobEntity)iterator.next();
             if (this.goalOwner != mobentity && mobentity.getAttackTarget() == null && (!(this.goalOwner instanceof TameableEntity) || ((TameableEntity)this.goalOwner).getOwner() == ((TameableEntity)mobentity).getOwner()) && !mobentity.isOnSameTeam(this.goalOwner.getRevengeTarget())) {
-               if (this.field_220797_i == null) {
+               if (this.reinforceClasses == null) {
                   break;
                }
 
                boolean flag = false;
 
-               for(Class<?> oclass : this.field_220797_i) {
+               for(Class<?> oclass : this.reinforceClasses) {
                   if (mobentity.getClass() == oclass) {
                      flag = true;
                      break;

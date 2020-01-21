@@ -45,7 +45,7 @@ public final class ProjectileHelper {
       Vec3d vec3d = p_221268_0_.getMotion();
       World world = p_221268_0_.world;
       Vec3d vec3d1 = p_221268_0_.getPositionVec();
-      if (p_221268_5_ && !world.func_226662_a_(p_221268_0_, p_221268_0_.getBoundingBox(), (Set<Entity>)(!p_221268_2_ && p_221268_3_ != null ? getEntityAndMount(p_221268_3_) : ImmutableSet.of()))) {
+      if (p_221268_5_ && !world.isEntityNoCollide(p_221268_0_, p_221268_0_.getBoundingBox(), (Set<Entity>)(!p_221268_2_ && p_221268_3_ != null ? getEntityAndMount(p_221268_3_) : ImmutableSet.of()))) {
          return new BlockRayTraceResult(vec3d1, Direction.getFacingFromVector(vec3d.x, vec3d.y, vec3d.z), new BlockPos(p_221268_0_), false);
       } else {
          Vec3d vec3d2 = vec3d1.add(vec3d);

@@ -21,7 +21,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
    @Nullable
    public Template.BlockInfo process(IWorldReader p_215194_1_, BlockPos p_215194_2_, Template.BlockInfo p_215194_3_, Template.BlockInfo p_215194_4_, PlacementSettings p_215194_5_) {
       Block block = p_215194_4_.state.getBlock();
-      if (block != Blocks.field_226904_lY_) {
+      if (block != Blocks.JIGSAW) {
          return p_215194_4_;
       } else {
          String s = p_215194_4_.nbt.getString("final_state");

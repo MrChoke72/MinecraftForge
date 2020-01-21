@@ -23,7 +23,7 @@ public class Path {
    private PathPoint[] closedSet = new PathPoint[0];
 
    @OnlyIn(Dist.CLIENT)
-   //Ah REFACTOR
+   //AH REFACTOR
    private Set<FlaggedPathPoint> pointSet;
    //private Set<FlaggedPathPoint> field_224772_d;
 
@@ -34,7 +34,7 @@ public class Path {
    private final float finalPointTgtDist;
    //private final float field_224773_g;
 
-   //Ah REFACTOR
+   //AH REFACTOR
    private final boolean completePath;
    //private final boolean field_224774_h;
 

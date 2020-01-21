@@ -5,12 +5,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -107,8 +102,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.OnlyIns;
+import org.lwjgl.system.CallbackI;
 
 public abstract class PlayerEntity extends LivingEntity {
+
    public static final EntitySize STANDING_SIZE = EntitySize.flexible(0.6F, 1.8F);
    private static final Map<Pose, EntitySize> SIZE_BY_POSE = ImmutableMap.<Pose, EntitySize>builder().put(Pose.STANDING, STANDING_SIZE).put(Pose.SLEEPING, SLEEPING_SIZE).put(Pose.FALL_FLYING, EntitySize.flexible(0.6F, 0.6F)).put(Pose.SWIMMING, EntitySize.flexible(0.6F, 0.6F)).put(Pose.SPIN_ATTACK, EntitySize.flexible(0.6F, 0.6F)).put(Pose.CROUCHING, EntitySize.flexible(0.6F, 1.5F)).put(Pose.DYING, EntitySize.fixed(0.2F, 0.2F)).build();
    private static final DataParameter<Float> ABSORPTION = EntityDataManager.createKey(PlayerEntity.class, DataSerializers.FLOAT);
@@ -151,6 +149,11 @@ public abstract class PlayerEntity extends LivingEntity {
    private final CooldownTracker cooldownTracker = this.createCooldownTracker();
    @Nullable
    public FishingBobberEntity fishingBobber;
+
+   //AH ADD ****
+   protected static Map<PlayerEntity, List> playerPathMap = new HashMap<>(32);
+   protected LinkedList<BlockPos> playerPath;    //List is ordered closet to furthest from player
+   //AH ADD END ****
 
    public PlayerEntity(World worldIn, GameProfile gameProfileIn) {
       super(EntityType.PLAYER, worldIn);
@@ -1414,6 +1417,12 @@ public abstract class PlayerEntity extends LivingEntity {
          super.travel(moveVecIn);
       }
 
+      //AH ADD ****
+      if(!world.isRemote) {
+         updatePlayerPathQueue();
+      }
+      //AH ADD END ****
+
       this.addMovementStat(this.getPosX() - d0, this.getPosY() - d1, this.getPosZ() - d2);
    }
 
@@ -2003,6 +2012,61 @@ public abstract class PlayerEntity extends LivingEntity {
 
       return super.onFoodEaten(p_213357_1_, p_213357_2_);
    }
+
+   //AH ADD ****
+   public List<BlockPos> getPlayerPath()
+   {
+      return playerPath;
+   }
+
+   public static Map<PlayerEntity, List> getPlayerPathMap()
+   {
+      return playerPathMap;
+   }
+
+   protected void updatePlayerPathQueue() {
+      final int DIST_BETWEEN_POINTS_SQ = (6*6) + (3*3) + (6*6);   //81 (sqrt: 9)
+      final int MAX_PLAYER_QUEUE_SIZE = 8;
+
+      if (playerPath == null) {
+         playerPath = new LinkedList<>();
+         playerPathMap.put(this, playerPath);
+      }
+
+      if(playerPath.size() > 0) {
+         BlockPos lastPos = playerPath.get(0);
+         if (getDistanceSq(lastPos.getX(), lastPos.getY(), lastPos.getZ()) > DIST_BETWEEN_POINTS_SQ)
+         {
+            BlockPos pos = new BlockPos(this);
+            playerPath.addFirst(pos);
+
+            while(playerPath.size() > MAX_PLAYER_QUEUE_SIZE)
+            {
+               playerPath.removeLast();
+            }
+         }
+      }
+      else
+      {
+         BlockPos pos = new BlockPos(this);
+         playerPath.addFirst(pos);
+
+         while(playerPath.size() > MAX_PLAYER_QUEUE_SIZE)
+         {
+            playerPath.removeLast();
+         }
+      }
+   }
+
+   @Override
+   protected void finalize()
+   {
+      if(!world.isRemote) {
+         playerPathMap.remove(this);
+      }
+   }
+
+   //AH ADD END ****
 
    public static enum SleepResult {
       NOT_POSSIBLE_HERE,

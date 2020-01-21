@@ -93,13 +93,13 @@ public class GroundPathNavigator extends PathNavigator {
    protected void trimPath() {
       super.trimPath();
       if (this.shouldAvoidSun) {
-         if (this.world.func_226660_f_(new BlockPos(this.entity.getPosX(), this.entity.getPosY() + 0.5D, this.entity.getPosZ()))) {
+         if (this.world.isMaxLightLevel(new BlockPos(this.entity.getPosX(), this.entity.getPosY() + 0.5D, this.entity.getPosZ()))) {
             return;
          }
 
          for(int i = 0; i < this.currentPath.getCurrentPathLength(); ++i) {
             PathPoint pathpoint = this.currentPath.getPathPointFromIndex(i);
-            if (this.world.func_226660_f_(new BlockPos(pathpoint.x, pathpoint.y, pathpoint.z))) {
+            if (this.world.isMaxLightLevel(new BlockPos(pathpoint.x, pathpoint.y, pathpoint.z))) {
                this.currentPath.func_215747_b(i);
                return;
             }

@@ -79,8 +79,8 @@ public abstract class MobRenderer<T extends MobEntity, M extends EntityModel<T>>
       float f6 = f * f4;
       int i = this.func_225624_a_(p_229118_1_, p_229118_2_);
       int j = this.renderManager.getRenderer(p_229118_5_).func_225624_a_(p_229118_5_, p_229118_2_);
-      int k = p_229118_1_.world.func_226658_a_(LightType.SKY, new BlockPos(p_229118_1_.getEyePosition(p_229118_2_)));
-      int l = p_229118_1_.world.func_226658_a_(LightType.SKY, new BlockPos(p_229118_5_.getEyePosition(p_229118_2_)));
+      int k = p_229118_1_.world.getLightLevel(LightType.SKY, new BlockPos(p_229118_1_.getEyePosition(p_229118_2_)));
+      int l = p_229118_1_.world.getLightLevel(LightType.SKY, new BlockPos(p_229118_5_.getEyePosition(p_229118_2_)));
       func_229119_a_(ivertexbuilder, matrix4f, f, f1, f2, i, j, k, l, 0.025F, 0.025F, f5, f6);
       func_229119_a_(ivertexbuilder, matrix4f, f, f1, f2, i, j, k, l, 0.025F, 0.0F, f5, f6);
       p_229118_3_.func_227865_b_();

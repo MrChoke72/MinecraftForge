@@ -23,7 +23,7 @@ public final class ConstantRange implements IRandomRange {
       return this.value;
    }
 
-   public ResourceLocation func_215830_a() {
+   public ResourceLocation getLocation() {
       return CONSTANT;
    }
 

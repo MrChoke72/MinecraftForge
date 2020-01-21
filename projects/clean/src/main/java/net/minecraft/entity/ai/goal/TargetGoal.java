@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -53,6 +54,15 @@ public abstract class TargetGoal extends Goal {
          } else {
             double d0 = this.getTargetDistance();
             if (this.goalOwner.getDistanceSq(livingentity) > d0 * d0) {
+
+               //AH CHANGE DEBUG OFF
+               /*
+               if(goalOwner.getCustomName() != null)
+               {
+                  System.out.println("TargetGoal:  shouldContinueExecuting, distance too far.  dist=" + this.goalOwner.getDistanceSq(livingentity));
+               }
+                */
+
                return false;
             } else {
                if (this.shouldCheckSight) {
@@ -60,11 +70,13 @@ public abstract class TargetGoal extends Goal {
                      this.targetUnseenTicks = 0;
                   } else if (++this.targetUnseenTicks > this.unseenMemoryTicks) {
 
-                     //AH CHANGE DEBUG
+                     //AH CHANGE DEBUG OFF
+                     /*
                      if(this.goalOwner.getCustomName() != null)
                      {
                         System.out.println("TargetGoal, targetUnseenTicks=" + targetUnseenTicks + ", unseenMemoryTicks=" + unseenMemoryTicks);
                      }
+                      */
 
                      return false;
                   }
@@ -96,9 +108,9 @@ public abstract class TargetGoal extends Goal {
 
       //AH CHANGE DEBUG OFF
       /*
-      if(this.goalOwner.getCustomName() != null)
+      if(goalOwner.getCustomName() != null)
       {
-         System.out.println("TargetGoal, clearing AttackTarget");
+            System.out.println("TargetGoal reset for " + goalOwner.getClass().getSimpleName() + ".  goal=" + getClass().getSimpleName());
       }
        */
 
@@ -135,23 +147,6 @@ public abstract class TargetGoal extends Goal {
    private boolean canEasilyReach(LivingEntity target) {
       this.targetSearchDelay = 10 + this.goalOwner.getRNG().nextInt(5);
       Path path = this.goalOwner.getNavigator().getPathToEntityLiving(target, 0);
-
-      //AH CHANGE DEBUG
-      if(this.goalOwner.getCustomName() != null && this.goalOwner.getCustomName().getString().equals("Chuck"))
-      {
-         //AH DEBUG OFF
-         /*
-         if(this.goalOwner.getNavigator().getPath() != null)
-         {
-            System.out.println("TargetGoal,  canEasilyReach.  lastPathPoint=" + this.goalOwner.getNavigator().getPath().getFinalPathPoint());
-         }
-         else
-         {
-            System.out.println("TargetGoal,  canEasilyReach. no path");
-         }
-          */
-      }
-
       if (path == null) {
          return false;
       } else {

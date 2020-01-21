@@ -269,11 +269,13 @@ public abstract class PathNavigator {
       if (this.totalTicks - this.ticksAtLastPos > 100) {
          if (positionVec3.squareDistanceTo(this.lastPosCheck) < 2.25D) {
 
-            //AH CHANGE DEBUG
+            //AH CHANGE DEBUG OFF
+            /*
             if(this.entity.getCustomName() != null)
             {
-               System.out.println("checkForStuck 1, calling clearPath");
+               System.out.println("checkForStuck 1, calling clearPath.  entPos=" + this.entity.getPosition() + ", posTryingToReach=" + this.currentPath.getCurrentPos());
             }
+             */
 
             this.clearPath();
          }
@@ -292,18 +294,19 @@ public abstract class PathNavigator {
             this.timeoutLimit = this.entity.getAIMoveSpeed() > 0.0F ? d0 / (double)this.entity.getAIMoveSpeed() * 1000.0D : 0.0D;
          }
 
+         //AH DEBUG OFF - Stop time-based check for stuck when I am debugging!!
          if (this.timeoutLimit > 0.0D && (double)this.timeoutTimer > this.timeoutLimit * 3.0D) {
             this.timeoutCachedNode = Vec3d.ZERO;
             this.timeoutTimer = 0L;
             this.timeoutLimit = 0.0D;
 
-
-            //AH CHANGE DEBUG
+            //AH CHANGE DEBUG OFF
+            /*
             if(this.entity.getCustomName() != null)
             {
-               System.out.println("checkForStuck 2, calling clearPath");
+               System.out.println("checkForStuck 2, calling clearPath.  entPos=" + this.entity.getPosition() + ", posTryingToReach=" + this.currentPath.getCurrentPos()););
             }
-
+            */
 
             this.clearPath();
          }
@@ -330,7 +333,7 @@ public abstract class PathNavigator {
          //System.out.println("BREAK 2");
          System.out.println("in clearPath to null.");
       }
-      */
+       */
 
       this.currentPath = null;
    }

@@ -46,15 +46,15 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   public static Vec3d findRandomTargetTowardsScaled(CreatureEntity p_203155_0_, int xz, int p_203155_2_, Vec3d p_203155_3_, double p_203155_4_) {
-      Vec3d vec3d = p_203155_3_.subtract(p_203155_0_.getPosX(), p_203155_0_.getPosY(), p_203155_0_.getPosZ());
-      return func_226339_a_(p_203155_0_, xz, p_203155_2_, 0, vec3d, true, p_203155_4_, p_203155_0_::getBlockPathWeight, false, 0, 0, true);
+   public static Vec3d findRandomTargetTowardsScaled(CreatureEntity entitycreatureIn, int xz, int p_203155_2_, Vec3d p_203155_3_, double p_203155_4_) {
+      Vec3d vec3d = p_203155_3_.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
+      return func_226339_a_(entitycreatureIn, xz, p_203155_2_, 0, vec3d, true, p_203155_4_, entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
 
    @Nullable
-   public static Vec3d func_226344_b_(CreatureEntity p_226344_0_, int p_226344_1_, int p_226344_2_, int p_226344_3_, Vec3d p_226344_4_, double p_226344_5_) {
-      Vec3d vec3d = p_226344_4_.subtract(p_226344_0_.getPosX(), p_226344_0_.getPosY(), p_226344_0_.getPosZ());
-      return func_226339_a_(p_226344_0_, p_226344_1_, p_226344_2_, p_226344_3_, vec3d, false, p_226344_5_, p_226344_0_::getBlockPathWeight, true, 0, 0, false);
+   public static Vec3d func_226344_b_(CreatureEntity entitycreatureIn, int xz, int y, int p_226344_3_, Vec3d p_226344_4_, double p_226344_5_) {
+      Vec3d vec3d = p_226344_4_.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
+      return func_226339_a_(entitycreatureIn, xz, y, p_226344_3_, vec3d, false, p_226344_5_, entitycreatureIn::getBlockPathWeight, true, 0, 0, false);
    }
 
    @Nullable
@@ -64,19 +64,19 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   public static Vec3d func_223548_b(CreatureEntity p_223548_0_, int p_223548_1_, int p_223548_2_, Vec3d p_223548_3_) {
-      Vec3d vec3d = p_223548_0_.getPositionVec().subtract(p_223548_3_);
-      return func_226339_a_(p_223548_0_, p_223548_1_, p_223548_2_, 0, vec3d, false, (double)((float)Math.PI / 2F), p_223548_0_::getBlockPathWeight, true, 0, 0, true);
+   public static Vec3d findRandomTargetBlockAwayFrom2(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
+      Vec3d vec3d = entitycreatureIn.getPositionVec().subtract(targetVec3);
+      return func_226339_a_(entitycreatureIn, xz, y, 0, vec3d, false, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, true, 0, 0, true);
    }
 
    @Nullable
-   private static Vec3d func_226339_a_(CreatureEntity entity, int p_226339_1_, int p_226339_2_, int p_226339_3_, @Nullable Vec3d p_226339_4_, boolean p_226339_5_,
+   private static Vec3d func_226339_a_(CreatureEntity entity, int xz, int y, int p_226339_3_, @Nullable Vec3d dirTowardVec, boolean noAvoidWater,
                                        double p_226339_6_, ToDoubleFunction<BlockPos> posDoubleFunc, boolean p_226339_9_, int p_226339_10_, int p_226339_11_, boolean p_226339_12_) {
       PathNavigator pathnavigator = entity.getNavigator();
       Random random = entity.getRNG();
       boolean flag;
       if (entity.detachHome()) {
-         flag = entity.getHomePosition().withinDistance(entity.getPositionVec(), (double)(entity.getMaximumHomeDistance() + (float)p_226339_1_) + 1.0D);
+         flag = entity.getHomePosition().withinDistance(entity.getPositionVec(), (double)(entity.getMaximumHomeDistance() + (float)xz) + 1.0D);
       } else {
          flag = false;
       }
@@ -86,23 +86,23 @@ public class RandomPositionGenerator {
       BlockPos blockpos = new BlockPos(entity);
 
       for(int i = 0; i < 10; ++i) {
-         BlockPos blockpos1 = func_226343_a_(random, p_226339_1_, p_226339_2_, p_226339_3_, p_226339_4_, p_226339_6_);
+         BlockPos blockpos1 = func_226343_a_(random, xz, y, p_226339_3_, dirTowardVec, p_226339_6_);
          if (blockpos1 != null) {
             int j = blockpos1.getX();
             int k = blockpos1.getY();
             int l = blockpos1.getZ();
-            if (entity.detachHome() && p_226339_1_ > 1) {
+            if (entity.detachHome() && xz > 1) {
                BlockPos blockpos2 = entity.getHomePosition();
                if (entity.getPosX() > (double)blockpos2.getX()) {
-                  j -= random.nextInt(p_226339_1_ / 2);
+                  j -= random.nextInt(xz / 2);
                } else {
-                  j += random.nextInt(p_226339_1_ / 2);
+                  j += random.nextInt(xz / 2);
                }
 
                if (entity.getPosZ() > (double)blockpos2.getZ()) {
-                  l -= random.nextInt(p_226339_1_ / 2);
+                  l -= random.nextInt(xz / 2);
                } else {
-                  l += random.nextInt(p_226339_1_ / 2);
+                  l += random.nextInt(xz / 2);
                }
             }
 
@@ -114,7 +114,7 @@ public class RandomPositionGenerator {
                   });
                }
 
-               if (p_226339_5_ || !entity.world.getFluidState(blockpos3).isTagged(FluidTags.WATER)) {
+               if (noAvoidWater || !entity.world.getFluidState(blockpos3).isTagged(FluidTags.WATER)) {
                   PathNodeType pathnodetype = WalkNodeProcessor.getPathNodeTypeDamage(entity.world, blockpos3.getX(), blockpos3.getY(), blockpos3.getZ());
                   if (entity.getPathPriority(pathnodetype) == 0.0F) {
                      double d1 = posDoubleFunc.applyAsDouble(blockpos3);

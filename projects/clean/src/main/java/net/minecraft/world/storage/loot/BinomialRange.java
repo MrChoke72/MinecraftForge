@@ -37,7 +37,7 @@ public final class BinomialRange implements IRandomRange {
       return new BinomialRange(p_215838_0_, p_215838_1_);
    }
 
-   public ResourceLocation func_215830_a() {
+   public ResourceLocation getLocation() {
       return BINOMIAL;
    }
 

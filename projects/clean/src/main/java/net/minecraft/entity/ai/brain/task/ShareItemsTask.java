@@ -58,8 +58,8 @@ public class ShareItemsTask extends Task<VillagerEntity> {
    }
 
    private static Set<Item> func_220585_a(VillagerEntity p_220585_0_, VillagerEntity p_220585_1_) {
-      ImmutableSet<Item> immutableset = p_220585_1_.getVillagerData().getProfession().func_221146_c();
-      ImmutableSet<Item> immutableset1 = p_220585_0_.getVillagerData().getProfession().func_221146_c();
+      ImmutableSet<Item> immutableset = p_220585_1_.getVillagerData().getProfession().getItemSet();
+      ImmutableSet<Item> immutableset1 = p_220585_0_.getVillagerData().getProfession().getItemSet();
       return immutableset.stream().filter((p_220587_1_) -> {
          return !immutableset1.contains(p_220587_1_);
       }).collect(Collectors.toSet());

@@ -28,8 +28,8 @@ public class RandomValueRange implements IRandomRange {
       this.max = value;
    }
 
-   public static RandomValueRange func_215837_a(float p_215837_0_, float p_215837_1_) {
-      return new RandomValueRange(p_215837_0_, p_215837_1_);
+   public static RandomValueRange createRandRange(float minVal, float maxVal) {
+      return new RandomValueRange(minVal, maxVal);
    }
 
    public float getMin() {
@@ -52,7 +52,7 @@ public class RandomValueRange implements IRandomRange {
       return (float)value <= this.max && (float)value >= this.min;
    }
 
-   public ResourceLocation func_215830_a() {
+   public ResourceLocation getLocation() {
       return UNIFORM;
    }
 

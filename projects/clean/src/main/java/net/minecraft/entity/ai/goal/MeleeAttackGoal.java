@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,11 +45,13 @@ public class MeleeAttackGoal extends Goal {
             this.path = this.attacker.getNavigator().getPathToEntityLiving(livingentity, 0);
             if (this.path != null) {
 
-               //AH CHANGE DEBUG
+               //AH CHANGE DEBUG OFF
+               /*
                if(this.attacker.getCustomName() != null && this.attacker.getCustomName().getString().equals("Chuck"))
                {
-                  System.out.println("MeleeAttackGoal,  shouldExecute.  before loop.  pathLastPoint=" + path.getFinalPathPoint() + ", goal=" + this);
+                  System.out.println("MeleeAttackGoal for " + attacker.getClass().getSimpleName() + ".  In shouldExecute.  before loop.  pathLastPoint=" + path.getFinalPathPoint() + ", goal=" + this);
                }
+                */
 
                return true;
             } else {
@@ -91,7 +94,7 @@ public class MeleeAttackGoal extends Goal {
       /*
       if(this.attacker.getCustomName() != null)
       {
-       System.out.println("MeleeAttackGoal, calling clearPath");
+         System.out.println("MeleeAttackGoal for " + attacker.getClass().getSimpleName() + ", In reset.  goal=" + this);
       }
        */
 
@@ -103,7 +106,8 @@ public class MeleeAttackGoal extends Goal {
       this.attacker.getLookController().setLookPositionWithEntity(livingentity, 30.0F, 30.0F);
       double d0 = this.attacker.getDistanceSq(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
       --this.delayCounter;
-      if ((this.longMemory || this.attacker.getEntitySenses().canSee(livingentity)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || livingentity.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F)) {
+      if ((this.longMemory || this.attacker.getEntitySenses().canSee(livingentity)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D
+              || livingentity.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F)) {
          this.targetX = livingentity.getPosX();
          this.targetY = livingentity.getPosY();
          this.targetZ = livingentity.getPosZ();

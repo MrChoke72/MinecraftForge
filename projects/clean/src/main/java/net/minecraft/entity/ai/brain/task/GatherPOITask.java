@@ -96,8 +96,8 @@ public class GatherPOITask extends Task<CreatureEntity> {
             DebugPacketSender.func_218801_c(worldIn, blockpos);
          });
       } else if (this.maxPoiPosToCheck < 5) {
-         this.posByEndTimeMap.long2LongEntrySet().removeIf((p_223011_1_) -> {
-            return p_223011_1_.getLongValue() < this.taskEndTime;
+         this.posByEndTimeMap.long2LongEntrySet().removeIf((entry) -> {
+            return entry.getLongValue() < this.taskEndTime;
          });
       }
 

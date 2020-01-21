@@ -126,7 +126,7 @@ public class CropsBlock extends BushBlock implements IGrowable {
    }
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-      return (worldIn.func_226659_b_(pos, 0) >= 8 || worldIn.func_226660_f_(pos)) && super.isValidPosition(state, worldIn, pos);
+      return (worldIn.func_226659_b_(pos, 0) >= 8 || worldIn.isMaxLightLevel(pos)) && super.isValidPosition(state, worldIn, pos);
    }
 
    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {

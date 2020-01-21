@@ -102,7 +102,7 @@ public class VindicatorEntity extends AbstractIllagerEntity {
       this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue((double)0.35F);
 
       //AH CHANGE:
-      this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
+      this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
       //this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(12.0D);
 
       this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(24.0D);

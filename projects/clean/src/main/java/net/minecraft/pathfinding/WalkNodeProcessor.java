@@ -9,7 +9,6 @@ import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.tags.BlockTags;
@@ -644,7 +643,7 @@ public class WalkNodeProcessor extends NodeProcessor {
          return PathNodeType.DAMAGE_CACTUS;
       } else if (block == Blocks.SWEET_BERRY_BUSH) {
          return PathNodeType.DAMAGE_OTHER;
-      } else if (block == Blocks.field_226907_mc_) {
+      } else if (block == Blocks.HONEY_BLOCK) {
          return PathNodeType.STICKY_HONEY;
       } else if (block == Blocks.COCOA) {
          return PathNodeType.COCOA;

@@ -7,5 +7,5 @@ public interface IPosWrapper {
 
    Vec3d getPos();
 
-   boolean isVisibleTo(LivingEntity p_220610_1_);
+   boolean isVisibleTo(LivingEntity entity);
 }

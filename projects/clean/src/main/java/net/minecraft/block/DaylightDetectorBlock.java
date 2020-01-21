@@ -43,7 +43,7 @@ public class DaylightDetectorBlock extends ContainerBlock {
 
    public static void updatePower(BlockState p_196319_0_, World p_196319_1_, BlockPos p_196319_2_) {
       if (p_196319_1_.dimension.hasSkyLight()) {
-         int i = p_196319_1_.func_226658_a_(LightType.SKY, p_196319_2_) - p_196319_1_.getSkylightSubtracted();
+         int i = p_196319_1_.getLightLevel(LightType.SKY, p_196319_2_) - p_196319_1_.getSkylightSubtracted();
          float f = p_196319_1_.getCelestialAngleRadians(1.0F);
          boolean flag = p_196319_0_.get(INVERTED);
          if (flag) {

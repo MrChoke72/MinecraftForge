@@ -41,29 +41,29 @@ public interface ICollisionReader extends IBlockReader {
    }
 
    default boolean func_226664_a_(AxisAlignedBB p_226664_1_) {
-      return this.func_226662_a_((Entity)null, p_226664_1_, Collections.emptySet());
+      return this.isEntityNoCollide((Entity)null, p_226664_1_, Collections.emptySet());
    }
 
-   default boolean func_226669_j_(Entity p_226669_1_) {
-      return this.func_226662_a_(p_226669_1_, p_226669_1_.getBoundingBox(), Collections.emptySet());
+   default boolean isEntityNoCollide(Entity entity) {
+      return this.isEntityNoCollide(entity, entity.getBoundingBox(), Collections.emptySet());
    }
 
    //AH CHANGE REFACTOR
    default boolean isCollisionBoxesEmpty(Entity entityIn, AxisAlignedBB aabb) {
    //default boolean func_226665_a__(Entity p_226665_1_, AxisAlignedBB p_226665_2_) {
-      return this.func_226662_a_(entityIn, aabb, Collections.emptySet());
+      return this.isEntityNoCollide(entityIn, aabb, Collections.emptySet());
    }
 
-   default boolean func_226662_a_(@Nullable Entity p_226662_1_, AxisAlignedBB p_226662_2_, Set<Entity> p_226662_3_) {
-      return this.func_226667_c_(p_226662_1_, p_226662_2_, p_226662_3_).allMatch(VoxelShape::isEmpty);
+   default boolean isEntityNoCollide(@Nullable Entity entity, AxisAlignedBB boundingBox, Set<Entity> ignoreSet) {
+      return this.func_226667_c_(entity, boundingBox, ignoreSet).allMatch(VoxelShape::isEmpty);
    }
 
    default Stream<VoxelShape> getEmptyCollisionShapes(@Nullable Entity entityIn, AxisAlignedBB aabb, Set<Entity> entitiesToIgnore) {
       return Stream.empty();
    }
 
-   default Stream<VoxelShape> func_226667_c_(@Nullable Entity p_226667_1_, AxisAlignedBB p_226667_2_, Set<Entity> p_226667_3_) {
-      return Streams.concat(this.func_226666_b_(p_226667_1_, p_226667_2_), this.getEmptyCollisionShapes(p_226667_1_, p_226667_2_, p_226667_3_));
+   default Stream<VoxelShape> func_226667_c_(@Nullable Entity p_226667_1_, AxisAlignedBB p_226667_2_, Set<Entity> ignoreSet) {
+      return Streams.concat(this.func_226666_b_(p_226667_1_, p_226667_2_), this.getEmptyCollisionShapes(p_226667_1_, p_226667_2_, ignoreSet));
    }
 
    default Stream<VoxelShape> func_226666_b_(@Nullable final Entity p_226666_1_, AxisAlignedBB p_226666_2_) {

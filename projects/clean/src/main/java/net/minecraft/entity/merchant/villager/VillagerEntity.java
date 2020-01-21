@@ -148,16 +148,16 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       return poiType == PointOfInterestType.MEETING;
    });
 
-   public VillagerEntity(EntityType<? extends VillagerEntity> p_i50182_1_, World p_i50182_2_) {
-      this(p_i50182_1_, p_i50182_2_, IVillagerType.PLAINS);
+   public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world) {
+      this(entityType, world, IVillagerType.PLAINS);
    }
 
-   public VillagerEntity(EntityType<? extends VillagerEntity> p_i50183_1_, World p_i50183_2_, IVillagerType p_i50183_3_) {
-      super(p_i50183_1_, p_i50183_2_);
+   public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world, IVillagerType villagerType) {
+      super(entityType, world);
       ((GroundPathNavigator)this.getNavigator()).setBreakDoors(true);
       this.getNavigator().setCanSwim(true);
       this.setCanPickUpLoot(true);
-      this.setVillagerData(this.getVillagerData().withType(p_i50183_3_).withProfession(VillagerProfession.NONE));
+      this.setVillagerData(this.getVillagerData().withType(villagerType).withProfession(VillagerProfession.NONE));
       this.brain = this.createBrain(new Dynamic<>(NBTDynamicOps.INSTANCE, new CompoundNBT()));
    }
 
@@ -171,9 +171,9 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       return brain;
    }
 
-   public void resetBrain(ServerWorld p_213770_1_) {
+   public void resetBrain(ServerWorld world) {
       Brain<VillagerEntity> brain = this.getBrain();
-      brain.stopAllTasks(p_213770_1_, this);
+      brain.stopAllTasks(world, this);
       this.brain = brain.copy();
       this.initBrain(this.getBrain());
    }
@@ -217,9 +217,9 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       super.registerAttributes();
       this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
 
-      //AH CHANGE
-      this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
-      //this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48.0D);
+      //AH CHANGE CANCEL
+      //this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
+      this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48.0D);
    }
 
 
@@ -501,7 +501,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
    }
 
    public void playWorkstationSound() {
-      SoundEvent soundevent = this.getVillagerData().getProfession().func_226558_e_();
+      SoundEvent soundevent = this.getVillagerData().getProfession().getSoundEvent();
       if (soundevent != null) {
          this.playSound(soundevent, this.getSoundVolume(), this.getSoundPitch());
       }
@@ -768,7 +768,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
    }
 
    public boolean func_223717_b(Item p_223717_1_) {
-      return foodPickUpSet.contains(p_223717_1_) || this.getVillagerData().getProfession().func_221146_c().contains(p_223717_1_);
+      return foodPickUpSet.contains(p_223717_1_) || this.getVillagerData().getProfession().getItemSet().contains(p_223717_1_);
    }
 
    public boolean canAbondonItems() {

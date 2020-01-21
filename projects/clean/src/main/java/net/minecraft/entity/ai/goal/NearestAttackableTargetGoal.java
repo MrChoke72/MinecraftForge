@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -39,6 +40,18 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
          return false;
       } else {
          this.findNearestTarget();
+
+         //AH CHANGE DEBUG OFF
+         /*
+         if(goalOwner.getCustomName() != null)
+         {
+            if(this.nearestTarget != null)
+            {
+               System.out.println("In NearestAttackableTargetGoal, shouldExecute.  Entity=" + goalOwner.getClass().getSimpleName() + " will target: " + targetClass.getSimpleName());
+            }
+         }
+          */
+
          return this.nearestTarget != null;
       }
    }

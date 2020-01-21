@@ -19,9 +19,9 @@ public class BreakDoorGoal extends InteractDoorGoal {
    protected int maxTicksToBreak = -1;
    //protected int field_220698_c = -1;
 
-   public BreakDoorGoal(MobEntity p_i50332_1_, Predicate<Difficulty> p_i50332_2_) {
-      super(p_i50332_1_);
-      this.difficultyPredicate = p_i50332_2_;
+   public BreakDoorGoal(MobEntity entity, Predicate<Difficulty> diffPred) {
+      super(entity);
+      this.difficultyPredicate = diffPred;
    }
 
    public BreakDoorGoal(MobEntity p_i50333_1_, int p_i50333_2_, Predicate<Difficulty> p_i50333_3_) {

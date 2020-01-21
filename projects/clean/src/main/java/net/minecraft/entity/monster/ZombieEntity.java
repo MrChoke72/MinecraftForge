@@ -64,11 +64,10 @@ public class ZombieEntity extends MonsterEntity {
    private static final DataParameter<Boolean> DROWNING = EntityDataManager.createKey(ZombieEntity.class, DataSerializers.BOOLEAN);
 
    //AH CHANGE REFACTOR
-   private static final Predicate<Difficulty> checkDifficulty = (p_213697_0_) -> {
+   private static final Predicate<Difficulty> checkDifficulty = (difficulty) -> {
    //private static final Predicate<Difficulty> field_213699_bC = (p_213697_0_) -> {
-      return p_213697_0_ == Difficulty.HARD;
+      return difficulty == Difficulty.HARD;
    };
-
 
    private final BreakDoorGoal breakDoor = new BreakDoorGoal(this, checkDifficulty);
 
@@ -344,9 +343,9 @@ public class ZombieEntity extends MonsterEntity {
                int j1 = j + MathHelper.nextInt(this.rand, 7, 40) * MathHelper.nextInt(this.rand, -1, 1);
                int k1 = k + MathHelper.nextInt(this.rand, 7, 40) * MathHelper.nextInt(this.rand, -1, 1);
                BlockPos blockpos = new BlockPos(i1, j1 - 1, k1);
-               if (this.world.getBlockState(blockpos).func_215682_a(this.world, blockpos, zombieentity) && this.world.getLight(new BlockPos(i1, j1, k1)) < 10) {
+               if (this.world.getBlockState(blockpos).isUpSideFilled(this.world, blockpos, zombieentity) && this.world.getLight(new BlockPos(i1, j1, k1)) < 10) {
                   zombieentity.setPosition((double)i1, (double)j1, (double)k1);
-                  if (!this.world.isPlayerWithin((double)i1, (double)j1, (double)k1, 7.0D) && this.world.func_226668_i_(zombieentity) && this.world.func_226669_j_(zombieentity) && !this.world.containsAnyLiquid(zombieentity.getBoundingBox())) {
+                  if (!this.world.isPlayerWithin((double)i1, (double)j1, (double)k1, 7.0D) && this.world.func_226668_i_(zombieentity) && this.world.isEntityNoCollide(zombieentity) && !this.world.containsAnyLiquid(zombieentity.getBoundingBox())) {
                      this.world.addEntity(zombieentity);
                      zombieentity.setAttackTarget(livingentity);
                      zombieentity.onInitialSpawn(this.world, this.world.getDifficultyForLocation(new BlockPos(zombieentity)), SpawnReason.REINFORCEMENT, (ILivingEntityData)null, (CompoundNBT)null);
@@ -558,18 +557,6 @@ public class ZombieEntity extends MonsterEntity {
 
    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
       super.dropSpecialItems(source, looting, recentlyHitIn);
-      Entity entity = source.getTrueSource();
-      if (entity instanceof CreeperEntity) {
-         CreeperEntity creeperentity = (CreeperEntity)entity;
-         if (creeperentity.ableToCauseSkullDrop()) {
-            creeperentity.incrementDroppedSkulls();
-            ItemStack itemstack = this.getSkullDrop();
-            if (!itemstack.isEmpty()) {
-               this.entityDropItem(itemstack);
-            }
-         }
-      }
-
    }
 
    protected ItemStack getSkullDrop() {

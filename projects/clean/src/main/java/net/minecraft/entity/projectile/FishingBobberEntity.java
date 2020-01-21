@@ -269,7 +269,7 @@ public class FishingBobberEntity extends Entity {
          ++i;
       }
 
-      if (this.rand.nextFloat() < 0.5F && !this.world.func_226660_f_(blockpos)) {
+      if (this.rand.nextFloat() < 0.5F && !this.world.isMaxLightLevel(blockpos)) {
          --i;
       }
 

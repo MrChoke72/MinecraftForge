@@ -34,7 +34,7 @@ public class MoveTowardsVillageGoal extends RandomWalkingGoal {
       }
        */
 
-      SectionPos sectionpos1 = BrainUtil.getSecPosLowerInRadius(serverworld, sectionpos, 2);
+      SectionPos sectionpos1 = BrainUtil.getSecPosLowerInRadius(serverworld, sectionpos, 2); //2 section radius, 32 blocks
 
       //AH CHANGE DEBUG OFF
       /*

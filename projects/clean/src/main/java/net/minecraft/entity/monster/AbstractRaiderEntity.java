@@ -105,7 +105,7 @@ public abstract class AbstractRaiderEntity extends PatrollerEntity {
       super.livingTick();
    }
 
-   protected void func_213623_ec() {
+   protected void incrementIdleTime() {
       this.idleTime += 2;
    }
 

@@ -193,7 +193,7 @@ public class EndermanEntity extends MonsterEntity {
 
       if (this.world.isDaytime() && this.ticksExisted >= this.targetChangeTime + 600) {
          float f = this.getBrightness();
-         if (f > 0.5F && this.world.func_226660_f_(new BlockPos(this)) && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
+         if (f > 0.5F && this.world.isMaxLightLevel(new BlockPos(this)) && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
             this.setAttackTarget((LivingEntity)null);
             this.teleportRandomly();
          }

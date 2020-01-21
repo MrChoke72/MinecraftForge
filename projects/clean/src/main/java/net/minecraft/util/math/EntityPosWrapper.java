@@ -21,8 +21,8 @@ public class EntityPosWrapper implements IPosWrapper {
       return new Vec3d(this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ());
    }
 
-   public boolean isVisibleTo(LivingEntity p_220610_1_) {
-      Optional<List<LivingEntity>> optional = p_220610_1_.getBrain().getMemory(MemoryModuleType.VISIBLE_MOBS);
+   public boolean isVisibleTo(LivingEntity entity) {
+      Optional<List<LivingEntity>> optional = entity.getBrain().getMemory(MemoryModuleType.VISIBLE_MOBS);
       return this.entity.isAlive() && optional.isPresent() && optional.get().contains(this.entity);
    }
 

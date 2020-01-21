@@ -50,9 +50,9 @@ public class TileEntityType<T extends TileEntity> {
    public static final TileEntityType<BlastFurnaceTileEntity> BLAST_FURNACE = register("blast_furnace", TileEntityType.Builder.create(BlastFurnaceTileEntity::new, Blocks.BLAST_FURNACE));
    public static final TileEntityType<LecternTileEntity> LECTERN = register("lectern", TileEntityType.Builder.create(LecternTileEntity::new, Blocks.LECTERN));
    public static final TileEntityType<BellTileEntity> BELL = register("bell", TileEntityType.Builder.create(BellTileEntity::new, Blocks.BELL));
-   public static final TileEntityType<JigsawTileEntity> JIGSAW = register("jigsaw", TileEntityType.Builder.create(JigsawTileEntity::new, Blocks.field_226904_lY_));
+   public static final TileEntityType<JigsawTileEntity> JIGSAW = register("jigsaw", TileEntityType.Builder.create(JigsawTileEntity::new, Blocks.JIGSAW));
    public static final TileEntityType<CampfireTileEntity> CAMPFIRE = register("campfire", TileEntityType.Builder.create(CampfireTileEntity::new, Blocks.CAMPFIRE));
-   public static final TileEntityType<BeehiveTileEntity> field_226985_G_ = register("beehive", TileEntityType.Builder.create(BeehiveTileEntity::new, Blocks.field_226905_ma_, Blocks.field_226906_mb_));
+   public static final TileEntityType<BeehiveTileEntity> field_226985_G_ = register("beehive", TileEntityType.Builder.create(BeehiveTileEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE));
    private final Supplier<? extends T> factory;
    private final Set<Block> validBlocks;
    private final Type<?> datafixerType;

@@ -268,13 +268,13 @@ public class SlimeEntity extends MobEntity implements IMob {
          if (p_223366_1_.getDifficulty() != Difficulty.PEACEFUL) {
             Biome biome = p_223366_1_.func_226691_t_(p_223366_3_);
             if (biome == Biomes.SWAMP && p_223366_3_.getY() > 50 && p_223366_3_.getY() < 70 && randomIn.nextFloat() < 0.5F && randomIn.nextFloat() < p_223366_1_.getCurrentMoonPhaseFactor() && p_223366_1_.getLight(p_223366_3_) <= randomIn.nextInt(8)) {
-               return func_223315_a(p_223366_0_, p_223366_1_, reason, p_223366_3_, randomIn);
+               return canEntitySpawn(p_223366_0_, p_223366_1_, reason, p_223366_3_, randomIn);
             }
 
             ChunkPos chunkpos = new ChunkPos(p_223366_3_);
             boolean flag = SharedSeedRandom.seedSlimeChunk(chunkpos.x, chunkpos.z, p_223366_1_.getSeed(), 987234911L).nextInt(10) == 0;
             if (randomIn.nextInt(10) == 0 && flag && p_223366_3_.getY() < 40) {
-               return func_223315_a(p_223366_0_, p_223366_1_, reason, p_223366_3_, randomIn);
+               return canEntitySpawn(p_223366_0_, p_223366_1_, reason, p_223366_3_, randomIn);
             }
          }
 

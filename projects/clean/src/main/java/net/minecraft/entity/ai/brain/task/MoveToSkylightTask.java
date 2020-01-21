@@ -32,7 +32,7 @@ public class MoveToSkylightTask extends Task<LivingEntity> {
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, LivingEntity owner) {
-      return !worldIn.func_226660_f_(new BlockPos(owner));
+      return !worldIn.isMaxLightLevel(new BlockPos(owner));
    }
 
    @Nullable
@@ -51,6 +51,6 @@ public class MoveToSkylightTask extends Task<LivingEntity> {
    }
 
    public static boolean func_226306_a_(ServerWorld p_226306_0_, LivingEntity p_226306_1_, BlockPos p_226306_2_) {
-      return p_226306_0_.func_226660_f_(p_226306_2_) && (double)p_226306_0_.getHeight(Heightmap.Type.MOTION_BLOCKING, p_226306_2_).getY() <= p_226306_1_.getPosY();
+      return p_226306_0_.isMaxLightLevel(p_226306_2_) && (double)p_226306_0_.getHeight(Heightmap.Type.MOTION_BLOCKING, p_226306_2_).getY() <= p_226306_1_.getPosY();
    }
 }
