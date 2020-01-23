@@ -852,6 +852,11 @@ public class RecipeProvider implements IDataProvider {
       SingleItemRecipeBuilder.func_218648_a(Ingredient.fromItems(Blocks.END_STONE), Blocks.END_STONE_BRICK_STAIRS).func_218643_a("has_end_stone", this.hasItem(Blocks.END_STONE)).func_218645_a(consumer, "end_stone_brick_stairs_from_end_stone_stonecutting");
       SingleItemRecipeBuilder.func_218648_a(Ingredient.fromItems(Blocks.END_STONE), Blocks.END_STONE_BRICK_WALL).func_218643_a("has_end_stone", this.hasItem(Blocks.END_STONE)).func_218645_a(consumer, "end_stone_brick_wall_from_end_stone_stonecutting");
       SingleItemRecipeBuilder.func_218644_a(Ingredient.fromItems(Blocks.SMOOTH_STONE), Blocks.SMOOTH_STONE_SLAB, 2).func_218643_a("has_smooth_stone", this.hasItem(Blocks.SMOOTH_STONE)).func_218645_a(consumer, "smooth_stone_slab_from_smooth_stone_stonecutting");
+
+      //AH ADD ****
+      ShapedRecipeBuilder.shapedRecipe(Blocks.GOLD_DOOR, 3).key('#', Items.GOLD_INGOT).patternLine("##").patternLine("##").patternLine("##").addCriterion("has_gold_ingot", this.hasItem(Items.GOLD_INGOT)).build(consumer);
+      //AH ADD END ****
+
    }
 
    private void cookingRecipesForMethod(Consumer<IFinishedRecipe> recipeConsumerIn, String cookingMethod, CookingRecipeSerializer<?> serializerIn, int cookingTimeIn) {

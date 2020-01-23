@@ -2376,6 +2376,12 @@ public class WorldRenderer implements AutoCloseable, IResourceManagerReloadListe
          break;
       case 3001:
          this.world.playSound(blockPosIn, SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.HOSTILE, 64.0F, 0.8F + this.world.rand.nextFloat() * 0.3F, false);
+         break;
+      //AH ADD ****
+      case 7272:
+         this.world.playSound(blockPosIn, SoundEvents.ENTITY_ZOMBIE_BREAK_IRON_DOOR, SoundCategory.HOSTILE, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+         break;
+      //AH ADD END ****
       }
 
    }

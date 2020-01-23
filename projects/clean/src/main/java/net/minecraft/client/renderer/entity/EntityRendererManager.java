@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+import com.mrchoke.client.renderer.entity.ZombieMeanRenderer;
 import com.mrchoke.client.renderer.entity.ZombieNastyRenderer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -178,6 +179,7 @@ public class EntityRendererManager {
 
       //AH ADD ****
       this.addRenderer(EntityType.ZOMBIE_NASTY, new ZombieNastyRenderer(this));
+      this.addRenderer(EntityType.ZOMBIE_MEAN, new ZombieMeanRenderer(this));
       //AH ADD END
    }
 

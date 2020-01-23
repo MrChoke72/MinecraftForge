@@ -125,6 +125,7 @@ public class EntitySpawnPlacementRegistry {
 
       //AH ADD ****
       register(EntityType.ZOMBIE_NASTY, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MonsterEntity::spawnPred);
+      register(EntityType.ZOMBIE_MEAN, EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MonsterEntity::spawnPred);
       //AH END ****
 
    }

@@ -24,7 +24,11 @@ public class BlockTagsProvider extends TagsProvider<Block> {
       this.getBuilder(BlockTags.WOODEN_STAIRS).add(Blocks.OAK_STAIRS, Blocks.SPRUCE_STAIRS, Blocks.BIRCH_STAIRS, Blocks.JUNGLE_STAIRS, Blocks.ACACIA_STAIRS, Blocks.DARK_OAK_STAIRS);
       this.getBuilder(BlockTags.WOODEN_SLABS).add(Blocks.OAK_SLAB, Blocks.SPRUCE_SLAB, Blocks.BIRCH_SLAB, Blocks.JUNGLE_SLAB, Blocks.ACACIA_SLAB, Blocks.DARK_OAK_SLAB);
       this.getBuilder(BlockTags.WOODEN_FENCES).add(Blocks.OAK_FENCE, Blocks.ACACIA_FENCE, Blocks.DARK_OAK_FENCE, Blocks.SPRUCE_FENCE, Blocks.BIRCH_FENCE, Blocks.JUNGLE_FENCE);
-      this.getBuilder(BlockTags.DOORS).add(BlockTags.WOODEN_DOORS).add(Blocks.IRON_DOOR);
+
+      //AH CHANGE
+      this.getBuilder(BlockTags.DOORS).add(BlockTags.WOODEN_DOORS).add(Blocks.IRON_DOOR).add(Blocks.GOLD_DOOR);
+      //this.getBuilder(BlockTags.DOORS).add(BlockTags.WOODEN_DOORS).add(Blocks.IRON_DOOR);
+
       this.getBuilder(BlockTags.SAPLINGS).add(Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING, Blocks.JUNGLE_SAPLING, Blocks.ACACIA_SAPLING, Blocks.DARK_OAK_SAPLING);
       this.getBuilder(BlockTags.DARK_OAK_LOGS).add(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_WOOD);
       this.getBuilder(BlockTags.OAK_LOGS).add(Blocks.OAK_LOG, Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_LOG, Blocks.STRIPPED_OAK_WOOD);
@@ -70,6 +74,7 @@ public class BlockTagsProvider extends TagsProvider<Block> {
       this.getBuilder(BlockTags.field_226153_ac_).add(BlockTags.field_226152_ab_).add(Blocks.SWEET_BERRY_BUSH);
       this.getBuilder(BlockTags.field_226150_J_).add(Blocks.SHULKER_BOX, Blocks.BLACK_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.LIGHT_GRAY_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.WHITE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX);
       this.getBuilder(BlockTags.field_226154_ad_).add(Blocks.NETHER_PORTAL, Blocks.END_PORTAL, Blocks.END_GATEWAY);
+
    }
 
    protected Path makePath(ResourceLocation id) {

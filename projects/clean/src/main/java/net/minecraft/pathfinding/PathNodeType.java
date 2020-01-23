@@ -9,8 +9,10 @@ public enum PathNodeType {
    TRAPDOOR_OPEN(0.0F),
    //TRAPDOOR(0.0F),
 
-   //AH CHANGE ADD
-   TRAPDOOR_CLOSED(-1.0F),
+   //AH CHANGE ADD ****
+   TRAPDOOR_WOOD_CLOSED(-1.0F),
+   TRAPDOOR_IRON_CLOSED(-1.0F),
+   //AH ADD END****
 
    FENCE(-1.0F),
    LAVA(-1.0F),
@@ -34,7 +36,8 @@ public enum PathNodeType {
    //AH CHANGE NEW
    LADDER(0.0F),  //or Vine
    SCAFFOLDING(0.0F),
-   LILYPAD(0.0F);
+   LILYPAD(0.0F),
+   FENCE_GATE(-1.0F);
 
    private final float priority;
 

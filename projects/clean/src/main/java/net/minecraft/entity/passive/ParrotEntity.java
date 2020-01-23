@@ -103,6 +103,7 @@ public class ParrotEntity extends ShoulderRidingEntity implements IFlyingAnimal 
 
       //AH ADD ****
       soundMap.put(EntityType.ZOMBIE_NASTY, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_NASTY);
+      soundMap.put(EntityType.ZOMBIE_NASTY, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_MEAN);
       //AH END
 
    });

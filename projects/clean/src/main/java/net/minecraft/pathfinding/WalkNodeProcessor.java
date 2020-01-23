@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import com.mrchoke.entity.monster.BaseChokeZombie;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -451,7 +452,7 @@ public class WalkNodeProcessor extends NodeProcessor {
       }
    }
 
-   public PathNodeType getPathNodeType(IBlockReader p_193577_1_, int x, int y, int z, int xSize, int ySize, int zSize, boolean canOpenDoorsIn, boolean canEnterDoorsIn, EnumSet<PathNodeType> nodeTypeEnum, PathNodeType nodeType, BlockPos pos) {
+   public PathNodeType getPathNodeType(IBlockReader blockReader, int x, int y, int z, int xSize, int ySize, int zSize, boolean canOpenDoorsIn, boolean canEnterDoorsIn, EnumSet<PathNodeType> nodeTypeEnum, PathNodeType nodeType, BlockPos pos) {
       //AH CHANGE ******
       int[] xArr = new int[xSize];
       int[] zArr = new int[zSize];
@@ -472,8 +473,8 @@ public class WalkNodeProcessor extends NodeProcessor {
                int l = xArr[i];
                int i1 = j + y;
                int j1 = zArr[k];
-               PathNodeType pathnodetype = this.getPathNodeType(p_193577_1_, l, i1, j1);
-               pathnodetype = this.getPathNodeTypeWalkable(p_193577_1_, canOpenDoorsIn, canEnterDoorsIn, pos, pathnodetype);
+               PathNodeType pathnodetype = this.getPathNodeType(blockReader, l, i1, j1);
+               pathnodetype = this.getPathNodeTypeWalkable(blockReader, canOpenDoorsIn, canEnterDoorsIn, pos, pathnodetype);
                if (i == 0 && j == 0 && k == 0) {
                   nodeType = pathnodetype;
                }
@@ -510,21 +511,71 @@ public class WalkNodeProcessor extends NodeProcessor {
    protected PathNodeType getPathNodeTypeWalkable(IBlockReader blockReader, boolean canOpenDoorsIn, boolean canEnterDoorsIn, BlockPos pos, PathNodeType pathNodeType) {
    //protected PathNodeType func_215744_a(IBlockReader p_215744_1_, boolean p_215744_2_, boolean p_215744_3_, BlockPos p_215744_4_, PathNodeType p_215744_5_) {
 
-      if (pathNodeType == PathNodeType.DOOR_WOOD_CLOSED && canOpenDoorsIn && canEnterDoorsIn) {
-         pathNodeType = PathNodeType.WALKABLE;
-      }
-
       if (pathNodeType == PathNodeType.DOOR_OPEN && !canEnterDoorsIn) {
          pathNodeType = PathNodeType.BLOCKED;
       }
 
       //AH CHANGE ADD ******
-      if (pathNodeType == PathNodeType.TRAPDOOR_CLOSED && (canOpenDoorsIn && canEnterDoorsIn)) {
-         pathNodeType = PathNodeType.WALKABLE;
+      if((canOpenDoorsIn && canEnterDoorsIn))
+      {
+         if(this.entity instanceof BaseChokeZombie)
+         {
+            BaseChokeZombie chokeZombie = (BaseChokeZombie)this.entity;
+            if(chokeZombie.isBreakIronAndFences())
+            {
+               if(pathNodeType == PathNodeType.TRAPDOOR_IRON_CLOSED || pathNodeType == PathNodeType.DOOR_IRON_CLOSED)
+               {
+                  pathNodeType = PathNodeType.WALKABLE;
+               }
+
+               if (pathNodeType == PathNodeType.FENCE_GATE)
+               {
+                  pathNodeType = PathNodeType.WALKABLE;
+               }
+            }
+            else
+            {
+               if(pathNodeType == PathNodeType.TRAPDOOR_WOOD_CLOSED || pathNodeType == PathNodeType.DOOR_WOOD_CLOSED)
+               {
+                  pathNodeType = PathNodeType.WALKABLE;
+               }
+
+               if (pathNodeType == PathNodeType.FENCE_GATE)
+               {
+                  pathNodeType = PathNodeType.FENCE;
+               }
+            }
+         }
+         else
+         {
+            if (pathNodeType == PathNodeType.TRAPDOOR_WOOD_CLOSED || pathNodeType == PathNodeType.DOOR_WOOD_CLOSED)
+            {
+               pathNodeType = PathNodeType.WALKABLE;
+            }
+
+            if (pathNodeType == PathNodeType.FENCE_GATE)
+            {
+               pathNodeType = PathNodeType.FENCE;
+            }
+         }
+      }
+      else
+      {
+         if (pathNodeType == PathNodeType.FENCE_GATE)
+         {
+            pathNodeType = PathNodeType.FENCE;
+         }
       }
       //AH CHANGE END ******
+      //Vanilla
+      /*
+      if (pathNodeType == PathNodeType.DOOR_WOOD_CLOSED && canOpenDoorsIn && canEnterDoorsIn) {
+         pathNodeType = PathNodeType.WALKABLE;
+      }
+       */
 
-      if (pathNodeType == PathNodeType.RAIL && !(blockReader.getBlockState(pos).getBlock() instanceof AbstractRailBlock) && !(blockReader.getBlockState(pos.down()).getBlock() instanceof AbstractRailBlock)) {
+      if (pathNodeType == PathNodeType.RAIL && !(blockReader.getBlockState(pos).getBlock() instanceof AbstractRailBlock) &&
+              !(blockReader.getBlockState(pos.down()).getBlock() instanceof AbstractRailBlock)) {
          pathNodeType = PathNodeType.FENCE;
       }
 
@@ -628,7 +679,7 @@ public class WalkNodeProcessor extends NodeProcessor {
          }
          else
          {
-            return (material == Material.WOOD) ? PathNodeType.TRAPDOOR_CLOSED : PathNodeType.BLOCKED;
+            return (material == Material.WOOD) ? PathNodeType.TRAPDOOR_WOOD_CLOSED : PathNodeType.TRAPDOOR_IRON_CLOSED;
          }
       } else if (block == Blocks.LILY_PAD) {
          return PathNodeType.LILYPAD;
@@ -664,9 +715,17 @@ public class WalkNodeProcessor extends NodeProcessor {
       } else if (isLadderPathable(blockReader, blockstate, blockpos, true, false)) {
          return PathNodeType.LADDER;
 
+         //AH CHANGE ADD
+      } else if (block instanceof FenceGateBlock && !blockstate.get(FenceGateBlock.OPEN)) {
+         return PathNodeType.FENCE_GATE;
+
       } else if (block instanceof LeavesBlock) {
          return PathNodeType.LEAVES;
-      } else if (!block.isIn(BlockTags.FENCES) && !block.isIn(BlockTags.WALLS) && (!(block instanceof FenceGateBlock) || blockstate.get(FenceGateBlock.OPEN))) {
+
+      //AH CHANGE
+      } else if (!block.isIn(BlockTags.FENCES) && !block.isIn(BlockTags.WALLS)) {
+      //} else if (!block.isIn(BlockTags.FENCES) && !block.isIn(BlockTags.WALLS) && (!(block instanceof FenceGateBlock) || blockstate.get(FenceGateBlock.OPEN))) {
+
          IFluidState ifluidstate = blockReader.getFluidState(blockpos);
          if (ifluidstate.isTagged(FluidTags.WATER)) {
             return PathNodeType.WATER;

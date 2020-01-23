@@ -2,7 +2,10 @@ package com.mrchoke.entity.monster;
 
 import com.mrchoke.entity.ai.goal.*;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ILivingEntityData;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.entity.passive.ChickenEntity;
@@ -13,27 +16,29 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.*;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ZombieNasty extends BaseChokeZombie {
+public class ZombieMean extends BaseChokeZombie {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ZombieNasty(EntityType<? extends ZombieEntity> type, World worldIn) {
+    public ZombieMean(EntityType<? extends ZombieEntity> type, World worldIn) {
         super(type, worldIn);
 
-        breakIronAndFences = false;
+        breakIronAndFences = true;
         breakDoorGoal =  new ChokeBreakDoorGoal(this, checkDifficulty, breakIronAndFences);
         trapDoorGoal = new ChokeTrapDoorGoal(this, false, breakIronAndFences);
     }
 
-    public ZombieNasty(World worldIn) {
-        this(EntityType.ZOMBIE_NASTY, worldIn);
+    public ZombieMean(World worldIn) {
+        this(EntityType.ZOMBIE_MEAN, worldIn);
     }
 
     protected void registerGoals() {
@@ -48,7 +53,7 @@ public class ZombieNasty extends BaseChokeZombie {
         this.goalSelector.addGoal(4, new FollowPlayerPathGoal(this, 1.0D));     //Follow a player path
         this.goalSelector.addGoal(7, new WaterAvoidingRandomChokeGoal(this, 1.25D));  //Beef up speed a little when random walking
 
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, ZombieNasty.class)));    //Ignore hurt by other nasties
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, ZombieMean.class)));    //Ignore hurt by other nasties
         this.targetSelector.addGoal(2, new NearestAttTargetChokeGoal<>(this, PlayerEntity.class, false)); //He must see player to start target, but he doesn't need to see to keep it
         this.targetSelector.addGoal(4, new SelectPlayerPathGoal(this)); //Try to sniff out a player's recent path
     }
@@ -68,13 +73,13 @@ public class ZombieNasty extends BaseChokeZombie {
         Item item = itemstack.getItem();
         if (item instanceof SpawnEggItem && ((SpawnEggItem)item).hasType(itemstack.getTag(), this.getType())) {
             if (!this.world.isRemote) {
-                ZombieNasty nasty = (ZombieNasty)this.getType().create(this.world);
-                if (nasty != null) {
-                    nasty.setChild(true);
-                    nasty.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), 0.0F, 0.0F);
-                    this.world.addEntity(nasty);
+                ZombieMean mean = (ZombieMean)this.getType().create(this.world);
+                if (mean != null) {
+                    mean.setChild(true);
+                    mean.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), 0.0F, 0.0F);
+                    this.world.addEntity(mean);
                     if (itemstack.hasDisplayName()) {
-                        nasty.setCustomName(itemstack.getDisplayName());
+                        mean.setCustomName(itemstack.getDisplayName());
                     }
 
                     if (!player.abilities.isCreativeMode) {
@@ -90,19 +95,19 @@ public class ZombieNasty extends BaseChokeZombie {
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_ZOMBIENASTY_AMBIENT;
+        return SoundEvents.ENTITY_ZOMBIEMEAN_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_ZOMBIENASTY_HURT;
+        return SoundEvents.ENTITY_ZOMBIEMEAN_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_ZOMBIENASTY_DEATH;
+        return SoundEvents.ENTITY_ZOMBIEMEAN_DEATH;
     }
 
     protected SoundEvent getStepSound() {
-        return SoundEvents.ENTITY_ZOMBIENASTY_STEP;
+        return SoundEvents.ENTITY_ZOMBIEMEAN_STEP;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
@@ -115,11 +120,11 @@ public class ZombieNasty extends BaseChokeZombie {
         float f = difficultyIn.getClampedAdditionalDifficulty();
         this.setCanPickUpLoot(this.rand.nextFloat() < 0.55F * f);
         if (spawnDataIn == null) {
-            spawnDataIn = new ZombieNasty.GroupData(worldIn.getRandom().nextFloat() < 0.05F);  //This is the chance to be a baby
+            spawnDataIn = new ZombieMean.GroupData(worldIn.getRandom().nextFloat() < 0.05F);  //This is the chance to be a baby
         }
 
-        if (spawnDataIn instanceof ZombieNasty.GroupData) {
-            ZombieNasty.GroupData zombieentity$groupdata = (ZombieNasty.GroupData)spawnDataIn;
+        if (spawnDataIn instanceof ZombieMean.GroupData) {
+            ZombieMean.GroupData zombieentity$groupdata = (ZombieMean.GroupData)spawnDataIn;
             if (zombieentity$groupdata.isChild) {
                 this.setChild(true);
                 if ((double)worldIn.getRandom().nextFloat() < 0.05D) {
@@ -159,5 +164,4 @@ public class ZombieNasty extends BaseChokeZombie {
             this.isChild = b;
         }
     }
-
 }

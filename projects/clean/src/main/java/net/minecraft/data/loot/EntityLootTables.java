@@ -155,6 +155,20 @@ public class EntityLootTables implements Consumer<BiConsumer<ResourceLocation, L
                            .acceptCondition(KilledByPlayer.builder())
                            .acceptCondition(RandomChanceWithLooting.builder(0.1F, 0.02F))));
                            //.acceptCondition(RandomChanceWithLooting.builder(0.025F, 0.01F))));
+
+      this.addToLootMap(EntityType.ZOMBIE_MEAN, LootTable.builder()
+              .addLootPool(LootPool.builder().rolls(ConstantRange.of(1))
+                      .addEntry(ItemLootEntry.builder(Items.ROTTEN_FLESH)
+                              .acceptFunction(SetCount.createLootBuilder(RandomValueRange.createRandRange(0.0F, 2.0F)))
+                              .acceptFunction(LootingEnchantBonus.createLootBuilder(RandomValueRange.createRandRange(0.0F, 1.0F)))))
+              .addLootPool(LootPool.builder().rolls(ConstantRange.of(1))
+                      .addEntry(ItemLootEntry.builder(Items.DIAMOND))
+                      .addEntry(ItemLootEntry.builder(Items.CAKE))
+                      .addEntry(ItemLootEntry.builder(Items.PARROT_SPAWN_EGG))
+                      .acceptCondition(KilledByPlayer.builder())
+                      .acceptCondition(RandomChanceWithLooting.builder(0.1F, 0.02F))));
+      //.acceptCondition(RandomChanceWithLooting.builder(0.025F, 0.01F))));
+
       //AH END ****
 
       EntityType<?> entitytype;

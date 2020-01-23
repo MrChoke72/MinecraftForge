@@ -516,7 +516,10 @@ public class ZombieEntity extends MonsterEntity {
 
          //AH CHANGE OFF TEMP FOR TESTING
          //this.setBreakDoorsAItask(true);
-         this.setBreakDoorsAItask(this.canBreakDoors() && this.rand.nextFloat() < f * 0.1F);
+
+         //AH CHANGE, with choke zombies, reduce chance of breaking doors by normal zombies a little.  0.1 down to 0.07
+         this.setBreakDoorsAItask(this.canBreakDoors() && this.rand.nextFloat() < f * 0.07F);
+         //this.setBreakDoorsAItask(this.canBreakDoors() && this.rand.nextFloat() < f * 0.1F);
 
          this.setEquipmentBasedOnDifficulty(difficultyIn);
          this.setEnchantmentBasedOnDifficulty(difficultyIn);

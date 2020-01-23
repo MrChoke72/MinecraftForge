@@ -667,6 +667,13 @@ public class BlockLootTables implements Consumer<BiConsumer<ResourceLocation, Lo
       this.registerLootTable(Blocks.IRON_DOOR, (p_218510_0_) -> {
          return func_218562_a(p_218510_0_, DoorBlock.HALF, DoubleBlockHalf.LOWER);
       });
+
+      //AH ADD ****
+      this.registerLootTable(Blocks.GOLD_DOOR, (block) -> {
+         return func_218562_a(block, DoorBlock.HALF, DoubleBlockHalf.LOWER);
+      });
+      //AH ADD END ****
+
       this.registerLootTable(Blocks.JUNGLE_DOOR, (p_218498_0_) -> {
          return func_218562_a(p_218498_0_, DoorBlock.HALF, DoubleBlockHalf.LOWER);
       });

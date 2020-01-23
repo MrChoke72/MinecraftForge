@@ -820,6 +820,17 @@ public class SoundEvents {
    public static final SoundEvent ENTITY_ZOMBIENASTY_HURT = register("choke:entity.zombienasty.hurt");
    public static final SoundEvent ENTITY_ZOMBIENASTY_STEP = register("choke:entity.zombienasty.step");
    public static final SoundEvent ENTITY_PARROT_IMITATE_ZOMBIE_NASTY = register("choke:entity.parrot.imitate.zombienasty");
+
+   public static final SoundEvent ENTITY_ZOMBIEMEAN_AMBIENT = register("choke:entity.zombiemean.ambient");
+   public static final SoundEvent ENTITY_ZOMBIEMEAN_DEATH = register("choke:entity.zombiemean.death");
+   public static final SoundEvent ENTITY_ZOMBIEMEAN_HURT = register("choke:entity.zombiemean.hurt");
+   public static final SoundEvent ENTITY_ZOMBIEMEAN_STEP = register("choke:entity.zombiemean.step");
+   public static final SoundEvent ENTITY_PARROT_IMITATE_ZOMBIE_MEAN = register("choke:entity.parrot.imitate.zombiemean");
+
+   public static final SoundEvent ENTITY_ZOMBIE_BREAK_IRON_DOOR = register("choke:entity.zombie.break_iron_door");
+
+   public static final SoundEvent BLOCK_GOLD_DOOR_CLOSE = register("block.iron_door.close");
+   public static final SoundEvent BLOCK_GOLD_DOOR_OPEN = register("block.iron_door.open");
    //AH ADD END ****
 
 

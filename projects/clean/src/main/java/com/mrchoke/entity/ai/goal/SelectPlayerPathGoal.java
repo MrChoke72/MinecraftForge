@@ -1,6 +1,6 @@
 package com.mrchoke.entity.ai.goal;
 
-import com.mrchoke.entity.monster.ZombieNasty;
+import com.mrchoke.entity.monster.BaseChokeZombie;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -14,50 +14,50 @@ public class SelectPlayerPathGoal extends Goal {
     public static final int MAX_CHECK_SIGHT_DIST_SQ = (20*20) + (5*5) + (20*20);    //825 (sqrt: 29)
 
     private long waitBeforeExecTime;
-    private ZombieNasty nasty;
+    private BaseChokeZombie chokeZombie;
     private int delayCounter;
 
     private Set<BlockPos> blockPosProcessed = new HashSet<>();
 
-    public SelectPlayerPathGoal(ZombieNasty nasty) {
-        this.nasty = nasty;
+    public SelectPlayerPathGoal(BaseChokeZombie chokeZombie) {
+        this.chokeZombie = chokeZombie;
         this.setMutexFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
     public boolean shouldExecute() {
-        long i = this.nasty.world.getGameTime();
+        long i = this.chokeZombie.world.getGameTime();
         if (i - this.waitBeforeExecTime < 40) { //wait 2 secs
             return false;
         } else {
             this.waitBeforeExecTime = i;
 
-            if (nasty.getTargetMode() == ZombieNasty.TargetModeEnum.RESET_PATH)
+            if (chokeZombie.getTargetMode() == BaseChokeZombie.TargetModeEnum.RESET_PATH)
             {
-                nasty.setTargetMode(ZombieNasty.TargetModeEnum.NORMAL);
+                chokeZombie.setTargetMode(BaseChokeZombie.TargetModeEnum.NORMAL);
                 blockPosProcessed.clear();
             }
-            else if(nasty.getTargetMode() == ZombieNasty.TargetModeEnum.RESET_FOLLOW) {
-                nasty.setTargetMode(ZombieNasty.TargetModeEnum.NORMAL);
+            else if(chokeZombie.getTargetMode() == BaseChokeZombie.TargetModeEnum.RESET_FOLLOW) {
+                chokeZombie.setTargetMode(BaseChokeZombie.TargetModeEnum.NORMAL);
             }
 
-            if(nasty.getPlayerToFollow() == null) {
-                List<ServerPlayerEntity> pList = nasty.getServer().getPlayerList().getPlayers();
-                nasty.setPlayerToFollow(pList.get(nasty.getRNG().nextInt(pList.size())));
+            if(chokeZombie.getPlayerToFollow() == null) {
+                List<ServerPlayerEntity> pList = chokeZombie.getServer().getPlayerList().getPlayers();
+                chokeZombie.setPlayerToFollow(pList.get(chokeZombie.getRNG().nextInt(pList.size())));
             }
 
-            PlayerEntity player = nasty.getPlayerToFollow();
-            if (nasty.getAttackTarget() != null || nasty.getTargetMode() == ZombieNasty.TargetModeEnum.PLAYER_PATH || !player.isAlive() || player.isSpectator()) {
+            PlayerEntity player = chokeZombie.getPlayerToFollow();
+            if (chokeZombie.getAttackTarget() != null || chokeZombie.getTargetMode() == BaseChokeZombie.TargetModeEnum.PLAYER_PATH || !player.isAlive() || player.isSpectator()) {
                 return false;
             }
             else
             {
-                double distToPosSq = nasty.getDistanceSq(player);
+                double distToPosSq = chokeZombie.getDistanceSq(player);
                 if (distToPosSq > MAX_PATH_DIST_SQ) {
 
                     //AH DEBUG OFF
                     /*
-                    if(nasty.getCustomName() != null) {
-                        System.out.println("SelectPlayerPathGoal: shouldExecute.  distToPlayer too far.  dist=" + Math.sqrt(distToPosSq) + ", No exec.  entPos=" + nasty.getPosition() + ", playPos="
+                    if(chokeZombie.getCustomName() != null) {
+                        System.out.println("SelectPlayerPathGoal: shouldExecute.  distToPlayer too far.  dist=" + Math.sqrt(distToPosSq) + ", No exec.  entPos=" + chokeZombie.getPosition() + ", playPos="
                                 + player.getPosition());
                     }
                      */
@@ -68,9 +68,9 @@ public class SelectPlayerPathGoal extends Goal {
                 {
                     //AH CHANGE DEBUG OFF
                     /*
-                    if(nasty.getCustomName() != null)
+                    if(chokeZombie.getCustomName() != null)
                     {
-                       System.out.println("In SelectPlayerPathGoal, shouldExecute.  Will start.  entPos=" + nasty.getPosition() + ", distEntToPlayer=" + Math.sqrt(distToPosSq));
+                       System.out.println("In SelectPlayerPathGoal, shouldExecute.  Will start.  entPos=" + chokeZombie.getPosition() + ", distEntToPlayer=" + Math.sqrt(distToPosSq));
                     }
                      */
 
@@ -87,14 +87,15 @@ public class SelectPlayerPathGoal extends Goal {
 
     @Override
     public boolean shouldContinueExecuting() {
-        if(nasty.getAttackTarget() != null || nasty.getTargetMode() != ZombieNasty.TargetModeEnum.NORMAL || !nasty.getPlayerToFollow().isAlive() || nasty.getPlayerToFollow().isSpectator()) {
+        if(chokeZombie.getAttackTarget() != null || chokeZombie.getTargetMode() != BaseChokeZombie.TargetModeEnum.NORMAL || !chokeZombie.getPlayerToFollow().isAlive()
+                || chokeZombie.getPlayerToFollow().isSpectator()) {
 
             //AH CHANGE DEBUG OFF
             /*
-            if(nasty.getCustomName() != null)
+            if(chokeZombie.getCustomName() != null)
             {
-                System.out.println("In SelectPlayerPathGoal, stopping execute.  entPos=" + nasty.getPosition() + ", nasty.getAttackTarget()=" + nasty.getAttackTarget() +
-                        ", getTargetMode=" + nasty.getTargetMode() + ", player isAlive: " + nasty.getPlayerToFollow().isAlive());
+                System.out.println("In SelectPlayerPathGoal, stopping execute.  entPos=" + chokeZombie.getPosition() + ", chokeZombie.getAttackTarget()=" + chokeZombie.getAttackTarget() +
+                        ", getTargetMode=" + chokeZombie.getTargetMode() + ", player isAlive: " + chokeZombie.getPlayerToFollow().isAlive());
             }
              */
 
@@ -108,7 +109,7 @@ public class SelectPlayerPathGoal extends Goal {
     public void resetTask() {
         //AH CHANGE DEBUG OFF
         /*
-        if(this.nasty.getCustomName() != null && this.nasty.getCustomName().getString().equals("Chuck"))
+        if(this.chokeZombie.getCustomName() != null && this.chokeZombie.getCustomName().getString().equals("Chuck"))
         {
             System.out.println("In SelectPlayerPathGoal reset");
         }
@@ -119,7 +120,7 @@ public class SelectPlayerPathGoal extends Goal {
     public void tick() {
         --this.delayCounter;
         if(delayCounter <= 0) {
-            List<BlockPos> playerPath = nasty.getPlayerToFollow().getPlayerPath();
+            List<BlockPos> playerPath = chokeZombie.getPlayerToFollow().getPlayerPath();
             boolean bSetPathTarget = false;
             Map<BlockPos, Double> posDistMap = new HashMap<>();
             List<BlockPos> posList = new ArrayList<>();
@@ -131,24 +132,24 @@ public class SelectPlayerPathGoal extends Goal {
                     continue;
                 }
 
-                double distToPosSq = nasty.getDistanceSq(pos.getX(), pos.getY(), pos.getZ());
+                double distToPosSq = chokeZombie.getDistanceSq(pos.getX(), pos.getY(), pos.getZ());
                 if (distToPosSq > MAX_PATH_DIST_SQ) {
                     blockPosProcessed.add(pos);
                     continue;
                 }
 
                 if (distToPosSq <= MAX_CHECK_SIGHT_DIST_SQ) {
-                    if (nasty.canSeePos(pos)) {
+                    if (chokeZombie.canSeePos(pos)) {
 
                         //AH DEBUG OFF
                         /*
-                        if(nasty.getCustomName() != null) {
-                            System.out.println("SelectPlayerPathGoal: In tick - Nasty can see path pos.  entPos=" + nasty.getPosition() + ", posIdx=" + posIdx + ", Will path find to: " + pos);
+                        if(chokeZombie.getCustomName() != null) {
+                            System.out.println("SelectPlayerPathGoal: In tick - chokeZombie can see path pos.  entPos=" + chokeZombie.getPosition() + ", posIdx=" + posIdx + ", Will path find to: " + pos);
                         }
                          */
 
                         blockPosProcessed.add(pos);
-                        nasty.setPlayerPathTarget(pos);
+                        chokeZombie.setPlayerPathTarget(pos);
                         bSetPathTarget = true;
                         break;
                     }
@@ -159,7 +160,7 @@ public class SelectPlayerPathGoal extends Goal {
             }
 
             if (!bSetPathTarget && posList.size() > 0) {
-                //Closest to nasty iterate
+                //Closest to chokeZombie iterate
                 Collections.sort(posList, (pos1, pos2) -> {
                     double dist1 = posDistMap.get(pos1);
                     double dist2 = posDistMap.get(pos2);
@@ -170,30 +171,30 @@ public class SelectPlayerPathGoal extends Goal {
 
                 //AH DEBUG OFF
                 /*
-                if(nasty.getCustomName() != null) {
+                if(chokeZombie.getCustomName() != null) {
                     System.out.println("SelectPlayerPathGoal: In tick - Will path find to closest pos to entity.  distToPos=" + Math.sqrt(posDistMap.get(pos)) + ", entPos= "
-                            + nasty.getPosition() + ", pos=" + pos);
+                            + chokeZombie.getPosition() + ", pos=" + pos);
                 }
                  */
 
                 blockPosProcessed.add(pos);
-                nasty.setPlayerPathTarget(pos);
+                chokeZombie.setPlayerPathTarget(pos);
                 bSetPathTarget = true;
             }
 
             if (bSetPathTarget)
             {
-                nasty.setTargetMode(ZombieNasty.TargetModeEnum.PLAYER_PATH);
+                chokeZombie.setTargetMode(BaseChokeZombie.TargetModeEnum.PLAYER_PATH);
                 delayCounter = 100;
             }
             else {
                 //All current path points have been tried already, reset it and try again
-                nasty.setTargetMode(ZombieNasty.TargetModeEnum.RESET_PATH);
+                chokeZombie.setTargetMode(BaseChokeZombie.TargetModeEnum.RESET_PATH);
 
                 //AH DEBUG OFF
                 /*
-                if(nasty.getCustomName() != null) {
-                    System.out.println("SelectPlayerPathGoal: In tick - All paths tried and failed, clearing processed.  entPos=" + nasty.getPosition());
+                if(chokeZombie.getCustomName() != null) {
+                    System.out.println("SelectPlayerPathGoal: In tick - All paths tried and failed, clearing processed.  entPos=" + chokeZombie.getPosition());
                 }
                  */
 
@@ -202,11 +203,11 @@ public class SelectPlayerPathGoal extends Goal {
                 Set<BlockPos> pathSet = new HashSet<>(playerPath);
                 if(blockPosProcessed.size() >= pathSet.size()) {
                     //blockPosProcessed.clear();
-                    nasty.setTargetMode(ZombieNasty.TargetModeEnum.RESET_PATH);
+                    chokeZombie.setTargetMode(BaseChokeZombie.TargetModeEnum.RESET_PATH);
 
                     //AH DEBUG
-                    if(nasty.getCustomName() != null) {
-                        System.out.println("SelectPlayerPathGoal: In tick - All paths tried and failed, clearing processed.  entPos=" + nasty.getPosition());
+                    if(chokeZombie.getCustomName() != null) {
+                        System.out.println("SelectPlayerPathGoal: In tick - All paths tried and failed, clearing processed.  entPos=" + chokeZombie.getPosition());
                     }
 
                     delayCounter = 200; //10 secs

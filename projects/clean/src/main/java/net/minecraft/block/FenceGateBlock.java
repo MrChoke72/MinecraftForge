@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.pathfinding.PathType;
@@ -138,4 +139,19 @@ public class FenceGateBlock extends HorizontalBlock {
    public static boolean isParallel(BlockState p_220253_0_, Direction p_220253_1_) {
       return p_220253_0_.get(HORIZONTAL_FACING).getAxis() == p_220253_1_.rotateY().getAxis();
    }
+
+   //AH NEW ****
+   public void toggleGate(World worldIn, BlockPos pos, boolean open) {
+      BlockState blockstate = worldIn.getBlockState(pos);
+      if (blockstate.getBlock() == this && blockstate.get(OPEN) != open) {
+         worldIn.setBlockState(pos, blockstate.with(OPEN, Boolean.valueOf(open)), 10);
+         this.playSound(worldIn, pos, open);
+      }
+   }
+
+   private void playSound(World world, BlockPos pos, boolean open) {
+      world.playEvent((PlayerEntity)null, open ? 1008 : 1014, pos, 0);
+   }
+
+   //AH NEW END ****
 }

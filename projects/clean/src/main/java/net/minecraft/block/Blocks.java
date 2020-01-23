@@ -698,6 +698,10 @@ public class Blocks {
    public static final Block HONEY_BLOCK = register("honey_block", new HoneyBlock(Block.Properties.create(Material.CLAY, MaterialColor.ADOBE).func_226897_b_(0.4F).func_226898_c_(0.5F).func_226896_b_().sound(SoundType.field_226947_m_)));
    public static final Block HONEYCOMB_BLOCK = register("honeycomb_block", new Block(Block.Properties.create(Material.CLAY, MaterialColor.ADOBE).hardnessAndResistance(0.6F).sound(SoundType.CORAL)));
 
+   //AH ADD ****
+   public static final Block GOLD_DOOR = register("choke:gold_door", new DoorBlock(Block.Properties.create(Material.ROCK, MaterialColor.GOLD).hardnessAndResistance(4.0F).sound(SoundType.METAL).func_226896_b_()));
+   //AH ADD END ****
+
    private static Block register(String key, Block p_222382_1_) {
       return Registry.register(Registry.BLOCK, key, p_222382_1_);
    }

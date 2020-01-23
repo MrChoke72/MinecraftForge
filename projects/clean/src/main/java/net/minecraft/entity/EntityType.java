@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
+import com.mrchoke.entity.monster.ZombieMean;
 import com.mrchoke.entity.monster.ZombieNasty;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -245,6 +246,7 @@ public class EntityType<T extends Entity> {
 
    //AH ADD ****
    public static final EntityType<ZombieNasty> ZOMBIE_NASTY = register("zombienasty", EntityType.Builder.<ZombieNasty>create(ZombieNasty::new, EntityClassification.MONSTER).size(0.6F, 1.95F));
+   public static final EntityType<ZombieMean> ZOMBIE_MEAN = register("zombiemean", EntityType.Builder.<ZombieMean>create(ZombieMean::new, EntityClassification.MONSTER).size(0.6F, 1.95F));
    //AH END
 
 

@@ -1,14 +1,14 @@
 package com.mrchoke.entity.ai.goal;
 
-import com.mrchoke.entity.monster.ZombieNasty;
+import com.mrchoke.entity.monster.BaseChokeZombie;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.player.PlayerEntity;
 
-public class NearestAttTargetNastyGoal<T extends LivingEntity> extends NearestAttackableTargetGoal {
+public class NearestAttTargetChokeGoal<T extends LivingEntity> extends NearestAttackableTargetGoal {
 
-    public NearestAttTargetNastyGoal(MobEntity entity, Class<T> targetClass, boolean checkSight) {
+    public NearestAttTargetChokeGoal(MobEntity entity, Class<T> targetClass, boolean checkSight) {
         super(entity, targetClass, checkSight, false);
     }
 
@@ -17,7 +17,7 @@ public class NearestAttTargetNastyGoal<T extends LivingEntity> extends NearestAt
         super.startExecuting();
 
         if(goalOwner.getAttackTarget() instanceof PlayerEntity) {
-            ((ZombieNasty)goalOwner).setPlayerToFollow((PlayerEntity)goalOwner.getAttackTarget());
+            ((BaseChokeZombie)goalOwner).setPlayerToFollow((PlayerEntity)goalOwner.getAttackTarget());
         }
     }
 

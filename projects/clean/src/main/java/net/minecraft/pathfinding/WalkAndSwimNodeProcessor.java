@@ -206,6 +206,13 @@ public class WalkAndSwimNodeProcessor extends WalkNodeProcessor {
          pathNodeType = PathNodeType.FENCE;
       }
 
+      //AH ADD ****
+      if (pathNodeType == PathNodeType.FENCE_GATE)
+      {
+         pathNodeType = PathNodeType.FENCE;
+      }
+      //AH ADD END ***
+
       if (pathNodeType == PathNodeType.DOOR_OPEN || pathNodeType == PathNodeType.DOOR_WOOD_CLOSED || pathNodeType == PathNodeType.DOOR_IRON_CLOSED) {
          pathNodeType = PathNodeType.BLOCKED;
       }

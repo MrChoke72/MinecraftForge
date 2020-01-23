@@ -1,27 +1,26 @@
 package com.mrchoke.entity.ai.goal;
 
-import com.mrchoke.entity.monster.ZombieNasty;
-import net.minecraft.entity.CreatureEntity;
+import com.mrchoke.entity.monster.BaseChokeZombie;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 
-public class WaterAvoidingRandomNastyGoal extends WaterAvoidingRandomWalkingGoal {
+public class WaterAvoidingRandomChokeGoal extends WaterAvoidingRandomWalkingGoal {
 
-    private ZombieNasty nasty;
+    private BaseChokeZombie chokeZombie;
 
-    public WaterAvoidingRandomNastyGoal(ZombieNasty nasty, double speedIn)
+    public WaterAvoidingRandomChokeGoal(BaseChokeZombie chokeZombie, double speedIn)
     {
-        super(nasty, speedIn);
-        this.nasty = nasty;
+        super(chokeZombie, speedIn);
+        this.chokeZombie = chokeZombie;
     }
 
 
     @Override
     public boolean shouldExecute() {
-        if (nasty.getTargetMode() != ZombieNasty.TargetModeEnum.NORMAL) {
+        if (chokeZombie.getTargetMode() != BaseChokeZombie.TargetModeEnum.NORMAL) {
             return false;
         }
 
@@ -51,7 +50,7 @@ public class WaterAvoidingRandomNastyGoal extends WaterAvoidingRandomWalkingGoal
                 //AH CHANGE DEBUG OFF
                 /*
                 if (this.creature.getCustomName() != null && this.creature.getCustomName().getString().equals("Chuck")) {
-                    System.out.println("In WaterAvoidingRandomNastyGoal, shouldExecute.  Will start. entPos=" + creature.getPosition() + ", tgtPos=" + x + "," + y + "," + z);
+                    System.out.println("In WaterAvoidingRandomChokeGoal, shouldExecute.  Will start. entPos=" + creature.getPosition() + ", tgtPos=" + x + "," + y + "," + z);
                 }
                  */
 

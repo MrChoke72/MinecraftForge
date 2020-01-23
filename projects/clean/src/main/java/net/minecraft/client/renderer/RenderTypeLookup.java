@@ -237,6 +237,11 @@ public class RenderTypeLookup {
       p_228395_0_.put(Blocks.HONEY_BLOCK, rendertype2);
       p_228395_0_.put(Blocks.FROSTED_ICE, rendertype2);
       p_228395_0_.put(Blocks.BUBBLE_COLUMN, rendertype2);
+
+      //AH ADD ****
+      p_228395_0_.put(Blocks.GOLD_DOOR, rendertype1);
+      //AH ADD END ****
+
    });
    private static final Map<Fluid, RenderType> field_228387_b_ = Util.make(Maps.newHashMap(), (p_228392_0_) -> {
       RenderType rendertype = RenderType.func_228645_f_();

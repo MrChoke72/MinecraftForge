@@ -18,9 +18,7 @@ public abstract class InteractTrapDoorGoal extends Goal {
     protected BlockPos doorPosition = BlockPos.ZERO;
     protected boolean doorInteract;
     private boolean hasStoppedDoorInteraction;
-    //private float entityPositionX;
     private float entityPositionY;
-    //private float entityPositionZ;
 
     public InteractTrapDoorGoal(MobEntity entityIn) {
         this.entity = entityIn;
@@ -98,17 +96,12 @@ public abstract class InteractTrapDoorGoal extends Goal {
 
     public void startExecuting() {
         this.hasStoppedDoorInteraction = false;
-        //this.entityPositionX = (float)((double)((float)this.doorPosition.getX() + 0.5F) - this.entity.getPosX());
         this.entityPositionY = (float)((double)((float)this.doorPosition.getY() + 0.5F) - this.entity.getPosY());
-        //this.entityPositionZ = (float)((double)((float)this.doorPosition.getZ() + 0.5F) - this.entity.getPosZ());
     }
 
     public void tick() {
-        //float f = (float)((double)((float)this.doorPosition.getX() + 0.5F) - this.entity.getPosX());
         float f1 = (float)((double)((float)this.doorPosition.getY() + 0.5F) - this.entity.getPosY());
-        //float f2 = (float)((double)((float)this.doorPosition.getZ() + 0.5F) - this.entity.getPosZ());
         float f3 = this.entityPositionY * f1;
-        //float f3 = this.entityPositionX * f + this.entityPositionY * f1 + this.entityPositionZ * f2;
 
         //AH CHANGE DEBUG OFF
         /*

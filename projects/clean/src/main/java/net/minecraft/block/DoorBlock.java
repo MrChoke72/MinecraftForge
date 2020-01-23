@@ -111,11 +111,15 @@ public class DoorBlock extends Block {
    }
 
    private int getCloseSound() {
-      return this.material == Material.IRON ? 1011 : 1012;
+      //AH CHANGE
+      return this.material == Material.WOOD ? 1012 : 1011;
+      //return this.material == Material.IRON ? 1011 : 1012;
    }
 
    private int getOpenSound() {
-      return this.material == Material.IRON ? 1005 : 1006;
+      //AH CHANGE
+      return this.material == Material.WOOD ? 1006 : 1005;
+      //return this.material == Material.IRON ? 1005 : 1006;
    }
 
    @Nullable

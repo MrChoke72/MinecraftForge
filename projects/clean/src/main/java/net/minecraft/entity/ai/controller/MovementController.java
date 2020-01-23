@@ -129,6 +129,7 @@ public class MovementController {
          }
           */
 
+
          if (blockState != null) {
             Block ladderBlock = blockState.getBlock();
 
@@ -188,7 +189,10 @@ public class MovementController {
             BlockState blockstate = this.mob.world.getBlockState(blockpos);
             Block block = blockstate.getBlock();
             VoxelShape voxelshape = blockstate.getCollisionShape(this.mob.world, blockpos);
-            if (d2 > (double) this.mob.stepHeight && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.mob.getWidth()) || !voxelshape.isEmpty() && this.mob.getPosY() < voxelshape.getEnd(Direction.Axis.Y) + (double) blockpos.getY() && !block.isIn(BlockTags.DOORS) && !block.isIn(BlockTags.FENCES)) {
+            if (d2 > (double) this.mob.stepHeight && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.mob.getWidth()) || !voxelshape.isEmpty() &&
+                    this.mob.getPosY() < voxelshape.getEnd(Direction.Axis.Y) + (double) blockpos.getY() && !block.isIn(BlockTags.DOORS) && !block.isIn(BlockTags.FENCES)
+                    && !(block instanceof FenceGateBlock))
+            {
                this.mob.getJumpController().setJumping();
                this.action = MovementController.Action.JUMPING;
 

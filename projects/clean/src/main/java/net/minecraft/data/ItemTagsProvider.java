@@ -65,6 +65,7 @@ public class ItemTagsProvider extends TagsProvider<Item> {
       this.getBuilder(ItemTags.COALS).add(Items.COAL, Items.CHARCOAL);
       this.getBuilder(ItemTags.ARROWS).add(Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW);
       this.getBuilder(ItemTags.field_226160_P_).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);
+
    }
 
    protected void copy(Tag<Block> from, Tag<Item> to) {

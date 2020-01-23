@@ -3,9 +3,9 @@ package com.mrchoke.entity.ai.goal;
 import net.minecraft.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.entity.monster.ZombieEntity;
 
-public class ZombieNastyAttackGoal extends ZombieAttackGoal {
+public class ZombieChokeAttackGoal extends ZombieAttackGoal {
 
-    public ZombieNastyAttackGoal(ZombieEntity zombieIn, double speedIn)
+    public ZombieChokeAttackGoal(ZombieEntity zombieIn, double speedIn)
     {
         super(zombieIn, speedIn, true); //always long memory
     }

@@ -900,8 +900,10 @@ public class Items {
 
    //AH ADD ****
    public static final Item ZOMBIENASTY_SPAWN_EGG = register("choke:zombienasty_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_NASTY, 14680064, 12607488, (new Item.Properties()).group(ItemGroup.MISC)));
-   //AH END ****
+   public static final Item ZOMBIEMEAN_SPAWN_EGG = register("choke:zombiemean_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_MEAN, 36944, 17644, (new Item.Properties()).group(ItemGroup.MISC)));
 
+   public static final Item GOLD_DOOR = register(new TallBlockItem(Blocks.GOLD_DOOR, (new Item.Properties()).group(ItemGroup.REDSTONE)));
+   //AH END ****
 
 
    private static Item register(Block p_221545_0_) {
