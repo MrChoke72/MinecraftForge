@@ -22,7 +22,7 @@ public class MoveTowardsRestrictionGoal extends Goal {
       if (this.creature.isWithinHomeDistanceCurrentPosition()) {
          return false;
       } else {
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.creature, 16, 7, new Vec3d(this.creature.getHomePosition()));
+         Vec3d vec3d = RandomPositionGenerator.findRandomTargetToward(this.creature, 16, 7, new Vec3d(this.creature.getHomePosition()));
          if (vec3d == null) {
             return false;
          } else {

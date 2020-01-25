@@ -219,7 +219,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
 
       //AH CHANGE CANCEL
       //this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
-      this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(48.0D);
+      this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
    }
 
 
@@ -413,7 +413,7 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
    }
 
    private void func_213762_g(PlayerEntity p_213762_1_) {
-      int i = this.func_223107_f(p_213762_1_);
+      int i = this.getGossipForPlayer(p_213762_1_);
       if (i != 0) {
          for(MerchantOffer merchantoffer : this.getOffers()) {
             merchantoffer.func_222207_a(-MathHelper.floor((float)i * merchantoffer.func_222211_m()));
@@ -635,8 +635,8 @@ public class VillagerEntity extends AbstractVillagerEntity implements IReputatio
       }
    }
 
-   public int func_223107_f(PlayerEntity p_223107_1_) {
-      return this.gossip.func_220921_a(p_223107_1_.getUniqueID(), (p_223103_0_) -> {
+   public int getGossipForPlayer(PlayerEntity player) {
+      return this.gossip.func_220921_a(player.getUniqueID(), (p_223103_0_) -> {
          return true;
       });
    }

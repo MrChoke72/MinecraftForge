@@ -49,7 +49,7 @@ public class MoveThroughVillageGoal extends Goal {
          if (!serverworld.isPosBelowEQSecLevel(blockpos, 6)) {
             return false;
          } else {
-            Vec3d vec3d = RandomPositionGenerator.func_221024_a(this.entity, 15, 7, (pos) -> {
+            Vec3d vec3d = RandomPositionGenerator.findLandPosWeight(this.entity, 15, 7, (pos) -> {
                if (!serverworld.isPosBelowEQSecLevel1(pos)) {
                   return Double.NEGATIVE_INFINITY;
                } else {
@@ -73,7 +73,7 @@ public class MoveThroughVillageGoal extends Goal {
                   this.path = groundpathnavigator.getPathToPos(this.targetPos, 0);
                   groundpathnavigator.setBreakDoors(flag);
                   if (this.path == null) {
-                     Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.entity, 10, 7, new Vec3d(this.targetPos));
+                     Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.entity, 10, 7, new Vec3d(this.targetPos));
                      if (vec3d1 == null) {
                         return false;
                      }

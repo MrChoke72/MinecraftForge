@@ -129,7 +129,7 @@ public class WalkToTargetTask extends Task<MobEntity> {
             return true;
          }
 
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards((CreatureEntity)entity, 10, 7, new Vec3d(blockpos));
+         Vec3d vec3d = RandomPositionGenerator.findRandomTargetToward((CreatureEntity)entity, 10, 7, new Vec3d(blockpos));
          if (vec3d != null) {
             this.path = entity.getNavigator().getPathToPos(vec3d.x, vec3d.y, vec3d.z, 0);
             return this.path != null;

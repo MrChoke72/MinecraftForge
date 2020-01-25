@@ -30,7 +30,7 @@ public class WorkTask extends Task<CreatureEntity> {
 
    protected void startExecuting(ServerWorld worldIn, CreatureEntity entityIn, long gameTimeIn) {
       if (gameTimeIn > this.field_220566_b) {
-         Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.getLandPos(entityIn, 8, 6));
+         Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.findLandPos(entityIn, 8, 6));
          entityIn.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((p_220564_0_) -> {
             return new WalkTarget(p_220564_0_, 0.4F, 1);
          }));

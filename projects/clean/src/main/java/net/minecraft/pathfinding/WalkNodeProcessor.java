@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.mrchoke.entity.monster.BaseChokeZombie;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.fluid.Fluids;
@@ -281,26 +282,25 @@ public class WalkNodeProcessor extends NodeProcessor {
    //AH CHANGE
    //public static double getGroundY(NodeProcessor nodeProcessor, IBlockReader p_197682_0_, BlockPos pos) {
    public static double getGroundY(IBlockReader blockReader, BlockPos pos) {
-      //AH CHANGE ******
-      BlockPos blockpos;
+         //AH CHANGE ******
+         BlockPos blockpos;
 
-      BlockState state = blockReader.getBlockState(pos);
-      if (isLadderPathable(blockReader, state, pos, false, false)) {
-         return pos.getY() + 0.5D;
-      }
+         BlockState state = blockReader.getBlockState(pos);
+         if (isLadderPathable(blockReader, state, pos, false, false)) {
+            return pos.getY() + 0.5D;
+         }
 
-      blockpos = pos.down();
+         blockpos = pos.down();
 
-      VoxelShape voxelshape = blockReader.getBlockState(blockpos).getCollisionShape(blockReader, blockpos);
-      return (double)blockpos.getY() + (voxelshape.isEmpty() ? 0.0D : voxelshape.getEnd(Direction.Axis.Y));
-
-      //Vanilla:
-      /*
-      BlockPos blockpos = pos.down();
-      VoxelShape voxelshape = blockReader.getBlockState(blockpos).getCollisionShape(blockReader, blockpos);
-      return (double)blockpos.getY() + (voxelshape.isEmpty() ? 0.0D : voxelshape.getEnd(Direction.Axis.Y));
-       */
-      //AH END ******
+         VoxelShape voxelshape = blockReader.getBlockState(blockpos).getCollisionShape(blockReader, blockpos);
+         return (double) blockpos.getY() + (voxelshape.isEmpty() ? 0.0D : voxelshape.getEnd(Direction.Axis.Y));
+         //AH END ******
+         //Vanilla:
+         /*
+         BlockPos blockpos = pos.down();
+         VoxelShape voxelshape = blockReader.getBlockState(blockpos).getCollisionShape(blockReader, blockpos);
+         return (double) blockpos.getY() + (voxelshape.isEmpty() ? 0.0D : voxelshape.getEnd(Direction.Axis.Y));
+          */
    }
 
    @Nullable
@@ -598,7 +598,7 @@ public class WalkNodeProcessor extends NodeProcessor {
       return getPathNodeTypeDamage(blockaccessIn, x, y, z);
    }
 
-   //AH CHANGE REFACTOR
+   //AH CHANGE NEW VERSION
    public static PathNodeType getPathNodeTypeDamage(IBlockReader blockReader, int x, int y, int z) {
    //public static PathNodeType func_227480_b_(IBlockReader p_227480_0_, int p_227480_1_, int p_227480_2_, int p_227480_3_) {
       PathNodeType pathnodetype = getPathNodeTypeRaw(blockReader, x, y, z);
@@ -608,9 +608,10 @@ public class WalkNodeProcessor extends NodeProcessor {
 
          //AH CHANGE
          pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.LADDER &&
-                  pathnodetype1 != PathNodeType.WATER && pathnodetype1 != PathNodeType.LAVA ? PathNodeType.WALKABLE : PathNodeType.OPEN;
+                 pathnodetype1 != PathNodeType.WATER && pathnodetype1 != PathNodeType.LAVA ? PathNodeType.WALKABLE : PathNodeType.OPEN;
+         //vanilla
          //pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER &&
-           //      pathnodetype1 != PathNodeType.LAVA ? PathNodeType.WALKABLE : PathNodeType.OPEN;
+           //    pathnodetype1 != PathNodeType.LAVA ? PathNodeType.WALKABLE : PathNodeType.OPEN;
 
          if (pathnodetype1 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block == Blocks.CAMPFIRE) {
             pathnodetype = PathNodeType.DAMAGE_FIRE;

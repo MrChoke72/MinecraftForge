@@ -65,7 +65,7 @@ import net.minecraft.network.play.server.SSpawnMobPacket;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ItemParticleData;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.ClimberPathNavigator;
+import net.minecraft.pathfinding.GroundPathNavigator;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectUtils;
@@ -1876,7 +1876,7 @@ public abstract class LivingEntity extends Entity {
                } else {
                   //AH CHANGE ****
                   boolean bVerticalOverride;
-                  if ((this instanceof CreatureEntity) && (!(((CreatureEntity)this).getNavigator() instanceof ClimberPathNavigator)))
+                  if ((this instanceof CreatureEntity) && ((((CreatureEntity)this).getNavigator() instanceof GroundPathNavigator)))
                   {
                      bVerticalOverride = true;
                   }

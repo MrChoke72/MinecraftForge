@@ -32,7 +32,7 @@ public class WalkToPOITask extends Task<VillagerEntity> {
       Vec3d vec3d = null;
 
       for(int j = 0; j < 5; ++j) {
-         Vec3d vec3d1 = RandomPositionGenerator.func_221024_a(entityIn, 15, 7, (pos) -> {
+         Vec3d vec3d1 = RandomPositionGenerator.findLandPosWeight(entityIn, 15, 7, (pos) -> {
             return (double)(-worldIn.getPoiSecPosLevel(SectionPos.from(pos)));
          });
          if (vec3d1 != null) {

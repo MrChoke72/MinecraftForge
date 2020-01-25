@@ -54,7 +54,7 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
       if (this.field_75376_d == null) {
          return false;
       } else {
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 16, 7, this.field_75376_d.getPositionVec());
+         Vec3d vec3d = RandomPositionGenerator.findRandomTargetAwayFrom(this.entity, 16, 7, this.field_75376_d.getPositionVec());
          if (vec3d == null) {
             return false;
          } else if (this.field_75376_d.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.field_75376_d.getDistanceSq(this.entity)) {

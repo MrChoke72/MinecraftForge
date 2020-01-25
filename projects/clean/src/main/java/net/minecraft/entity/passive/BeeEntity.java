@@ -255,7 +255,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
          l = i1 / 2;
       }
 
-      Vec3d vec3d1 = RandomPositionGenerator.func_226344_b_(this, k, l, i, vec3d, (double)((float)Math.PI / 10F));
+      Vec3d vec3d1 = RandomPositionGenerator.getLandPosTargetTowardMaxAngle(this, k, l, i, vec3d, (double)((float)Math.PI / 10F));
       if (vec3d1 != null) {
          this.navigator.setIterMaxMult(0.5F);
          this.navigator.tryMoveToXYZ(vec3d1.x, vec3d1.y, vec3d1.z, 1.0D);
@@ -1170,8 +1170,8 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
          }
 
          int i = 8;
-         Vec3d vec3d2 = RandomPositionGenerator.func_226340_a_(BeeEntity.this, 8, 7, vec3d, ((float)Math.PI / 2F), 2, 1);
-         return vec3d2 != null ? vec3d2 : RandomPositionGenerator.func_226338_a_(BeeEntity.this, 8, 4, -2, vec3d, (double)((float)Math.PI / 2F));
+         Vec3d vec3d2 = RandomPositionGenerator.getLandPosTowardMaxAngle(BeeEntity.this, 8, 7, vec3d, ((float)Math.PI / 2F), 2, 1);
+         return vec3d2 != null ? vec3d2 : RandomPositionGenerator.findRandomTowardMaxAngle(BeeEntity.this, 8, 4, -2, vec3d, (double)((float)Math.PI / 2F));
       }
    }
 }

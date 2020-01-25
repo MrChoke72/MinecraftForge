@@ -32,7 +32,7 @@ public class FleeTask extends Task<CreatureEntity> {
 
    public static void setWalkTarget(CreatureEntity owner, Entity entityAvoid, float speed) {
       for(int i = 0; i < 10; ++i) {
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom2(owner, 16, 7, entityAvoid.getPositionVec());
+         Vec3d vec3d = RandomPositionGenerator.findLandTargetPosAwayFrom(owner, 16, 7, entityAvoid.getPositionVec());
          if (vec3d != null) {
             owner.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, speed, 0));
             return;

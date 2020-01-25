@@ -121,16 +121,16 @@ public class FollowOwnerGoal extends Goal {
       }
    }
 
-   private boolean func_226329_a_(BlockPos p_226329_1_) {
-      PathNodeType pathnodetype = WalkNodeProcessor.getPathNodeTypeDamage(this.world, p_226329_1_.getX(), p_226329_1_.getY(), p_226329_1_.getZ());
+   private boolean func_226329_a_(BlockPos pos) {
+      PathNodeType pathnodetype = WalkNodeProcessor.getPathNodeTypeDamage(this.world, pos.getX(), pos.getY(), pos.getZ());
       if (pathnodetype != PathNodeType.WALKABLE) {
          return false;
       } else {
-         BlockState blockstate = this.world.getBlockState(p_226329_1_.down());
+         BlockState blockstate = this.world.getBlockState(pos.down());
          if (!this.field_226326_j_ && blockstate.getBlock() instanceof LeavesBlock) {
             return false;
          } else {
-            BlockPos blockpos = p_226329_1_.subtract(new BlockPos(this.tameable));
+            BlockPos blockpos = pos.subtract(new BlockPos(this.tameable));
             return this.world.isCollisionBoxesEmpty(this.tameable, this.tameable.getBoundingBox().offset(blockpos));
          }
       }

@@ -30,8 +30,8 @@ public interface IWorldReader extends ILightReader, ICollisionReader, BiomeManag
 
    BiomeManager func_225523_d_();
 
-   default Biome func_226691_t_(BlockPos p_226691_1_) {
-      return this.func_225523_d_().func_226836_a_(p_226691_1_);
+   default Biome func_226691_t_(BlockPos pos) {
+      return this.func_225523_d_().func_226836_a_(pos);
    }
 
    @OnlyIn(Dist.CLIENT)

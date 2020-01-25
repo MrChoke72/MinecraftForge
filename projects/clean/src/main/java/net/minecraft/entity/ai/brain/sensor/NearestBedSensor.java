@@ -57,9 +57,17 @@ public class NearestBedSensor extends Sensor<MobEntity> {
             }
          };
 
-         //AH CHANGE CANCEL - Increase range to look for a bed.  Default is 48
-         Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entity), 48, PointOfInterestManager.Status.ANY);
+         //AH CHANGE - Increase range to look for a bed.  Default is 48
+         Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entity), 64, PointOfInterestManager.Status.ANY);
          //Stream<BlockPos> stream = pointofinterestmanager.func_225399_a(PointOfInterestType.HOME.func_221045_c(), predicate, new BlockPos(p_212872_2_), 48, PointOfInterestManager.Status.ANY);
+
+         //AH DEBUG OFF
+         /*
+         if(entity.getCustomName() != null)
+         {
+            System.out.println("In NearestBedSensor, update. beds found=" + stream.count());
+         }
+          */
 
          Path path = entity.getNavigator().findPath(stream, PointOfInterestType.HOME.getKeepDist());
          if (path != null && path.isCompletePath()) {

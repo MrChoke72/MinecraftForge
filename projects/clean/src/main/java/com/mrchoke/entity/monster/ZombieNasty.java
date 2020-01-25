@@ -28,7 +28,14 @@ public class ZombieNasty extends BaseChokeZombie {
         super(type, worldIn);
 
         breakIronAndFences = false;
-        breakDoorGoal =  new ChokeBreakDoorGoal(this, checkDifficulty, breakIronAndFences);
+
+        if(breakNotOpen) {
+            breakDoorGoal =  new ChokeBreakDoorGoal(this, checkDifficulty, breakIronAndFences);
+        }
+        else {
+            openDoorGoal = new ChokeOpenDoorGoal(this, true, breakIronAndFences);
+        }
+
         trapDoorGoal = new ChokeTrapDoorGoal(this, false, breakIronAndFences);
     }
 

@@ -46,7 +46,6 @@ public abstract class InteractDoorGoal extends Goal {
             ((DoorBlock)blockstate.getBlock()).toggleDoor(this.entity.world, this.doorPosition, open);
          }
       }
-
    }
 
    public boolean shouldExecute() {

@@ -1,11 +1,15 @@
 package com.mrchoke.entity.ai.goal;
 
 import com.mrchoke.entity.monster.BaseChokeZombie;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class WaterAvoidingRandomChokeGoal extends WaterAvoidingRandomWalkingGoal {
 
@@ -16,7 +20,6 @@ public class WaterAvoidingRandomChokeGoal extends WaterAvoidingRandomWalkingGoal
         super(chokeZombie, speedIn);
         this.chokeZombie = chokeZombie;
     }
-
 
     @Override
     public boolean shouldExecute() {
@@ -61,12 +64,32 @@ public class WaterAvoidingRandomChokeGoal extends WaterAvoidingRandomWalkingGoal
 
     @Nullable
     protected Vec3d getPosition() {
-        if (this.creature.isInWaterOrBubbleColumn()) {
-            Vec3d vec3d = RandomPositionGenerator.getLandPos(this.creature, 15, 7);
-            return vec3d == null ? super.getPosition() : vec3d;
-        } else {
-            return this.creature.getRNG().nextFloat() >= this.probability ? RandomPositionGenerator.getLandPos(this.creature, 20, 10)
-                    : RandomPositionGenerator.findRandomTarget(this.creature, 20, 10);   //was 10, 7
+        if(chokeZombie.getPlayerToFollow() == null) {
+            List<ServerPlayerEntity> pList = chokeZombie.getServer().getPlayerList().getPlayers();
+            if(pList.size() > 0) {
+                chokeZombie.setPlayerToFollow(pList.get(chokeZombie.getRNG().nextInt(pList.size())));
+            }
+        }
+
+        PlayerEntity player = chokeZombie.getPlayerToFollow();
+        if(player != null) {
+            if (this.creature.isInWaterOrBubbleColumn()) {
+                Vec3d vec3d  = RandomPositionGenerator.getLandPosTargetTowardMaxAngle(chokeZombie, 15, 9, 0, new Vec3d(player.getPosition()), Math.PI / 3F);
+                return vec3d == null ? RandomPositionGenerator.findRandomTargetToward(this.creature, 15, 9, new Vec3d(player.getPosition())) : vec3d;
+            } else {
+                return this.creature.getRNG().nextFloat() >=
+                        this.probability ? RandomPositionGenerator.getLandPosTargetTowardMaxAngle(chokeZombie, 20, 13, 0, new Vec3d(player.getPosition()), Math.PI / 3F)
+                            : RandomPositionGenerator.findRandomTargetToward(this.creature, 20, 13, new Vec3d(player.getPosition()));
+            }
+        }
+        else {
+            if (this.creature.isInWaterOrBubbleColumn()) {
+                Vec3d vec3d = RandomPositionGenerator.findLandPos(this.creature, 15, 9);
+                return vec3d == null ? RandomPositionGenerator.findRandomPos(this.creature, 15, 9) : vec3d;
+            } else {
+                return this.creature.getRNG().nextFloat() >= this.probability ? RandomPositionGenerator.findLandPos(this.creature, 20, 13)
+                        : RandomPositionGenerator.findRandomPos(this.creature, 20, 13);   //was 10, 7
+            }
         }
     }
 

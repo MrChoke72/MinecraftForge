@@ -37,7 +37,7 @@ public class MoveThroughVillageAtNightGoal extends Goal {
          if (!serverworld.isPosBelowEQSecLevel(blockpos, 6)) {
             return false;
          } else {
-            Vec3d vec3d = RandomPositionGenerator.func_221024_a(this.field_220756_a, 15, 7, (p_220755_1_) -> {
+            Vec3d vec3d = RandomPositionGenerator.findLandPosWeight(this.field_220756_a, 15, 7, (p_220755_1_) -> {
                return (double)(-serverworld.getPoiSecPosLevel(SectionPos.from(p_220755_1_)));
             });
             this.field_220758_c = vec3d == null ? null : new BlockPos(vec3d);

@@ -29,7 +29,7 @@ public class MoveTowardsTargetGoal extends Goal {
       } else if (this.targetEntity.getDistanceSq(this.creature) > (double)(this.maxTargetDistance * this.maxTargetDistance)) {
          return false;
       } else {
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.creature, 16, 7, this.targetEntity.getPositionVec());
+         Vec3d vec3d = RandomPositionGenerator.findRandomTargetToward(this.creature, 16, 7, this.targetEntity.getPositionVec());
          if (vec3d == null) {
             return false;
          } else {

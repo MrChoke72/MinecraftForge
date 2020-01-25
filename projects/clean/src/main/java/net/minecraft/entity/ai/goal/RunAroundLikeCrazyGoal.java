@@ -22,7 +22,7 @@ public class RunAroundLikeCrazyGoal extends Goal {
 
    public boolean shouldExecute() {
       if (!this.horseHost.isTame() && this.horseHost.isBeingRidden()) {
-         Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.horseHost, 5, 4);
+         Vec3d vec3d = RandomPositionGenerator.findRandomPos(this.horseHost, 5, 4);
          if (vec3d == null) {
             return false;
          } else {

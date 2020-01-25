@@ -42,7 +42,7 @@ public class PanicGoal extends Goal {
    }
 
    protected boolean findRandomPosition() {
-      Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.creature, 5, 4);
+      Vec3d vec3d = RandomPositionGenerator.findRandomPos(this.creature, 5, 4);
       if (vec3d == null) {
          return false;
       } else {

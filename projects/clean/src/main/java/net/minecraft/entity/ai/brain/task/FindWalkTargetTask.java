@@ -57,7 +57,7 @@ public class FindWalkTargetTask extends Task<CreatureEntity> {
    //AH REFACTOR
    private void findBlockTowardPos(CreatureEntity entity, SectionPos secPos) {
    //private void func_220594_a(CreatureEntity p_220594_1_, SectionPos p_220594_2_) {
-      Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.findRandomTargetBlockTowards(entity, this.randXZ, this.randY, new Vec3d(secPos.getCenter())));
+      Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.findRandomTargetToward(entity, this.randXZ, this.randY, new Vec3d(secPos.getCenter())));
       entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((vec3d) -> {
          return new WalkTarget(vec3d, this.speed, 0);
       }));
@@ -65,7 +65,7 @@ public class FindWalkTargetTask extends Task<CreatureEntity> {
 
    private void findLandPosition(CreatureEntity entity) {
    //private void func_220593_a(CreatureEntity p_220593_1_) {
-      Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.getLandPos(entity, this.randXZ, this.randY));
+      Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.findLandPos(entity, this.randXZ, this.randY));
       entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((vec3d) -> {
          return new WalkTarget(vec3d, this.speed, 0);
       }));

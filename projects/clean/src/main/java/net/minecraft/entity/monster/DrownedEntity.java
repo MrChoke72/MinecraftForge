@@ -410,7 +410,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
 
       public void tick() {
          if (this.field_204736_a.getPosY() < (double)(this.targetY - 1) && (this.field_204736_a.getNavigator().noPath() || this.field_204736_a.isCloseToPathTarget())) {
-            Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.field_204736_a, 4, 8, new Vec3d(this.field_204736_a.getPosX(), (double)(this.targetY - 1), this.field_204736_a.getPosZ()));
+            Vec3d vec3d = RandomPositionGenerator.findRandomTargetToward(this.field_204736_a, 4, 8, new Vec3d(this.field_204736_a.getPosX(), (double)(this.targetY - 1), this.field_204736_a.getPosZ()));
             if (vec3d == null) {
                this.obstructed = true;
                return;

@@ -15,63 +15,63 @@ import net.minecraft.util.math.Vec3d;
 
 public class RandomPositionGenerator {
    @Nullable
-   public static Vec3d findRandomTarget(CreatureEntity entitycreatureIn, int xz, int y) {
-      return func_226339_a_(entitycreatureIn, xz, y, 0, (Vec3d)null, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
+   public static Vec3d findRandomPos(CreatureEntity entitycreatureIn, int xz, int y) {
+      return getRandomPosition(entitycreatureIn, xz, y, 0, (Vec3d)null, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
 
    @Nullable
-   public static Vec3d func_226338_a_(CreatureEntity p_226338_0_, int p_226338_1_, int p_226338_2_, int p_226338_3_, @Nullable Vec3d p_226338_4_, double p_226338_5_) {
-      return func_226339_a_(p_226338_0_, p_226338_1_, p_226338_2_, p_226338_3_, p_226338_4_, true, p_226338_5_, p_226338_0_::getBlockPathWeight, true, 0, 0, false);
+   public static Vec3d findRandomTowardMaxAngle(CreatureEntity entity, int xz, int y, int yOffset, @Nullable Vec3d dirTowardVec, double maxTowardAngle) {
+      return getRandomPosition(entity, xz, y, yOffset, dirTowardVec, true, maxTowardAngle, entity::getBlockPathWeight, true, 0, 0, false);
    }
 
    @Nullable
-   public static Vec3d getLandPos(CreatureEntity creature, int maxXZ, int maxY) {
-      return func_221024_a(creature, maxXZ, maxY, creature::getBlockPathWeight);
+   public static Vec3d findLandPos(CreatureEntity creature, int maxXZ, int maxY) {
+      return findLandPosWeight(creature, maxXZ, maxY, creature::getBlockPathWeight);
    }
 
    @Nullable
-   public static Vec3d func_221024_a(CreatureEntity entity, int p_221024_1_, int p_221024_2_, ToDoubleFunction<BlockPos> p_221024_3_) {
-      return func_226339_a_(entity, p_221024_1_, p_221024_2_, 0, (Vec3d)null, false, 0.0D, p_221024_3_, true, 0, 0, true);
+   public static Vec3d findLandPosWeight(CreatureEntity entity, int maxXZ, int maxY, ToDoubleFunction<BlockPos> blockPathWeight) {
+      return getRandomPosition(entity, maxXZ, maxY, 0, (Vec3d)null, false, 0.0D, blockPathWeight, true, 0, 0, true);
    }
 
    @Nullable
-   public static Vec3d func_226340_a_(CreatureEntity p_226340_0_, int p_226340_1_, int p_226340_2_, Vec3d p_226340_3_, float p_226340_4_, int p_226340_5_, int p_226340_6_) {
-      return func_226339_a_(p_226340_0_, p_226340_1_, p_226340_2_, 0, p_226340_3_, false, (double)p_226340_4_, p_226340_0_::getBlockPathWeight, true, p_226340_5_, p_226340_6_, true);
+   public static Vec3d getLandPosTowardMaxAngle(CreatureEntity entity, int maxXZ, int maxY, Vec3d dirTowardVec, float maxTowardAngle, int p_226340_5_, int p_226340_6_) {
+      return getRandomPosition(entity, maxXZ, maxY, 0, dirTowardVec, false, (double)maxTowardAngle, entity::getBlockPathWeight, true, p_226340_5_, p_226340_6_, true);
    }
 
    @Nullable
-   public static Vec3d findRandomTargetBlockTowards(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
-      Vec3d vec3d = targetVec3.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
-      return func_226339_a_(entitycreatureIn, xz, y, 0, vec3d, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
+   public static Vec3d findRandomTargetToward(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
+      Vec3d dirTowardVec = targetVec3.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
+      return getRandomPosition(entitycreatureIn, xz, y, 0, dirTowardVec, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
 
    @Nullable
-   public static Vec3d findRandomTargetTowardsScaled(CreatureEntity entitycreatureIn, int xz, int p_203155_2_, Vec3d p_203155_3_, double p_203155_4_) {
-      Vec3d vec3d = p_203155_3_.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
-      return func_226339_a_(entitycreatureIn, xz, p_203155_2_, 0, vec3d, true, p_203155_4_, entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
+   public static Vec3d findRandomTargetTowardScaled(CreatureEntity entitycreatureIn, int maxXZ, int maxY, Vec3d targetVec3, double maxTowardAngle) {
+      Vec3d dirTowardVec = targetVec3.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
+      return getRandomPosition(entitycreatureIn, maxXZ, maxY, 0, dirTowardVec, true, maxTowardAngle, entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
 
    @Nullable
-   public static Vec3d func_226344_b_(CreatureEntity entitycreatureIn, int xz, int y, int p_226344_3_, Vec3d p_226344_4_, double p_226344_5_) {
-      Vec3d vec3d = p_226344_4_.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
-      return func_226339_a_(entitycreatureIn, xz, y, p_226344_3_, vec3d, false, p_226344_5_, entitycreatureIn::getBlockPathWeight, true, 0, 0, false);
+   public static Vec3d getLandPosTargetTowardMaxAngle(CreatureEntity entitycreatureIn, int maxXZ, int maxY, int yOffset, Vec3d targetVec3, double maxTowardAngle) {
+      Vec3d dirTowardVec = targetVec3.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
+      return getRandomPosition(entitycreatureIn, maxXZ, maxY, yOffset, dirTowardVec, false, maxTowardAngle, entitycreatureIn::getBlockPathWeight, true, 0, 0, false);
    }
 
    @Nullable
-   public static Vec3d findRandomTargetBlockAwayFrom(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
-      Vec3d vec3d = entitycreatureIn.getPositionVec().subtract(targetVec3);
-      return func_226339_a_(entitycreatureIn, xz, y, 0, vec3d, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
+   public static Vec3d findRandomTargetAwayFrom(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
+      Vec3d dirTowardVec = entitycreatureIn.getPositionVec().subtract(targetVec3);
+      return getRandomPosition(entitycreatureIn, xz, y, 0, dirTowardVec, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
 
    @Nullable
-   public static Vec3d findRandomTargetBlockAwayFrom2(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
-      Vec3d vec3d = entitycreatureIn.getPositionVec().subtract(targetVec3);
-      return func_226339_a_(entitycreatureIn, xz, y, 0, vec3d, false, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, true, 0, 0, true);
+   public static Vec3d findLandTargetPosAwayFrom(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
+      Vec3d dirTowardVec = entitycreatureIn.getPositionVec().subtract(targetVec3);
+      return getRandomPosition(entitycreatureIn, xz, y, 0, dirTowardVec, false, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, true, 0, 0, true);
    }
 
    @Nullable
-   private static Vec3d func_226339_a_(CreatureEntity entity, int xz, int y, int p_226339_3_, @Nullable Vec3d dirTowardVec, boolean noAvoidWater,
-                                       double p_226339_6_, ToDoubleFunction<BlockPos> posDoubleFunc, boolean p_226339_9_, int p_226339_10_, int p_226339_11_, boolean p_226339_12_) {
+   private static Vec3d getRandomPosition(CreatureEntity entity, int xz, int y, int yOffset, @Nullable Vec3d dirTowardVec, boolean noAvoidWater,
+                                          double maxTowardAngle, ToDoubleFunction<BlockPos> blockWeightFunc, boolean p_226339_9_, int aboveSolidRange, int p_226339_11_, boolean p_226339_12_) {
       PathNavigator pathnavigator = entity.getNavigator();
       Random random = entity.getRNG();
       boolean flag;
@@ -86,7 +86,7 @@ public class RandomPositionGenerator {
       BlockPos blockpos = new BlockPos(entity);
 
       for(int i = 0; i < 10; ++i) {
-         BlockPos blockpos1 = func_226343_a_(random, xz, y, p_226339_3_, dirTowardVec, p_226339_6_);
+         BlockPos blockpos1 = getRandPos(random, xz, y, yOffset, dirTowardVec, maxTowardAngle);
          if (blockpos1 != null) {
             int j = blockpos1.getX();
             int k = blockpos1.getY();
@@ -109,15 +109,15 @@ public class RandomPositionGenerator {
             BlockPos blockpos3 = new BlockPos((double)j + entity.getPosX(), (double)k + entity.getPosY(), (double)l + entity.getPosZ());
             if (blockpos3.getY() >= 0 && blockpos3.getY() <= entity.world.getHeight() && (!flag || entity.isWithinHomeDistanceFromPosition(blockpos3)) && (!p_226339_12_ || pathnavigator.canEntityStandOnPos(blockpos3))) {
                if (p_226339_9_) {
-                  blockpos3 = func_226342_a_(blockpos3, random.nextInt(p_226339_10_ + 1) + p_226339_11_, entity.world.getHeight(), (p_226341_1_) -> {
-                     return entity.world.getBlockState(p_226341_1_).getMaterial().isSolid();
+                  blockpos3 = getBlockAboveSold(blockpos3, random.nextInt(aboveSolidRange + 1) + p_226339_11_, entity.world.getHeight(), (pos) -> {
+                     return entity.world.getBlockState(pos).getMaterial().isSolid();
                   });
                }
 
                if (noAvoidWater || !entity.world.getFluidState(blockpos3).isTagged(FluidTags.WATER)) {
                   PathNodeType pathnodetype = WalkNodeProcessor.getPathNodeTypeDamage(entity.world, blockpos3.getX(), blockpos3.getY(), blockpos3.getZ());
                   if (entity.getPathPriority(pathnodetype) == 0.0F) {
-                     double d1 = posDoubleFunc.applyAsDouble(blockpos3);
+                     double d1 = blockWeightFunc.applyAsDouble(blockpos3);
                      if (d1 > d0) {
                         d0 = d1;
                         blockpos = blockpos3;
@@ -133,43 +133,43 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   private static BlockPos func_226343_a_(Random random, int p_226343_1_, int p_226343_2_, int p_226343_3_, @Nullable Vec3d p_226343_4_, double p_226343_5_) {
-      if (p_226343_4_ != null && !(p_226343_5_ >= Math.PI)) {
-         double d3 = MathHelper.atan2(p_226343_4_.z, p_226343_4_.x) - (double)((float)Math.PI / 2F);
-         double d4 = d3 + (double)(2.0F * random.nextFloat() - 1.0F) * p_226343_5_;
-         double d0 = Math.sqrt(random.nextDouble()) * (double)MathHelper.SQRT_2 * (double)p_226343_1_;
+   private static BlockPos getRandPos(Random random, int xz, int y, int yOffset, @Nullable Vec3d dirTowardVec, double maxTowardAngle) {
+      if (dirTowardVec != null && !(maxTowardAngle >= Math.PI)) {
+         double d3 = MathHelper.atan2(dirTowardVec.z, dirTowardVec.x) - (double)((float)Math.PI / 2F);
+         double d4 = d3 + (double)(2.0F * random.nextFloat() - 1.0F) * maxTowardAngle;
+         double d0 = Math.sqrt(random.nextDouble()) * (double)MathHelper.SQRT_2 * (double)xz;
          double d1 = -d0 * Math.sin(d4);
          double d2 = d0 * Math.cos(d4);
-         if (!(Math.abs(d1) > (double)p_226343_1_) && !(Math.abs(d2) > (double)p_226343_1_)) {
-            int l = random.nextInt(2 * p_226343_2_ + 1) - p_226343_2_ + p_226343_3_;
+         if (!(Math.abs(d1) > (double)xz) && !(Math.abs(d2) > (double)xz)) {
+            int l = random.nextInt(2 * y + 1) - y + yOffset;
             return new BlockPos(d1, (double)l, d2);
          } else {
             return null;
          }
       } else {
-         int i = random.nextInt(2 * p_226343_1_ + 1) - p_226343_1_;
-         int j = random.nextInt(2 * p_226343_2_ + 1) - p_226343_2_ + p_226343_3_;
-         int k = random.nextInt(2 * p_226343_1_ + 1) - p_226343_1_;
+         int i = random.nextInt(2 * xz + 1) - xz;
+         int j = random.nextInt(2 * y + 1) - y + yOffset;
+         int k = random.nextInt(2 * xz + 1) - xz;
          return new BlockPos(i, j, k);
       }
    }
 
-   static BlockPos func_226342_a_(BlockPos p_226342_0_, int p_226342_1_, int p_226342_2_, Predicate<BlockPos> p_226342_3_) {
-      if (p_226342_1_ < 0) {
-         throw new IllegalArgumentException("aboveSolidAmount was " + p_226342_1_ + ", expected >= 0");
-      } else if (!p_226342_3_.test(p_226342_0_)) {
-         return p_226342_0_;
+   static BlockPos getBlockAboveSold(BlockPos pos, int aboveSolidAmt, int worldHeight, Predicate<BlockPos> posPred) {
+      if (aboveSolidAmt < 0) {
+         throw new IllegalArgumentException("aboveSolidAmount was " + aboveSolidAmt + ", expected >= 0");
+      } else if (!posPred.test(pos)) {
+         return pos;
       } else {
          BlockPos blockpos;
-         for(blockpos = p_226342_0_.up(); blockpos.getY() < p_226342_2_ && p_226342_3_.test(blockpos); blockpos = blockpos.up()) {
+         for(blockpos = pos.up(); blockpos.getY() < worldHeight && posPred.test(blockpos); blockpos = blockpos.up()) {
             ;
          }
 
          BlockPos blockpos1;
          BlockPos blockpos2;
-         for(blockpos1 = blockpos; blockpos1.getY() < p_226342_2_ && blockpos1.getY() - blockpos.getY() < p_226342_1_; blockpos1 = blockpos2) {
+         for(blockpos1 = blockpos; blockpos1.getY() < worldHeight && blockpos1.getY() - blockpos.getY() < aboveSolidAmt; blockpos1 = blockpos2) {
             blockpos2 = blockpos1.up();
-            if (p_226342_3_.test(blockpos2)) {
+            if (posPred.test(blockpos2)) {
                break;
             }
          }

@@ -50,11 +50,24 @@ public class WalkToHouseTask extends Task<LivingEntity> {
          CreatureEntity creatureentity = (CreatureEntity)owner;
          PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
 
+         //AH DEBUG OFF
+         /*
+         if(owner.getCustomName() != null)
+         {
+            System.out.println("In WalkToHouseTask, should execute");
+         }
+          */
+
          //AH CHANGE REFACTOR
          Optional<BlockPos> optional = pointofinterestmanager.getPoiPosInRange(PointOfInterestType.HOME.getPoiTypePred(), (posPred) -> {
          //Optional<BlockPos> optional = pointofinterestmanager.getPoiPosInRange(PointOfInterestType.HOME.getPoiTypePred(), (p_220522_0_) -> {            
             return true;
-         }, new BlockPos(owner), 48, PointOfInterestManager.Status.ANY);
+
+         //AH CHANGE - increase range form 48 to 64
+         }, new BlockPos(owner), 64, PointOfInterestManager.Status.ANY);
+         //}, new BlockPos(owner), 48, PointOfInterestManager.Status.ANY);
+
+
          return optional.isPresent() && !(optional.get().distanceSq(new BlockPos(creatureentity)) <= 4.0D);
       }
    }
@@ -75,7 +88,11 @@ public class WalkToHouseTask extends Task<LivingEntity> {
             return true;
          }
       };
-      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.ANY);
+
+      //AH CHANGE - increase home search from 48 to 64
+      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entityIn), 64, PointOfInterestManager.Status.ANY);
+      //Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.ANY);
+
       Path path = creatureentity.getNavigator().findPath(stream, PointOfInterestType.HOME.getKeepDist());
       if (path != null && path.isCompletePath()) {
          BlockPos blockpos = path.getTargetPos();

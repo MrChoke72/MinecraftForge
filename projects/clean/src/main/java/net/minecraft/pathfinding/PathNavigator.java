@@ -235,8 +235,7 @@ public abstract class PathNavigator {
             {
                System.out.println("in navigator tick, currPathPos=" + vec3d2.toString() + "currPathIdx=" + currentPath.getCurrentPathIndex() + ", pathSize=" + this.currentPath.getCurrentPathLength() + ", lastPoint=" + getPath().getFinalPathPoint());
             }
-            */
-
+             */
 
             this.entity.getMoveHelper().setMoveTo(vec3d2.x, this.world.getBlockState(blockpos.down()).isAir() ? vec3d2.y : WalkNodeProcessor.getGroundY(this.world, blockpos), vec3d2.z, this.speed);
          }

@@ -20,10 +20,10 @@ public class WaterAvoidingRandomWalkingGoal extends RandomWalkingGoal {
    @Nullable
    protected Vec3d getPosition() {
       if (this.creature.isInWaterOrBubbleColumn()) {
-         Vec3d vec3d = RandomPositionGenerator.getLandPos(this.creature, 15, 7);
+         Vec3d vec3d = RandomPositionGenerator.findLandPos(this.creature, 15, 7);
          return vec3d == null ? super.getPosition() : vec3d;
       } else {
-         return this.creature.getRNG().nextFloat() >= this.probability ? RandomPositionGenerator.getLandPos(this.creature, 10, 7) : super.getPosition();
+         return this.creature.getRNG().nextFloat() >= this.probability ? RandomPositionGenerator.findLandPos(this.creature, 10, 7) : super.getPosition();
       }
    }
 }

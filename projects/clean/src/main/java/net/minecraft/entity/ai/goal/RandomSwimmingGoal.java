@@ -14,9 +14,9 @@ public class RandomSwimmingGoal extends RandomWalkingGoal {
 
    @Nullable
    protected Vec3d getPosition() {
-      Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.creature, 10, 7);
+      Vec3d vec3d = RandomPositionGenerator.findRandomPos(this.creature, 10, 7);
 
-      for(int i = 0; vec3d != null && !this.creature.world.getBlockState(new BlockPos(vec3d)).allowsMovement(this.creature.world, new BlockPos(vec3d), PathType.WATER) && i++ < 10; vec3d = RandomPositionGenerator.findRandomTarget(this.creature, 10, 7)) {
+      for(int i = 0; vec3d != null && !this.creature.world.getBlockState(new BlockPos(vec3d)).allowsMovement(this.creature.world, new BlockPos(vec3d), PathType.WATER) && i++ < 10; vec3d = RandomPositionGenerator.findRandomPos(this.creature, 10, 7)) {
          ;
       }
 

@@ -17,17 +17,17 @@ public enum EntityClassification {
    private final int maxNumberOfCreature;
    private final boolean isPeacefulCreature;
    private final boolean isAnimal;
-   private final String field_220365_j;
+   private final String entityTypeName;
 
    private EntityClassification(String p_i50381_3_, int p_i50381_4_, boolean p_i50381_5_, boolean p_i50381_6_) {
-      this.field_220365_j = p_i50381_3_;
+      this.entityTypeName = p_i50381_3_;
       this.maxNumberOfCreature = p_i50381_4_;
       this.isPeacefulCreature = p_i50381_5_;
       this.isAnimal = p_i50381_6_;
    }
 
    public String func_220363_a() {
-      return this.field_220365_j;
+      return this.entityTypeName;
    }
 
    public int getMaxNumberOfCreature() {

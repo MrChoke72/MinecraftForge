@@ -1,6 +1,7 @@
 package com.mrchoke.entity.monster;
 
 import com.mrchoke.entity.ai.goal.ChokeBreakDoorGoal;
+import com.mrchoke.entity.ai.goal.ChokeOpenDoorGoal;
 import com.mrchoke.entity.ai.goal.ChokeTrapDoorGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -22,9 +23,12 @@ import java.util.function.Predicate;
 public abstract class BaseChokeZombie extends ZombieEntity {
 
     protected ChokeBreakDoorGoal breakDoorGoal;
+    protected ChokeOpenDoorGoal openDoorGoal;
+
     protected ChokeTrapDoorGoal trapDoorGoal;
     protected boolean isBreakDoorsTaskSet;
     protected boolean breakIronAndFences;
+    protected boolean breakNotOpen; //true is break, not open;
 
     protected static final Predicate<Difficulty> checkDifficulty = (difficulty) -> {
         return true;
@@ -37,6 +41,8 @@ public abstract class BaseChokeZombie extends ZombieEntity {
 
     protected BaseChokeZombie(EntityType<? extends ZombieEntity> type, World worldIn) {
         super(type, worldIn);
+
+        breakNotOpen = (this.getRNG().nextFloat() < 0.5);
     }
 
     /*
@@ -139,7 +145,7 @@ public abstract class BaseChokeZombie extends ZombieEntity {
 
         //AH CHANGE DEBUG
         if(!this.world.isRemote && this.getCustomName() != null && this.getCustomName().getString().equals("Chuck")) {
-            System.out.println(this.getClass().getSimpleName() + " removed");
+            System.out.println("Chuck as: " + this.getClass().getSimpleName() + " removed");
         }
     }
 
@@ -176,20 +182,37 @@ public abstract class BaseChokeZombie extends ZombieEntity {
                 this.isBreakDoorsTaskSet = enabled;
                 ((GroundPathNavigator) this.getNavigator()).setBreakDoors(enabled);
                 if (enabled) {
-                    this.goalSelector.addGoal(1, this.breakDoorGoal);
+                    if(breakNotOpen)
+                    {
+                        this.goalSelector.addGoal(1, this.breakDoorGoal);
+                    }
+                    else
+                    {
+                        this.goalSelector.addGoal(1, this.openDoorGoal);
+                    }
 
                     //AH CHANGE ADD
                     this.goalSelector.addGoal(1, this.trapDoorGoal);
 
                 } else {
-                    this.goalSelector.removeGoal(this.breakDoorGoal);
+                    if(breakNotOpen) {
+                        this.goalSelector.removeGoal(this.breakDoorGoal);
+                    }
+                    else {
+                        this.goalSelector.removeGoal(this.openDoorGoal);
+                    }
 
                     //AH CHANGE ADD
                     this.goalSelector.removeGoal(this.trapDoorGoal);
                 }
             }
         } else if (this.isBreakDoorsTaskSet) {
-            this.goalSelector.removeGoal(this.breakDoorGoal);
+            if(breakNotOpen) {
+                this.goalSelector.removeGoal(this.breakDoorGoal);
+            }
+            else {
+                this.goalSelector.removeGoal(this.openDoorGoal);
+            }
 
             //AH CHANGE ADD
             this.goalSelector.removeGoal(this.trapDoorGoal);

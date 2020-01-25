@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import javax.annotation.Nullable;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.monster.HuskEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class RandomWalkingGoal extends Goal {
@@ -65,7 +64,7 @@ public class RandomWalkingGoal extends Goal {
 
    @Nullable
    protected Vec3d getPosition() {
-      return RandomPositionGenerator.findRandomTarget(this.creature, 10, 7);
+      return RandomPositionGenerator.findRandomPos(this.creature, 10, 7);
    }
 
    public boolean shouldContinueExecuting() {

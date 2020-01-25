@@ -10,8 +10,8 @@ import java.util.*;
 
 public class SelectPlayerPathGoal extends Goal {
 
-    public static final int MAX_PATH_DIST_SQ = (56*48) + (16*16) + (56*56);    //6528  (sqrt: 81)
-    public static final int MAX_CHECK_SIGHT_DIST_SQ = (20*20) + (5*5) + (20*20);    //825 (sqrt: 29)
+    public static final int MAX_PATH_DIST_SQ = (64*64) + (24*24) + (64*64);    //8768  (sqrt: 93)
+    public static final int MAX_CHECK_SIGHT_DIST_SQ = (24*24) + (8*8) + (24*24);    //1216 (sqrt: 34)
 
     private long waitBeforeExecTime;
     private BaseChokeZombie chokeZombie;
@@ -42,41 +42,45 @@ public class SelectPlayerPathGoal extends Goal {
 
             if(chokeZombie.getPlayerToFollow() == null) {
                 List<ServerPlayerEntity> pList = chokeZombie.getServer().getPlayerList().getPlayers();
-                chokeZombie.setPlayerToFollow(pList.get(chokeZombie.getRNG().nextInt(pList.size())));
+                if(pList.size() > 0) {
+                    chokeZombie.setPlayerToFollow(pList.get(chokeZombie.getRNG().nextInt(pList.size())));
+                }
             }
 
             PlayerEntity player = chokeZombie.getPlayerToFollow();
-            if (chokeZombie.getAttackTarget() != null || chokeZombie.getTargetMode() == BaseChokeZombie.TargetModeEnum.PLAYER_PATH || !player.isAlive() || player.isSpectator()) {
-                return false;
+            if(player != null) {
+                if (chokeZombie.getAttackTarget() != null || chokeZombie.getTargetMode() == BaseChokeZombie.TargetModeEnum.PLAYER_PATH || !player.isAlive() || player.isSpectator()) {
+                    return false;
+                } else {
+                    double distToPosSq = chokeZombie.getDistanceSq(player);
+                    if (distToPosSq > MAX_PATH_DIST_SQ) {
+
+                        //AH DEBUG OFF
+                        /*
+                        if(chokeZombie.getCustomName() != null) {
+                            System.out.println("SelectPlayerPathGoal: shouldExecute.  distToPlayer too far.  dist=" + Math.sqrt(distToPosSq) + ", No exec.  entPos=" + chokeZombie.getPosition() + ", playPos="
+                                    + player.getPosition());
+                        }
+                         */
+
+                        return false;
+                    } else {
+                        //AH CHANGE DEBUG OFF
+                        /*
+                        if (chokeZombie.getCustomName() != null) {
+                            System.out.println("In SelectPlayerPathGoal, shouldExecute.  Will start.  entPos=" + chokeZombie.getPosition() + ", distEntToPlayer=" + Math.sqrt(distToPosSq));
+                        }
+                         */
+
+                        return true;
+                    }
+                }
             }
             else
             {
-                double distToPosSq = chokeZombie.getDistanceSq(player);
-                if (distToPosSq > MAX_PATH_DIST_SQ) {
-
-                    //AH DEBUG OFF
-                    /*
-                    if(chokeZombie.getCustomName() != null) {
-                        System.out.println("SelectPlayerPathGoal: shouldExecute.  distToPlayer too far.  dist=" + Math.sqrt(distToPosSq) + ", No exec.  entPos=" + chokeZombie.getPosition() + ", playPos="
-                                + player.getPosition());
-                    }
-                     */
-
-                    return false;
-                }
-                else
-                {
-                    //AH CHANGE DEBUG OFF
-                    /*
-                    if(chokeZombie.getCustomName() != null)
-                    {
-                       System.out.println("In SelectPlayerPathGoal, shouldExecute.  Will start.  entPos=" + chokeZombie.getPosition() + ", distEntToPlayer=" + Math.sqrt(distToPosSq));
-                    }
-                     */
-
-                    return true;
-                }
+                return false;
             }
+
         }
     }
 

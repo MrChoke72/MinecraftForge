@@ -33,12 +33,10 @@ public class FollowPlayerPathGoal extends Goal {
             }
             else {
 
-                //AH CHANGE DEBUG OFF
-                /*
+                //AH CHANGE DEBUG
                 if (this.chokeZombie.getCustomName() != null && this.chokeZombie.getCustomName().getString().equals("Chuck")) {
                     System.out.println("FollowPlayerPathGoal:  In shouldExecute.  Will execute.  entPos=" + chokeZombie.getPosition() + ", tgtPos=" + chokeZombie.getPlayerPathTarget());
                 }
-                 */
 
                 return true;
             }

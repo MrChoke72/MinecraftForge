@@ -33,7 +33,14 @@ public class ZombieMean extends BaseChokeZombie {
         super(type, worldIn);
 
         breakIronAndFences = true;
-        breakDoorGoal =  new ChokeBreakDoorGoal(this, checkDifficulty, breakIronAndFences);
+
+        if(breakNotOpen) {
+            breakDoorGoal =  new ChokeBreakDoorGoal(this, checkDifficulty, breakIronAndFences);
+        }
+        else {
+            openDoorGoal = new ChokeOpenDoorGoal(this, true, breakIronAndFences);
+        }
+
         trapDoorGoal = new ChokeTrapDoorGoal(this, false, breakIronAndFences);
     }
 

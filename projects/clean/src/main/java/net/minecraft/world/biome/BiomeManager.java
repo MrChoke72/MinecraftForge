@@ -18,8 +18,8 @@ public class BiomeManager {
       return new BiomeManager(p_226835_1_, this.field_226833_b_, this.field_226834_c_);
    }
 
-   public Biome func_226836_a_(BlockPos p_226836_1_) {
-      return this.field_226834_c_.func_225532_a_(this.field_226833_b_, p_226836_1_.getX(), p_226836_1_.getY(), p_226836_1_.getZ(), this.field_226832_a_);
+   public Biome func_226836_a_(BlockPos pos) {
+      return this.field_226834_c_.func_225532_a_(this.field_226833_b_, pos.getX(), pos.getY(), pos.getZ(), this.field_226832_a_);
    }
 
    public interface IBiomeReader {

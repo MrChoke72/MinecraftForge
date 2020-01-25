@@ -517,15 +517,15 @@ public class DolphinEntity extends WaterMobEntity {
          World world = this.dolphin.world;
          if (this.dolphin.closeToTarget() || this.dolphin.getNavigator().noPath()) {
             Vec3d vec3d = new Vec3d(this.dolphin.getTreasurePos());
-            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardsScaled(this.dolphin, 16, 1, vec3d, (double)((float)Math.PI / 8F));
+            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardScaled(this.dolphin, 16, 1, vec3d, (double)((float)Math.PI / 8F));
             if (vec3d1 == null) {
-               vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.dolphin, 8, 4, vec3d);
+               vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.dolphin, 8, 4, vec3d);
             }
 
             if (vec3d1 != null) {
                BlockPos blockpos = new BlockPos(vec3d1);
                if (!world.getFluidState(blockpos).isTagged(FluidTags.WATER) || !world.getBlockState(blockpos).allowsMovement(world, blockpos, PathType.WATER)) {
-                  vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.dolphin, 8, 5, vec3d);
+                  vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.dolphin, 8, 5, vec3d);
                }
             }
 

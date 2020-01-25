@@ -8,8 +8,8 @@ public class FlyingMovementController extends MovementController {
    private final int field_226323_i_;
    private final boolean field_226324_j_;
 
-   public FlyingMovementController(MobEntity p_i225710_1_, int p_i225710_2_, boolean p_i225710_3_) {
-      super(p_i225710_1_);
+   public FlyingMovementController(MobEntity entity, int p_i225710_2_, boolean p_i225710_3_) {
+      super(entity);
       this.field_226323_i_ = p_i225710_2_;
       this.field_226324_j_ = p_i225710_3_;
    }

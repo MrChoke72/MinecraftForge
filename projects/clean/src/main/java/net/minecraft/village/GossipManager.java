@@ -89,9 +89,9 @@ public class GossipManager {
       });
    }
 
-   public int func_220921_a(UUID p_220921_1_, Predicate<GossipType> p_220921_2_) {
-      GossipManager.Gossips gossipmanager$gossips = this.field_220928_a.get(p_220921_1_);
-      return gossipmanager$gossips != null ? gossipmanager$gossips.func_220896_a(p_220921_2_) : 0;
+   public int func_220921_a(UUID uuid, Predicate<GossipType> gossipPred) {
+      GossipManager.Gossips gossipmanager$gossips = this.field_220928_a.get(uuid);
+      return gossipmanager$gossips != null ? gossipmanager$gossips.func_220896_a(gossipPred) : 0;
    }
 
    public void func_220916_a(UUID p_220916_1_, GossipType p_220916_2_, int p_220916_3_) {

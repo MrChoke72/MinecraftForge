@@ -433,9 +433,9 @@ public abstract class AbstractRaiderEntity extends PatrollerEntity {
       public void tick() {
          if (this.field_220864_a.getNavigator().noPath()) {
             Vec3d vec3d = new Vec3d(this.field_220866_c);
-            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardsScaled(this.field_220864_a, 16, 7, vec3d, (double)((float)Math.PI / 10F));
+            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardScaled(this.field_220864_a, 16, 7, vec3d, (double)((float)Math.PI / 10F));
             if (vec3d1 == null) {
-               vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.field_220864_a, 8, 7, vec3d);
+               vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.field_220864_a, 8, 7, vec3d);
             }
 
             if (vec3d1 == null) {

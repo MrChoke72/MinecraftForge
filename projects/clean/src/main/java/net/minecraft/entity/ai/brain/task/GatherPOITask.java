@@ -77,7 +77,11 @@ public class GatherPOITask extends Task<CreatureEntity> {
             return true;
          }
       };
-      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(this.poiType.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.HAS_SPACE);
+
+      //AH CHANGE - increase search range from 48 to 64
+      Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(this.poiType.getPoiTypePred(), predicate, new BlockPos(entityIn), 64, PointOfInterestManager.Status.HAS_SPACE);
+      //Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(this.poiType.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.HAS_SPACE);
+
       Path path = entityIn.getNavigator().findPath(stream, this.poiType.getKeepDist());
       if (path != null && path.isCompletePath()) {
          BlockPos blockpos = path.getTargetPos();
@@ -87,11 +91,13 @@ public class GatherPOITask extends Task<CreatureEntity> {
             }, blockpos, 1);
             entityIn.getBrain().setMemory(this.memModuleType, GlobalPos.of(worldIn.getDimension().getType(), blockpos));
 
-            //AH CHANGE DEBUG
+            //AH CHANGE DEBUG OFF
+            /*
            if(entityIn.getCustomName() != null)
            {
                System.out.println("GatherPOITask, memory set at: " + blockpos.toString() + " for " + this.poiType);
            }
+             */
 
             DebugPacketSender.func_218801_c(worldIn, blockpos);
          });
