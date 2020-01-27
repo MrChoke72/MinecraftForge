@@ -44,6 +44,13 @@ public class BlockModelConfiguration implements IModelConfiguration
         this.owner = owner;
     }
 
+    @Nullable
+    @Override
+    public IUnbakedModel getOwnerModel()
+    {
+        return owner;
+    }
+
     @Override
     public String getModelName()
     {
@@ -99,7 +106,13 @@ public class BlockModelConfiguration implements IModelConfiguration
 
     @Override
     public boolean isShadedInGui() {
-        return owner.isGui3d();
+        return true;
+    }
+
+    @Override
+    public boolean isSideLit()
+    {
+        return owner.func_230176_c_().func_230178_a_();
     }
 
     @Override
@@ -138,12 +151,12 @@ public class BlockModelConfiguration implements IModelConfiguration
                 geometry.getTextures(this, modelGetter, missingTextureErrors);
     }
 
-    public IBakedModel bake(ModelBakery bakery, Function<Material, TextureAtlasSprite> bakedTextureGetter, IModelTransform sprite, ItemOverrideList overrides, ResourceLocation modelLocation)
+    public IBakedModel bake(ModelBakery bakery, Function<Material, TextureAtlasSprite> bakedTextureGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation)
     {
         IModelGeometry<?> geometry = getCustomGeometry();
         if (geometry == null)
             throw new IllegalStateException("Can not use custom baking without custom geometry");
-        return geometry.bake(this, bakery, bakedTextureGetter, sprite, overrides, modelLocation);
+        return geometry.bake(this, bakery, bakedTextureGetter, modelTransform, overrides, modelLocation);
     }
 
     public static class VisibilityData

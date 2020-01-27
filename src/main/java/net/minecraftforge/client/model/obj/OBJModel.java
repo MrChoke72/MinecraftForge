@@ -29,8 +29,6 @@ import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.Vector4f;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -39,11 +37,12 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraftforge.client.model.*;
 import net.minecraftforge.client.model.geometry.IModelGeometryPart;
 import net.minecraftforge.client.model.geometry.IMultipartModelGeometry;
+import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
-import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.model.TransformationHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
@@ -52,6 +51,7 @@ import java.util.stream.Collectors;
 
 public class OBJModel implements IMultipartModelGeometry<OBJModel>
 {
+    private static Vector4f COLOR_WHITE = new Vector4f(1, 1, 1, 1);
     private static Vec2f[] DEFAULT_COORDS = {
             new Vec2f(0, 0),
             new Vec2f(0, 1),
@@ -73,13 +73,18 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
 
     public final ResourceLocation modelLocation;
 
-    OBJModel(ResourceLocation modelLocation, OBJLoader.LineReader reader, boolean detectCullableFaces, boolean diffuseLighting, boolean flipV, boolean ambientToFullbright) throws IOException
+    @Nullable
+    public final String materialLibraryOverrideLocation;
+
+
+    OBJModel(LineReader reader, ModelSettings settings) throws IOException
     {
-        this.modelLocation = modelLocation;
-        this.detectCullableFaces = detectCullableFaces;
-        this.diffuseLighting = diffuseLighting;
-        this.flipV = flipV;
-        this.ambientToFullbright = ambientToFullbright;
+        this.modelLocation = settings.modelLocation;
+        this.detectCullableFaces = settings.detectCullableFaces;
+        this.diffuseLighting = settings.diffuseLighting;
+        this.flipV = settings.flipV;
+        this.ambientToFullbright = settings.ambientToFullbright;
+        this.materialLibraryOverrideLocation = settings.materialLibraryOverrideLocation;
 
         // for relative references to material libraries
         String modelDomain = modelLocation.getNamespace();
@@ -90,7 +95,7 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
         else
             modelPath = "";
 
-        MaterialLibrary mtllib = null;
+        MaterialLibrary mtllib = MaterialLibrary.EMPTY;
         MaterialLibrary.Material currentMat = null;
         String currentSmoothingGroup = null;
         ModelGroup currentGroup = null;
@@ -99,6 +104,15 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
 
         boolean objAboveGroup = false;
 
+        if (materialLibraryOverrideLocation != null)
+        {
+            String lib = materialLibraryOverrideLocation;
+            if (lib.contains(":"))
+                mtllib = OBJLoader.INSTANCE.loadMaterialLibrary(new ResourceLocation(lib));
+            else
+                mtllib = OBJLoader.INSTANCE.loadMaterialLibrary(new ResourceLocation(modelDomain, modelPath + lib));
+        }
+
         String[] line;
         while((line = reader.readAndSplitLine(true)) != null)
         {
@@ -106,6 +120,9 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
             {
                 case "mtllib": // Loads material library
                 {
+                    if (materialLibraryOverrideLocation != null)
+                        break;
+
                     String lib = line[1];
                     if (lib.contains(":"))
                         mtllib = OBJLoader.INSTANCE.loadMaterialLibrary(new ResourceLocation(lib));
@@ -321,47 +338,7 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
         return Optional.ofNullable(parts.get(name));
     }
 
-    public VertexFormat calculateBestVertexFormat(@Nullable VertexFormat base)
-    {
-        List<VertexFormatElement> elements = Lists.newArrayList(base.func_227894_c_());
-
-        addElementIfNotPresent(elements, DefaultVertexFormats.POSITION_3F);
-
-        if (texCoords.size() > 0)
-        {
-             addElementIfNotPresent(elements, DefaultVertexFormats.TEX_2F);
-        }
-
-        if (normals.size() > 0)
-        {
-            addElementIfNotPresent(elements, DefaultVertexFormats.NORMAL_3B);
-            addElementIfNotPresent(elements, DefaultVertexFormats.PADDING_1B);
-        }
-
-        if (colors.size() > 0)
-        {
-            addElementIfNotPresent(elements, DefaultVertexFormats.COLOR_4UB);
-        }
-
-        if (ambientToFullbright && parts.values().stream().anyMatch(ModelGroup::hasAnyFullBright))
-        {
-            addElementIfNotPresent(elements, DefaultVertexFormats.TEX_2S);
-        }
-
-        return new VertexFormat(ImmutableList.copyOf(elements));
-    }
-
-    private static void addElementIfNotPresent(List<VertexFormatElement> fmt, VertexFormatElement element)
-    {
-        for(VertexFormatElement e : fmt)
-        {
-            if (e.getUsage() == element.getUsage() && e.getIndex() == element.getIndex())
-                return;
-        }
-        fmt.add(element);
-    }
-
-    private Pair<BakedQuad,Direction> makeQuad(int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, boolean isFullbright, TextureAtlasSprite texture, VertexFormat format, TransformationMatrix transform)
+    private Pair<BakedQuad,Direction> makeQuad(int[][] indices, int tintIndex, Vector4f colorTint, Vector4f ambientColor, TextureAtlasSprite texture, TransformationMatrix transform)
     {
         boolean needsNormalRecalculation = false;
         for (int[] ints : indices)
@@ -385,27 +362,31 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
         Vector4f[] pos = new Vector4f[4];
         Vector3f[] norm = new Vector3f[4];
 
-        UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(format);
+        BakedQuadBuilder builder = new BakedQuadBuilder(texture);
 
         builder.setQuadTint(tintIndex);
-        builder.setTexture(texture);
-        builder.setApplyDiffuseLighting(!isFullbright);
 
-        int fakeLight = (int)((ambientColor.getX() + ambientColor.getY() + ambientColor.getZ()) * 15 / 3.0f);
-        Vec2f uv2 = new Vec2f(((float) fakeLight * 0x20) / 0xFFFF, ((float) fakeLight * 0x20) / 0xFFFF);
+        Vec2f uv2 = new Vec2f(0, 0);
+        if (ambientToFullbright)
+        {
+            int fakeLight = (int) ((ambientColor.getX() + ambientColor.getY() + ambientColor.getZ()) * 15 / 3.0f);
+            uv2 = new Vec2f((fakeLight << 4) / 32767.0f, (fakeLight << 4) / 32767.0f);
+            builder.setApplyDiffuseLighting(fakeLight == 0);
+        }
 
         boolean hasTransform = !transform.isIdentity();
-        TransformationMatrix transformation = hasTransform ? transform : null;
+        // The incoming transform is referenced on the center of the block, but our coords are referenced on the corner
+        TransformationMatrix transformation = hasTransform ? transform.blockCenterToCorner() : transform;
 
         for(int i=0;i<4;i++)
         {
             int[] index = indices[Math.min(i,indices.length-1)];
             Vector3f pos0 = positions.get(index[0]);
-            Vector4f position = new Vector4f(pos0.getX(), pos0.getY(), pos0.getZ(), 1);
+            Vector4f position = new Vector4f(pos0);
             Vec2f texCoord = index.length >= 2 && texCoords.size() > 0 ? texCoords.get(index[1]) : DEFAULT_COORDS[i];
             Vector3f norm0 = !needsNormalRecalculation && index.length >= 3 && normals.size() > 0 ? normals.get(index[2]) : faceNormal;
             Vector3f normal = norm0;
-            Vector4f color = index.length >= 4 && colors.size() > 0 ? colors.get(index[3]) : new Vector4f(1, 1, 1, 1);
+            Vector4f color = index.length >= 4 && colors.size() > 0 ? colors.get(index[3]) : COLOR_WHITE;
             if (hasTransform)
             {
                 normal = norm0.func_229195_e_();
@@ -417,7 +398,7 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
                     color.getY() * colorTint.getY(),
                     color.getZ() * colorTint.getZ(),
                     color.getW() * colorTint.getW());
-            putVertexData(builder, format, position, texCoord, normal, tintedColor, uv2, texture);
+            putVertexData(builder, position, texCoord, normal, tintedColor, uv2, texture);
             pos[i] = position;
             norm[i] = normal;
         }
@@ -480,9 +461,9 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
         return Pair.of(builder.build(), cull);
     }
 
-    private void putVertexData(IVertexConsumer consumer, VertexFormat format, Vector4f position0, Vec2f texCoord0, Vector3f normal0, Vector4f color0, Vec2f uv2, TextureAtlasSprite texture)
+    private void putVertexData(IVertexConsumer consumer, Vector4f position0, Vec2f texCoord0, Vector3f normal0, Vector4f color0, Vec2f uv2, TextureAtlasSprite texture)
     {
-        ImmutableList<VertexFormatElement> elements = format.func_227894_c_();
+        ImmutableList<VertexFormatElement> elements = consumer.getVertexFormat().func_227894_c_();
         for(int j=0;j<elements.size();j++)
         {
             VertexFormatElement e = elements.get(j);
@@ -503,7 +484,7 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
                                     texture.getInterpolatedV((flipV ? (1 - texCoord0.y) : texCoord0.y) * 16)
                             );
                             break;
-                        case 1:
+                        case 2:
                             consumer.put(j, uv2.x, uv2.y);
                             break;
                         default:
@@ -520,23 +501,6 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
             }
         }
     }
-
-    /*
-    public BakedGeometryRenderable<Void> bakeRenderable()
-    {
-        return bakeRenderable(DummyAtlasSprite.GETTER);
-    }
-
-    public BakedGeometryRenderable<Void> bakeRenderable(Function<ResourceLocation, TextureAtlasSprite> spriteGetter)
-    {
-        return BakedGeometryRenderable.of(GL11.GL_QUADS, calculateBestVertexFormat(null), ((bufferBuilder, fmt) -> {
-            this.addQuads(
-                    new StandaloneModelConfiguration("", true, diffuseLighting),
-                    new VertexBufferModelBuilder(bufferBuilder),
-                    null, spriteGetter, SimpleModelTransform.IDENTITY, fmt);
-        }));
-    }
-     */
 
     public class ModelObject implements IModelGeometryPart
     {
@@ -556,7 +520,7 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
         }
 
         @Override
-        public void addQuads(IModelConfiguration owner, IModelBuilder<?> modelBuilder, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform sprite, ResourceLocation modelLocation)
+        public void addQuads(IModelConfiguration owner, IModelBuilder<?> modelBuilder, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ResourceLocation modelLocation)
         {
             for(ModelMesh mesh : meshes)
             {
@@ -566,11 +530,10 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
                 TextureAtlasSprite texture = spriteGetter.apply(ModelLoaderRegistry.resolveTexture(mat.diffuseColorMap, owner));
                 int tintIndex = mat.diffuseTintIndex;
                 Vector4f colorTint = mat.diffuseColor;
-                boolean isFullbright = ambientToFullbright && mesh.isFullbright();
 
                 for (int[][] face : mesh.faces)
                 {
-                    Pair<BakedQuad, Direction> quad = makeQuad(face, tintIndex, colorTint, mat.ambientColor, isFullbright, texture, DefaultVertexFormats.BLOCK, sprite.func_225615_b_());
+                    Pair<BakedQuad, Direction> quad = makeQuad(face, tintIndex, colorTint, mat.ambientColor, texture, modelTransform.func_225615_b_());
                     if (quad.getRight() == null)
                         modelBuilder.addGeneralQuad(quad.getLeft());
                     else
@@ -580,14 +543,9 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
         }
 
         @Override
-        public Collection<Material> getTextureDependencies(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors)
+        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors)
         {
             return meshes.stream().map(mesh -> ModelLoaderRegistry.resolveTexture(mesh.mat.diffuseColorMap, owner)).collect(Collectors.toSet());
-        }
-
-        public boolean hasAnyFullBright()
-        {
-            return meshes.stream().anyMatch(ModelMesh::isFullbright);
         }
     }
 
@@ -606,28 +564,22 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
         }
 
         @Override
-        public void addQuads(IModelConfiguration owner, IModelBuilder<?> modelBuilder, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform sprite, ResourceLocation modelLocation)
+        public void addQuads(IModelConfiguration owner, IModelBuilder<?> modelBuilder, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ResourceLocation modelLocation)
         {
-            super.addQuads(owner, modelBuilder, bakery, spriteGetter, sprite, modelLocation);
+            super.addQuads(owner, modelBuilder, bakery, spriteGetter, modelTransform, modelLocation);
 
             getParts().stream().filter(part -> owner.getPartVisibility(part))
-                    .forEach(part -> part.addQuads(owner, modelBuilder, bakery, spriteGetter, sprite, modelLocation));
+                    .forEach(part -> part.addQuads(owner, modelBuilder, bakery, spriteGetter, modelTransform, modelLocation));
         }
 
         @Override
-        public Collection<Material> getTextureDependencies(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors)
+        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors)
         {
             Set<Material> combined = Sets.newHashSet();
-            combined.addAll(super.getTextureDependencies(owner, modelGetter, missingTextureErrors));
+            combined.addAll(super.getTextures(owner, modelGetter, missingTextureErrors));
             for (IModelGeometryPart part : getParts())
-                combined.addAll(part.getTextureDependencies(owner, modelGetter, missingTextureErrors));
+                combined.addAll(part.getTextures(owner, modelGetter, missingTextureErrors));
             return combined;
-        }
-
-        @Override
-        public boolean hasAnyFullBright()
-        {
-            return super.hasAnyFullBright() || parts.values().stream().anyMatch(ModelObject::hasAnyFullBright);
         }
     }
 
@@ -644,92 +596,53 @@ public class OBJModel implements IMultipartModelGeometry<OBJModel>
             this.mat = currentMat;
             this.smoothingGroup = currentSmoothingGroup;
         }
-
-        public boolean isFullbright()
-        {
-            return mat != null && TransformationHelper.epsilonEquals(mat.ambientColor, new Vector4f(1,1,1,1), 1/256f);
-        }
     }
 
-    /*
-    private static class VertexBufferModelBuilder implements IModelBuilder<VertexBufferModelBuilder>
+    public static class ModelSettings
     {
-        private final BufferBuilder bufferBuilder;
+        @Nonnull
+        public final ResourceLocation modelLocation;
+        public final boolean detectCullableFaces;
+        public final boolean diffuseLighting;
+        public final boolean flipV;
+        public final boolean ambientToFullbright;
+        @Nullable
+        public final String materialLibraryOverrideLocation;
 
-        public VertexBufferModelBuilder(BufferBuilder bufferBuilder)
+        public ModelSettings(@Nonnull ResourceLocation modelLocation, boolean detectCullableFaces, boolean diffuseLighting, boolean flipV, boolean ambientToFullbright,
+                             @Nullable String materialLibraryOverrideLocation)
         {
-            this.bufferBuilder = bufferBuilder;
-        }
-
-        @Override
-        public VertexBufferModelBuilder addFaceQuad(Direction facing, BakedQuad quad)
-        {
-            LightUtil.renderQuadColor(bufferBuilder, quad, -1);
-            return this;
-        }
-
-        @Override
-        public VertexBufferModelBuilder addGeneralQuad(BakedQuad quad)
-        {
-            LightUtil.renderQuadColor(bufferBuilder, quad, -1);
-            return this;
-        }
-
-        @Override
-        public IBakedModel build()
-        {
-            return null;
-        }
-    }
-
-    private static class StandaloneModelConfiguration implements IModelConfiguration
-    {
-        private final String modelName;
-        private final boolean diffuseLighting;
-        private final boolean directionalLighting;
-
-        private StandaloneModelConfiguration(String modelName, boolean directionalLighting, boolean diffuseLighting)
-        {
-            this.modelName = modelName;
-            this.directionalLighting = directionalLighting;
+            this.modelLocation = modelLocation;
+            this.detectCullableFaces = detectCullableFaces;
             this.diffuseLighting = diffuseLighting;
+            this.flipV = flipV;
+            this.ambientToFullbright = ambientToFullbright;
+            this.materialLibraryOverrideLocation = materialLibraryOverrideLocation;
         }
 
         @Override
-        public String getModelName()
+        public boolean equals(Object o)
         {
-            return modelName;
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ModelSettings that = (ModelSettings) o;
+            return equals(that);
+        }
+
+        public boolean equals(@Nonnull ModelSettings that)
+        {
+            return detectCullableFaces == that.detectCullableFaces &&
+                    diffuseLighting == that.diffuseLighting &&
+                    flipV == that.flipV &&
+                    ambientToFullbright == that.ambientToFullbright &&
+                    modelLocation.equals(that.modelLocation) &&
+                    Objects.equals(materialLibraryOverrideLocation, that.materialLibraryOverrideLocation);
         }
 
         @Override
-        public Material resolveTexture(String name)
+        public int hashCode()
         {
-            return "";
-        }
-
-        @Override
-        public boolean isShadedInGui()
-        {
-            return directionalLighting;
-        }
-
-        @Override
-        public boolean useSmoothLighting()
-        {
-            return diffuseLighting;
-        }
-
-        @Override
-        public ItemCameraTransforms getCameraTransforms()
-        {
-            return ItemCameraTransforms.DEFAULT;
-        }
-
-        @Override
-        public IModelTransform getCombinedTransform()
-        {
-            return SimpleModelTransform.IDENTITY;
+            return Objects.hash(modelLocation, detectCullableFaces, diffuseLighting, flipV, ambientToFullbright, materialLibraryOverrideLocation);
         }
     }
-     */
 }

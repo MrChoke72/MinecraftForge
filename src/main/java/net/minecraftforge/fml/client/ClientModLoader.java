@@ -65,7 +65,7 @@ import net.minecraftforge.fml.ModLoadingStage;
 import net.minecraftforge.fml.ModLoadingWarning;
 import net.minecraftforge.fml.SidedProvider;
 import net.minecraftforge.fml.VersionChecker;
-import net.minecraftforge.fml.client.gui.LoadingErrorScreen;
+import net.minecraftforge.fml.client.gui.screen.LoadingErrorScreen;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.packs.DelegatableResourcePack;
@@ -125,6 +125,7 @@ public class ClientModLoader
 
     private static void postSidedRunnable(Consumer<Supplier<Event>> perModContainerEventProcessor) {
         RenderingRegistry.loadEntityRenderers(mc.getRenderManager());
+        ModelLoaderRegistry.initComplete();
     }
 
     private static void preSidedRunnable(Consumer<Supplier<Event>> perModContainerEventProcessor) {
