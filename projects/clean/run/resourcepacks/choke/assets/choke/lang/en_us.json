@@ -1,0 +1,10 @@
+{
+  "block.choke.gold_door": "Gold Door",
+  "item.choke.music_disc_satellite": "Good Shit",
+  "item.choke.music_disc_satellite.desc": "Satellite",
+  "item.choke.zombienasty_spawn_egg": "Zombie Nasty Spawn Egg",
+  "item.choke.zombieally_spawn_egg": "Zombie Ally Spawn Egg",
+  "item.choke.zombiemean_spawn_egg": "Zombie Mean Spawn Egg",
+  "entity.minecraft.zombienasty": "Zombie Nasty",
+  "entity.minecraft.zombiemean": "Zombie Mean"
+}

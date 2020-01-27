@@ -24,7 +24,8 @@
 /projects/forge/
 /projects/**/build/
 /projects/**/out/
-/projects/**/run/
+#/projects/**/run/
+/projects/forge/run/
 /projects/**/*.launch
 /repo/
 /buildSrc
@@ -42,3 +43,11 @@ changelog.txt
 
 gradle.properties
 !/mdk/gradle.properties
+/projects/clean/run/crash-reports
+/projects/clean/run/logs
+/projects/clean/run/saves
+/projects/clean/run/screenshots
+/projects/clean/run/world
+/projects/clean/run/resourcepacks/ChromaHills-128x-1.15-v1
+/projects/clean/run/eula.txt
+/projects/clean/run/servers.dat

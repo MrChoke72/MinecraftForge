@@ -1,0 +1,7 @@
+{
+    "parent": "block/door_bottom_rh",
+    "textures": {
+        "bottom": "choke:block/gold_door_bottom",
+        "top": "choke:block/gold_door_top"
+    }
+}

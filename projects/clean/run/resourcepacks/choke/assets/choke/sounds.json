@@ -1,0 +1,208 @@
+{
+  "entity.zombie.break_iron_door": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "choke:block/iron_door_break",
+          "pitch": 1.0,
+          "volume": 1.0
+        }
+      ],
+      "subtitle":"block.iron_door.break"
+  },
+  
+
+  "entity.zombienasty.hurt": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name":"choke:mob/zombienasty/adam_hurt1",
+          "pitch": 1.0   
+        }
+      ],
+      "subtitle": "subtitles.entity.zombienasty.hurt"
+  },
+  "entity.zombienasty.death": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name":"choke:mob/zombienasty/adam_death1",
+          "pitch": 0.9,
+          "volume": 0.5
+        }
+      ],
+      "subtitle": "subtitles.entity.zombienasty.death"
+  },
+  "entity.zombienasty.ambient": {
+      "category": "ambient",
+      "sounds": [
+        {
+          "name":"choke:mob/zombienasty/jenny_ambient",
+		  "volume": 0.3
+        }
+      ],
+      "subtitle": "subtitles.entity.zombienasty.ambient"
+  },
+  "entity.zombienasty.step": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombienasty/adam_step1",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },  
+   "entity.parrot.imitate.zombienasty": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombieally/adam_notmyfriend",
+        "pitch": 1.0,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.zombieally.notmyfriend"
+  },  
+  
+
+  "entity.zombieally.hurt": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name":"choke:mob/zombieally/adam_hurt2",
+          "pitch": 1.0,
+          "volume": 0.7
+        }
+      ],
+      "subtitle": "subtitles.entity.zombieally.hurt"
+  },
+  "entity.zombieally.death": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombieally/gizzards",
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.entity.zombieally.ambient"
+  },
+  "entity.zombieally.ambient": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name":"choke:mob/zombieally/adam_ambient1",
+        "volume": 0.1
+      }
+    ],
+    "subtitle": "subtitles.entity.zombieally.ambient"
+  },
+  "entity.zombieally.step": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombieally/adam_step1",
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "entity.zombieally.yourfriend": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombieally/adam_yourfriend",
+        "pitch": 1.0,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.entity.zombieally.yourfriend"
+  },
+  "entity.zombieally.befriends": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombieally/adam_befriends",
+        "pitch": 1.0,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.zombieally.befriends"
+  },
+  "entity.zombieally.notmyfriend": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombieally/adam_notmyfriend",
+        "pitch": 1.0,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.zombieally.notmyfriend"
+  },
+
+  "entity.zombiemean.hurt": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombiemean/alaina_hurt",
+        "pitch": 1.0,
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.entity.zombiemean.hurt"
+  },
+  "entity.zombiemean.death": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombiemean/mybaby",
+        "volume": 0.4
+      }
+    ],
+    "subtitle": "subtitles.entity.zombiemean.ambient"
+  },
+  "entity.zombiemean.ambient": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name":"choke:mob/zombiemean/adam_ambient2",
+		"volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.entity.zombiemean.ambient"
+  },
+  "entity.zombiemean.step": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombiemean/adam_step1",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "entity.parrot.imitate.zombiemean": {
+    "category": "hostile",
+    "sounds": [
+      {
+        "name":"choke:mob/zombiemean/adam_notmyfriend",
+        "pitch": 1.0,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.entity.zombiemean.notmyfriend"
+  },  
+
+  "music_disc.satellite": {
+      "category": "records",
+      "sounds": [
+        {
+          "name": "choke:records/satellite",
+          "stream": true,
+          "volume": 0.8
+        }
+      ]
+    }
+
+}
