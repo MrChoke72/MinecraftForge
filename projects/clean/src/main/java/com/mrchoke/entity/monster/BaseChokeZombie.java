@@ -133,6 +133,7 @@ public abstract class BaseChokeZombie extends ZombieEntity {
         //force nothing
     }
 
+    
       /*
     protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropSpecialItems(source, looting, recentlyHitIn);
