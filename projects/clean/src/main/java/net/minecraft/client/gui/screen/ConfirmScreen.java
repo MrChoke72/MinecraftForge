@@ -17,18 +17,18 @@ public class ConfirmScreen extends Screen {
    protected String confirmButtonText;
    protected String cancelButtonText;
    private int ticksUntilEnable;
-   protected final BooleanConsumer field_213003_c;
+   protected final BooleanConsumer callbackFunction;
 
-   public ConfirmScreen(BooleanConsumer p_i51119_1_, ITextComponent p_i51119_2_, ITextComponent p_i51119_3_) {
-      this(p_i51119_1_, p_i51119_2_, p_i51119_3_, I18n.format("gui.yes"), I18n.format("gui.no"));
+   public ConfirmScreen(BooleanConsumer _callbackFunction, ITextComponent _title, ITextComponent _messageLine2) {
+      this(_callbackFunction, _title, _messageLine2, I18n.format("gui.yes"), I18n.format("gui.no"));
    }
 
-   public ConfirmScreen(BooleanConsumer p_i51120_1_, ITextComponent p_i51120_2_, ITextComponent p_i51120_3_, String p_i51120_4_, String p_i51120_5_) {
-      super(p_i51120_2_);
-      this.field_213003_c = p_i51120_1_;
-      this.messageLine2 = p_i51120_3_;
-      this.confirmButtonText = p_i51120_4_;
-      this.cancelButtonText = p_i51120_5_;
+   public ConfirmScreen(BooleanConsumer _callbackFunction, ITextComponent _title, ITextComponent _messageLine2, String _confirmButtonText, String _cancelButtonText) {
+      super(_title);
+      this.callbackFunction = _callbackFunction;
+      this.messageLine2 = _messageLine2;
+      this.confirmButtonText = _confirmButtonText;
+      this.cancelButtonText = _cancelButtonText;
    }
 
    public String getNarrationMessage() {
@@ -38,10 +38,10 @@ public class ConfirmScreen extends Screen {
    protected void init() {
       super.init();
       this.addButton(new Button(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.confirmButtonText, (p_213002_1_) -> {
-         this.field_213003_c.accept(true);
+         this.callbackFunction.accept(true);
       }));
       this.addButton(new Button(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.cancelButtonText, (p_213001_1_) -> {
-         this.field_213003_c.accept(false);
+         this.callbackFunction.accept(false);
       }));
       this.listLines.clear();
       this.listLines.addAll(this.font.listFormattedStringToWidth(this.messageLine2.getFormattedText(), this.width - 50));
@@ -85,7 +85,7 @@ public class ConfirmScreen extends Screen {
 
    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
       if (p_keyPressed_1_ == 256) {
-         this.field_213003_c.accept(false);
+         this.callbackFunction.accept(false);
          return true;
       } else {
          return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);

@@ -27,7 +27,7 @@ public class SOpenBookWindowPacket implements IPacket<IClientPlayNetHandler> {
    }
 
    public void processPacket(IClientPlayNetHandler handler) {
-      handler.func_217268_a(this);
+      handler.handleOpenBookPacket(this);
    }
 
    @OnlyIn(Dist.CLIENT)

@@ -40,7 +40,7 @@ public class ItemUseContext {
       return this.rayTraceResult.getHitVec();
    }
 
-   public boolean func_221533_k() {
+   public boolean isInside() {
       return this.rayTraceResult.isInside();
    }
 

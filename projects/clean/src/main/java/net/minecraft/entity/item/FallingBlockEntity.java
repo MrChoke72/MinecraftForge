@@ -81,7 +81,7 @@ public class FallingBlockEntity extends Entity {
       return this.dataManager.get(ORIGIN);
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -141,8 +141,9 @@ public class FallingBlockEntity extends Entity {
                   this.remove();
                   if (!this.dontSetBlock) {
                      boolean flag2 = blockstate.isReplaceable(new DirectionalPlaceContext(this.world, blockpos1, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-                     boolean flag3 = this.fallTile.isValidPosition(this.world, blockpos1) && !FallingBlock.canFallThrough(this.world.getBlockState(blockpos1.down()));
-                     if (flag2 && flag3) {
+                     boolean flag3 = FallingBlock.canFallThrough(this.world.getBlockState(blockpos1.down())) && (!flag || !flag1);
+                     boolean flag4 = this.fallTile.isValidPosition(this.world, blockpos1) && !flag3;
+                     if (flag2 && flag4) {
                         if (this.fallTile.has(BlockStateProperties.WATERLOGGED) && this.world.getFluidState(blockpos1).getFluid() == Fluids.WATER) {
                            this.fallTile = this.fallTile.with(BlockStateProperties.WATERLOGGED, Boolean.valueOf(true));
                         }
@@ -185,9 +186,9 @@ public class FallingBlockEntity extends Entity {
       }
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       if (this.hurtEntities) {
-         int i = MathHelper.ceil(p_225503_1_ - 1.0F);
+         int i = MathHelper.ceil(distance - 1.0F);
          if (i > 0) {
             List<Entity> list = Lists.newArrayList(this.world.getEntitiesWithinAABBExcludingEntity(this, this.getBoundingBox()));
             boolean flag = this.fallTile.isIn(BlockTags.ANVIL);

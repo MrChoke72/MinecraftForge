@@ -18,13 +18,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("textures/gui/container/stonecutter.png");
    private float sliderProgress;
-   private boolean field_214148_m;
+   private boolean clickedOnSroll;
    private int recipeIndexOffset;
-   private boolean field_214150_o;
+   private boolean hasItemsInInputSlot;
 
-   public StonecutterScreen(StonecutterContainer containerIn, PlayerInventory playerInv, ITextComponent p_i51076_3_) {
-      super(containerIn, playerInv, p_i51076_3_);
-      containerIn.setInventoryUpdateListener(this::func_214145_d);
+   public StonecutterScreen(StonecutterContainer containerIn, PlayerInventory playerInv, ITextComponent titleIn) {
+      super(containerIn, playerInv, titleIn);
+      containerIn.setInventoryUpdateListener(this::onInventoryUpdate);
    }
 
    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
@@ -49,20 +49,20 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
       int l = this.guiLeft + 52;
       int i1 = this.guiTop + 14;
       int j1 = this.recipeIndexOffset + 12;
-      this.func_214141_a(mouseX, mouseY, l, i1, j1);
-      this.func_214142_b(l, i1, j1);
+      this.drawRecipesBackground(mouseX, mouseY, l, i1, j1);
+      this.drawRecipesItems(l, i1, j1);
    }
 
-   private void func_214141_a(int p_214141_1_, int p_214141_2_, int p_214141_3_, int p_214141_4_, int p_214141_5_) {
-      for(int i = this.recipeIndexOffset; i < p_214141_5_ && i < this.container.getRecipeListSize(); ++i) {
+   private void drawRecipesBackground(int mouseX, int mouseY, int left, int top, int recipeIndexOffsetMax) {
+      for(int i = this.recipeIndexOffset; i < recipeIndexOffsetMax && i < this.container.getRecipeListSize(); ++i) {
          int j = i - this.recipeIndexOffset;
-         int k = p_214141_3_ + j % 4 * 16;
+         int k = left + j % 4 * 16;
          int l = j / 4;
-         int i1 = p_214141_4_ + l * 18 + 2;
+         int i1 = top + l * 18 + 2;
          int j1 = this.ySize;
-         if (i == this.container.func_217073_e()) {
+         if (i == this.container.getSelectedRecipe()) {
             j1 += 18;
-         } else if (p_214141_1_ >= k && p_214141_2_ >= i1 && p_214141_1_ < k + 16 && p_214141_2_ < i1 + 18) {
+         } else if (mouseX >= k && mouseY >= i1 && mouseX < k + 16 && mouseY < i1 + 18) {
             j1 += 36;
          }
 
@@ -71,22 +71,22 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 
    }
 
-   private void func_214142_b(int p_214142_1_, int p_214142_2_, int p_214142_3_) {
+   private void drawRecipesItems(int left, int top, int recipeIndexOffsetMax) {
       List<StonecuttingRecipe> list = this.container.getRecipeList();
 
-      for(int i = this.recipeIndexOffset; i < p_214142_3_ && i < this.container.getRecipeListSize(); ++i) {
+      for(int i = this.recipeIndexOffset; i < recipeIndexOffsetMax && i < this.container.getRecipeListSize(); ++i) {
          int j = i - this.recipeIndexOffset;
-         int k = p_214142_1_ + j % 4 * 16;
+         int k = left + j % 4 * 16;
          int l = j / 4;
-         int i1 = p_214142_2_ + l * 18 + 2;
+         int i1 = top + l * 18 + 2;
          this.minecraft.getItemRenderer().renderItemAndEffectIntoGUI(list.get(i).getRecipeOutput(), k, i1);
       }
 
    }
 
    public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
-      this.field_214148_m = false;
-      if (this.field_214150_o) {
+      this.clickedOnSroll = false;
+      if (this.hasItemsInInputSlot) {
          int i = this.guiLeft + 52;
          int j = this.guiTop + 14;
          int k = this.recipeIndexOffset + 12;
@@ -105,7 +105,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
          i = this.guiLeft + 119;
          j = this.guiTop + 9;
          if (p_mouseClicked_1_ >= (double)i && p_mouseClicked_1_ < (double)(i + 12) && p_mouseClicked_3_ >= (double)j && p_mouseClicked_3_ < (double)(j + 54)) {
-            this.field_214148_m = true;
+            this.clickedOnSroll = true;
          }
       }
 
@@ -113,7 +113,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
    }
 
    public boolean mouseDragged(double p_mouseDragged_1_, double p_mouseDragged_3_, int p_mouseDragged_5_, double p_mouseDragged_6_, double p_mouseDragged_8_) {
-      if (this.field_214148_m && this.canScroll()) {
+      if (this.clickedOnSroll && this.canScroll()) {
          int i = this.guiTop + 14;
          int j = i + 54;
          this.sliderProgress = ((float)p_mouseDragged_3_ - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
@@ -137,16 +137,16 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
    }
 
    private boolean canScroll() {
-      return this.field_214150_o && this.container.getRecipeListSize() > 12;
+      return this.hasItemsInInputSlot && this.container.getRecipeListSize() > 12;
    }
 
    protected int getHiddenRows() {
       return (this.container.getRecipeListSize() + 4 - 1) / 4 - 3;
    }
 
-   private void func_214145_d() {
-      this.field_214150_o = this.container.func_217083_h();
-      if (!this.field_214150_o) {
+   private void onInventoryUpdate() {
+      this.hasItemsInInputSlot = this.container.hasItemsinInputSlot();
+      if (!this.hasItemsInInputSlot) {
          this.sliderProgress = 0.0F;
          this.recipeIndexOffset = 0;
       }

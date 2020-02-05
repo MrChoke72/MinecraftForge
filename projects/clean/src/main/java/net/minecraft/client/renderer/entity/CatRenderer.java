@@ -15,8 +15,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CatRenderer extends MobRenderer<CatEntity, CatModel<CatEntity>> {
-   public CatRenderer(EntityRendererManager p_i50973_1_) {
-      super(p_i50973_1_, new CatModel<>(0.0F), 0.4F);
+   public CatRenderer(EntityRendererManager renderManagerIn) {
+      super(renderManagerIn, new CatModel<>(0.0F), 0.4F);
       this.addLayer(new CatCollarLayer(this));
    }
 
@@ -24,22 +24,22 @@ public class CatRenderer extends MobRenderer<CatEntity, CatModel<CatEntity>> {
       return entity.getCatTypeName();
    }
 
-   protected void func_225620_a_(CatEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
-      super.func_225620_a_(p_225620_1_, p_225620_2_, p_225620_3_);
-      p_225620_2_.func_227862_a_(0.8F, 0.8F, 0.8F);
+   protected void preRenderCallback(CatEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+      super.preRenderCallback(entitylivingbaseIn, matrixStackIn, partialTickTime);
+      matrixStackIn.scale(0.8F, 0.8F, 0.8F);
    }
 
-   protected void func_225621_a_(CatEntity p_225621_1_, MatrixStack p_225621_2_, float p_225621_3_, float p_225621_4_, float p_225621_5_) {
-      super.func_225621_a_(p_225621_1_, p_225621_2_, p_225621_3_, p_225621_4_, p_225621_5_);
-      float f = p_225621_1_.func_213408_v(p_225621_5_);
+   protected void applyRotations(CatEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
+      super.applyRotations(entityLiving, matrixStackIn, ageInTicks, rotationYaw, partialTicks);
+      float f = entityLiving.func_213408_v(partialTicks);
       if (f > 0.0F) {
-         p_225621_2_.func_227861_a_((double)(0.4F * f), (double)(0.15F * f), (double)(0.1F * f));
-         p_225621_2_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(MathHelper.func_219805_h(f, 0.0F, 90.0F)));
-         BlockPos blockpos = new BlockPos(p_225621_1_);
+         matrixStackIn.translate((double)(0.4F * f), (double)(0.15F * f), (double)(0.1F * f));
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(MathHelper.interpolateAngle(f, 0.0F, 90.0F)));
+         BlockPos blockpos = new BlockPos(entityLiving);
 
-         for(PlayerEntity playerentity : p_225621_1_.world.getEntitiesWithinAABB(PlayerEntity.class, (new AxisAlignedBB(blockpos)).grow(2.0D, 2.0D, 2.0D))) {
+         for(PlayerEntity playerentity : entityLiving.world.getEntitiesWithinAABB(PlayerEntity.class, (new AxisAlignedBB(blockpos)).grow(2.0D, 2.0D, 2.0D))) {
             if (playerentity.isSleeping()) {
-               p_225621_2_.func_227861_a_((double)(0.15F * f), 0.0D, 0.0D);
+               matrixStackIn.translate((double)(0.15F * f), 0.0D, 0.0D);
                break;
             }
          }

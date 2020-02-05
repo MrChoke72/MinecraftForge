@@ -11,8 +11,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SearchTreeManager implements IResourceManagerReloadListener {
-   public static final SearchTreeManager.Key<ItemStack> field_215359_a = new SearchTreeManager.Key<>();
-   public static final SearchTreeManager.Key<ItemStack> field_215360_b = new SearchTreeManager.Key<>();
+   public static final SearchTreeManager.Key<ItemStack> ITEMS = new SearchTreeManager.Key<>();
+   public static final SearchTreeManager.Key<ItemStack> TAGS = new SearchTreeManager.Key<>();
    public static final SearchTreeManager.Key<RecipeList> RECIPES = new SearchTreeManager.Key<>();
    private final Map<SearchTreeManager.Key<?>, IMutableSearchTree<?>> trees = Maps.newHashMap();
 
@@ -23,12 +23,12 @@ public class SearchTreeManager implements IResourceManagerReloadListener {
 
    }
 
-   public <T> void add(SearchTreeManager.Key<T> p_215357_1_, IMutableSearchTree<T> p_215357_2_) {
-      this.trees.put(p_215357_1_, p_215357_2_);
+   public <T> void add(SearchTreeManager.Key<T> key, IMutableSearchTree<T> value) {
+      this.trees.put(key, value);
    }
 
-   public <T> IMutableSearchTree<T> get(SearchTreeManager.Key<T> p_215358_1_) {
-      return (IMutableSearchTree<T>) this.trees.get(p_215358_1_);
+   public <T> IMutableSearchTree<T> get(SearchTreeManager.Key<T> key) {
+      return (IMutableSearchTree<T>) this.trees.get(key);
    }
 
    @OnlyIn(Dist.CLIENT)

@@ -6,7 +6,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderHelper {
-   public static void func_227780_a_() {
+   public static void enableStandardItemLighting() {
       RenderSystem.enableLighting();
       RenderSystem.enableColorMaterial();
       RenderSystem.colorMaterial(1032, 5634);
@@ -17,15 +17,15 @@ public class RenderHelper {
       RenderSystem.disableColorMaterial();
    }
 
-   public static void func_227781_a_(Matrix4f p_227781_0_) {
-      RenderSystem.setupLevelDiffuseLighting(p_227781_0_);
+   public static void setupLevelDiffuseLighting(Matrix4f matrixIn) {
+      RenderSystem.setupLevelDiffuseLighting(matrixIn);
    }
 
-   public static void func_227783_c_() {
+   public static void setupGuiFlatDiffuseLighting() {
       RenderSystem.setupGuiFlatDiffuseLighting();
    }
 
-   public static void func_227784_d_() {
+   public static void setupGui3DDiffuseLighting() {
       RenderSystem.setupGui3DDiffuseLighting();
    }
 }

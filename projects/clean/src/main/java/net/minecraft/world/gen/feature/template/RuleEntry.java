@@ -30,8 +30,8 @@ public class RuleEntry {
       this.outputNbt = outputNbt;
    }
 
-   public boolean test(BlockState p_215211_1_, BlockState p_215211_2_, Random p_215211_3_) {
-      return this.inputPredicate.test(p_215211_1_, p_215211_3_) && this.locationPredicate.test(p_215211_2_, p_215211_3_);
+   public boolean test(BlockState stateA, BlockState stateB, Random rand) {
+      return this.inputPredicate.test(stateA, rand) && this.locationPredicate.test(stateB, rand);
    }
 
    public BlockState getOutputState() {
@@ -43,9 +43,9 @@ public class RuleEntry {
       return this.outputNbt;
    }
 
-   public <T> Dynamic<T> serialize(DynamicOps<T> p_215212_1_) {
-      T t = p_215212_1_.createMap(ImmutableMap.of(p_215212_1_.createString("input_predicate"), this.inputPredicate.serialize(p_215212_1_).getValue(), p_215212_1_.createString("location_predicate"), this.locationPredicate.serialize(p_215212_1_).getValue(), p_215212_1_.createString("output_state"), BlockState.serialize(p_215212_1_, this.outputState).getValue()));
-      return this.outputNbt == null ? new Dynamic<>(p_215212_1_, t) : new Dynamic<>(p_215212_1_, p_215212_1_.mergeInto(t, p_215212_1_.createString("output_nbt"), (new Dynamic<>(NBTDynamicOps.INSTANCE, this.outputNbt)).convert(p_215212_1_).getValue()));
+   public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+      T t = ops.createMap(ImmutableMap.of(ops.createString("input_predicate"), this.inputPredicate.serialize(ops).getValue(), ops.createString("location_predicate"), this.locationPredicate.serialize(ops).getValue(), ops.createString("output_state"), BlockState.serialize(ops, this.outputState).getValue()));
+      return this.outputNbt == null ? new Dynamic<>(ops, t) : new Dynamic<>(ops, ops.mergeInto(t, ops.createString("output_nbt"), (new Dynamic<>(NBTDynamicOps.INSTANCE, this.outputNbt)).convert(ops).getValue()));
    }
 
    public static <T> RuleEntry deserialize(Dynamic<T> p_215213_0_) {

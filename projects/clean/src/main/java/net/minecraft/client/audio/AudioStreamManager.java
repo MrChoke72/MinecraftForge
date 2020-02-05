@@ -20,8 +20,8 @@ public class AudioStreamManager {
    private final IResourceManager resourceManager;
    private final Map<ResourceLocation, CompletableFuture<AudioStreamBuffer>> field_217919_b = Maps.newHashMap();
 
-   public AudioStreamManager(IResourceManager p_i50893_1_) {
-      this.resourceManager = p_i50893_1_;
+   public AudioStreamManager(IResourceManager resourceManagerIn) {
+      this.resourceManager = resourceManagerIn;
    }
 
    public CompletableFuture<AudioStreamBuffer> func_217909_a(ResourceLocation p_217909_1_) {

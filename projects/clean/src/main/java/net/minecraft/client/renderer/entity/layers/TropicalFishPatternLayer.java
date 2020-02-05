@@ -19,9 +19,9 @@ public class TropicalFishPatternLayer extends LayerRenderer<TropicalFishEntity, 
       super(p_i50918_1_);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, TropicalFishEntity p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      EntityModel<TropicalFishEntity> entitymodel = (EntityModel<TropicalFishEntity>)(p_225628_4_.getSize() == 0 ? this.modelA : this.modelB);
-      float[] afloat = p_225628_4_.func_204222_dD();
-      func_229140_a_(this.getEntityModel(), entitymodel, p_225628_4_.getPatternTexture(), p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, p_225628_5_, p_225628_6_, p_225628_8_, p_225628_9_, p_225628_10_, p_225628_7_, afloat[0], afloat[1], afloat[2]);
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, TropicalFishEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      EntityModel<TropicalFishEntity> entitymodel = (EntityModel<TropicalFishEntity>)(entitylivingbaseIn.getSize() == 0 ? this.modelA : this.modelB);
+      float[] afloat = entitylivingbaseIn.func_204222_dD();
+      renderCopyCutoutModel(this.getEntityModel(), entitymodel, entitylivingbaseIn.getPatternTexture(), matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, partialTicks, afloat[0], afloat[1], afloat[2]);
    }
 }

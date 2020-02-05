@@ -10,11 +10,11 @@ public class CraftingInventory implements IInventory, IRecipeHelperPopulator {
    private final NonNullList<ItemStack> stackList;
    private final int width;
    private final int height;
-   private final Container field_70465_c;
+   private final Container eventHandler;
 
    public CraftingInventory(Container eventHandlerIn, int width, int height) {
       this.stackList = NonNullList.withSize(width * height, ItemStack.EMPTY);
-      this.field_70465_c = eventHandlerIn;
+      this.eventHandler = eventHandlerIn;
       this.width = width;
       this.height = height;
    }
@@ -44,7 +44,7 @@ public class CraftingInventory implements IInventory, IRecipeHelperPopulator {
    public ItemStack decrStackSize(int index, int count) {
       ItemStack itemstack = ItemStackHelper.getAndSplit(this.stackList, index, count);
       if (!itemstack.isEmpty()) {
-         this.field_70465_c.onCraftMatrixChanged(this);
+         this.eventHandler.onCraftMatrixChanged(this);
       }
 
       return itemstack;
@@ -52,7 +52,7 @@ public class CraftingInventory implements IInventory, IRecipeHelperPopulator {
 
    public void setInventorySlotContents(int index, ItemStack stack) {
       this.stackList.set(index, stack);
-      this.field_70465_c.onCraftMatrixChanged(this);
+      this.eventHandler.onCraftMatrixChanged(this);
    }
 
    public void markDirty() {

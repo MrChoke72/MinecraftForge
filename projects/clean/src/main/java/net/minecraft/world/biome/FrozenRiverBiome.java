@@ -10,7 +10,7 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public final class FrozenRiverBiome extends Biome {
    public FrozenRiverBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.SNOW).category(Biome.Category.RIVER).depth(-0.5F).scale(0.0F).temperature(0.0F).downfall(0.5F).waterColor(3750089).waterFogColor(329011).parent((String)null));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -18,9 +18,9 @@ public final class FrozenRiverBiome extends Biome {
       DefaultBiomeFeatures.addStoneVariants(this);
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
-      DefaultBiomeFeatures.func_222296_u(this);
+      DefaultBiomeFeatures.addScatteredOakTrees(this);
       DefaultBiomeFeatures.addDefaultFlowers(this);
-      DefaultBiomeFeatures.func_222348_W(this);
+      DefaultBiomeFeatures.addSparseGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);

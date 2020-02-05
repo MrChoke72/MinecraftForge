@@ -31,8 +31,8 @@ public class BlazeEntity extends MonsterEntity {
    private int heightOffsetUpdateTime;
    private static final DataParameter<Byte> ON_FIRE = EntityDataManager.createKey(BlazeEntity.class, DataSerializers.BYTE);
 
-   public BlazeEntity(EntityType<? extends BlazeEntity> p_i50215_1_, World p_i50215_2_) {
-      super(p_i50215_1_, p_i50215_2_);
+   public BlazeEntity(EntityType<? extends BlazeEntity> type, World p_i50215_2_) {
+      super(type, p_i50215_2_);
       this.setPathPriority(PathNodeType.WATER, -1.0F);
       this.setPathPriority(PathNodeType.LAVA, 8.0F);
       this.setPathPriority(PathNodeType.DANGER_FIRE, 0.0F);
@@ -89,7 +89,7 @@ public class BlazeEntity extends MonsterEntity {
          }
 
          for(int i = 0; i < 2; ++i) {
-            this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.func_226282_d_(0.5D), this.func_226279_cv_(), this.func_226287_g_(0.5D), 0.0D, 0.0D, 0.0D);
+            this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), 0.0D, 0.0D, 0.0D);
          }
       }
 
@@ -108,7 +108,7 @@ public class BlazeEntity extends MonsterEntity {
       }
 
       LivingEntity livingentity = this.getAttackTarget();
-      if (livingentity != null && livingentity.getPosYPlusEyeHeight() > this.getPosYPlusEyeHeight() + (double)this.heightOffset && this.canAttack(livingentity)) {
+      if (livingentity != null && livingentity.getPosYEye() > this.getPosYEye() + (double)this.heightOffset && this.canAttack(livingentity)) {
          Vec3d vec3d = this.getMotion();
          this.setMotion(this.getMotion().add(0.0D, ((double)0.3F - vec3d.y) * (double)0.3F, 0.0D));
          this.isAirBorne = true;
@@ -117,7 +117,7 @@ public class BlazeEntity extends MonsterEntity {
       super.updateAITasks();
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 
@@ -190,7 +190,7 @@ public class BlazeEntity extends MonsterEntity {
                this.blaze.getMoveHelper().setMoveTo(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ(), 1.0D);
             } else if (d0 < this.getFollowDistance() * this.getFollowDistance() && flag) {
                double d1 = livingentity.getPosX() - this.blaze.getPosX();
-               double d2 = livingentity.func_226283_e_(0.5D) - this.blaze.func_226283_e_(0.5D);
+               double d2 = livingentity.getPosYHeight(0.5D) - this.blaze.getPosYHeight(0.5D);
                double d3 = livingentity.getPosZ() - this.blaze.getPosZ();
                if (this.attackTime <= 0) {
                   ++this.attackStep;
@@ -211,7 +211,7 @@ public class BlazeEntity extends MonsterEntity {
 
                      for(int i = 0; i < 1; ++i) {
                         SmallFireballEntity smallfireballentity = new SmallFireballEntity(this.blaze.world, this.blaze, d1 + this.blaze.getRNG().nextGaussian() * (double)f, d2, d3 + this.blaze.getRNG().nextGaussian() * (double)f);
-                        smallfireballentity.setPosition(smallfireballentity.getPosX(), this.blaze.func_226283_e_(0.5D) + 0.5D, smallfireballentity.getPosZ());
+                        smallfireballentity.setPosition(smallfireballentity.getPosX(), this.blaze.getPosYHeight(0.5D) + 0.5D, smallfireballentity.getPosZ());
                         this.blaze.world.addEntity(smallfireballentity);
                      }
                   }

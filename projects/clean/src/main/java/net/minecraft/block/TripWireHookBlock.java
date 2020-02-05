@@ -57,7 +57,7 @@ public class TripWireHookBlock extends Block {
       Direction direction = state.get(FACING);
       BlockPos blockpos = pos.offset(direction.getOpposite());
       BlockState blockstate = worldIn.getBlockState(blockpos);
-      return direction.getAxis().isHorizontal() && blockstate.func_224755_d(worldIn, blockpos, direction) && !blockstate.canProvidePower();
+      return direction.getAxis().isHorizontal() && blockstate.isSolidSide(worldIn, blockpos, direction) && !blockstate.canProvidePower();
    }
 
    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
@@ -160,8 +160,8 @@ public class TripWireHookBlock extends Block {
 
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      this.calculateState(p_225534_2_, p_225534_3_, p_225534_1_, false, true, -1, (BlockState)null);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      this.calculateState(worldIn, pos, state, false, true, -1, (BlockState)null);
    }
 
    private void playSound(World worldIn, BlockPos pos, boolean p_180694_3_, boolean p_180694_4_, boolean p_180694_5_, boolean p_180694_6_) {

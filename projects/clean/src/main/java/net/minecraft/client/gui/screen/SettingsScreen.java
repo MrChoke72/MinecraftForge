@@ -7,13 +7,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SettingsScreen extends Screen {
-   protected final Screen field_228182_a_;
-   protected final GameSettings field_228183_b_;
+   protected final Screen parentScreen;
+   protected final GameSettings gameSettings;
 
    public SettingsScreen(Screen p_i225930_1_, GameSettings p_i225930_2_, ITextComponent p_i225930_3_) {
       super(p_i225930_3_);
-      this.field_228182_a_ = p_i225930_1_;
-      this.field_228183_b_ = p_i225930_2_;
+      this.parentScreen = p_i225930_1_;
+      this.gameSettings = p_i225930_2_;
    }
 
    public void removed() {
@@ -21,6 +21,6 @@ public class SettingsScreen extends Screen {
    }
 
    public void onClose() {
-      this.minecraft.displayGuiScreen(this.field_228182_a_);
+      this.minecraft.displayGuiScreen(this.parentScreen);
    }
 }

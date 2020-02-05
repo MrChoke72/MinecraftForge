@@ -26,8 +26,8 @@ public class LoggingChunkStatusListener implements IChunkStatusListener {
       this.startTime = this.nextLogTime;
    }
 
-   public void statusChanged(ChunkPos p_219508_1_, @Nullable ChunkStatus p_219508_2_) {
-      if (p_219508_2_ == ChunkStatus.FULL) {
+   public void statusChanged(ChunkPos chunkPosition, @Nullable ChunkStatus newStatus) {
+      if (newStatus == ChunkStatus.FULL) {
          ++this.loadedChunks;
       }
 

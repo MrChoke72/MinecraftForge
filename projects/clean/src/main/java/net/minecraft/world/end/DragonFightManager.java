@@ -126,7 +126,7 @@ public class DragonFightManager {
       ListNBT listnbt = new ListNBT();
 
       for(int i : this.gateways) {
-         listnbt.add(IntNBT.func_229692_a_(i));
+         listnbt.add(IntNBT.valueOf(i));
       }
 
       compoundnbt.put("Gateways", listnbt);
@@ -141,10 +141,10 @@ public class DragonFightManager {
       }
 
       if (!this.bossInfo.getPlayers().isEmpty()) {
-         this.world.getChunkProvider().func_217228_a(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
-         boolean flag = this.func_222670_k();
+         this.world.getChunkProvider().registerTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+         boolean flag = this.isFightAreaLoaded();
          if (this.scanForLegacyFight && flag) {
-            this.func_210827_g();
+            this.scanForLegacyFight();
             this.scanForLegacyFight = false;
          }
 
@@ -159,7 +159,7 @@ public class DragonFightManager {
 
          if (!this.dragonKilled) {
             if ((this.dragonUniqueId == null || ++this.ticksSinceDragonSeen >= 1200) && flag) {
-               this.func_210828_h();
+               this.findOrCreateDragon();
                this.ticksSinceDragonSeen = 0;
             }
 
@@ -169,14 +169,14 @@ public class DragonFightManager {
             }
          }
       } else {
-         this.world.getChunkProvider().func_217222_b(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+         this.world.getChunkProvider().releaseTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
       }
 
    }
 
-   private void func_210827_g() {
+   private void scanForLegacyFight() {
       LOGGER.info("Scanning for legacy world dragon fight...");
-      boolean flag = this.func_229981_i_();
+      boolean flag = this.exitPortalExists();
       if (flag) {
          LOGGER.info("Found that the dragon has been killed in this world already.");
          this.previouslyKilled = true;
@@ -209,7 +209,7 @@ public class DragonFightManager {
 
    }
 
-   private void func_210828_h() {
+   private void findOrCreateDragon() {
       List<EnderDragonEntity> list = this.world.getDragons();
       if (list.isEmpty()) {
          LOGGER.debug("Haven't seen the dragon, respawning it");
@@ -241,7 +241,7 @@ public class DragonFightManager {
       }
    }
 
-   private boolean func_229981_i_() {
+   private boolean exitPortalExists() {
       for(int i = -8; i <= 8; ++i) {
          for(int j = -8; j <= 8; ++j) {
             Chunk chunk = this.world.getChunk(i, j);
@@ -295,7 +295,7 @@ public class DragonFightManager {
       return null;
    }
 
-   private boolean func_222670_k() {
+   private boolean isFightAreaLoaded() {
       for(int i = -8; i <= 8; ++i) {
          for(int j = 8; j <= 8; ++j) {
             IChunk ichunk = this.world.getChunk(i, j, ChunkStatus.FULL, false);
@@ -303,7 +303,7 @@ public class DragonFightManager {
                return false;
             }
 
-            ChunkHolder.LocationType chunkholder$locationtype = ((Chunk)ichunk).func_217321_u();
+            ChunkHolder.LocationType chunkholder$locationtype = ((Chunk)ichunk).getLocationType();
             if (!chunkholder$locationtype.isAtLeast(ChunkHolder.LocationType.TICKING)) {
                return false;
             }
@@ -334,7 +334,7 @@ public class DragonFightManager {
       this.ticksSinceCrystalsScanned = 0;
       this.aliveCrystals = 0;
 
-      for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.func_214554_a(this.world)) {
+      for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.generateSpikes(this.world)) {
          this.aliveCrystals += this.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()).size();
       }
 
@@ -368,7 +368,7 @@ public class DragonFightManager {
 
    private void generateGateway(BlockPos pos) {
       this.world.playEvent(3000, pos, 0);
-      Feature.END_GATEWAY.func_225566_b_(EndGatewayConfig.func_214698_a()).place(this.world, this.world.getChunkProvider().getChunkGenerator(), new Random(), pos);
+      Feature.END_GATEWAY.withConfiguration(EndGatewayConfig.func_214698_a()).place(this.world, this.world.getChunkProvider().getChunkGenerator(), new Random(), pos);
    }
 
    private void generatePortal(boolean active) {
@@ -379,7 +379,7 @@ public class DragonFightManager {
          }
       }
 
-      endpodiumfeature.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG).place(this.world, this.world.getChunkProvider().getChunkGenerator(), new Random(), this.exitPortalLocation);
+      endpodiumfeature.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).place(this.world, this.world.getChunkProvider().getChunkGenerator(), new Random(), this.exitPortalLocation);
    }
 
    private EnderDragonEntity createNewDragon() {
@@ -486,7 +486,7 @@ public class DragonFightManager {
    }
 
    public void resetSpikeCrystals() {
-      for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.func_214554_a(this.world)) {
+      for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.generateSpikes(this.world)) {
          for(EnderCrystalEntity endercrystalentity : this.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox())) {
             endercrystalentity.setInvulnerable(false);
             endercrystalentity.setBeamTarget((BlockPos)null);

@@ -9,21 +9,21 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class PaintingSpriteUploader extends SpriteUploader {
-   private static final ResourceLocation field_215287_a = new ResourceLocation("back");
+   private static final ResourceLocation LOCATION_BACK_SPRITE = new ResourceLocation("back");
 
    public PaintingSpriteUploader(TextureManager textureManagerIn) {
       super(textureManagerIn, new ResourceLocation("textures/atlas/paintings.png"), "painting");
    }
 
-   protected Stream<ResourceLocation> func_225640_a_() {
-      return Stream.concat(Registry.MOTIVE.keySet().stream(), Stream.of(field_215287_a));
+   protected Stream<ResourceLocation> getResourceLocations() {
+      return Stream.concat(Registry.MOTIVE.keySet().stream(), Stream.of(LOCATION_BACK_SPRITE));
    }
 
    public TextureAtlasSprite getSpriteForPainting(PaintingType paintingTypeIn) {
       return this.getSprite(Registry.MOTIVE.getKey(paintingTypeIn));
    }
 
-   public TextureAtlasSprite func_215286_b() {
-      return this.getSprite(field_215287_a);
+   public TextureAtlasSprite getBackSprite() {
+      return this.getSprite(LOCATION_BACK_SPRITE);
    }
 }

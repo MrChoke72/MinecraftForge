@@ -48,14 +48,14 @@ public class MerchantResultSlot extends Slot {
       if (merchantoffer != null) {
          ItemStack itemstack = this.merchantInventory.getStackInSlot(0);
          ItemStack itemstack1 = this.merchantInventory.getStackInSlot(1);
-         if (merchantoffer.func_222215_b(itemstack, itemstack1) || merchantoffer.func_222215_b(itemstack1, itemstack)) {
+         if (merchantoffer.doTransaction(itemstack, itemstack1) || merchantoffer.doTransaction(itemstack1, itemstack)) {
             this.merchant.onTrade(merchantoffer);
             thePlayer.addStat(Stats.TRADED_WITH_VILLAGER);
             this.merchantInventory.setInventorySlotContents(0, itemstack);
             this.merchantInventory.setInventorySlotContents(1, itemstack1);
          }
 
-         this.merchant.func_213702_q(this.merchant.getXp() + merchantoffer.func_222210_n());
+         this.merchant.setXP(this.merchant.getXp() + merchantoffer.getGivenExp());
       }
 
       return stack;

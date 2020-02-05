@@ -65,7 +65,7 @@ public class ArmorDyeRecipe extends SpecialRecipe {
          }
       }
 
-      return !itemstack.isEmpty() && !list.isEmpty() ? IDyeableArmorItem.func_219975_a(itemstack, list) : ItemStack.EMPTY;
+      return !itemstack.isEmpty() && !list.isEmpty() ? IDyeableArmorItem.dyeItem(itemstack, list) : ItemStack.EMPTY;
    }
 
    public boolean canFit(int width, int height) {

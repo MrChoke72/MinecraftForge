@@ -48,7 +48,7 @@ public class SetLore extends LootFunction {
          }
 
          UnaryOperator<ITextComponent> unaryoperator = SetName.func_215936_a(context, this.field_215947_d);
-         this.lore.stream().map(unaryoperator).map(ITextComponent.Serializer::toJson).map(StringNBT::func_229705_a_).forEach(listnbt::add);
+         this.lore.stream().map(unaryoperator).map(ITextComponent.Serializer::toJson).map(StringNBT::valueOf).forEach(listnbt::add);
       }
 
       return stack;

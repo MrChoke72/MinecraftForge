@@ -29,7 +29,7 @@ public class SwimmerPathNavigator extends PathNavigator {
    }
 
    protected Vec3d getEntityPosition() {
-      return new Vec3d(this.entity.getPosX(), this.entity.func_226283_e_(0.5D), this.entity.getPosZ());
+      return new Vec3d(this.entity.getPosX(), this.entity.getPosYHeight(0.5D), this.entity.getPosZ());
    }
 
    public void tick() {
@@ -48,7 +48,7 @@ public class SwimmerPathNavigator extends PathNavigator {
             }
          }
 
-         DebugPacketSender.func_218803_a(this.world, this.entity, this.currentPath, this.maxDistanceToWaypoint);
+         DebugPacketSender.sendPath(this.world, this.entity, this.currentPath, this.maxDistanceToWaypoint);
          if (!this.noPath()) {
             Vec3d vec3d1 = this.currentPath.getPosition(this.entity);
             this.entity.getMoveHelper().setMoveTo(vec3d1.x, vec3d1.y, vec3d1.z, this.speed);

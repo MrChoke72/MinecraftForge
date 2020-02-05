@@ -50,7 +50,7 @@ public abstract class AnimalEntity extends AgeableEntity {
             double d0 = this.rand.nextGaussian() * 0.02D;
             double d1 = this.rand.nextGaussian() * 0.02D;
             double d2 = this.rand.nextGaussian() * 0.02D;
-            this.world.addParticle(ParticleTypes.HEART, this.func_226282_d_(1.0D), this.func_226279_cv_() + 0.5D, this.func_226287_g_(1.0D), d0, d1, d2);
+            this.world.addParticle(ParticleTypes.HEART, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
          }
       }
 
@@ -88,8 +88,8 @@ public abstract class AnimalEntity extends AgeableEntity {
       this.playerInLove = compound.hasUniqueId("LoveCause") ? compound.getUniqueId("LoveCause") : null;
    }
 
-   public static boolean func_223316_b(EntityType<? extends AnimalEntity> p_223316_0_, IWorld p_223316_1_, SpawnReason p_223316_2_, BlockPos p_223316_3_, Random p_223316_4_) {
-      return p_223316_1_.getBlockState(p_223316_3_.down()).getBlock() == Blocks.GRASS_BLOCK && p_223316_1_.func_226659_b_(p_223316_3_, 0) > 8;
+   public static boolean func_223316_b(EntityType<? extends AnimalEntity> p_223316_0_, IWorld p_223316_1_, SpawnReason reason, BlockPos p_223316_3_, Random p_223316_4_) {
+      return p_223316_1_.getBlockState(p_223316_3_.down()).getBlock() == Blocks.GRASS_BLOCK && p_223316_1_.getLightSubtracted(p_223316_3_, 0) > 8;
    }
 
    public int getTalkInterval() {
@@ -187,7 +187,7 @@ public abstract class AnimalEntity extends AgeableEntity {
             double d0 = this.rand.nextGaussian() * 0.02D;
             double d1 = this.rand.nextGaussian() * 0.02D;
             double d2 = this.rand.nextGaussian() * 0.02D;
-            this.world.addParticle(ParticleTypes.HEART, this.func_226282_d_(1.0D), this.func_226279_cv_() + 0.5D, this.func_226287_g_(1.0D), d0, d1, d2);
+            this.world.addParticle(ParticleTypes.HEART, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
          }
       } else {
          super.handleStatusUpdate(id);

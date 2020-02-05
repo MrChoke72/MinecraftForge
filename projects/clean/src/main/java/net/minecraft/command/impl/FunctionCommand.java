@@ -21,7 +21,7 @@ public class FunctionCommand {
    public static void register(CommandDispatcher<CommandSource> dispatcher) {
       dispatcher.register(Commands.literal("function").requires((p_198480_0_) -> {
          return p_198480_0_.hasPermissionLevel(2);
-      }).then(Commands.argument("name", FunctionArgument.func_200021_a()).suggests(FUNCTION_SUGGESTER).executes((p_198479_0_) -> {
+      }).then(Commands.argument("name", FunctionArgument.function()).suggests(FUNCTION_SUGGESTER).executes((p_198479_0_) -> {
          return executeFunctions(p_198479_0_.getSource(), FunctionArgument.getFunctions(p_198479_0_, "name"));
       })));
    }

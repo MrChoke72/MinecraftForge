@@ -6,8 +6,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public interface IModelTransform {
-   default TransformationMatrix func_225615_b_() {
-      return TransformationMatrix.func_227983_a_();
+   default TransformationMatrix getRotation() {
+      return TransformationMatrix.identity();
    }
 
    default boolean isUvLock() {

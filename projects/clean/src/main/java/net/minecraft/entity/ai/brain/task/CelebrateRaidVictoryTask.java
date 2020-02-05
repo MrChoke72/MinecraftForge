@@ -43,14 +43,14 @@ public class CelebrateRaidVictoryTask extends Task<VillagerEntity> {
    protected void updateTask(ServerWorld worldIn, VillagerEntity owner, long gameTime) {
       Random random = owner.getRNG();
       if (random.nextInt(100) == 0) {
-         owner.func_213711_eb();
+         owner.playCelebrateSound();
       }
 
       if (random.nextInt(200) == 0 && MoveToSkylightTask.func_226306_a_(worldIn, owner, new BlockPos(owner))) {
          DyeColor dyecolor = DyeColor.values()[random.nextInt(DyeColor.values().length)];
          int i = random.nextInt(3);
          ItemStack itemstack = this.makeFirework(dyecolor, i);
-         FireworkRocketEntity fireworkrocketentity = new FireworkRocketEntity(owner.world, owner.getPosX(), owner.getPosYPlusEyeHeight(), owner.getPosZ(), itemstack);
+         FireworkRocketEntity fireworkrocketentity = new FireworkRocketEntity(owner.world, owner.getPosX(), owner.getPosYEye(), owner.getPosZ(), itemstack);
          owner.world.addEntity(fireworkrocketentity);
       }
 

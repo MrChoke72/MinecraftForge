@@ -50,7 +50,7 @@ public class LanternBlock extends Block {
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
       Direction direction = func_220277_j(state).getOpposite();
-      return Block.func_220055_a(worldIn, pos.offset(direction), direction.getOpposite());
+      return Block.hasEnoughSolidSide(worldIn, pos.offset(direction), direction.getOpposite());
    }
 
    protected static Direction func_220277_j(BlockState p_220277_0_) {

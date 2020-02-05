@@ -95,7 +95,7 @@ public class BatEntity extends AmbientEntity {
       super.tick();
       if (this.getIsBatHanging()) {
          this.setMotion(Vec3d.ZERO);
-         this.func_226288_n_(this.getPosX(), (double)MathHelper.floor(this.getPosY()) + 1.0D - (double)this.getHeight(), this.getPosZ());
+         this.setRawPosition(this.getPosX(), (double)MathHelper.floor(this.getPosY()) + 1.0D - (double)this.getHeight(), this.getPosZ());
       } else {
          this.setMotion(this.getMotion().mul(1.0D, 0.6D, 1.0D));
       }
@@ -146,11 +146,11 @@ public class BatEntity extends AmbientEntity {
 
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 
@@ -183,7 +183,7 @@ public class BatEntity extends AmbientEntity {
       compound.putByte("BatFlags", this.dataManager.get(HANGING));
    }
 
-   public static boolean func_223369_b(EntityType<BatEntity> p_223369_0_, IWorld p_223369_1_, SpawnReason p_223369_2_, BlockPos p_223369_3_, Random p_223369_4_) {
+   public static boolean func_223369_b(EntityType<BatEntity> p_223369_0_, IWorld p_223369_1_, SpawnReason reason, BlockPos p_223369_3_, Random p_223369_4_) {
       if (p_223369_3_.getY() >= p_223369_1_.getSeaLevel()) {
          return false;
       } else {
@@ -195,7 +195,7 @@ public class BatEntity extends AmbientEntity {
             return false;
          }
 
-         return i > p_223369_4_.nextInt(j) ? false : canEntitySpawn(p_223369_0_, p_223369_1_, p_223369_2_, p_223369_3_, p_223369_4_);
+         return i > p_223369_4_.nextInt(j) ? false : canSpawnOn(p_223369_0_, p_223369_1_, reason, p_223369_3_, p_223369_4_);
       }
    }
 

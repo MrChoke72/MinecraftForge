@@ -24,7 +24,7 @@ public class RealmsScreenProxy extends Screen {
    private static final Logger LOGGER = LogManager.getLogger();
 
    public RealmsScreenProxy(RealmsScreen p_i50912_1_) {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
       this.screen = p_i50912_1_;
    }
 

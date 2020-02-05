@@ -124,7 +124,12 @@ public class MainMenuScreen extends Screen {
          this.minecraft.displayGuiScreen(new WorldSelectionScreen(this));
       }));
       this.addButton(new Button(this.width / 2 - 100, yIn + rowHeightIn * 1, 200, 20, I18n.format("menu.multiplayer"), (p_213086_1_) -> {
-         this.minecraft.displayGuiScreen(new MultiplayerScreen(this));
+         if (this.minecraft.gameSettings.field_230152_Z_) {
+            this.minecraft.displayGuiScreen(new MultiplayerScreen(this));
+         } else {
+            this.minecraft.displayGuiScreen(new MultiplayerWarningScreen(this));
+         }
+
       }));
       this.addButton(new Button(this.width / 2 - 100, yIn + rowHeightIn * 2, 200, 20, I18n.format("menu.online"), (p_213095_1_) -> {
          this.switchToRealms();
@@ -206,6 +211,10 @@ public class MainMenuScreen extends Screen {
             s = s + " Demo";
          } else {
             s = s + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType());
+         }
+
+         if (this.minecraft.func_230151_c_()) {
+            s = s + I18n.format("menu.modded");
          }
 
          this.drawString(this.font, s, 2, this.height - 10, 16777215 | l);

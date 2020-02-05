@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 public class CompoundNBT implements INBT {
    private static final Logger LOGGER = LogManager.getLogger();
    private static final Pattern SIMPLE_VALUE = Pattern.compile("[A-Za-z0-9._+-]+");
-   public static final INBTType<CompoundNBT> field_229675_a_ = new INBTType<CompoundNBT>() {
+   public static final INBTType<CompoundNBT> TYPE = new INBTType<CompoundNBT>() {
       public CompoundNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(384L);
          if (p_225649_2_ > 512) {
@@ -84,8 +84,8 @@ public class CompoundNBT implements INBT {
       return 10;
    }
 
-   public INBTType<CompoundNBT> func_225647_b_() {
-      return field_229675_a_;
+   public INBTType<CompoundNBT> getType() {
+      return TYPE;
    }
 
    public int size() {
@@ -93,24 +93,24 @@ public class CompoundNBT implements INBT {
    }
 
    @Nullable
-   public INBT put(String key, INBT p_218657_2_) {
-      return this.tagMap.put(key, p_218657_2_);
+   public INBT put(String key, INBT value) {
+      return this.tagMap.put(key, value);
    }
 
    public void putByte(String key, byte value) {
-      this.tagMap.put(key, ByteNBT.func_229671_a_(value));
+      this.tagMap.put(key, ByteNBT.valueOf(value));
    }
 
    public void putShort(String key, short value) {
-      this.tagMap.put(key, ShortNBT.func_229701_a_(value));
+      this.tagMap.put(key, ShortNBT.valueOf(value));
    }
 
    public void putInt(String key, int value) {
-      this.tagMap.put(key, IntNBT.func_229692_a_(value));
+      this.tagMap.put(key, IntNBT.valueOf(value));
    }
 
    public void putLong(String key, long value) {
-      this.tagMap.put(key, LongNBT.func_229698_a_(value));
+      this.tagMap.put(key, LongNBT.valueOf(value));
    }
 
    public void putUniqueId(String key, UUID value) {
@@ -132,15 +132,15 @@ public class CompoundNBT implements INBT {
    }
 
    public void putFloat(String key, float value) {
-      this.tagMap.put(key, FloatNBT.func_229689_a_(value));
+      this.tagMap.put(key, FloatNBT.valueOf(value));
    }
 
    public void putDouble(String key, double value) {
-      this.tagMap.put(key, DoubleNBT.func_229684_a_(value));
+      this.tagMap.put(key, DoubleNBT.valueOf(value));
    }
 
    public void putString(String key, String value) {
-      this.tagMap.put(key, StringNBT.func_229705_a_(value));
+      this.tagMap.put(key, StringNBT.valueOf(value));
    }
 
    public void putByteArray(String key, byte[] value) {
@@ -164,7 +164,7 @@ public class CompoundNBT implements INBT {
    }
 
    public void putBoolean(String key, boolean value) {
-      this.tagMap.put(key, ByteNBT.func_229672_a_(value));
+      this.tagMap.put(key, ByteNBT.valueOf(value));
    }
 
    @Nullable
@@ -282,7 +282,7 @@ public class CompoundNBT implements INBT {
             return ((ByteArrayNBT)this.tagMap.get(key)).getByteArray();
          }
       } catch (ClassCastException classcastexception) {
-         throw new ReportedException(this.func_229677_a_(key, ByteArrayNBT.field_229667_a_, classcastexception));
+         throw new ReportedException(this.func_229677_a_(key, ByteArrayNBT.TYPE, classcastexception));
       }
 
       return new byte[0];
@@ -294,7 +294,7 @@ public class CompoundNBT implements INBT {
             return ((IntArrayNBT)this.tagMap.get(key)).getIntArray();
          }
       } catch (ClassCastException classcastexception) {
-         throw new ReportedException(this.func_229677_a_(key, IntArrayNBT.field_229690_a_, classcastexception));
+         throw new ReportedException(this.func_229677_a_(key, IntArrayNBT.TYPE, classcastexception));
       }
 
       return new int[0];
@@ -306,7 +306,7 @@ public class CompoundNBT implements INBT {
             return ((LongArrayNBT)this.tagMap.get(key)).getAsLongArray();
          }
       } catch (ClassCastException classcastexception) {
-         throw new ReportedException(this.func_229677_a_(key, LongArrayNBT.field_229696_a_, classcastexception));
+         throw new ReportedException(this.func_229677_a_(key, LongArrayNBT.TYPE, classcastexception));
       }
 
       return new long[0];
@@ -318,7 +318,7 @@ public class CompoundNBT implements INBT {
             return (CompoundNBT)this.tagMap.get(key);
          }
       } catch (ClassCastException classcastexception) {
-         throw new ReportedException(this.func_229677_a_(key, field_229675_a_, classcastexception));
+         throw new ReportedException(this.func_229677_a_(key, TYPE, classcastexception));
       }
 
       return new CompoundNBT();
@@ -335,7 +335,7 @@ public class CompoundNBT implements INBT {
             return listnbt;
          }
       } catch (ClassCastException classcastexception) {
-         throw new ReportedException(this.func_229677_a_(key, ListNBT.field_229694_a_, classcastexception));
+         throw new ReportedException(this.func_229677_a_(key, ListNBT.TYPE, classcastexception));
       }
 
       return new ListNBT();
@@ -377,7 +377,7 @@ public class CompoundNBT implements INBT {
       CrashReport crashreport = CrashReport.makeCrashReport(p_229677_3_, "Reading NBT data");
       CrashReportCategory crashreportcategory = crashreport.makeCategoryDepth("Corrupt NBT tag", 1);
       crashreportcategory.addDetail("Tag type found", () -> {
-         return this.tagMap.get(p_229677_1_).func_225647_b_().func_225648_a_();
+         return this.tagMap.get(p_229677_1_).getType().func_225648_a_();
       });
       crashreportcategory.addDetail("Tag type expected", p_229677_2_::func_225648_a_);
       crashreportcategory.addDetail("Tag name", p_229677_1_);

@@ -50,7 +50,7 @@ public abstract class ChunkGenerator<C extends GenerationSettings> {
    }
 
    protected Biome func_225552_a_(BiomeManager p_225552_1_, BlockPos p_225552_2_) {
-      return p_225552_1_.func_226836_a_(p_225552_2_);
+      return p_225552_1_.getBiome(p_225552_2_);
    }
 
    public void func_225550_a_(BiomeManager p_225550_1_, IChunk p_225550_2_, GenerationStage.Carving p_225550_3_) {
@@ -94,7 +94,7 @@ public abstract class ChunkGenerator<C extends GenerationSettings> {
       int k = i * 16;
       int l = j * 16;
       BlockPos blockpos = new BlockPos(k, 0, l);
-      Biome biome = this.func_225552_a_(region.func_225523_d_(), blockpos.add(8, 8, 8));
+      Biome biome = this.func_225552_a_(region.getBiomeManager(), blockpos.add(8, 8, 8));
       SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
       long i1 = sharedseedrandom.setDecorationSeed(region.getSeed(), k, l);
 
@@ -146,10 +146,10 @@ public abstract class ChunkGenerator<C extends GenerationSettings> {
    }
 
    public List<Biome.SpawnListEntry> getPossibleCreatures(EntityClassification creatureType, BlockPos pos) {
-      return this.world.func_226691_t_(pos).getSpawns(creatureType);
+      return this.world.getBiome(pos).getSpawns(creatureType);
    }
 
-   public void func_227058_a_(BiomeManager p_227058_1_, IChunk p_227058_2_, ChunkGenerator<?> p_227058_3_, TemplateManager p_227058_4_) {
+   public void generateStructures(BiomeManager p_227058_1_, IChunk p_227058_2_, ChunkGenerator<?> p_227058_3_, TemplateManager p_227058_4_) {
       for(Structure<?> structure : Feature.STRUCTURES.values()) {
          if (p_227058_3_.getBiomeProvider().hasStructure(structure)) {
             StructureStart structurestart = p_227058_2_.getStructureStart(structure.getStructureName());
@@ -157,7 +157,7 @@ public abstract class ChunkGenerator<C extends GenerationSettings> {
             SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
             ChunkPos chunkpos = p_227058_2_.getPos();
             StructureStart structurestart1 = StructureStart.DUMMY;
-            Biome biome = p_227058_1_.func_226836_a_(new BlockPos(chunkpos.getXStart() + 9, 0, chunkpos.getZStart() + 9));
+            Biome biome = p_227058_1_.getBiome(new BlockPos(chunkpos.getXStart() + 9, 0, chunkpos.getZStart() + 9));
             if (structure.func_225558_a_(p_227058_1_, p_227058_3_, sharedseedrandom, chunkpos.x, chunkpos.z, biome)) {
                StructureStart structurestart2 = structure.getStartFactory().create(structure, chunkpos.x, chunkpos.z, MutableBoundingBox.getNewBoundingBox(), i, p_227058_3_.getSeed());
                structurestart2.init(this, p_227058_4_, chunkpos.x, chunkpos.z, biome);
@@ -185,7 +185,7 @@ public abstract class ChunkGenerator<C extends GenerationSettings> {
                StructureStart structurestart = entry.getValue();
                if (structurestart != StructureStart.DUMMY && structurestart.getBoundingBox().intersectsWith(l, i1, l + 15, i1 + 15)) {
                   chunkIn.addStructureReference(entry.getKey(), l1);
-                  DebugPacketSender.func_218804_a(worldIn, structurestart);
+                  DebugPacketSender.sendStructureStart(worldIn, structurestart);
                }
             }
          }
@@ -199,13 +199,13 @@ public abstract class ChunkGenerator<C extends GenerationSettings> {
       return 63;
    }
 
-   public abstract int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type p_222529_3_);
+   public abstract int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type heightmapType);
 
-   public int func_222532_b(int p_222532_1_, int p_222532_2_, Heightmap.Type p_222532_3_) {
-      return this.func_222529_a(p_222532_1_, p_222532_2_, p_222532_3_);
+   public int func_222532_b(int p_222532_1_, int p_222532_2_, Heightmap.Type heightmapType) {
+      return this.func_222529_a(p_222532_1_, p_222532_2_, heightmapType);
    }
 
-   public int func_222531_c(int p_222531_1_, int p_222531_2_, Heightmap.Type p_222531_3_) {
-      return this.func_222529_a(p_222531_1_, p_222531_2_, p_222531_3_) - 1;
+   public int func_222531_c(int p_222531_1_, int p_222531_2_, Heightmap.Type heightmapType) {
+      return this.func_222529_a(p_222531_1_, p_222531_2_, heightmapType) - 1;
    }
 }

@@ -72,7 +72,7 @@ public class ItemColors {
 
       itemcolors.register((p_210235_1_, p_210235_2_) -> {
          BlockState blockstate = ((BlockItem)p_210235_1_.getItem()).getBlock().getDefaultState();
-         return colors.func_228054_a_(blockstate, (ILightReader)null, (BlockPos)null, p_210235_2_);
+         return colors.getColor(blockstate, (ILightReader)null, (BlockPos)null, p_210235_2_);
       }, Blocks.GRASS_BLOCK, Blocks.GRASS, Blocks.FERN, Blocks.VINE, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.BIRCH_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.LILY_PAD);
       itemcolors.register((p_210242_0_, p_210242_1_) -> {
          return p_210242_1_ == 0 ? PotionUtils.getColor(p_210242_0_) : -1;

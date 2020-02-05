@@ -20,17 +20,17 @@ public class BatRenderer extends MobRenderer<BatEntity, BatModel> {
       return BAT_TEXTURES;
    }
 
-   protected void func_225620_a_(BatEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
-      p_225620_2_.func_227862_a_(0.35F, 0.35F, 0.35F);
+   protected void preRenderCallback(BatEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+      matrixStackIn.scale(0.35F, 0.35F, 0.35F);
    }
 
-   protected void func_225621_a_(BatEntity p_225621_1_, MatrixStack p_225621_2_, float p_225621_3_, float p_225621_4_, float p_225621_5_) {
-      if (p_225621_1_.getIsBatHanging()) {
-         p_225621_2_.func_227861_a_(0.0D, (double)-0.1F, 0.0D);
+   protected void applyRotations(BatEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
+      if (entityLiving.getIsBatHanging()) {
+         matrixStackIn.translate(0.0D, (double)-0.1F, 0.0D);
       } else {
-         p_225621_2_.func_227861_a_(0.0D, (double)(MathHelper.cos(p_225621_3_ * 0.3F) * 0.1F), 0.0D);
+         matrixStackIn.translate(0.0D, (double)(MathHelper.cos(ageInTicks * 0.3F) * 0.1F), 0.0D);
       }
 
-      super.func_225621_a_(p_225621_1_, p_225621_2_, p_225621_3_, p_225621_4_, p_225621_5_);
+      super.applyRotations(entityLiving, matrixStackIn, ageInTicks, rotationYaw, partialTicks);
    }
 }

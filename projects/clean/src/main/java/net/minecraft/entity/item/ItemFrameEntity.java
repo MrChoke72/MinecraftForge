@@ -48,7 +48,7 @@ public class ItemFrameEntity extends HangingEntity {
       this.updateFacingWithBoundingBox(p_i45852_3_);
    }
 
-   protected float getEyeHeight(Pose p_213316_1_, EntitySize p_213316_2_) {
+   protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
       return 0.0F;
    }
 
@@ -79,7 +79,7 @@ public class ItemFrameEntity extends HangingEntity {
          double d1 = (double)this.hangingPosition.getX() + 0.5D - (double)this.facingDirection.getXOffset() * 0.46875D;
          double d2 = (double)this.hangingPosition.getY() + 0.5D - (double)this.facingDirection.getYOffset() * 0.46875D;
          double d3 = (double)this.hangingPosition.getZ() + 0.5D - (double)this.facingDirection.getZOffset() * 0.46875D;
-         this.func_226288_n_(d1, d2, d3);
+         this.setRawPosition(d1, d2, d3);
          double d4 = (double)this.getWidthPixels();
          double d5 = (double)this.getHeightPixels();
          double d6 = (double)this.getWidthPixels();

@@ -65,7 +65,7 @@ public class GatherPOITask extends Task<CreatureEntity> {
    protected void startExecuting(ServerWorld worldIn, CreatureEntity entityIn, long gameTimeIn) {
       this.maxPoiPosToCheck = 0;
       this.taskEndTime = worldIn.getGameTime() + (long)worldIn.getRandom().nextInt(20);
-      PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
+      PointOfInterestManager pointofinterestmanager = worldIn.getPointOfInterestManager();
       Predicate<BlockPos> predicate = (pos) -> {
          long i = pos.toLong();
          if (this.posByEndTimeMap.containsKey(i)) {
@@ -91,13 +91,11 @@ public class GatherPOITask extends Task<CreatureEntity> {
             }, blockpos, 1);
             entityIn.getBrain().setMemory(this.memModuleType, GlobalPos.of(worldIn.getDimension().getType(), blockpos));
 
-            //AH CHANGE DEBUG OFF
-            /*
+            //AH CHANGE DEBUG
            if(entityIn.getCustomName() != null)
            {
                System.out.println("GatherPOITask, memory set at: " + blockpos.toString() + " for " + this.poiType);
            }
-             */
 
             DebugPacketSender.func_218801_c(worldIn, blockpos);
          });

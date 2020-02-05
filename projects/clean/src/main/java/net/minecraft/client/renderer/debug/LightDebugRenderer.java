@@ -22,26 +22,26 @@ public class LightDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.minecraft = minecraftIn;
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       World world = this.minecraft.world;
       RenderSystem.pushMatrix();
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
       RenderSystem.disableTexture();
-      BlockPos blockpos = new BlockPos(p_225619_3_, p_225619_5_, p_225619_7_);
+      BlockPos blockpos = new BlockPos(camX, camY, camZ);
       LongSet longset = new LongOpenHashSet();
 
       for(BlockPos blockpos1 : BlockPos.getAllInBoxMutable(blockpos.add(-10, -10, -10), blockpos.add(10, 10, 10))) {
-         int i = world.getLightLevel(LightType.SKY, blockpos1);
+         int i = world.getLightFor(LightType.SKY, blockpos1);
          float f = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
          int j = MathHelper.hsvToRGB(f, 0.9F, 0.9F);
          long k = SectionPos.worldToSection(blockpos1.toLong());
          if (longset.add(k)) {
-            DebugRenderer.func_217729_a(world.getChunkProvider().getLightManager().func_215572_a(LightType.SKY, SectionPos.from(k)), (double)(SectionPos.extractX(k) * 16 + 8), (double)(SectionPos.extractY(k) * 16 + 8), (double)(SectionPos.extractZ(k) * 16 + 8), 16711680, 0.3F);
+            DebugRenderer.renderText(world.getChunkProvider().getLightManager().getDebugInfo(LightType.SKY, SectionPos.from(k)), (double)(SectionPos.extractX(k) * 16 + 8), (double)(SectionPos.extractY(k) * 16 + 8), (double)(SectionPos.extractZ(k) * 16 + 8), 16711680, 0.3F);
          }
 
          if (i != 15) {
-            DebugRenderer.func_217732_a(String.valueOf(i), (double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.25D, (double)blockpos1.getZ() + 0.5D, j);
+            DebugRenderer.renderText(String.valueOf(i), (double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.25D, (double)blockpos1.getZ() + 0.5D, j);
          }
       }
 

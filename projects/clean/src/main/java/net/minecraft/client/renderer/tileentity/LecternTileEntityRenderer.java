@@ -20,19 +20,19 @@ public class LecternTileEntityRenderer extends TileEntityRenderer<LecternTileEnt
       super(p_i226011_1_);
    }
 
-   public void func_225616_a_(LecternTileEntity p_225616_1_, float p_225616_2_, MatrixStack p_225616_3_, IRenderTypeBuffer p_225616_4_, int p_225616_5_, int p_225616_6_) {
-      BlockState blockstate = p_225616_1_.getBlockState();
+   public void render(LecternTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+      BlockState blockstate = tileEntityIn.getBlockState();
       if (blockstate.get(LecternBlock.HAS_BOOK)) {
-         p_225616_3_.func_227860_a_();
-         p_225616_3_.func_227861_a_(0.5D, 1.0625D, 0.5D);
+         matrixStackIn.push();
+         matrixStackIn.translate(0.5D, 1.0625D, 0.5D);
          float f = blockstate.get(LecternBlock.FACING).rotateY().getHorizontalAngle();
-         p_225616_3_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(-f));
-         p_225616_3_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(67.5F));
-         p_225616_3_.func_227861_a_(0.0D, -0.125D, 0.0D);
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-f));
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(67.5F));
+         matrixStackIn.translate(0.0D, -0.125D, 0.0D);
          this.field_217656_d.func_228247_a_(0.0F, 0.1F, 0.9F, 1.2F);
-         IVertexBuilder ivertexbuilder = EnchantmentTableTileEntityRenderer.TEXTURE_BOOK.func_229311_a_(p_225616_4_, RenderType::func_228634_a_);
-         this.field_217656_d.func_228249_b_(p_225616_3_, ivertexbuilder, p_225616_5_, p_225616_6_, 1.0F, 1.0F, 1.0F, 1.0F);
-         p_225616_3_.func_227865_b_();
+         IVertexBuilder ivertexbuilder = EnchantmentTableTileEntityRenderer.TEXTURE_BOOK.getBuffer(bufferIn, RenderType::entitySolid);
+         this.field_217656_d.func_228249_b_(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
+         matrixStackIn.pop();
       }
    }
 }

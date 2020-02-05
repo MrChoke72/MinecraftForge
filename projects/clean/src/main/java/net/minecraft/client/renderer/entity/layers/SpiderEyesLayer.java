@@ -10,13 +10,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SpiderEyesLayer<T extends Entity, M extends SpiderModel<T>> extends AbstractEyesLayer<T, M> {
-   private static final RenderType field_229142_a_ = RenderType.func_228652_i_(new ResourceLocation("textures/entity/spider_eyes.png"));
+   private static final RenderType RENDER_TYPE = RenderType.eyes(new ResourceLocation("textures/entity/spider_eyes.png"));
 
-   public SpiderEyesLayer(IEntityRenderer<T, M> p_i50921_1_) {
-      super(p_i50921_1_);
+   public SpiderEyesLayer(IEntityRenderer<T, M> rendererIn) {
+      super(rendererIn);
    }
 
-   public RenderType func_225636_a_() {
-      return field_229142_a_;
+   public RenderType getRenderType() {
+      return RENDER_TYPE;
    }
 }

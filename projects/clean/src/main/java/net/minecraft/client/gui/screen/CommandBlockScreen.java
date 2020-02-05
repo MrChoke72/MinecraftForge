@@ -84,8 +84,8 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
       this.autoExecBtn.active = true;
    }
 
-   protected void func_195235_a(CommandBlockLogic p_195235_1_) {
-      this.minecraft.getConnection().sendPacket(new CUpdateCommandBlockPacket(new BlockPos(p_195235_1_.getPositionVector()), this.commandTextField.getText(), this.commandBlockMode, p_195235_1_.shouldTrackOutput(), this.conditional, this.automatic));
+   protected void func_195235_a(CommandBlockLogic commandBlockLogicIn) {
+      this.minecraft.getConnection().sendPacket(new CUpdateCommandBlockPacket(new BlockPos(commandBlockLogicIn.getPositionVector()), this.commandTextField.getText(), this.commandBlockMode, commandBlockLogicIn.shouldTrackOutput(), this.conditional, this.automatic));
    }
 
    private void updateMode() {

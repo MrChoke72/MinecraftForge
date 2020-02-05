@@ -11,7 +11,7 @@ public class Passthrough extends SimplePlacement<NoPlacementConfig> {
       super(p_i51363_1_);
    }
 
-   public Stream<BlockPos> getPositions(Random p_212852_1_, NoPlacementConfig p_212852_2_, BlockPos p_212852_3_) {
-      return Stream.of(p_212852_3_);
+   public Stream<BlockPos> getPositions(Random random, NoPlacementConfig p_212852_2_, BlockPos pos) {
+      return Stream.of(pos);
    }
 }

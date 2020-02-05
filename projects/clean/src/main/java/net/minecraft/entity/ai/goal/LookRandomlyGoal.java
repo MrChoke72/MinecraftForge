@@ -2,11 +2,10 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.monster.HuskEntity;
 
 public class LookRandomlyGoal extends Goal {
    //AH CHANGE REFACTOR
-   private final MobEntity entity;
+   private final MobEntity idleEntity;
    //private final MobEntity field_75258_a;
 
    private double lookX;
@@ -14,12 +13,12 @@ public class LookRandomlyGoal extends Goal {
    private int idleTime;
 
    public LookRandomlyGoal(MobEntity entitylivingIn) {
-      this.entity = entitylivingIn;
+      this.idleEntity = entitylivingIn;
       this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
    }
 
    public boolean shouldExecute() {
-      return this.entity.getRNG().nextFloat() < 0.02F;
+      return this.idleEntity.getRNG().nextFloat() < 0.02F;
    }
 
    public boolean shouldContinueExecuting() {
@@ -27,10 +26,10 @@ public class LookRandomlyGoal extends Goal {
    }
 
    public void startExecuting() {
-      double d0 = (Math.PI * 2D) * this.entity.getRNG().nextDouble();
+      double d0 = (Math.PI * 2D) * this.idleEntity.getRNG().nextDouble();
       this.lookX = Math.cos(d0);
       this.lookZ = Math.sin(d0);
-      this.idleTime = 20 + this.entity.getRNG().nextInt(20);
+      this.idleTime = 20 + this.idleEntity.getRNG().nextInt(20);
    }
 
    public void tick() {
@@ -44,6 +43,6 @@ public class LookRandomlyGoal extends Goal {
        */
 
       --this.idleTime;
-      this.entity.getLookController().func_220679_a(this.entity.getPosX() + this.lookX, this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ() + this.lookZ);
+      this.idleEntity.getLookController().setLookPosition(this.idleEntity.getPosX() + this.lookX, this.idleEntity.getPosYEye(), this.idleEntity.getPosZ() + this.lookZ);
    }
 }

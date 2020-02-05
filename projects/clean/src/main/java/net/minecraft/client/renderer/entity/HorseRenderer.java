@@ -25,7 +25,7 @@ public final class HorseRenderer extends AbstractHorseRenderer<HorseEntity, Hors
       ResourceLocation resourcelocation = LAYERED_LOCATION_CACHE.get(s);
       if (resourcelocation == null) {
          resourcelocation = new ResourceLocation(s);
-         Minecraft.getInstance().getTextureManager().func_229263_a_(resourcelocation, new LayeredTexture(entity.getVariantTexturePaths()));
+         Minecraft.getInstance().getTextureManager().loadTexture(resourcelocation, new LayeredTexture(entity.getVariantTexturePaths()));
          LAYERED_LOCATION_CACHE.put(s, resourcelocation);
       }
 

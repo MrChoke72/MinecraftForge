@@ -28,11 +28,11 @@ import net.minecraft.world.server.ServerWorld;
 public class FarmTask extends Task<VillagerEntity> {
    @Nullable
    private BlockPos field_220422_a;
-   private boolean field_220423_b;
+   private boolean hasFarmItemInInventory;
    private boolean field_220424_c;
    private long field_220425_d;
    private int field_220426_e;
-   private final List<BlockPos> field_223518_f = Lists.newArrayList();
+   private final List<BlockPos> farmableBlocks = Lists.newArrayList();
 
    public FarmTask() {
       super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleStatus.VALUE_PRESENT));
@@ -44,9 +44,9 @@ public class FarmTask extends Task<VillagerEntity> {
       } else if (owner.getVillagerData().getProfession() != VillagerProfession.FARMER) {
          return false;
       } else {
-         this.field_220423_b = owner.isFarmItemInInventory();
+         this.hasFarmItemInInventory = owner.isFarmItemInInventory();
          this.field_220424_c = false;
-         Inventory inventory = owner.getInventory();
+         Inventory inventory = owner.getVillagerInventory();
          int i = inventory.getSizeInventory();
 
          for(int j = 0; j < i; ++j) {
@@ -63,34 +63,34 @@ public class FarmTask extends Task<VillagerEntity> {
          }
 
          BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(owner);
-         this.field_223518_f.clear();
+         this.farmableBlocks.clear();
 
          for(int i1 = -1; i1 <= 1; ++i1) {
             for(int k = -1; k <= 1; ++k) {
                for(int l = -1; l <= 1; ++l) {
                   blockpos$mutable.setPos(owner.getPosX() + (double)i1, owner.getPosY() + (double)k, owner.getPosZ() + (double)l);
-                  if (this.func_223516_a(blockpos$mutable, worldIn)) {
-                     this.field_223518_f.add(new BlockPos(blockpos$mutable));
+                  if (this.isValidPosForFarming(blockpos$mutable, worldIn)) {
+                     this.farmableBlocks.add(new BlockPos(blockpos$mutable));
                   }
                }
             }
          }
 
-         this.field_220422_a = this.func_223517_a(worldIn);
-         return (this.field_220423_b || this.field_220424_c) && this.field_220422_a != null;
+         this.field_220422_a = this.getNextPosForFarming(worldIn);
+         return (this.hasFarmItemInInventory || this.field_220424_c) && this.field_220422_a != null;
       }
    }
 
    @Nullable
-   private BlockPos func_223517_a(ServerWorld p_223517_1_) {
-      return this.field_223518_f.isEmpty() ? null : this.field_223518_f.get(p_223517_1_.getRandom().nextInt(this.field_223518_f.size()));
+   private BlockPos getNextPosForFarming(ServerWorld serverWorldIn) {
+      return this.farmableBlocks.isEmpty() ? null : this.farmableBlocks.get(serverWorldIn.getRandom().nextInt(this.farmableBlocks.size()));
    }
 
-   private boolean func_223516_a(BlockPos p_223516_1_, ServerWorld p_223516_2_) {
-      BlockState blockstate = p_223516_2_.getBlockState(p_223516_1_);
+   private boolean isValidPosForFarming(BlockPos pos, ServerWorld serverWorldIn) {
+      BlockState blockstate = serverWorldIn.getBlockState(pos);
       Block block = blockstate.getBlock();
-      Block block1 = p_223516_2_.getBlockState(p_223516_1_.down()).getBlock();
-      return block instanceof CropsBlock && ((CropsBlock)block).isMaxAge(blockstate) && this.field_220424_c || blockstate.isAir() && block1 instanceof FarmlandBlock && this.field_220423_b;
+      Block block1 = serverWorldIn.getBlockState(pos.down()).getBlock();
+      return block instanceof CropsBlock && ((CropsBlock)block).isMaxAge(blockstate) && this.field_220424_c || blockstate.isAir() && block1 instanceof FarmlandBlock && this.hasFarmItemInInventory;
    }
 
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
@@ -117,8 +117,8 @@ public class FarmTask extends Task<VillagerEntity> {
             worldIn.func_225521_a_(this.field_220422_a, true, owner);
          }
 
-         if (blockstate.isAir() && block1 instanceof FarmlandBlock && this.field_220423_b) {
-            Inventory inventory = owner.getInventory();
+         if (blockstate.isAir() && block1 instanceof FarmlandBlock && this.hasFarmItemInInventory) {
+            Inventory inventory = owner.getVillagerInventory();
 
             for(int i = 0; i < inventory.getSizeInventory(); ++i) {
                ItemStack itemstack = inventory.getStackInSlot(i);
@@ -151,8 +151,8 @@ public class FarmTask extends Task<VillagerEntity> {
          }
 
          if (block instanceof CropsBlock && !((CropsBlock)block).isMaxAge(blockstate)) {
-            this.field_223518_f.remove(this.field_220422_a);
-            this.field_220422_a = this.func_223517_a(worldIn);
+            this.farmableBlocks.remove(this.field_220422_a);
+            this.field_220422_a = this.getNextPosForFarming(worldIn);
             if (this.field_220422_a != null) {
                this.field_220425_d = gameTime + 20L;
                owner.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosWrapper(this.field_220422_a), 0.5F, 1));

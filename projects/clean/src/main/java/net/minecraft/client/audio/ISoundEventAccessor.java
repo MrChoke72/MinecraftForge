@@ -9,5 +9,5 @@ public interface ISoundEventAccessor<T> {
 
    T cloneEntry();
 
-   void func_217867_a(SoundEngine p_217867_1_);
+   void enqueuePreload(SoundEngine engine);
 }

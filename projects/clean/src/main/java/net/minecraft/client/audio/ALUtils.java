@@ -30,7 +30,7 @@ public class ALUtils {
       }
    }
 
-   static boolean func_216483_a(String p_216483_0_) {
+   static boolean checkALError(String p_216483_0_) {
       int i = AL10.alGetError();
       if (i != 0) {
          LOGGER.error("{}: {}", p_216483_0_, func_216482_a(i));
@@ -57,7 +57,7 @@ public class ALUtils {
       }
    }
 
-   static boolean func_216481_a(long p_216481_0_, String p_216481_2_) {
+   static boolean checkALCError(long p_216481_0_, String p_216481_2_) {
       int i = ALC10.alcGetError(p_216481_0_);
       if (i != 0) {
          LOGGER.error("{}{}: {}", p_216481_2_, p_216481_0_, initErrorMessage(i));

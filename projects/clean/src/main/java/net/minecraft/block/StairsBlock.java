@@ -91,7 +91,7 @@ public class StairsBlock extends Block implements IWaterLoggable {
       this.modelState = state;
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 
@@ -141,12 +141,12 @@ public class StairsBlock extends Block implements IWaterLoggable {
       this.modelBlock.onEntityWalk(worldIn, pos, entityIn);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      this.modelBlock.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      this.modelBlock.tick(state, worldIn, pos, rand);
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      return this.modelState.func_227031_a_(p_225533_2_, p_225533_4_, p_225533_5_, p_225533_6_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      return this.modelState.onBlockActivated(worldIn, player, handIn, p_225533_6_);
    }
 
    public void onExplosionDestroy(World worldIn, BlockPos pos, Explosion explosionIn) {

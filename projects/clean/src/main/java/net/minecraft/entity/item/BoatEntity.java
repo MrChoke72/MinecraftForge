@@ -91,7 +91,7 @@ public class BoatEntity extends Entity {
       this.prevPosZ = z;
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -355,7 +355,7 @@ public class BoatEntity extends Entity {
    private void tickLerp() {
       if (this.canPassengerSteer()) {
          this.lerpSteps = 0;
-         this.func_213312_b(this.getPosX(), this.getPosY(), this.getPosZ());
+         this.setPacketCoordinates(this.getPosX(), this.getPosY(), this.getPosZ());
       }
 
       if (this.lerpSteps > 0) {
@@ -418,7 +418,7 @@ public class BoatEntity extends Entity {
                   blockpos$pooledmutable.setPos(l1, k1, i2);
                   IFluidState ifluidstate = this.world.getFluidState(blockpos$pooledmutable);
                   if (ifluidstate.isTagged(FluidTags.WATER)) {
-                     f = Math.max(f, ifluidstate.func_215679_a(this.world, blockpos$pooledmutable));
+                     f = Math.max(f, ifluidstate.getActualHeight(this.world, blockpos$pooledmutable));
                   }
 
                   if (f >= 1.0F) {
@@ -492,7 +492,7 @@ public class BoatEntity extends Entity {
                   blockpos$pooledmutable.setPos(k1, l1, i2);
                   IFluidState ifluidstate = this.world.getFluidState(blockpos$pooledmutable);
                   if (ifluidstate.isTagged(FluidTags.WATER)) {
-                     float f = (float)l1 + ifluidstate.func_215679_a(this.world, blockpos$pooledmutable);
+                     float f = (float)l1 + ifluidstate.getActualHeight(this.world, blockpos$pooledmutable);
                      this.waterLevel = Math.max((double)f, this.waterLevel);
                      flag |= axisalignedbb.minY < (double)f;
                   }
@@ -522,7 +522,7 @@ public class BoatEntity extends Entity {
                for(int i2 = i1; i2 < j1; ++i2) {
                   blockpos$pooledmutable.setPos(k1, l1, i2);
                   IFluidState ifluidstate = this.world.getFluidState(blockpos$pooledmutable);
-                  if (ifluidstate.isTagged(FluidTags.WATER) && d0 < (double)((float)blockpos$pooledmutable.getY() + ifluidstate.func_215679_a(this.world, blockpos$pooledmutable))) {
+                  if (ifluidstate.isTagged(FluidTags.WATER) && d0 < (double)((float)blockpos$pooledmutable.getY() + ifluidstate.getActualHeight(this.world, blockpos$pooledmutable))) {
                      if (!ifluidstate.isSource()) {
                         BoatEntity.Status boatentity$status = BoatEntity.Status.UNDER_FLOWING_WATER;
                         return boatentity$status;
@@ -544,7 +544,7 @@ public class BoatEntity extends Entity {
       double d2 = 0.0D;
       this.momentum = 0.05F;
       if (this.previousStatus == BoatEntity.Status.IN_AIR && this.status != BoatEntity.Status.IN_AIR && this.status != BoatEntity.Status.ON_LAND) {
-         this.waterLevel = this.func_226283_e_(1.0D);
+         this.waterLevel = this.getPosYHeight(1.0D);
          this.setPosition(this.getPosX(), (double)(this.getWaterLevelAbove() - this.getHeight()) + 0.101D, this.getPosZ());
          this.setMotion(this.getMotion().mul(1.0D, 0.0D, 1.0D));
          this.lastYd = 0.0D;
@@ -682,7 +682,7 @@ public class BoatEntity extends Entity {
                   return;
                }
 
-               this.func_225503_b_(this.fallDistance, 1.0F);
+               this.onLivingFall(this.fallDistance, 1.0F);
                if (!this.world.isRemote && !this.removed) {
                   this.remove();
                   if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {

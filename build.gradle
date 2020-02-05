@@ -62,7 +62,8 @@ ext {
         ]
     }
     MAPPING_CHANNEL = 'snapshot'
-    MAPPING_VERSION = '20190719-1.14.3'
+    //MAPPING_VERSION = '20190719-1.14.3'
+    MAPPING_VERSION = '20200127-1.15.1'
     MC_VERSION = '1.15.2'
     MCP_VERSION = '20200122.131323'
 }
@@ -123,6 +124,7 @@ project(':clean') {
     }
 }
 
+/*
 project(':forge') {    
     evaluationDependsOn(':clean')
     apply plugin: 'java-library'
@@ -498,7 +500,9 @@ project(':forge') {
                 }
                 exclude { it.isDirectory() }
                 rename { it.toLowerCase() }//Minecraft needs it lowercase.
-                exclude '**/*.lang' //Pre-1.13 format
+        */
+          //      exclude '**/*.lang' //Pre-1.13 format
+        /*
             }
         }
     
@@ -754,7 +758,7 @@ project(':forge') {
         }
     }
 
-    task installerJson(dependsOn: [launcherJson, genClientBinPatches, applyClientBinPatches, applyServerBinPatches/*, createClientSRG, createServerSRG*/]) {
+    task installerJson(dependsOn: [launcherJson, genClientBinPatches, applyClientBinPatches, applyServerBinPatches]) {
         ext {
             output = file('build/install_profile.json')
             INSTALLER_TOOLS = 'net.minecraftforge:installertools:1.1.4'
@@ -767,10 +771,7 @@ project(':forge') {
         inputs.file applyServerBinPatches.output
         inputs.file genClientBinPatches.toolJar
         inputs.file launcherJson.output
-        /*
-        inputs.file createClientSRG.output
-        inputs.file createServerSRG.output
-        */
+
         outputs.file output
         doLast {
             def libs = [
@@ -826,10 +827,7 @@ project(':forge') {
                         client: "[net.minecraft:client:${MC_VERSION}-${MCP_VERSION}:srg]",
                         server: "[net.minecraft:server:${MC_VERSION}-${MCP_VERSION}:srg]"
                     ],
-                    /*MC_SRG_SHA: [
-                        client: "'${sha1(createClientSRG.output)}'",
-                        server: "'${sha1(createServerSRG.output)}'"
-                    ],*/
+
                     PATCHED: [
                         client: "[${project.group}:${project.name}:${project.version}:client]",
                         server: "[${project.group}:${project.name}:${project.version}:server]"
@@ -874,11 +872,7 @@ project(':forge') {
                             '--in-jar', '{MC_SLIM}',
                             '--out-jar', '{MC_SRG}',
                             '--srg-in', '{MAPPINGS}'
-                        ]/*,
-                        outputs: [
-                            '{MC_SRG}': '{MC_SRG_SHA}'
                         ]
-                        */
                     ], [
                         jar: BIN_PATCHER,
                         classpath: getClasspath(project, libs, BIN_PATCHER),
@@ -913,26 +907,7 @@ project(':forge') {
     
     universalJar {
         from extraTxts
-        
-        /* TODO: Annotation Cache? need to talk to cpw about his new design.
-        from(fixAnnotationsJson){
-            into 'META-INF'
-        }
-        dependsOn fixAnnotationsJson
-        */
-        
-        /* We do not actually check this anywhere, so it's 400KB of uselless data
-        // Add checksum files of clean and patched vanilla classes.
-        ['client', 'server'].each { side ->
-            ['Base', 'Patched'].each { type -> 
-                from(tasks.getByName("${side}${type}Checksum").output) {
-                    into 'checksums/'
-                }
-            }
-        }
-        dependsOn checksums
-        */
-        
+
         // add crowdin locales
         from { !crowdin.state.skipped ? zipTree(crowdin.archivePath) : null}
         dependsOn crowdin
@@ -1234,6 +1209,7 @@ project(':forge') {
         }
     }
 }
+*/
 
 def dateToIso8601(date) {
     def format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")

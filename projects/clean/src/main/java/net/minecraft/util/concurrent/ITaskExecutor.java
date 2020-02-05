@@ -19,10 +19,10 @@ public interface ITaskExecutor<Msg> extends AutoCloseable {
       return completablefuture;
    }
 
-   static <Msg> ITaskExecutor<Msg> inline(final String p_213140_0_, final Consumer<Msg> p_213140_1_) {
+   static <Msg> ITaskExecutor<Msg> inline(final String name, final Consumer<Msg> p_213140_1_) {
       return new ITaskExecutor<Msg>() {
          public String getName() {
-            return p_213140_0_;
+            return name;
          }
 
          public void enqueue(Msg taskIn) {
@@ -30,7 +30,7 @@ public interface ITaskExecutor<Msg> extends AutoCloseable {
          }
 
          public String toString() {
-            return p_213140_0_;
+            return name;
          }
       };
    }

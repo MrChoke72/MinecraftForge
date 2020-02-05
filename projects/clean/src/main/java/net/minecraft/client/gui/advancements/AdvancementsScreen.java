@@ -26,7 +26,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
    private boolean isScrolling;
 
    public AdvancementsScreen(ClientAdvancementManager p_i47383_1_) {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
       this.clientAdvancementManager = p_i47383_1_;
    }
 

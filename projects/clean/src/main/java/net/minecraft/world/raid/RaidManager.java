@@ -88,7 +88,7 @@ public class RaidManager extends WorldSavedData {
             return null;
          } else {
             BlockPos blockpos = new BlockPos(p_215170_1_);
-            List<PointOfInterest> list = this.world.getPoiMgr().poiStreamByDistFiltPos(PointOfInterestType.POI_TYPE_PRED_TRUE, blockpos, 64, PointOfInterestManager.Status.IS_OCCUPIED).collect(Collectors.toList());
+            List<PointOfInterest> list = this.world.getPointOfInterestManager().poiStreamByDistFiltPos(PointOfInterestType.POI_TYPE_PRED_TRUE, blockpos, 64, PointOfInterestManager.Status.IS_OCCUPIED).collect(Collectors.toList());
             int i = 0;
             Vec3d vec3d = Vec3d.ZERO;
 

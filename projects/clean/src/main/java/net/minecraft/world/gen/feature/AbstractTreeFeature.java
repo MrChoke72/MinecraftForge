@@ -36,7 +36,7 @@ public abstract class AbstractTreeFeature<T extends BaseTreeFeatureConfig> exten
    protected static boolean func_214587_a(IWorldGenerationBaseReader p_214587_0_, BlockPos p_214587_1_) {
       return p_214587_0_.hasBlockState(p_214587_1_, (p_214573_0_) -> {
          Block block = p_214573_0_.getBlock();
-         return p_214573_0_.isAir() || p_214573_0_.isIn(BlockTags.LEAVES) || func_227250_b_(block) || block.isIn(BlockTags.LOGS) || block.isIn(BlockTags.SAPLINGS) || block == Blocks.VINE;
+         return p_214573_0_.isAir() || p_214573_0_.isIn(BlockTags.LEAVES) || isDirt(block) || block.isIn(BlockTags.LOGS) || block.isIn(BlockTags.SAPLINGS) || block == Blocks.VINE;
       });
    }
 
@@ -47,7 +47,7 @@ public abstract class AbstractTreeFeature<T extends BaseTreeFeatureConfig> exten
    protected static boolean isDirt(IWorldGenerationBaseReader worldIn, BlockPos pos) {
       return worldIn.hasBlockState(pos, (p_214590_0_) -> {
          Block block = p_214590_0_.getBlock();
-         return func_227250_b_(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM;
+         return isDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM;
       });
    }
 
@@ -71,18 +71,18 @@ public abstract class AbstractTreeFeature<T extends BaseTreeFeatureConfig> exten
 
    public static boolean isDirtOrGrassBlock(IWorldGenerationBaseReader worldIn, BlockPos pos) {
       return worldIn.hasBlockState(pos, (p_227221_0_) -> {
-         return func_227250_b_(p_227221_0_.getBlock());
+         return isDirt(p_227221_0_.getBlock());
       });
    }
 
    protected static boolean isDirtOrGrassBlockOrFarmland(IWorldGenerationBaseReader worldIn, BlockPos pos) {
       return worldIn.hasBlockState(pos, (p_227220_0_) -> {
          Block block = p_227220_0_.getBlock();
-         return func_227250_b_(block) || block == Blocks.FARMLAND;
+         return isDirt(block) || block == Blocks.FARMLAND;
       });
    }
 
-   public static boolean func_214576_j(IWorldGenerationBaseReader p_214576_0_, BlockPos p_214576_1_) {
+   public static boolean isTallPlants(IWorldGenerationBaseReader p_214576_0_, BlockPos p_214576_1_) {
       return p_214576_0_.hasBlockState(p_214576_1_, (p_227218_0_) -> {
          Material material = p_227218_0_.getMaterial();
          return material == Material.TALL_PLANTS;
@@ -97,20 +97,20 @@ public abstract class AbstractTreeFeature<T extends BaseTreeFeatureConfig> exten
    }
 
    protected boolean func_227216_a_(IWorldGenerationReader p_227216_1_, Random p_227216_2_, BlockPos p_227216_3_, Set<BlockPos> p_227216_4_, MutableBoundingBox p_227216_5_, BaseTreeFeatureConfig p_227216_6_) {
-      if (!isAirOrLeaves(p_227216_1_, p_227216_3_) && !func_214576_j(p_227216_1_, p_227216_3_) && !isWater(p_227216_1_, p_227216_3_)) {
+      if (!isAirOrLeaves(p_227216_1_, p_227216_3_) && !isTallPlants(p_227216_1_, p_227216_3_) && !isWater(p_227216_1_, p_227216_3_)) {
          return false;
       } else {
-         this.func_227217_a_(p_227216_1_, p_227216_3_, p_227216_6_.field_227368_m_.func_225574_a_(p_227216_2_, p_227216_3_), p_227216_5_);
+         this.func_227217_a_(p_227216_1_, p_227216_3_, p_227216_6_.trunkProvider.func_225574_a_(p_227216_2_, p_227216_3_), p_227216_5_);
          p_227216_4_.add(p_227216_3_.toImmutable());
          return true;
       }
    }
 
    protected boolean func_227219_b_(IWorldGenerationReader p_227219_1_, Random p_227219_2_, BlockPos p_227219_3_, Set<BlockPos> p_227219_4_, MutableBoundingBox p_227219_5_, BaseTreeFeatureConfig p_227219_6_) {
-      if (!isAirOrLeaves(p_227219_1_, p_227219_3_) && !func_214576_j(p_227219_1_, p_227219_3_) && !isWater(p_227219_1_, p_227219_3_)) {
+      if (!isAirOrLeaves(p_227219_1_, p_227219_3_) && !isTallPlants(p_227219_1_, p_227219_3_) && !isWater(p_227219_1_, p_227219_3_)) {
          return false;
       } else {
-         this.func_227217_a_(p_227219_1_, p_227219_3_, p_227219_6_.field_227369_n_.func_225574_a_(p_227219_2_, p_227219_3_), p_227219_5_);
+         this.func_227217_a_(p_227219_1_, p_227219_3_, p_227219_6_.leavesProvider.func_225574_a_(p_227219_2_, p_227219_3_), p_227219_5_);
          p_227219_4_.add(p_227219_3_.toImmutable());
          return true;
       }
@@ -136,12 +136,12 @@ public abstract class AbstractTreeFeature<T extends BaseTreeFeatureConfig> exten
       MutableBoundingBox mutableboundingbox = MutableBoundingBox.getNewBoundingBox();
       boolean flag = this.func_225557_a_(worldIn, rand, pos, set, set1, mutableboundingbox, config);
       if (mutableboundingbox.minX <= mutableboundingbox.maxX && flag && !set.isEmpty()) {
-         if (!config.field_227370_o_.isEmpty()) {
+         if (!config.decorators.isEmpty()) {
             List<BlockPos> list = Lists.newArrayList(set);
             List<BlockPos> list1 = Lists.newArrayList(set1);
             list.sort(Comparator.comparingInt(Vec3i::getY));
             list1.sort(Comparator.comparingInt(Vec3i::getY));
-            config.field_227370_o_.forEach((p_227215_6_) -> {
+            config.decorators.forEach((p_227215_6_) -> {
                p_227215_6_.func_225576_a_(worldIn, rand, list, list1, set2, mutableboundingbox);
             });
          }

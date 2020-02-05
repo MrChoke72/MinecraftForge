@@ -12,12 +12,12 @@ public class RandomCountWithRange extends SimplePlacement<CountRangeConfig> {
       super(p_i51353_1_);
    }
 
-   public Stream<BlockPos> getPositions(Random p_212852_1_, CountRangeConfig p_212852_2_, BlockPos p_212852_3_) {
-      int i = p_212852_1_.nextInt(Math.max(p_212852_2_.count, 1));
+   public Stream<BlockPos> getPositions(Random random, CountRangeConfig p_212852_2_, BlockPos pos) {
+      int i = random.nextInt(Math.max(p_212852_2_.count, 1));
       return IntStream.range(0, i).mapToObj((p_227455_3_) -> {
-         int j = p_212852_1_.nextInt(16) + p_212852_3_.getX();
-         int k = p_212852_1_.nextInt(16) + p_212852_3_.getZ();
-         int l = p_212852_1_.nextInt(p_212852_2_.maximum - p_212852_2_.topOffset) + p_212852_2_.bottomOffset;
+         int j = random.nextInt(16) + pos.getX();
+         int k = random.nextInt(16) + pos.getZ();
+         int l = random.nextInt(p_212852_2_.maximum - p_212852_2_.topOffset) + p_212852_2_.bottomOffset;
          return new BlockPos(j, l, k);
       });
    }

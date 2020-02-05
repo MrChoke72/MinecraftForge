@@ -11,9 +11,9 @@ import net.minecraft.world.World;
 public class DirectionalPlaceContext extends BlockItemUseContext {
    private final Direction lookDirection;
 
-   public DirectionalPlaceContext(World p_i50051_1_, BlockPos p_i50051_2_, Direction p_i50051_3_, ItemStack p_i50051_4_, Direction against) {
-      super(p_i50051_1_, (PlayerEntity)null, Hand.MAIN_HAND, p_i50051_4_, new BlockRayTraceResult(new Vec3d((double)p_i50051_2_.getX() + 0.5D, (double)p_i50051_2_.getY(), (double)p_i50051_2_.getZ() + 0.5D), against, p_i50051_2_, false));
-      this.lookDirection = p_i50051_3_;
+   public DirectionalPlaceContext(World worldIn, BlockPos pos, Direction lookDirectionIn, ItemStack stackIn, Direction against) {
+      super(worldIn, (PlayerEntity)null, Hand.MAIN_HAND, stackIn, new BlockRayTraceResult(new Vec3d((double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D), against, pos, false));
+      this.lookDirection = lookDirectionIn;
    }
 
    public BlockPos getPos() {

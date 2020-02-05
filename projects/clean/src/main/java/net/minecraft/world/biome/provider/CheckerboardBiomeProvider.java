@@ -13,7 +13,7 @@ public class CheckerboardBiomeProvider extends BiomeProvider {
       this.field_205321_c = p_i48973_1_.getSize() + 2;
    }
 
-   public Biome func_225526_b_(int p_225526_1_, int p_225526_2_, int p_225526_3_) {
-      return this.field_205320_b[Math.abs(((p_225526_1_ >> this.field_205321_c) + (p_225526_3_ >> this.field_205321_c)) % this.field_205320_b.length)];
+   public Biome getNoiseBiome(int x, int y, int z) {
+      return this.field_205320_b[Math.abs(((x >> this.field_205321_c) + (z >> this.field_205321_c)) % this.field_205320_b.length)];
    }
 }

@@ -16,7 +16,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.server.ServerWorld;
 
 public class FluidPredicate {
-   public static final FluidPredicate field_226643_a_ = new FluidPredicate((Tag<Fluid>)null, (Fluid)null, StatePropertiesPredicate.field_227178_a_);
+   public static final FluidPredicate field_226643_a_ = new FluidPredicate((Tag<Fluid>)null, (Fluid)null, StatePropertiesPredicate.EMPTY);
    @Nullable
    private final Tag<Fluid> field_226644_b_;
    @Nullable
@@ -42,7 +42,7 @@ public class FluidPredicate {
          } else if (this.field_226645_c_ != null && fluid != this.field_226645_c_) {
             return false;
          } else {
-            return this.field_226646_d_.func_227185_a_(ifluidstate);
+            return this.field_226646_d_.matches(ifluidstate);
          }
       }
    }
@@ -59,13 +59,13 @@ public class FluidPredicate {
          Tag<Fluid> tag = null;
          if (jsonobject.has("tag")) {
             ResourceLocation resourcelocation1 = new ResourceLocation(JSONUtils.getString(jsonobject, "tag"));
-            tag = FluidTags.func_226157_a_().get(resourcelocation1);
+            tag = FluidTags.getCollection().get(resourcelocation1);
             if (tag == null) {
                throw new JsonSyntaxException("Unknown fluid tag '" + resourcelocation1 + "'");
             }
          }
 
-         StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.func_227186_a_(jsonobject.get("state"));
+         StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.deserializeProperties(jsonobject.get("state"));
          return new FluidPredicate(tag, fluid, statepropertiespredicate);
       } else {
          return field_226643_a_;
@@ -85,7 +85,7 @@ public class FluidPredicate {
             jsonobject.addProperty("tag", this.field_226644_b_.getId().toString());
          }
 
-         jsonobject.add("state", this.field_226646_d_.func_227180_a_());
+         jsonobject.add("state", this.field_226646_d_.toJsonElement());
          return jsonobject;
       }
    }

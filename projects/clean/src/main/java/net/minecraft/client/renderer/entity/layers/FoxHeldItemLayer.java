@@ -19,40 +19,40 @@ public class FoxHeldItemLayer extends LayerRenderer<FoxEntity, FoxModel<FoxEntit
       super(p_i50938_1_);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, FoxEntity p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      boolean flag = p_225628_4_.isSleeping();
-      boolean flag1 = p_225628_4_.isChild();
-      p_225628_1_.func_227860_a_();
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, FoxEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      boolean flag = entitylivingbaseIn.isSleeping();
+      boolean flag1 = entitylivingbaseIn.isChild();
+      matrixStackIn.push();
       if (flag1) {
          float f = 0.75F;
-         p_225628_1_.func_227862_a_(0.75F, 0.75F, 0.75F);
-         p_225628_1_.func_227861_a_(0.0D, 0.5D, (double)0.209375F);
+         matrixStackIn.scale(0.75F, 0.75F, 0.75F);
+         matrixStackIn.translate(0.0D, 0.5D, (double)0.209375F);
       }
 
-      p_225628_1_.func_227861_a_((double)((this.getEntityModel()).field_217115_a.rotationPointX / 16.0F), (double)((this.getEntityModel()).field_217115_a.rotationPointY / 16.0F), (double)((this.getEntityModel()).field_217115_a.rotationPointZ / 16.0F));
-      float f1 = p_225628_4_.func_213475_v(p_225628_7_);
-      p_225628_1_.func_227863_a_(Vector3f.field_229183_f_.func_229193_c_(f1));
-      p_225628_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(p_225628_9_));
-      p_225628_1_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(p_225628_10_));
-      if (p_225628_4_.isChild()) {
+      matrixStackIn.translate((double)((this.getEntityModel()).field_217115_a.rotationPointX / 16.0F), (double)((this.getEntityModel()).field_217115_a.rotationPointY / 16.0F), (double)((this.getEntityModel()).field_217115_a.rotationPointZ / 16.0F));
+      float f1 = entitylivingbaseIn.func_213475_v(partialTicks);
+      matrixStackIn.rotate(Vector3f.ZP.rotation(f1));
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(netHeadYaw));
+      matrixStackIn.rotate(Vector3f.XP.rotationDegrees(headPitch));
+      if (entitylivingbaseIn.isChild()) {
          if (flag) {
-            p_225628_1_.func_227861_a_((double)0.4F, (double)0.26F, (double)0.15F);
+            matrixStackIn.translate((double)0.4F, (double)0.26F, (double)0.15F);
          } else {
-            p_225628_1_.func_227861_a_((double)0.06F, (double)0.26F, -0.5D);
+            matrixStackIn.translate((double)0.06F, (double)0.26F, -0.5D);
          }
       } else if (flag) {
-         p_225628_1_.func_227861_a_((double)0.46F, (double)0.26F, (double)0.22F);
+         matrixStackIn.translate((double)0.46F, (double)0.26F, (double)0.22F);
       } else {
-         p_225628_1_.func_227861_a_((double)0.06F, (double)0.27F, -0.5D);
+         matrixStackIn.translate((double)0.06F, (double)0.27F, -0.5D);
       }
 
-      p_225628_1_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(90.0F));
+      matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90.0F));
       if (flag) {
-         p_225628_1_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(90.0F));
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(90.0F));
       }
 
-      ItemStack itemstack = p_225628_4_.getItemStackFromSlot(EquipmentSlotType.MAINHAND);
-      Minecraft.getInstance().getFirstPersonRenderer().func_228397_a_(p_225628_4_, itemstack, ItemCameraTransforms.TransformType.GROUND, false, p_225628_1_, p_225628_2_, p_225628_3_);
-      p_225628_1_.func_227865_b_();
+      ItemStack itemstack = entitylivingbaseIn.getItemStackFromSlot(EquipmentSlotType.MAINHAND);
+      Minecraft.getInstance().getFirstPersonRenderer().renderItemSide(entitylivingbaseIn, itemstack, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn);
+      matrixStackIn.pop();
    }
 }

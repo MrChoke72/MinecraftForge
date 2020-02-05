@@ -42,8 +42,8 @@ public class HorseEntity extends AbstractHorseEntity {
    private String texturePrefix;
    private final String[] horseTexturesArray = new String[2];
 
-   public HorseEntity(EntityType<? extends HorseEntity> p_i50238_1_, World p_i50238_2_) {
-      super(p_i50238_1_, p_i50238_2_);
+   public HorseEntity(EntityType<? extends HorseEntity> p_i50238_1_, World worldIn) {
+      super(p_i50238_1_, worldIn);
    }
 
    protected void registerData() {

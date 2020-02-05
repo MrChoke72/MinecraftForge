@@ -1,4 +1,4 @@
-package net.minecraft.entity.ai.goal;
+package com.mrchoke.entity.ai.goal;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.MobEntity;

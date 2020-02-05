@@ -29,14 +29,14 @@ public class NetherWartBlock extends BushBlock {
       return state.getBlock() == Blocks.SOUL_SAND;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      int i = p_225534_1_.get(AGE);
-      if (i < 3 && p_225534_4_.nextInt(10) == 0) {
-         p_225534_1_ = p_225534_1_.with(AGE, Integer.valueOf(i + 1));
-         p_225534_2_.setBlockState(p_225534_3_, p_225534_1_, 2);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      int i = state.get(AGE);
+      if (i < 3 && rand.nextInt(10) == 0) {
+         state = state.with(AGE, Integer.valueOf(i + 1));
+         worldIn.setBlockState(pos, state, 2);
       }
 
-      super.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
+      super.tick(state, worldIn, pos, rand);
    }
 
    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state) {

@@ -20,9 +20,9 @@ public class Rotations {
 
    public ListNBT writeToNBT() {
       ListNBT listnbt = new ListNBT();
-      listnbt.add(FloatNBT.func_229689_a_(this.x));
-      listnbt.add(FloatNBT.func_229689_a_(this.y));
-      listnbt.add(FloatNBT.func_229689_a_(this.z));
+      listnbt.add(FloatNBT.valueOf(this.x));
+      listnbt.add(FloatNBT.valueOf(this.y));
+      listnbt.add(FloatNBT.valueOf(this.z));
       return listnbt;
    }
 

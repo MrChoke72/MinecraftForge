@@ -140,7 +140,7 @@ public class PointOfInterestType {
       poiType.stateSet.forEach((blockState) -> {
          PointOfInterestType pointofinteresttype = blStatePoiTypeMap.put(blockState, poiType);
          if (pointofinteresttype != null) {
-            throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
+            throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
          }
       });
       return poiType;

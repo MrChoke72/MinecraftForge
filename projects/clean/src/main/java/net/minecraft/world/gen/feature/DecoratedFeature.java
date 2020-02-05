@@ -15,7 +15,7 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
    }
 
    public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, DecoratedFeatureConfig config) {
-      return config.decorator.func_215093_a(worldIn, generator, rand, pos, config.feature);
+      return config.decorator.place(worldIn, generator, rand, pos, config.feature);
    }
 
    public String toString() {

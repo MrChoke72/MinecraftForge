@@ -25,20 +25,20 @@ public class WalkToHouseTask extends Task<LivingEntity> {
    //private final float field_220524_a;
 
    //AH REFACTOR
-      //Key: Long: BlockPos packed
-      //Value:
+   //Key: Long: BlockPos packed
+   //Value:
    private final Long2LongMap posEndTimeMap = new Long2LongOpenHashMap();
    //private final Long2LongMap field_225455_b = new Long2LongOpenHashMap();
 
    //AH REFACTOR
    private int findPoiLimit;
    //private int field_225456_c;
-   
+
    private long startTime;
 
    //AH REFACTOR
    public WalkToHouseTask(float moveSpeed) {
-   //public WalkToHouseTask(float p_i50353_1_) {
+      //public WalkToHouseTask(float p_i50353_1_) {
       super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT, MemoryModuleType.HOME, MemoryModuleStatus.VALUE_ABSENT));
       this.moveSpeed = moveSpeed;
    }
@@ -48,22 +48,20 @@ public class WalkToHouseTask extends Task<LivingEntity> {
          return false;
       } else {
          CreatureEntity creatureentity = (CreatureEntity)owner;
-         PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
+         PointOfInterestManager pointofinterestmanager = worldIn.getPointOfInterestManager();
 
-         //AH DEBUG OFF
-         /*
+         //AH DEBUG
          if(owner.getCustomName() != null)
          {
             System.out.println("In WalkToHouseTask, should execute");
          }
-          */
-
+         
          //AH CHANGE REFACTOR
          Optional<BlockPos> optional = pointofinterestmanager.getPoiPosInRange(PointOfInterestType.HOME.getPoiTypePred(), (posPred) -> {
-         //Optional<BlockPos> optional = pointofinterestmanager.getPoiPosInRange(PointOfInterestType.HOME.getPoiTypePred(), (p_220522_0_) -> {            
+            //Optional<BlockPos> optional = pointofinterestmanager.getPoiPosInRange(PointOfInterestType.HOME.getPoiTypePred(), (p_220522_0_) -> {
             return true;
 
-         //AH CHANGE - increase range form 48 to 64
+            //AH CHANGE - increase range form 48 to 64
          }, new BlockPos(owner), 64, PointOfInterestManager.Status.ANY);
          //}, new BlockPos(owner), 48, PointOfInterestManager.Status.ANY);
 
@@ -76,7 +74,7 @@ public class WalkToHouseTask extends Task<LivingEntity> {
       this.findPoiLimit = 0;
       this.startTime = worldIn.getGameTime() + (long)worldIn.getRandom().nextInt(20);
       CreatureEntity creatureentity = (CreatureEntity)entityIn;
-      PointOfInterestManager pointofinterestmanager = worldIn.getPoiMgr();
+      PointOfInterestManager pointofinterestmanager = worldIn.getPointOfInterestManager();
       Predicate<BlockPos> predicate = (pos) -> {
          long i = pos.toLong();
          if (this.posEndTimeMap.containsKey(i)) {
@@ -89,6 +87,12 @@ public class WalkToHouseTask extends Task<LivingEntity> {
          }
       };
 
+      //AH CHANGE DEBUG
+      if(entityIn.getCustomName() != null)
+      {
+         System.out.println("WalkToHouseTask, in startExecuting");
+      }
+
       //AH CHANGE - increase home search from 48 to 64
       Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entityIn), 64, PointOfInterestManager.Status.ANY);
       //Stream<BlockPos> stream = pointofinterestmanager.poiStreamByDistFiltPos(PointOfInterestType.HOME.getPoiTypePred(), predicate, new BlockPos(entityIn), 48, PointOfInterestManager.Status.ANY);
@@ -99,15 +103,6 @@ public class WalkToHouseTask extends Task<LivingEntity> {
          Optional<PointOfInterestType> optional = pointofinterestmanager.getPoiTypeForPos(blockpos);
          if (optional.isPresent()) {
             entityIn.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockpos, this.moveSpeed, 1));
-
-            //AH CHANGE DEBUG OFF
-            /*
-            if(entityIn.getCustomName() != null)
-            {
-               System.out.println("WalkToHouseTask, walk target set to: " + blockpos.toString());
-            }
-             */
-
             DebugPacketSender.func_218801_c(worldIn, blockpos);
          }
       } else if (this.findPoiLimit < 5) {

@@ -15,12 +15,12 @@ public class MineshaftConfig implements IFeatureConfig {
    }
 
    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-      return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("probability"), ops.createDouble(this.probability), ops.createString("type"), ops.createString(this.type.func_214714_a()))));
+      return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("probability"), ops.createDouble(this.probability), ops.createString("type"), ops.createString(this.type.getName()))));
    }
 
    public static <T> MineshaftConfig deserialize(Dynamic<T> p_214638_0_) {
       float f = p_214638_0_.get("probability").asFloat(0.0F);
-      MineshaftStructure.Type mineshaftstructure$type = MineshaftStructure.Type.func_214715_a(p_214638_0_.get("type").asString(""));
+      MineshaftStructure.Type mineshaftstructure$type = MineshaftStructure.Type.byName(p_214638_0_.get("type").asString(""));
       return new MineshaftConfig((double)f, mineshaftstructure$type);
    }
 }

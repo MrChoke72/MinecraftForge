@@ -9,13 +9,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CreeperModel<T extends Entity> extends SegmentedModel<T> {
-   private final ModelRenderer field_78135_a;
+   private final ModelRenderer head;
    private final ModelRenderer creeperArmor;
-   private final ModelRenderer field_78134_c;
-   private final ModelRenderer field_78131_d;
-   private final ModelRenderer field_78132_e;
-   private final ModelRenderer field_78129_f;
-   private final ModelRenderer field_78130_g;
+   private final ModelRenderer body;
+   private final ModelRenderer leg1;
+   private final ModelRenderer leg2;
+   private final ModelRenderer leg3;
+   private final ModelRenderer leg4;
 
    public CreeperModel() {
       this(0.0F);
@@ -23,39 +23,39 @@ public class CreeperModel<T extends Entity> extends SegmentedModel<T> {
 
    public CreeperModel(float p_i46366_1_) {
       int i = 6;
-      this.field_78135_a = new ModelRenderer(this, 0, 0);
-      this.field_78135_a.func_228301_a_(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, p_i46366_1_);
-      this.field_78135_a.setRotationPoint(0.0F, 6.0F, 0.0F);
+      this.head = new ModelRenderer(this, 0, 0);
+      this.head.addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, p_i46366_1_);
+      this.head.setRotationPoint(0.0F, 6.0F, 0.0F);
       this.creeperArmor = new ModelRenderer(this, 32, 0);
-      this.creeperArmor.func_228301_a_(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, p_i46366_1_ + 0.5F);
+      this.creeperArmor.addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, p_i46366_1_ + 0.5F);
       this.creeperArmor.setRotationPoint(0.0F, 6.0F, 0.0F);
-      this.field_78134_c = new ModelRenderer(this, 16, 16);
-      this.field_78134_c.func_228301_a_(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, p_i46366_1_);
-      this.field_78134_c.setRotationPoint(0.0F, 6.0F, 0.0F);
-      this.field_78131_d = new ModelRenderer(this, 0, 16);
-      this.field_78131_d.func_228301_a_(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, p_i46366_1_);
-      this.field_78131_d.setRotationPoint(-2.0F, 18.0F, 4.0F);
-      this.field_78132_e = new ModelRenderer(this, 0, 16);
-      this.field_78132_e.func_228301_a_(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, p_i46366_1_);
-      this.field_78132_e.setRotationPoint(2.0F, 18.0F, 4.0F);
-      this.field_78129_f = new ModelRenderer(this, 0, 16);
-      this.field_78129_f.func_228301_a_(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, p_i46366_1_);
-      this.field_78129_f.setRotationPoint(-2.0F, 18.0F, -4.0F);
-      this.field_78130_g = new ModelRenderer(this, 0, 16);
-      this.field_78130_g.func_228301_a_(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, p_i46366_1_);
-      this.field_78130_g.setRotationPoint(2.0F, 18.0F, -4.0F);
+      this.body = new ModelRenderer(this, 16, 16);
+      this.body.addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, p_i46366_1_);
+      this.body.setRotationPoint(0.0F, 6.0F, 0.0F);
+      this.leg1 = new ModelRenderer(this, 0, 16);
+      this.leg1.addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, p_i46366_1_);
+      this.leg1.setRotationPoint(-2.0F, 18.0F, 4.0F);
+      this.leg2 = new ModelRenderer(this, 0, 16);
+      this.leg2.addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, p_i46366_1_);
+      this.leg2.setRotationPoint(2.0F, 18.0F, 4.0F);
+      this.leg3 = new ModelRenderer(this, 0, 16);
+      this.leg3.addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, p_i46366_1_);
+      this.leg3.setRotationPoint(-2.0F, 18.0F, -4.0F);
+      this.leg4 = new ModelRenderer(this, 0, 16);
+      this.leg4.addBox(-2.0F, 0.0F, -2.0F, 4.0F, 6.0F, 4.0F, p_i46366_1_);
+      this.leg4.setRotationPoint(2.0F, 18.0F, -4.0F);
    }
 
-   public Iterable<ModelRenderer> func_225601_a_() {
-      return ImmutableList.of(this.field_78135_a, this.field_78134_c, this.field_78131_d, this.field_78132_e, this.field_78129_f, this.field_78130_g);
+   public Iterable<ModelRenderer> getParts() {
+      return ImmutableList.of(this.head, this.body, this.leg1, this.leg2, this.leg3, this.leg4);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      this.field_78135_a.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F);
-      this.field_78135_a.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
-      this.field_78131_d.rotateAngleX = MathHelper.cos(p_225597_2_ * 0.6662F) * 1.4F * p_225597_3_;
-      this.field_78132_e.rotateAngleX = MathHelper.cos(p_225597_2_ * 0.6662F + (float)Math.PI) * 1.4F * p_225597_3_;
-      this.field_78129_f.rotateAngleX = MathHelper.cos(p_225597_2_ * 0.6662F + (float)Math.PI) * 1.4F * p_225597_3_;
-      this.field_78130_g.rotateAngleX = MathHelper.cos(p_225597_2_ * 0.6662F) * 1.4F * p_225597_3_;
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.head.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
+      this.head.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+      this.leg1.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+      this.leg2.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+      this.leg3.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+      this.leg4.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
    }
 }

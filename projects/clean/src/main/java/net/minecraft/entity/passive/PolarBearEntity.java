@@ -81,12 +81,12 @@ public class PolarBearEntity extends AnimalEntity {
       this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(6.0D);
    }
 
-   public static boolean func_223320_c(EntityType<PolarBearEntity> p_223320_0_, IWorld p_223320_1_, SpawnReason p_223320_2_, BlockPos p_223320_3_, Random p_223320_4_) {
-      Biome biome = p_223320_1_.func_226691_t_(p_223320_3_);
+   public static boolean func_223320_c(EntityType<PolarBearEntity> p_223320_0_, IWorld p_223320_1_, SpawnReason reason, BlockPos p_223320_3_, Random p_223320_4_) {
+      Biome biome = p_223320_1_.getBiome(p_223320_3_);
       if (biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN) {
-         return func_223316_b(p_223320_0_, p_223320_1_, p_223320_2_, p_223320_3_, p_223320_4_);
+         return func_223316_b(p_223320_0_, p_223320_1_, reason, p_223320_3_, p_223320_4_);
       } else {
-         return p_223320_1_.func_226659_b_(p_223320_3_, 0) > 8 && p_223320_1_.getBlockState(p_223320_3_.down()).getBlock() == Blocks.ICE;
+         return p_223320_1_.getLightSubtracted(p_223320_3_, 0) > 8 && p_223320_1_.getBlockState(p_223320_3_.down()).getBlock() == Blocks.ICE;
       }
    }
 

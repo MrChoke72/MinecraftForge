@@ -11,27 +11,27 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class IteratableOption extends AbstractOption {
    private final BiConsumer<GameSettings, Integer> setter;
-   private final BiFunction<GameSettings, IteratableOption, String> field_216724_R;
+   private final BiFunction<GameSettings, IteratableOption, String> getter;
 
-   public IteratableOption(String p_i51164_1_, BiConsumer<GameSettings, Integer> getter, BiFunction<GameSettings, IteratableOption, String> p_i51164_3_) {
-      super(p_i51164_1_);
+   public IteratableOption(String translationKeyIn, BiConsumer<GameSettings, Integer> getter, BiFunction<GameSettings, IteratableOption, String> getterIn) {
+      super(translationKeyIn);
       this.setter = getter;
-      this.field_216724_R = p_i51164_3_;
+      this.getter = getterIn;
    }
 
-   public void func_216722_a(GameSettings options, int p_216722_2_) {
-      this.setter.accept(options, p_216722_2_);
+   public void setValueIndex(GameSettings options, int valueIn) {
+      this.setter.accept(options, valueIn);
       options.saveOptions();
    }
 
-   public Widget createWidget(GameSettings options, int p_216586_2_, int p_216586_3_, int p_216586_4_) {
-      return new OptionButton(p_216586_2_, p_216586_3_, p_216586_4_, 20, this, this.func_216720_c(options), (p_216721_2_) -> {
-         this.func_216722_a(options, 1);
-         p_216721_2_.setMessage(this.func_216720_c(options));
+   public Widget createWidget(GameSettings options, int xIn, int yIn, int widthIn) {
+      return new OptionButton(xIn, yIn, widthIn, 20, this, this.getText(options), (p_216721_2_) -> {
+         this.setValueIndex(options, 1);
+         p_216721_2_.setMessage(this.getText(options));
       });
    }
 
-   public String func_216720_c(GameSettings options) {
-      return this.field_216724_R.apply(options, this);
+   public String getText(GameSettings options) {
+      return this.getter.apply(options, this);
    }
 }

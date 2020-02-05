@@ -31,7 +31,7 @@ public class WetSpongeBlock extends Block {
       if (direction != Direction.UP) {
          BlockPos blockpos = pos.offset(direction);
          BlockState blockstate = worldIn.getBlockState(blockpos);
-         if (!stateIn.isSolid() || !blockstate.func_224755_d(worldIn, blockpos, direction.getOpposite())) {
+         if (!stateIn.isSolid() || !blockstate.isSolidSide(worldIn, blockpos, direction.getOpposite())) {
             double d0 = (double)pos.getX();
             double d1 = (double)pos.getY();
             double d2 = (double)pos.getZ();

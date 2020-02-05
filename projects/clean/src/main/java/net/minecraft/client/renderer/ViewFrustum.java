@@ -17,14 +17,14 @@ public class ViewFrustum {
    protected int countChunksZ;
    public ChunkRenderDispatcher.ChunkRender[] renderChunks;
 
-   public ViewFrustum(ChunkRenderDispatcher p_i226000_1_, World p_i226000_2_, int p_i226000_3_, WorldRenderer p_i226000_4_) {
-      this.renderGlobal = p_i226000_4_;
-      this.world = p_i226000_2_;
-      this.setCountChunksXYZ(p_i226000_3_);
-      this.func_228789_a_(p_i226000_1_);
+   public ViewFrustum(ChunkRenderDispatcher renderDispatcherIn, World worldIn, int countChunksIn, WorldRenderer renderGlobalIn) {
+      this.renderGlobal = renderGlobalIn;
+      this.world = worldIn;
+      this.setCountChunksXYZ(countChunksIn);
+      this.createRenderChunks(renderDispatcherIn);
    }
 
-   protected void func_228789_a_(ChunkRenderDispatcher p_228789_1_) {
+   protected void createRenderChunks(ChunkRenderDispatcher renderChunkFactory) {
       int i = this.countChunksX * this.countChunksY * this.countChunksZ;
       this.renderChunks = new ChunkRenderDispatcher.ChunkRender[i];
 
@@ -32,7 +32,7 @@ public class ViewFrustum {
          for(int k = 0; k < this.countChunksY; ++k) {
             for(int l = 0; l < this.countChunksZ; ++l) {
                int i1 = this.getIndex(j, k, l);
-               this.renderChunks[i1] = p_228789_1_.new ChunkRender();
+               this.renderChunks[i1] = renderChunkFactory.new ChunkRender();
                this.renderChunks[i1].setPosition(j * 16, k * 16, l * 16);
             }
          }

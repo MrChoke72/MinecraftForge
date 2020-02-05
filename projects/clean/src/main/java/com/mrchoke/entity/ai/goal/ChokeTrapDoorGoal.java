@@ -3,7 +3,6 @@ package com.mrchoke.entity.ai.goal;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.InteractTrapDoorGoal;
 import net.minecraft.pathfinding.GroundPathNavigator;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;

@@ -14,10 +14,10 @@ public class HuskRenderer extends ZombieRenderer {
       super(renderManagerIn);
    }
 
-   protected void func_225620_a_(ZombieEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
+   protected void preRenderCallback(ZombieEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
       float f = 1.0625F;
-      p_225620_2_.func_227862_a_(1.0625F, 1.0625F, 1.0625F);
-      super.func_225620_a_(p_225620_1_, p_225620_2_, p_225620_3_);
+      matrixStackIn.scale(1.0625F, 1.0625F, 1.0625F);
+      super.preRenderCallback(entitylivingbaseIn, matrixStackIn, partialTickTime);
    }
 
    public ResourceLocation getEntityTexture(ZombieEntity entity) {

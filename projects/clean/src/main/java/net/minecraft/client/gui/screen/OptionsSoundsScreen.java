@@ -32,13 +32,13 @@ public class OptionsSoundsScreen extends SettingsScreen {
       int j = this.width / 2 - 75;
       int k = this.height / 6 - 12;
       ++i;
-      this.addButton(new OptionButton(j, k + 24 * (i >> 1), 150, 20, AbstractOption.SHOW_SUBTITLES, AbstractOption.SHOW_SUBTITLES.func_216743_c(this.field_228183_b_), (p_213105_1_) -> {
-         AbstractOption.SHOW_SUBTITLES.func_216740_a(this.minecraft.gameSettings);
-         p_213105_1_.setMessage(AbstractOption.SHOW_SUBTITLES.func_216743_c(this.minecraft.gameSettings));
+      this.addButton(new OptionButton(j, k + 24 * (i >> 1), 150, 20, AbstractOption.SHOW_SUBTITLES, AbstractOption.SHOW_SUBTITLES.getText(this.gameSettings), (p_213105_1_) -> {
+         AbstractOption.SHOW_SUBTITLES.nextValue(this.minecraft.gameSettings);
+         p_213105_1_.setMessage(AbstractOption.SHOW_SUBTITLES.getText(this.minecraft.gameSettings));
          this.minecraft.gameSettings.saveOptions();
       }));
       this.addButton(new Button(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.format("gui.done"), (p_213104_1_) -> {
-         this.minecraft.displayGuiScreen(this.field_228182_a_);
+         this.minecraft.displayGuiScreen(this.parentScreen);
       }));
    }
 

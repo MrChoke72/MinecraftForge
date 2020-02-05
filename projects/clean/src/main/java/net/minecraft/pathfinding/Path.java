@@ -70,9 +70,9 @@ public class Path {
       return this.points;
    }
 
-   public void func_215747_b(int p_215747_1_) {
-      if (this.points.size() > p_215747_1_) {
-         this.points.subList(p_215747_1_, this.points.size()).clear();
+   public void setCurrentPathLength(int len) {
+      if (this.points.size() > len) {
+         this.points.subList(len, this.points.size()).clear();
       }
 
    }

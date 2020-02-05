@@ -26,41 +26,41 @@ public class WolfModel<T extends WolfEntity> extends TintedAgeableModel<T> {
       this.head = new ModelRenderer(this, 0, 0);
       this.head.setRotationPoint(-1.0F, 13.5F, -7.0F);
       this.field_228298_b_ = new ModelRenderer(this, 0, 0);
-      this.field_228298_b_.func_228301_a_(-2.0F, -3.0F, -2.0F, 6.0F, 6.0F, 4.0F, 0.0F);
+      this.field_228298_b_.addBox(-2.0F, -3.0F, -2.0F, 6.0F, 6.0F, 4.0F, 0.0F);
       this.head.addChild(this.field_228298_b_);
       this.body = new ModelRenderer(this, 18, 14);
-      this.body.func_228301_a_(-3.0F, -2.0F, -3.0F, 6.0F, 9.0F, 6.0F, 0.0F);
+      this.body.addBox(-3.0F, -2.0F, -3.0F, 6.0F, 9.0F, 6.0F, 0.0F);
       this.body.setRotationPoint(0.0F, 14.0F, 2.0F);
       this.mane = new ModelRenderer(this, 21, 0);
-      this.mane.func_228301_a_(-3.0F, -3.0F, -3.0F, 8.0F, 6.0F, 7.0F, 0.0F);
+      this.mane.addBox(-3.0F, -3.0F, -3.0F, 8.0F, 6.0F, 7.0F, 0.0F);
       this.mane.setRotationPoint(-1.0F, 14.0F, 2.0F);
       this.legBackRight = new ModelRenderer(this, 0, 18);
-      this.legBackRight.func_228301_a_(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
+      this.legBackRight.addBox(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
       this.legBackRight.setRotationPoint(-2.5F, 16.0F, 7.0F);
       this.legBackLeft = new ModelRenderer(this, 0, 18);
-      this.legBackLeft.func_228301_a_(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
+      this.legBackLeft.addBox(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
       this.legBackLeft.setRotationPoint(0.5F, 16.0F, 7.0F);
       this.legFrontRight = new ModelRenderer(this, 0, 18);
-      this.legFrontRight.func_228301_a_(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
+      this.legFrontRight.addBox(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
       this.legFrontRight.setRotationPoint(-2.5F, 16.0F, -4.0F);
       this.legFrontLeft = new ModelRenderer(this, 0, 18);
-      this.legFrontLeft.func_228301_a_(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
+      this.legFrontLeft.addBox(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
       this.legFrontLeft.setRotationPoint(0.5F, 16.0F, -4.0F);
       this.tail = new ModelRenderer(this, 9, 18);
       this.tail.setRotationPoint(-1.0F, 12.0F, 8.0F);
       this.field_228299_l_ = new ModelRenderer(this, 9, 18);
-      this.field_228299_l_.func_228301_a_(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
+      this.field_228299_l_.addBox(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F, 0.0F);
       this.tail.addChild(this.field_228299_l_);
-      this.field_228298_b_.setTextureOffset(16, 14).func_228301_a_(-2.0F, -5.0F, 0.0F, 2.0F, 2.0F, 1.0F, 0.0F);
-      this.field_228298_b_.setTextureOffset(16, 14).func_228301_a_(2.0F, -5.0F, 0.0F, 2.0F, 2.0F, 1.0F, 0.0F);
-      this.field_228298_b_.setTextureOffset(0, 10).func_228301_a_(-0.5F, 0.0F, -5.0F, 3.0F, 3.0F, 4.0F, 0.0F);
+      this.field_228298_b_.setTextureOffset(16, 14).addBox(-2.0F, -5.0F, 0.0F, 2.0F, 2.0F, 1.0F, 0.0F);
+      this.field_228298_b_.setTextureOffset(16, 14).addBox(2.0F, -5.0F, 0.0F, 2.0F, 2.0F, 1.0F, 0.0F);
+      this.field_228298_b_.setTextureOffset(0, 10).addBox(-0.5F, 0.0F, -5.0F, 3.0F, 3.0F, 4.0F, 0.0F);
    }
 
-   protected Iterable<ModelRenderer> func_225602_a_() {
+   protected Iterable<ModelRenderer> getHeadParts() {
       return ImmutableList.of(this.head);
    }
 
-   protected Iterable<ModelRenderer> func_225600_b_() {
+   protected Iterable<ModelRenderer> getBodyParts() {
       return ImmutableList.of(this.body, this.legBackRight, this.legBackLeft, this.legFrontRight, this.legFrontLeft, this.tail, this.mane);
    }
 
@@ -108,9 +108,9 @@ public class WolfModel<T extends WolfEntity> extends TintedAgeableModel<T> {
       this.field_228299_l_.rotateAngleZ = entityIn.getShakeAngle(partialTick, -0.2F);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      this.head.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
-      this.head.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F);
-      this.tail.rotateAngleX = p_225597_4_;
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.head.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+      this.head.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
+      this.tail.rotateAngleX = ageInTicks;
    }
 }

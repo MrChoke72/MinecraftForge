@@ -178,7 +178,7 @@ public class ScoreboardSaveData extends WorldSavedData {
          ListNBT listnbt1 = new ListNBT();
 
          for(String s : scoreplayerteam.getMembershipCollection()) {
-            listnbt1.add(StringNBT.func_229705_a_(s));
+            listnbt1.add(StringNBT.valueOf(s));
          }
 
          compoundnbt.put("Players", listnbt1);

@@ -93,12 +93,12 @@ public class PandaEntity extends AnimalEntity {
 
    }
 
-   public boolean func_213365_e(ItemStack p_213365_1_) {
-      EquipmentSlotType equipmentslottype = MobEntity.getSlotForItemStack(p_213365_1_);
+   public boolean canPickUpItem(ItemStack itemstackIn) {
+      EquipmentSlotType equipmentslottype = MobEntity.getSlotForItemStack(itemstackIn);
       if (!this.getItemStackFromSlot(equipmentslottype).isEmpty()) {
          return false;
       } else {
-         return equipmentslottype == EquipmentSlotType.MAINHAND && super.func_213365_e(p_213365_1_);
+         return equipmentslottype == EquipmentSlotType.MAINHAND && super.canPickUpItem(itemstackIn);
       }
    }
 
@@ -400,7 +400,7 @@ public class PandaEntity extends AnimalEntity {
             double d0 = (double)(-this.rand.nextFloat()) * 0.6D - 0.3D;
             Vec3d vec3d1 = new Vec3d(((double)this.rand.nextFloat() - 0.5D) * 0.8D, d0, 1.0D + ((double)this.rand.nextFloat() - 0.5D) * 0.4D);
             vec3d1 = vec3d1.rotateYaw(-this.renderYawOffset * ((float)Math.PI / 180F));
-            vec3d1 = vec3d1.add(this.getPosX(), this.getPosYPlusEyeHeight() + 1.0D, this.getPosZ());
+            vec3d1 = vec3d1.add(this.getPosX(), this.getPosYEye() + 1.0D, this.getPosZ());
             this.world.addParticle(new ItemParticleData(ParticleTypes.ITEM, this.getItemStackFromSlot(EquipmentSlotType.MAINHAND)), vec3d1.x, vec3d1.y, vec3d1.z, vec3d.x, vec3d.y + 0.05D, vec3d.z);
          }
       }
@@ -476,7 +476,7 @@ public class PandaEntity extends AnimalEntity {
 
    private void func_213577_ez() {
       Vec3d vec3d = this.getMotion();
-      this.world.addParticle(ParticleTypes.SNEEZE, this.getPosX() - (double)(this.getWidth() + 1.0F) * 0.5D * (double)MathHelper.sin(this.renderYawOffset * ((float)Math.PI / 180F)), this.getPosYPlusEyeHeight() - (double)0.1F, this.getPosZ() + (double)(this.getWidth() + 1.0F) * 0.5D * (double)MathHelper.cos(this.renderYawOffset * ((float)Math.PI / 180F)), vec3d.x, 0.0D, vec3d.z);
+      this.world.addParticle(ParticleTypes.SNEEZE, this.getPosX() - (double)(this.getWidth() + 1.0F) * 0.5D * (double)MathHelper.sin(this.renderYawOffset * ((float)Math.PI / 180F)), this.getPosYEye() - (double)0.1F, this.getPosZ() + (double)(this.getWidth() + 1.0F) * 0.5D * (double)MathHelper.cos(this.renderYawOffset * ((float)Math.PI / 180F)), vec3d.x, 0.0D, vec3d.z);
       this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0F, 1.0F);
 
       for(PandaEntity pandaentity : this.world.getEntitiesWithinAABB(PandaEntity.class, this.getBoundingBox().grow(10.0D))) {
@@ -1066,9 +1066,9 @@ public class PandaEntity extends AnimalEntity {
          } else {
             if (this.closestEntity == null) {
                if (this.watchedClass == PlayerEntity.class) {
-                  this.closestEntity = this.entity.world.getClosestPlayer(this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ());
+                  this.closestEntity = this.entity.world.getClosestPlayer(this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYEye(), this.entity.getPosZ());
                } else {
-                  this.closestEntity = this.entity.world.getClosestEntity(this.watchedClass, this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.maxDistance, 3.0D, (double)this.maxDistance));
+                  this.closestEntity = this.entity.world.getClosestEntity(this.watchedClass, this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYEye(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.maxDistance, 3.0D, (double)this.maxDistance));
                }
             }
 

@@ -26,8 +26,8 @@ public class FrameTimer {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_219792_a(long p_219792_1_, int p_219792_3_, int p_219792_4_) {
-      double d0 = (double)p_219792_1_ / (double)(1000000000L / (long)p_219792_4_);
+   public int getLineHeight(long valueIn, int p_219792_3_, int p_219792_4_) {
+      double d0 = (double)valueIn / (double)(1000000000L / (long)p_219792_4_);
       return (int)(d0 * (double)p_219792_3_);
    }
 

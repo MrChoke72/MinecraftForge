@@ -3,7 +3,7 @@ package net.minecraft.entity.monster;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.OpenDoorGoal;
-import net.minecraft.entity.ai.goal.OpenTrapDoorGoal;
+import com.mrchoke.entity.ai.goal.OpenTrapDoorGoal;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

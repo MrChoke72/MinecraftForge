@@ -22,7 +22,7 @@ public class RealmsVertexFormat {
    public List<RealmsVertexFormatElement> getElements() {
       List<RealmsVertexFormatElement> list = Lists.newArrayList();
 
-      for(VertexFormatElement vertexformatelement : this.v.func_227894_c_()) {
+      for(VertexFormatElement vertexformatelement : this.v.getElements()) {
          list.add(new RealmsVertexFormatElement(vertexformatelement));
       }
 

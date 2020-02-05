@@ -25,60 +25,60 @@ public class RavagerModel extends SegmentedModel<RavagerEntity> {
       float f = 0.0F;
       this.field_217175_k = new ModelRenderer(this);
       this.field_217175_k.setRotationPoint(0.0F, -7.0F, -1.5F);
-      this.field_217175_k.setTextureOffset(68, 73).func_228301_a_(-5.0F, -1.0F, -18.0F, 10.0F, 10.0F, 18.0F, 0.0F);
+      this.field_217175_k.setTextureOffset(68, 73).addBox(-5.0F, -1.0F, -18.0F, 10.0F, 10.0F, 18.0F, 0.0F);
       this.field_217168_a = new ModelRenderer(this);
       this.field_217168_a.setRotationPoint(0.0F, 16.0F, -17.0F);
-      this.field_217168_a.setTextureOffset(0, 0).func_228301_a_(-8.0F, -20.0F, -14.0F, 16.0F, 20.0F, 16.0F, 0.0F);
-      this.field_217168_a.setTextureOffset(0, 0).func_228301_a_(-2.0F, -6.0F, -18.0F, 4.0F, 8.0F, 4.0F, 0.0F);
+      this.field_217168_a.setTextureOffset(0, 0).addBox(-8.0F, -20.0F, -14.0F, 16.0F, 20.0F, 16.0F, 0.0F);
+      this.field_217168_a.setTextureOffset(0, 0).addBox(-2.0F, -6.0F, -18.0F, 4.0F, 8.0F, 4.0F, 0.0F);
       ModelRenderer modelrenderer = new ModelRenderer(this);
       modelrenderer.setRotationPoint(-10.0F, -14.0F, -8.0F);
-      modelrenderer.setTextureOffset(74, 55).func_228301_a_(0.0F, -14.0F, -2.0F, 2.0F, 14.0F, 4.0F, 0.0F);
+      modelrenderer.setTextureOffset(74, 55).addBox(0.0F, -14.0F, -2.0F, 2.0F, 14.0F, 4.0F, 0.0F);
       modelrenderer.rotateAngleX = 1.0995574F;
       this.field_217168_a.addChild(modelrenderer);
       ModelRenderer modelrenderer1 = new ModelRenderer(this);
       modelrenderer1.mirror = true;
       modelrenderer1.setRotationPoint(8.0F, -14.0F, -8.0F);
-      modelrenderer1.setTextureOffset(74, 55).func_228301_a_(0.0F, -14.0F, -2.0F, 2.0F, 14.0F, 4.0F, 0.0F);
+      modelrenderer1.setTextureOffset(74, 55).addBox(0.0F, -14.0F, -2.0F, 2.0F, 14.0F, 4.0F, 0.0F);
       modelrenderer1.rotateAngleX = 1.0995574F;
       this.field_217168_a.addChild(modelrenderer1);
       this.field_217169_b = new ModelRenderer(this);
       this.field_217169_b.setRotationPoint(0.0F, -2.0F, 2.0F);
-      this.field_217169_b.setTextureOffset(0, 36).func_228301_a_(-8.0F, 0.0F, -16.0F, 16.0F, 3.0F, 16.0F, 0.0F);
+      this.field_217169_b.setTextureOffset(0, 36).addBox(-8.0F, 0.0F, -16.0F, 16.0F, 3.0F, 16.0F, 0.0F);
       this.field_217168_a.addChild(this.field_217169_b);
       this.field_217175_k.addChild(this.field_217168_a);
       this.field_217170_f = new ModelRenderer(this);
-      this.field_217170_f.setTextureOffset(0, 55).func_228301_a_(-7.0F, -10.0F, -7.0F, 14.0F, 16.0F, 20.0F, 0.0F);
-      this.field_217170_f.setTextureOffset(0, 91).func_228301_a_(-6.0F, 6.0F, -7.0F, 12.0F, 13.0F, 18.0F, 0.0F);
+      this.field_217170_f.setTextureOffset(0, 55).addBox(-7.0F, -10.0F, -7.0F, 14.0F, 16.0F, 20.0F, 0.0F);
+      this.field_217170_f.setTextureOffset(0, 91).addBox(-6.0F, 6.0F, -7.0F, 12.0F, 13.0F, 18.0F, 0.0F);
       this.field_217170_f.setRotationPoint(0.0F, 1.0F, 2.0F);
       this.field_217171_g = new ModelRenderer(this, 96, 0);
-      this.field_217171_g.func_228301_a_(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F, 0.0F);
+      this.field_217171_g.addBox(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F, 0.0F);
       this.field_217171_g.setRotationPoint(-8.0F, -13.0F, 18.0F);
       this.field_217172_h = new ModelRenderer(this, 96, 0);
       this.field_217172_h.mirror = true;
-      this.field_217172_h.func_228301_a_(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F, 0.0F);
+      this.field_217172_h.addBox(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F, 0.0F);
       this.field_217172_h.setRotationPoint(8.0F, -13.0F, 18.0F);
       this.field_217173_i = new ModelRenderer(this, 64, 0);
-      this.field_217173_i.func_228301_a_(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F, 0.0F);
+      this.field_217173_i.addBox(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F, 0.0F);
       this.field_217173_i.setRotationPoint(-8.0F, -13.0F, -5.0F);
       this.field_217174_j = new ModelRenderer(this, 64, 0);
       this.field_217174_j.mirror = true;
-      this.field_217174_j.func_228301_a_(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F, 0.0F);
+      this.field_217174_j.addBox(-4.0F, 0.0F, -4.0F, 8.0F, 37.0F, 8.0F, 0.0F);
       this.field_217174_j.setRotationPoint(8.0F, -13.0F, -5.0F);
    }
 
-   public Iterable<ModelRenderer> func_225601_a_() {
+   public Iterable<ModelRenderer> getParts() {
       return ImmutableList.of(this.field_217175_k, this.field_217170_f, this.field_217171_g, this.field_217172_h, this.field_217173_i, this.field_217174_j);
    }
 
-   public void func_225597_a_(RavagerEntity p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      this.field_217168_a.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
-      this.field_217168_a.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F);
+   public void render(RavagerEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.field_217168_a.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+      this.field_217168_a.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
       this.field_217170_f.rotateAngleX = ((float)Math.PI / 2F);
-      float f = 0.4F * p_225597_3_;
-      this.field_217171_g.rotateAngleX = MathHelper.cos(p_225597_2_ * 0.6662F) * f;
-      this.field_217172_h.rotateAngleX = MathHelper.cos(p_225597_2_ * 0.6662F + (float)Math.PI) * f;
-      this.field_217173_i.rotateAngleX = MathHelper.cos(p_225597_2_ * 0.6662F + (float)Math.PI) * f;
-      this.field_217174_j.rotateAngleX = MathHelper.cos(p_225597_2_ * 0.6662F) * f;
+      float f = 0.4F * limbSwingAmount;
+      this.field_217171_g.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * f;
+      this.field_217172_h.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * f;
+      this.field_217173_i.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * f;
+      this.field_217174_j.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * f;
    }
 
    public void setLivingAnimations(RavagerEntity entityIn, float limbSwing, float limbSwingAmount, float partialTick) {

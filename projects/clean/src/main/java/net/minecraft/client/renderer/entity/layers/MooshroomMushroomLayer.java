@@ -15,39 +15,39 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class MooshroomMushroomLayer<T extends MooshroomEntity> extends LayerRenderer<T, CowModel<T>> {
-   public MooshroomMushroomLayer(IEntityRenderer<T, CowModel<T>> p_i50931_1_) {
-      super(p_i50931_1_);
+   public MooshroomMushroomLayer(IEntityRenderer<T, CowModel<T>> rendererIn) {
+      super(rendererIn);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, T p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      if (!p_225628_4_.isChild() && !p_225628_4_.isInvisible()) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      if (!entitylivingbaseIn.isChild() && !entitylivingbaseIn.isInvisible()) {
          BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
-         BlockState blockstate = p_225628_4_.getMooshroomType().getRenderState();
-         int i = LivingRenderer.func_229117_c_(p_225628_4_, 0.0F);
-         p_225628_1_.func_227860_a_();
-         p_225628_1_.func_227861_a_((double)0.2F, (double)-0.35F, 0.5D);
-         p_225628_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(-48.0F));
-         p_225628_1_.func_227862_a_(-1.0F, -1.0F, 1.0F);
-         p_225628_1_.func_227861_a_(-0.5D, -0.5D, -0.5D);
-         blockrendererdispatcher.func_228791_a_(blockstate, p_225628_1_, p_225628_2_, p_225628_3_, i);
-         p_225628_1_.func_227865_b_();
-         p_225628_1_.func_227860_a_();
-         p_225628_1_.func_227861_a_((double)0.2F, (double)-0.35F, 0.5D);
-         p_225628_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(42.0F));
-         p_225628_1_.func_227861_a_((double)0.1F, 0.0D, (double)-0.6F);
-         p_225628_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(-48.0F));
-         p_225628_1_.func_227862_a_(-1.0F, -1.0F, 1.0F);
-         p_225628_1_.func_227861_a_(-0.5D, -0.5D, -0.5D);
-         blockrendererdispatcher.func_228791_a_(blockstate, p_225628_1_, p_225628_2_, p_225628_3_, i);
-         p_225628_1_.func_227865_b_();
-         p_225628_1_.func_227860_a_();
-         this.getEntityModel().getHead().func_228307_a_(p_225628_1_);
-         p_225628_1_.func_227861_a_(0.0D, (double)-0.7F, (double)-0.2F);
-         p_225628_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(-78.0F));
-         p_225628_1_.func_227862_a_(-1.0F, -1.0F, 1.0F);
-         p_225628_1_.func_227861_a_(-0.5D, -0.5D, -0.5D);
-         blockrendererdispatcher.func_228791_a_(blockstate, p_225628_1_, p_225628_2_, p_225628_3_, i);
-         p_225628_1_.func_227865_b_();
+         BlockState blockstate = entitylivingbaseIn.getMooshroomType().getRenderState();
+         int i = LivingRenderer.getPackedOverlay(entitylivingbaseIn, 0.0F);
+         matrixStackIn.push();
+         matrixStackIn.translate((double)0.2F, (double)-0.35F, 0.5D);
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-48.0F));
+         matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
+         matrixStackIn.translate(-0.5D, -0.5D, -0.5D);
+         blockrendererdispatcher.renderBlock(blockstate, matrixStackIn, bufferIn, packedLightIn, i);
+         matrixStackIn.pop();
+         matrixStackIn.push();
+         matrixStackIn.translate((double)0.2F, (double)-0.35F, 0.5D);
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(42.0F));
+         matrixStackIn.translate((double)0.1F, 0.0D, (double)-0.6F);
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-48.0F));
+         matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
+         matrixStackIn.translate(-0.5D, -0.5D, -0.5D);
+         blockrendererdispatcher.renderBlock(blockstate, matrixStackIn, bufferIn, packedLightIn, i);
+         matrixStackIn.pop();
+         matrixStackIn.push();
+         this.getEntityModel().getHead().setAnglesAndRotation(matrixStackIn);
+         matrixStackIn.translate(0.0D, (double)-0.7F, (double)-0.2F);
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-78.0F));
+         matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
+         matrixStackIn.translate(-0.5D, -0.5D, -0.5D);
+         blockrendererdispatcher.renderBlock(blockstate, matrixStackIn, bufferIn, packedLightIn, i);
+         matrixStackIn.pop();
       }
    }
 }

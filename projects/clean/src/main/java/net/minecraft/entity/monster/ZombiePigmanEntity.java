@@ -105,7 +105,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
       super.updateAITasks();
    }
 
-   public static boolean func_223337_b(EntityType<ZombiePigmanEntity> p_223337_0_, IWorld p_223337_1_, SpawnReason p_223337_2_, BlockPos p_223337_3_, Random p_223337_4_) {
+   public static boolean func_223337_b(EntityType<ZombiePigmanEntity> p_223337_0_, IWorld p_223337_1_, SpawnReason reason, BlockPos p_223337_3_, Random p_223337_4_) {
       return p_223337_1_.getDifficulty() != Difficulty.PEACEFUL;
    }
 

@@ -19,18 +19,18 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class ModelManager extends ReloadListener<ModelBakery> implements AutoCloseable {
    private Map<ResourceLocation, IBakedModel> modelRegistry;
-   private SpriteMap field_229352_b_;
+   private SpriteMap atlases;
    private final BlockModelShapes modelProvider;
-   private final TextureManager field_229353_d_;
-   private final BlockColors field_224743_d;
-   private int field_229354_f_;
+   private final TextureManager textureManager;
+   private final BlockColors blockColors;
+   private int maxMipmapLevel;
    private IBakedModel defaultModel;
-   private Object2IntMap<BlockState> field_224744_f;
+   private Object2IntMap<BlockState> stateModelIds;
 
-   public ModelManager(TextureManager p_i226057_1_, BlockColors p_i226057_2_, int p_i226057_3_) {
-      this.field_229353_d_ = p_i226057_1_;
-      this.field_224743_d = p_i226057_2_;
-      this.field_229354_f_ = p_i226057_3_;
+   public ModelManager(TextureManager textureManagerIn, BlockColors blockColorsIn, int maxMipmapLevelIn) {
+      this.textureManager = textureManagerIn;
+      this.blockColors = blockColorsIn;
+      this.maxMipmapLevel = maxMipmapLevelIn;
       this.modelProvider = new BlockModelShapes(this);
    }
 
@@ -48,7 +48,7 @@ public class ModelManager extends ReloadListener<ModelBakery> implements AutoClo
 
    protected ModelBakery prepare(IResourceManager resourceManagerIn, IProfiler profilerIn) {
       profilerIn.startTick();
-      ModelBakery modelbakery = new ModelBakery(resourceManagerIn, this.field_224743_d, profilerIn, this.field_229354_f_);
+      ModelBakery modelbakery = new ModelBakery(resourceManagerIn, this.blockColors, profilerIn, this.maxMipmapLevel);
       profilerIn.endTick();
       return modelbakery;
    }
@@ -56,9 +56,13 @@ public class ModelManager extends ReloadListener<ModelBakery> implements AutoClo
    protected void apply(ModelBakery splashList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
       profilerIn.startTick();
       profilerIn.startSection("upload");
-      this.field_229352_b_ = splashList.func_229333_a_(this.field_229353_d_, profilerIn);
-      this.modelRegistry = splashList.func_217846_a();
-      this.field_224744_f = splashList.func_225354_b();
+      if (this.atlases != null) {
+         this.atlases.close();
+      }
+
+      this.atlases = splashList.uploadTextures(this.textureManager, profilerIn);
+      this.modelRegistry = splashList.getTopBakedModels();
+      this.stateModelIds = splashList.getStateModelIds();
       this.defaultModel = this.modelRegistry.get(ModelBakery.MODEL_MISSING);
       profilerIn.endStartSection("cache");
       this.modelProvider.reloadModels();
@@ -66,16 +70,16 @@ public class ModelManager extends ReloadListener<ModelBakery> implements AutoClo
       profilerIn.endTick();
    }
 
-   public boolean func_224742_a(BlockState p_224742_1_, BlockState p_224742_2_) {
-      if (p_224742_1_ == p_224742_2_) {
+   public boolean needsRenderUpdate(BlockState oldState, BlockState newState) {
+      if (oldState == newState) {
          return false;
       } else {
-         int i = this.field_224744_f.getInt(p_224742_1_);
+         int i = this.stateModelIds.getInt(oldState);
          if (i != -1) {
-            int j = this.field_224744_f.getInt(p_224742_2_);
+            int j = this.stateModelIds.getInt(newState);
             if (i == j) {
-               IFluidState ifluidstate = p_224742_1_.getFluidState();
-               IFluidState ifluidstate1 = p_224742_2_.getFluidState();
+               IFluidState ifluidstate = oldState.getFluidState();
+               IFluidState ifluidstate1 = newState.getFluidState();
                return ifluidstate != ifluidstate1;
             }
          }
@@ -84,15 +88,15 @@ public class ModelManager extends ReloadListener<ModelBakery> implements AutoClo
       }
    }
 
-   public AtlasTexture func_229356_a_(ResourceLocation p_229356_1_) {
-      return this.field_229352_b_.func_229152_a_(p_229356_1_);
+   public AtlasTexture getAtlasTexture(ResourceLocation locationIn) {
+      return this.atlases.getAtlasTexture(locationIn);
    }
 
    public void close() {
-      this.field_229352_b_.close();
+      this.atlases.close();
    }
 
-   public void func_229355_a_(int p_229355_1_) {
-      this.field_229354_f_ = p_229355_1_;
+   public void setMaxMipmapLevel(int levelIn) {
+      this.maxMipmapLevel = levelIn;
    }
 }

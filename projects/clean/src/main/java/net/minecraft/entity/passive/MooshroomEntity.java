@@ -48,7 +48,7 @@ public class MooshroomEntity extends CowEntity {
    }
 
    public static boolean func_223318_c(EntityType<MooshroomEntity> p_223318_0_, IWorld p_223318_1_, SpawnReason p_223318_2_, BlockPos p_223318_3_, Random p_223318_4_) {
-      return p_223318_1_.getBlockState(p_223318_3_.down()).getBlock() == Blocks.MYCELIUM && p_223318_1_.func_226659_b_(p_223318_3_, 0) > 8;
+      return p_223318_1_.getBlockState(p_223318_3_.down()).getBlock() == Blocks.MYCELIUM && p_223318_1_.getLightSubtracted(p_223318_3_, 0) > 8;
    }
 
    public void onStruckByLightning(LightningBoltEntity lightningBolt) {
@@ -98,7 +98,7 @@ public class MooshroomEntity extends CowEntity {
          this.playSound(soundevent, 1.0F, 1.0F);
          return true;
       } else if (itemstack.getItem() == Items.SHEARS && !this.isChild()) {
-         this.world.addParticle(ParticleTypes.EXPLOSION, this.getPosX(), this.func_226283_e_(0.5D), this.getPosZ(), 0.0D, 0.0D, 0.0D);
+         this.world.addParticle(ParticleTypes.EXPLOSION, this.getPosX(), this.getPosYHeight(0.5D), this.getPosZ(), 0.0D, 0.0D, 0.0D);
          if (!this.world.isRemote) {
             this.remove();
             CowEntity cowentity = EntityType.COW.create(this.world);
@@ -118,7 +118,7 @@ public class MooshroomEntity extends CowEntity {
             this.world.addEntity(cowentity);
 
             for(int k = 0; k < 5; ++k) {
-               this.world.addEntity(new ItemEntity(this.world, this.getPosX(), this.func_226283_e_(1.0D), this.getPosZ(), new ItemStack(this.getMooshroomType().renderState.getBlock())));
+               this.world.addEntity(new ItemEntity(this.world, this.getPosX(), this.getPosYHeight(1.0D), this.getPosZ(), new ItemStack(this.getMooshroomType().renderState.getBlock())));
             }
 
             itemstack.damageItem(1, player, (p_213442_1_) -> {
@@ -132,7 +132,7 @@ public class MooshroomEntity extends CowEntity {
          if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemstack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
             if (this.hasStewEffect != null) {
                for(int i = 0; i < 2; ++i) {
-                  this.world.addParticle(ParticleTypes.SMOKE, this.getPosX() + (double)(this.rand.nextFloat() / 2.0F), this.func_226283_e_(0.5D), this.getPosZ() + (double)(this.rand.nextFloat() / 2.0F), 0.0D, (double)(this.rand.nextFloat() / 5.0F), 0.0D);
+                  this.world.addParticle(ParticleTypes.SMOKE, this.getPosX() + (double)(this.rand.nextFloat() / 2.0F), this.getPosYHeight(0.5D), this.getPosZ() + (double)(this.rand.nextFloat() / 2.0F), 0.0D, (double)(this.rand.nextFloat() / 5.0F), 0.0D);
                }
             } else {
                Pair<Effect, Integer> pair = this.getStewEffect(itemstack);
@@ -141,7 +141,7 @@ public class MooshroomEntity extends CowEntity {
                }
 
                for(int j = 0; j < 4; ++j) {
-                  this.world.addParticle(ParticleTypes.EFFECT, this.getPosX() + (double)(this.rand.nextFloat() / 2.0F), this.func_226283_e_(0.5D), this.getPosZ() + (double)(this.rand.nextFloat() / 2.0F), 0.0D, (double)(this.rand.nextFloat() / 5.0F), 0.0D);
+                  this.world.addParticle(ParticleTypes.EFFECT, this.getPosX() + (double)(this.rand.nextFloat() / 2.0F), this.getPosYHeight(0.5D), this.getPosZ() + (double)(this.rand.nextFloat() / 2.0F), 0.0D, (double)(this.rand.nextFloat() / 5.0F), 0.0D);
                }
 
                this.hasStewEffect = pair.getLeft();

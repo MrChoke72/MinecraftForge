@@ -18,10 +18,10 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public class DeepColdOceanBiome extends Biome {
    public DeepColdOceanBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.RAIN).category(Biome.Category.OCEAN).depth(-1.8F).scale(0.1F).temperature(0.5F).downfall(0.5F).waterColor(4020182).waterFogColor(329011).parent((String)null));
-      this.func_226711_a_(Feature.OCEAN_RUIN.func_225566_b_(new OceanRuinConfig(OceanRuinStructure.Type.COLD, 0.3F, 0.9F)));
-      this.func_226711_a_(Feature.OCEAN_MONUMENT.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.SHIPWRECK.func_225566_b_(new ShipwreckConfig(false)));
+      this.addStructure(Feature.OCEAN_RUIN.withConfiguration(new OceanRuinConfig(OceanRuinStructure.Type.COLD, 0.3F, 0.9F)));
+      this.addStructure(Feature.OCEAN_MONUMENT.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.SHIPWRECK.withConfiguration(new ShipwreckConfig(false)));
       DefaultBiomeFeatures.addOceanCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -29,15 +29,15 @@ public class DeepColdOceanBiome extends Biome {
       DefaultBiomeFeatures.addStoneVariants(this);
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
-      DefaultBiomeFeatures.func_222296_u(this);
+      DefaultBiomeFeatures.addScatteredOakTrees(this);
       DefaultBiomeFeatures.addDefaultFlowers(this);
-      DefaultBiomeFeatures.func_222348_W(this);
+      DefaultBiomeFeatures.addSparseGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);
-      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.SEAGRASS.func_225566_b_(new SeaGrassConfig(40, 0.8D)).func_227228_a_(Placement.TOP_SOLID_HEIGHTMAP.func_227446_a_(IPlacementConfig.NO_PLACEMENT_CONFIG)));
+      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.SEAGRASS.withConfiguration(new SeaGrassConfig(40, 0.8D)).func_227228_a_(Placement.TOP_SOLID_HEIGHTMAP.func_227446_a_(IPlacementConfig.NO_PLACEMENT_CONFIG)));
       DefaultBiomeFeatures.func_222320_ai(this);
-      DefaultBiomeFeatures.func_222287_ah(this);
+      DefaultBiomeFeatures.addExtraKelp(this);
       DefaultBiomeFeatures.addFreezeTopLayer(this);
       this.addSpawn(EntityClassification.WATER_CREATURE, new Biome.SpawnListEntry(EntityType.SQUID, 3, 1, 4));
       this.addSpawn(EntityClassification.WATER_CREATURE, new Biome.SpawnListEntry(EntityType.COD, 15, 3, 6));

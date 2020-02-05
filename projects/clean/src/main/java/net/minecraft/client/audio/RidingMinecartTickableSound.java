@@ -30,7 +30,7 @@ public class RidingMinecartTickableSound extends TickableSound {
 
    public void tick() {
       if (!this.minecart.removed && this.player.isPassenger() && this.player.getRidingEntity() == this.minecart) {
-         float f = MathHelper.sqrt(Entity.func_213296_b(this.minecart.getMotion()));
+         float f = MathHelper.sqrt(Entity.horizontalMag(this.minecart.getMotion()));
          if ((double)f >= 0.01D) {
             this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 1.0F) * 0.75F;
          } else {

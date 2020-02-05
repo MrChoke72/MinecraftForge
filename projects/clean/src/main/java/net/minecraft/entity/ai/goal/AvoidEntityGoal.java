@@ -15,14 +15,14 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
    protected final CreatureEntity entity;
    private final double farSpeed;
    private final double nearSpeed;
-   protected T field_75376_d;
+   protected T avoidTarget;
    protected final float avoidDistance;
    protected Path path;
    protected final PathNavigator navigation;
    protected final Class<T> classToAvoid;
    protected final Predicate<LivingEntity> avoidTargetSelector;
    protected final Predicate<LivingEntity> field_203784_k;
-   private final EntityPredicate field_220872_k;
+   private final EntityPredicate builtTargetSelector;
 
    public AvoidEntityGoal(CreatureEntity entityIn, Class<T> classToAvoidIn, float avoidDistanceIn, double farSpeedIn, double nearSpeedIn) {
       this(entityIn, classToAvoidIn, (p_200828_0_) -> {
@@ -40,24 +40,24 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
       this.field_203784_k = p_i48859_9_;
       this.navigation = entityIn.getNavigator();
       this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE));
-      this.field_220872_k = (new EntityPredicate()).setDistance((double)distance).setCustomPredicate(p_i48859_9_.and(targetPredicate));
+      this.builtTargetSelector = (new EntityPredicate()).setDistance((double)distance).setCustomPredicate(p_i48859_9_.and(targetPredicate));
    }
 
-   public AvoidEntityGoal(CreatureEntity p_i48860_1_, Class<T> p_i48860_2_, float p_i48860_3_, double p_i48860_4_, double p_i48860_6_, Predicate<LivingEntity> p_i48860_8_) {
-      this(p_i48860_1_, p_i48860_2_, (p_203782_0_) -> {
+   public AvoidEntityGoal(CreatureEntity entityIn, Class<T> avoidClass, float distance, double nearSpeedIn, double farSpeedIn, Predicate<LivingEntity> targetPredicate) {
+      this(entityIn, avoidClass, (p_203782_0_) -> {
          return true;
-      }, p_i48860_3_, p_i48860_4_, p_i48860_6_, p_i48860_8_);
+      }, distance, nearSpeedIn, farSpeedIn, targetPredicate);
    }
 
    public boolean shouldExecute() {
-      this.field_75376_d = this.entity.world.getClosestEntity(this.classToAvoid, this.field_220872_k, this.entity, this.entity.getPosX(), this.entity.getPosY(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.avoidDistance, 3.0D, (double)this.avoidDistance));
-      if (this.field_75376_d == null) {
+      this.avoidTarget = this.entity.world.getClosestEntity(this.classToAvoid, this.builtTargetSelector, this.entity, this.entity.getPosX(), this.entity.getPosY(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.avoidDistance, 3.0D, (double)this.avoidDistance));
+      if (this.avoidTarget == null) {
          return false;
       } else {
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetAwayFrom(this.entity, 16, 7, this.field_75376_d.getPositionVec());
+         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 16, 7, this.avoidTarget.getPositionVec());
          if (vec3d == null) {
             return false;
-         } else if (this.field_75376_d.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.field_75376_d.getDistanceSq(this.entity)) {
+         } else if (this.avoidTarget.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.avoidTarget.getDistanceSq(this.entity)) {
             return false;
          } else {
             this.path = this.navigation.getPathToPos(vec3d.x, vec3d.y, vec3d.z, 0);
@@ -75,11 +75,11 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
    }
 
    public void resetTask() {
-      this.field_75376_d = null;
+      this.avoidTarget = null;
    }
 
    public void tick() {
-      if (this.entity.getDistanceSq(this.field_75376_d) < 49.0D) {
+      if (this.entity.getDistanceSq(this.avoidTarget) < 49.0D) {
          this.entity.getNavigator().setSpeed(this.nearSpeed);
       } else {
          this.entity.getNavigator().setSpeed(this.farSpeed);

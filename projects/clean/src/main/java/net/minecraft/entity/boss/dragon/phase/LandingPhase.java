@@ -20,9 +20,9 @@ public class LandingPhase extends Phase {
    public void clientTick() {
       Vec3d vec3d = this.dragon.getHeadLookVec(1.0F).normalize();
       vec3d.rotateYaw((-(float)Math.PI / 4F));
-      double d0 = this.dragon.field_70986_h.getPosX();
-      double d1 = this.dragon.field_70986_h.func_226283_e_(0.5D);
-      double d2 = this.dragon.field_70986_h.getPosZ();
+      double d0 = this.dragon.dragonPartHead.getPosX();
+      double d1 = this.dragon.dragonPartHead.getPosYHeight(0.5D);
+      double d2 = this.dragon.dragonPartHead.getPosZ();
 
       for(int i = 0; i < 8; ++i) {
          Random random = this.dragon.getRNG();
@@ -53,7 +53,7 @@ public class LandingPhase extends Phase {
    }
 
    public float getYawFactor() {
-      float f = MathHelper.sqrt(Entity.func_213296_b(this.dragon.getMotion())) + 1.0F;
+      float f = MathHelper.sqrt(Entity.horizontalMag(this.dragon.getMotion())) + 1.0F;
       float f1 = Math.min(f, 40.0F);
       return f1 / f;
    }

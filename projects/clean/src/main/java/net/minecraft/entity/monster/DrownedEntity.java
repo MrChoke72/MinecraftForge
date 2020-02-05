@@ -88,9 +88,9 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
       return spawnDataIn;
    }
 
-   public static boolean func_223332_b(EntityType<DrownedEntity> p_223332_0_, IWorld p_223332_1_, SpawnReason p_223332_2_, BlockPos p_223332_3_, Random p_223332_4_) {
-      Biome biome = p_223332_1_.func_226691_t_(p_223332_3_);
-      boolean flag = p_223332_1_.getDifficulty() != Difficulty.PEACEFUL && isLightSpawnable(p_223332_1_, p_223332_3_, p_223332_4_) && (p_223332_2_ == SpawnReason.SPAWNER || p_223332_1_.getFluidState(p_223332_3_).isTagged(FluidTags.WATER));
+   public static boolean func_223332_b(EntityType<DrownedEntity> p_223332_0_, IWorld p_223332_1_, SpawnReason reason, BlockPos p_223332_3_, Random p_223332_4_) {
+      Biome biome = p_223332_1_.getBiome(p_223332_3_);
+      boolean flag = p_223332_1_.getDifficulty() != Difficulty.PEACEFUL && isValidLightLevel(p_223332_1_, p_223332_3_, p_223332_4_) && (reason == SpawnReason.SPAWNER || p_223332_1_.getFluidState(p_223332_3_).isTagged(FluidTags.WATER));
       if (biome != Biomes.RIVER && biome != Biomes.FROZEN_RIVER) {
          return p_223332_4_.nextInt(40) == 0 && func_223333_a(p_223332_1_, p_223332_3_) && flag;
       } else {
@@ -142,7 +142,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
 
    }
 
-   protected boolean shouldExchangeEquipment(ItemStack candidate, ItemStack existing, EquipmentSlotType p_208003_3_) {
+   protected boolean shouldExchangeEquipment(ItemStack candidate, ItemStack existing, EquipmentSlotType slotTypeIn) {
       if (existing.getItem() == Items.NAUTILUS_SHELL) {
          return false;
       } else if (existing.getItem() == Items.TRIDENT) {
@@ -152,7 +152,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
             return false;
          }
       } else {
-         return candidate.getItem() == Items.TRIDENT ? true : super.shouldExchangeEquipment(candidate, existing, p_208003_3_);
+         return candidate.getItem() == Items.TRIDENT ? true : super.shouldExchangeEquipment(candidate, existing, slotTypeIn);
       }
    }
 
@@ -227,7 +227,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
       TridentEntity tridententity = new TridentEntity(this.world, this, new ItemStack(Items.TRIDENT));
       double d0 = target.getPosX() - this.getPosX();
-      double d1 = target.func_226283_e_(0.3333333333333333D) - tridententity.getPosY();
+      double d1 = target.getPosYHeight(0.3333333333333333D) - tridententity.getPosY();
       double d2 = target.getPosZ() - this.getPosZ();
       double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
       tridententity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
@@ -274,7 +274,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
 
       protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
          BlockPos blockpos = pos.up();
-         return worldIn.isAirBlock(blockpos) && worldIn.isAirBlock(blockpos.up()) ? worldIn.getBlockState(pos).isUpSideFilled(worldIn, pos, this.drowned) : false;
+         return worldIn.isAirBlock(blockpos) && worldIn.isAirBlock(blockpos.up()) ? worldIn.getBlockState(pos).isTopSolid(worldIn, pos, this.drowned) : false;
       }
 
       public void startExecuting() {
@@ -410,7 +410,7 @@ public class DrownedEntity extends ZombieEntity implements IRangedAttackMob {
 
       public void tick() {
          if (this.field_204736_a.getPosY() < (double)(this.targetY - 1) && (this.field_204736_a.getNavigator().noPath() || this.field_204736_a.isCloseToPathTarget())) {
-            Vec3d vec3d = RandomPositionGenerator.findRandomTargetToward(this.field_204736_a, 4, 8, new Vec3d(this.field_204736_a.getPosX(), (double)(this.targetY - 1), this.field_204736_a.getPosZ()));
+            Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.field_204736_a, 4, 8, new Vec3d(this.field_204736_a.getPosX(), (double)(this.targetY - 1), this.field_204736_a.getPosZ()));
             if (vec3d == null) {
                this.obstructed = true;
                return;

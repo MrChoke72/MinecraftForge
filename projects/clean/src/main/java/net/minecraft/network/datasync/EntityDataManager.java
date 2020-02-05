@@ -218,8 +218,8 @@ public class EntityDataManager {
       return list;
    }
 
-   private static <T> EntityDataManager.DataEntry<T> makeDataEntry(PacketBuffer p_198167_0_, int p_198167_1_, IDataSerializer<T> p_198167_2_) {
-      return new EntityDataManager.DataEntry<>(p_198167_2_.createKey(p_198167_1_), p_198167_2_.read(p_198167_0_));
+   private static <T> EntityDataManager.DataEntry<T> makeDataEntry(PacketBuffer bufferIn, int idIn, IDataSerializer<T> serializerIn) {
+      return new EntityDataManager.DataEntry<>(serializerIn.createKey(idIn), serializerIn.read(bufferIn));
    }
 
    @OnlyIn(Dist.CLIENT)

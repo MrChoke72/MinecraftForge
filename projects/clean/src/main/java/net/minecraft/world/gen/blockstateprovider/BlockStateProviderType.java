@@ -12,7 +12,7 @@ public class BlockStateProviderType<P extends BlockStateProvider> {
    private final Function<Dynamic<?>, P> field_227398_e_;
 
    private static <P extends BlockStateProvider> BlockStateProviderType<P> func_227400_a_(String p_227400_0_, Function<Dynamic<?>, P> p_227400_1_) {
-      return Registry.register(Registry.field_229387_t_, p_227400_0_, new BlockStateProviderType<>(p_227400_1_));
+      return Registry.register(Registry.BLOCK_STATE_PROVIDER_TYPE, p_227400_0_, new BlockStateProviderType<>(p_227400_1_));
    }
 
    private BlockStateProviderType(Function<Dynamic<?>, P> p_i225855_1_) {

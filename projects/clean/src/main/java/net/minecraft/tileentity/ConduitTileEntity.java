@@ -239,7 +239,7 @@ public class ConduitTileEntity extends TileEntity implements ITickableTileEntity
       }
 
       if (this.target != null) {
-         Vec3d vec3d2 = new Vec3d(this.target.getPosX(), this.target.getPosYPlusEyeHeight(), this.target.getPosZ());
+         Vec3d vec3d2 = new Vec3d(this.target.getPosX(), this.target.getPosYEye(), this.target.getPosZ());
          float f3 = (-0.5F + random.nextFloat()) * (3.0F + this.target.getWidth());
          float f4 = -1.0F + random.nextFloat() * this.target.getHeight();
          float f5 = (-0.5F + random.nextFloat()) * (3.0F + this.target.getWidth());

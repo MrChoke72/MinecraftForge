@@ -105,7 +105,7 @@ public class ChunkPrimer implements IChunk {
       }
    }
 
-   public Stream<BlockPos> func_217304_m() {
+   public Stream<BlockPos> getLightSources() {
       return this.lightPositions.stream();
    }
 
@@ -142,7 +142,7 @@ public class ChunkPrimer implements IChunk {
 
             ChunkSection chunksection = this.func_217332_a(j >> 4);
             BlockState blockstate = chunksection.setBlockState(i & 15, j & 15, k & 15, state);
-            if (this.status.isAtLeast(ChunkStatus.FEATURES) && state != blockstate && (state.getOpacity(this, pos) != blockstate.getOpacity(this, pos) || state.getLightValue() != blockstate.getLightValue() || state.func_215691_g() || blockstate.func_215691_g())) {
+            if (this.status.isAtLeast(ChunkStatus.FEATURES) && state != blockstate && (state.getOpacity(this, pos) != blockstate.getOpacity(this, pos) || state.getLightValue() != blockstate.getLightValue() || state.isTransparent() || blockstate.isTransparent())) {
                WorldLightManager worldlightmanager = this.getWorldLightManager();
                worldlightmanager.checkBlock(pos);
             }
@@ -162,7 +162,7 @@ public class ChunkPrimer implements IChunk {
             }
 
             if (enumset != null) {
-               Heightmap.func_222690_a(this, enumset);
+               Heightmap.updateChunkHeightmaps(this, enumset);
             }
 
             for(Heightmap.Type heightmap$type1 : enumset1) {
@@ -223,7 +223,7 @@ public class ChunkPrimer implements IChunk {
    }
 
    @Nullable
-   public BiomeContainer func_225549_i_() {
+   public BiomeContainer getBiomes() {
       return this.biomes;
    }
 
@@ -253,16 +253,16 @@ public class ChunkPrimer implements IChunk {
       return this.field_217334_e;
    }
 
-   public Collection<Entry<Heightmap.Type, Heightmap>> func_217311_f() {
+   public Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps() {
       return Collections.unmodifiableSet(this.heightmaps.entrySet());
    }
 
    public void setHeightmap(Heightmap.Type type, long[] data) {
-      this.func_217303_b(type).setDataArray(data);
+      this.getHeightmap(type).setDataArray(data);
    }
 
-   public Heightmap func_217303_b(Heightmap.Type p_217303_1_) {
-      return this.heightmaps.computeIfAbsent(p_217303_1_, (p_217333_1_) -> {
+   public Heightmap getHeightmap(Heightmap.Type typeIn) {
+      return this.heightmaps.computeIfAbsent(typeIn, (p_217333_1_) -> {
          return new Heightmap(this, p_217333_1_);
       });
    }
@@ -270,7 +270,7 @@ public class ChunkPrimer implements IChunk {
    public int getTopBlockY(Heightmap.Type heightmapType, int x, int z) {
       Heightmap heightmap = this.heightmaps.get(heightmapType);
       if (heightmap == null) {
-         Heightmap.func_222690_a(this, EnumSet.of(heightmapType));
+         Heightmap.updateChunkHeightmaps(this, EnumSet.of(heightmapType));
          heightmap = this.heightmaps.get(heightmapType);
       }
 
@@ -392,9 +392,9 @@ public class ChunkPrimer implements IChunk {
    }
 
    @Nullable
-   public CompoundNBT func_223134_j(BlockPos p_223134_1_) {
-      TileEntity tileentity = this.getTileEntity(p_223134_1_);
-      return tileentity != null ? tileentity.write(new CompoundNBT()) : this.deferredTileEntities.get(p_223134_1_);
+   public CompoundNBT getTileEntityNBT(BlockPos pos) {
+      TileEntity tileentity = this.getTileEntity(pos);
+      return tileentity != null ? tileentity.write(new CompoundNBT()) : this.deferredTileEntities.get(pos);
    }
 
    public void removeTileEntity(BlockPos pos) {
@@ -420,8 +420,8 @@ public class ChunkPrimer implements IChunk {
       return this.hasLight;
    }
 
-   public void setLight(boolean p_217305_1_) {
-      this.hasLight = p_217305_1_;
+   public void setLight(boolean lightCorrectIn) {
+      this.hasLight = lightCorrectIn;
       this.setModified(true);
    }
 }

@@ -72,18 +72,18 @@ public class LeverBlock extends HorizontalFaceBlock {
       }
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
-         BlockState blockstate1 = p_225533_1_.cycle(POWERED);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
+         BlockState blockstate1 = state.cycle(POWERED);
          if (blockstate1.get(POWERED)) {
-            addParticles(blockstate1, p_225533_2_, p_225533_3_, 1.0F);
+            addParticles(blockstate1, worldIn, pos, 1.0F);
          }
 
          return ActionResultType.SUCCESS;
       } else {
-         BlockState blockstate = this.func_226939_d_(p_225533_1_, p_225533_2_, p_225533_3_);
+         BlockState blockstate = this.func_226939_d_(state, worldIn, pos);
          float f = blockstate.get(POWERED) ? 0.6F : 0.5F;
-         p_225533_2_.playSound((PlayerEntity)null, p_225533_3_, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
+         worldIn.playSound((PlayerEntity)null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
          return ActionResultType.SUCCESS;
       }
    }

@@ -61,7 +61,7 @@ public class SilverfishEntity extends MonsterEntity {
       this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0D);
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -107,8 +107,8 @@ public class SilverfishEntity extends MonsterEntity {
       return SilverfishBlock.canContainSilverfish(worldIn.getBlockState(pos.down())) ? 10.0F : super.getBlockPathWeight(pos, worldIn);
    }
 
-   public static boolean func_223331_b(EntityType<SilverfishEntity> p_223331_0_, IWorld p_223331_1_, SpawnReason p_223331_2_, BlockPos p_223331_3_, Random p_223331_4_) {
-      if (func_223324_d(p_223331_0_, p_223331_1_, p_223331_2_, p_223331_3_, p_223331_4_)) {
+   public static boolean func_223331_b(EntityType<SilverfishEntity> p_223331_0_, IWorld p_223331_1_, SpawnReason reason, BlockPos p_223331_3_, Random p_223331_4_) {
+      if (func_223324_d(p_223331_0_, p_223331_1_, reason, p_223331_3_, p_223331_4_)) {
          PlayerEntity playerentity = p_223331_1_.getClosestPlayer((double)p_223331_3_.getX() + 0.5D, (double)p_223331_3_.getY() + 0.5D, (double)p_223331_3_.getZ() + 0.5D, 5.0D, true);
          return playerentity == null;
       } else {

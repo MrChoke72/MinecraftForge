@@ -19,7 +19,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class EnderCrystalRenderer extends EntityRenderer<EnderCrystalEntity> {
    private static final ResourceLocation ENDER_CRYSTAL_TEXTURES = new ResourceLocation("textures/entity/end_crystal/end_crystal.png");
-   private static final RenderType field_229046_e_ = RenderType.func_228640_c_(ENDER_CRYSTAL_TEXTURES);
+   private static final RenderType field_229046_e_ = RenderType.entityCutoutNoCull(ENDER_CRYSTAL_TEXTURES);
    private static final float field_229047_f_ = (float)Math.sin((Math.PI / 4D));
    private final ModelRenderer field_229048_g_;
    private final ModelRenderer field_229049_h_;
@@ -29,54 +29,54 @@ public class EnderCrystalRenderer extends EntityRenderer<EnderCrystalEntity> {
       super(renderManagerIn);
       this.shadowSize = 0.5F;
       this.field_229049_h_ = new ModelRenderer(64, 32, 0, 0);
-      this.field_229049_h_.func_228300_a_(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
+      this.field_229049_h_.addBox(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
       this.field_229048_g_ = new ModelRenderer(64, 32, 32, 0);
-      this.field_229048_g_.func_228300_a_(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
+      this.field_229048_g_.addBox(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
       this.field_229050_i_ = new ModelRenderer(64, 32, 0, 16);
-      this.field_229050_i_.func_228300_a_(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F);
+      this.field_229050_i_.addBox(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F);
    }
 
-   public void func_225623_a_(EnderCrystalEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      p_225623_4_.func_227860_a_();
-      float f = func_229051_a_(p_225623_1_, p_225623_3_);
-      float f1 = ((float)p_225623_1_.innerRotation + p_225623_3_) * 3.0F;
-      IVertexBuilder ivertexbuilder = p_225623_5_.getBuffer(field_229046_e_);
-      p_225623_4_.func_227860_a_();
-      p_225623_4_.func_227862_a_(2.0F, 2.0F, 2.0F);
-      p_225623_4_.func_227861_a_(0.0D, -0.5D, 0.0D);
-      int i = OverlayTexture.field_229196_a_;
-      if (p_225623_1_.shouldShowBottom()) {
-         this.field_229050_i_.func_228308_a_(p_225623_4_, ivertexbuilder, p_225623_6_, i);
+   public void render(EnderCrystalEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      matrixStackIn.push();
+      float f = func_229051_a_(entityIn, partialTicks);
+      float f1 = ((float)entityIn.innerRotation + partialTicks) * 3.0F;
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(field_229046_e_);
+      matrixStackIn.push();
+      matrixStackIn.scale(2.0F, 2.0F, 2.0F);
+      matrixStackIn.translate(0.0D, -0.5D, 0.0D);
+      int i = OverlayTexture.DEFAULT_LIGHT;
+      if (entityIn.shouldShowBottom()) {
+         this.field_229050_i_.render(matrixStackIn, ivertexbuilder, packedLightIn, i);
       }
 
-      p_225623_4_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f1));
-      p_225623_4_.func_227861_a_(0.0D, (double)(1.5F + f / 2.0F), 0.0D);
-      p_225623_4_.func_227863_a_(new Quaternion(new Vector3f(field_229047_f_, 0.0F, field_229047_f_), 60.0F, true));
-      this.field_229049_h_.func_228308_a_(p_225623_4_, ivertexbuilder, p_225623_6_, i);
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(f1));
+      matrixStackIn.translate(0.0D, (double)(1.5F + f / 2.0F), 0.0D);
+      matrixStackIn.rotate(new Quaternion(new Vector3f(field_229047_f_, 0.0F, field_229047_f_), 60.0F, true));
+      this.field_229049_h_.render(matrixStackIn, ivertexbuilder, packedLightIn, i);
       float f2 = 0.875F;
-      p_225623_4_.func_227862_a_(0.875F, 0.875F, 0.875F);
-      p_225623_4_.func_227863_a_(new Quaternion(new Vector3f(field_229047_f_, 0.0F, field_229047_f_), 60.0F, true));
-      p_225623_4_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f1));
-      this.field_229049_h_.func_228308_a_(p_225623_4_, ivertexbuilder, p_225623_6_, i);
-      p_225623_4_.func_227862_a_(0.875F, 0.875F, 0.875F);
-      p_225623_4_.func_227863_a_(new Quaternion(new Vector3f(field_229047_f_, 0.0F, field_229047_f_), 60.0F, true));
-      p_225623_4_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f1));
-      this.field_229048_g_.func_228308_a_(p_225623_4_, ivertexbuilder, p_225623_6_, i);
-      p_225623_4_.func_227865_b_();
-      p_225623_4_.func_227865_b_();
-      BlockPos blockpos = p_225623_1_.getBeamTarget();
+      matrixStackIn.scale(0.875F, 0.875F, 0.875F);
+      matrixStackIn.rotate(new Quaternion(new Vector3f(field_229047_f_, 0.0F, field_229047_f_), 60.0F, true));
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(f1));
+      this.field_229049_h_.render(matrixStackIn, ivertexbuilder, packedLightIn, i);
+      matrixStackIn.scale(0.875F, 0.875F, 0.875F);
+      matrixStackIn.rotate(new Quaternion(new Vector3f(field_229047_f_, 0.0F, field_229047_f_), 60.0F, true));
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(f1));
+      this.field_229048_g_.render(matrixStackIn, ivertexbuilder, packedLightIn, i);
+      matrixStackIn.pop();
+      matrixStackIn.pop();
+      BlockPos blockpos = entityIn.getBeamTarget();
       if (blockpos != null) {
          float f3 = (float)blockpos.getX() + 0.5F;
          float f4 = (float)blockpos.getY() + 0.5F;
          float f5 = (float)blockpos.getZ() + 0.5F;
-         float f6 = (float)((double)f3 - p_225623_1_.getPosX());
-         float f7 = (float)((double)f4 - p_225623_1_.getPosY());
-         float f8 = (float)((double)f5 - p_225623_1_.getPosZ());
-         p_225623_4_.func_227861_a_((double)f6, (double)f7, (double)f8);
-         EnderDragonRenderer.func_229059_a_(-f6, -f7 + f, -f8, p_225623_3_, p_225623_1_.innerRotation, p_225623_4_, p_225623_5_, p_225623_6_);
+         float f6 = (float)((double)f3 - entityIn.getPosX());
+         float f7 = (float)((double)f4 - entityIn.getPosY());
+         float f8 = (float)((double)f5 - entityIn.getPosZ());
+         matrixStackIn.translate((double)f6, (double)f7, (double)f8);
+         EnderDragonRenderer.func_229059_a_(-f6, -f7 + f, -f8, partialTicks, entityIn.innerRotation, matrixStackIn, bufferIn, packedLightIn);
       }
 
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
    public static float func_229051_a_(EnderCrystalEntity p_229051_0_, float p_229051_1_) {
@@ -90,7 +90,7 @@ public class EnderCrystalRenderer extends EntityRenderer<EnderCrystalEntity> {
       return ENDER_CRYSTAL_TEXTURES;
    }
 
-   public boolean func_225626_a_(EnderCrystalEntity p_225626_1_, ClippingHelperImpl p_225626_2_, double p_225626_3_, double p_225626_5_, double p_225626_7_) {
-      return super.func_225626_a_(p_225626_1_, p_225626_2_, p_225626_3_, p_225626_5_, p_225626_7_) || p_225626_1_.getBeamTarget() != null;
+   public boolean shouldRender(EnderCrystalEntity livingEntityIn, ClippingHelperImpl camera, double camX, double camY, double camZ) {
+      return super.shouldRender(livingEntityIn, camera, camX, camY, camZ) || livingEntityIn.getBeamTarget() != null;
    }
 }

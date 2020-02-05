@@ -11,8 +11,8 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public final class ShatteredSavannaPlateauBiome extends Biome {
    public ShatteredSavannaPlateauBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.SHATTERED_SAVANNA, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.NONE).category(Biome.Category.SAVANNA).depth(1.05F).scale(1.2125001F).temperature(1.0F).downfall(0.0F).waterColor(4159204).waterFogColor(329011).parent("savanna_plateau"));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.STRONGHOLD.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.STRONGHOLD.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -22,7 +22,7 @@ public final class ShatteredSavannaPlateauBiome extends Biome {
       DefaultBiomeFeatures.addSedimentDisks(this);
       DefaultBiomeFeatures.addShatteredSavannaTrees(this);
       DefaultBiomeFeatures.addDefaultFlowers(this);
-      DefaultBiomeFeatures.func_222314_K(this);
+      DefaultBiomeFeatures.addDenseGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);

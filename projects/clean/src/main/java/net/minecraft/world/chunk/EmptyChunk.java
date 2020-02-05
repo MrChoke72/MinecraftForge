@@ -22,12 +22,12 @@ import net.minecraft.world.lighting.WorldLightManager;
 import net.minecraft.world.server.ChunkHolder;
 
 public class EmptyChunk extends Chunk {
-   private static final Biome[] BIOMES = Util.make(new Biome[BiomeContainer.field_227049_a_], (p_203406_0_) -> {
+   private static final Biome[] BIOMES = Util.make(new Biome[BiomeContainer.BIOMES_SIZE], (p_203406_0_) -> {
       Arrays.fill(p_203406_0_, Biomes.PLAINS);
    });
 
-   public EmptyChunk(World p_i49950_1_, ChunkPos p_i49950_2_) {
-      super(p_i49950_1_, p_i49950_2_, new BiomeContainer(BIOMES));
+   public EmptyChunk(World worldIn, ChunkPos p_i49950_2_) {
+      super(worldIn, p_i49950_2_, new BiomeContainer(BIOMES));
    }
 
    public BlockState getBlockState(BlockPos pos) {
@@ -92,7 +92,7 @@ public class EmptyChunk extends Chunk {
       return true;
    }
 
-   public ChunkHolder.LocationType func_217321_u() {
+   public ChunkHolder.LocationType getLocationType() {
       return ChunkHolder.LocationType.BORDER;
    }
 }

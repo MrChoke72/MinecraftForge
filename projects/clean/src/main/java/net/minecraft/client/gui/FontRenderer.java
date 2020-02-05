@@ -48,12 +48,12 @@ public class FontRenderer implements AutoCloseable {
 
    public int drawStringWithShadow(String text, float x, float y, int color) {
       RenderSystem.enableAlphaTest();
-      return this.func_228078_a_(text, x, y, color, TransformationMatrix.func_227983_a_().func_227988_c_(), true);
+      return this.renderString(text, x, y, color, TransformationMatrix.identity().getMatrix(), true);
    }
 
    public int drawString(String text, float x, float y, int color) {
       RenderSystem.enableAlphaTest();
-      return this.func_228078_a_(text, x, y, color, TransformationMatrix.func_227983_a_().func_227988_c_(), false);
+      return this.renderString(text, x, y, color, TransformationMatrix.identity().getMatrix(), false);
    }
 
    public String bidiReorder(String text) {
@@ -66,50 +66,50 @@ public class FontRenderer implements AutoCloseable {
       }
    }
 
-   private int func_228078_a_(String p_228078_1_, float p_228078_2_, float p_228078_3_, int p_228078_4_, Matrix4f p_228078_5_, boolean p_228078_6_) {
-      if (p_228078_1_ == null) {
+   private int renderString(String text, float x, float y, int color, Matrix4f matrix, boolean dropShadow) {
+      if (text == null) {
          return 0;
       } else {
-         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.func_228455_a_(Tessellator.getInstance().getBuffer());
-         int i = this.func_228079_a_(p_228078_1_, p_228078_2_, p_228078_3_, p_228078_4_, p_228078_6_, p_228078_5_, irendertypebuffer$impl, false, 0, 15728880);
-         irendertypebuffer$impl.func_228461_a_();
+         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+         int i = this.renderString(text, x, y, color, dropShadow, matrix, irendertypebuffer$impl, false, 0, 15728880);
+         irendertypebuffer$impl.finish();
          return i;
       }
    }
 
-   public int func_228079_a_(String p_228079_1_, float p_228079_2_, float p_228079_3_, int p_228079_4_, boolean p_228079_5_, Matrix4f p_228079_6_, IRenderTypeBuffer p_228079_7_, boolean p_228079_8_, int p_228079_9_, int p_228079_10_) {
-      return this.func_228080_b_(p_228079_1_, p_228079_2_, p_228079_3_, p_228079_4_, p_228079_5_, p_228079_6_, p_228079_7_, p_228079_8_, p_228079_9_, p_228079_10_);
+   public int renderString(String text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, IRenderTypeBuffer buffer, boolean p_228079_8_, int p_228079_9_, int packedLight) {
+      return this.renderStringAt(text, x, y, color, dropShadow, matrix, buffer, p_228079_8_, p_228079_9_, packedLight);
    }
 
-   private int func_228080_b_(String p_228080_1_, float p_228080_2_, float p_228080_3_, int p_228080_4_, boolean p_228080_5_, Matrix4f p_228080_6_, IRenderTypeBuffer p_228080_7_, boolean p_228080_8_, int p_228080_9_, int p_228080_10_) {
+   private int renderStringAt(String text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, IRenderTypeBuffer buffer, boolean p_228080_8_, int p_228080_9_, int packedLight) {
       if (this.bidiFlag) {
-         p_228080_1_ = this.bidiReorder(p_228080_1_);
+         text = this.bidiReorder(text);
       }
 
-      if ((p_228080_4_ & -67108864) == 0) {
-         p_228080_4_ |= -16777216;
+      if ((color & -67108864) == 0) {
+         color |= -16777216;
       }
 
-      if (p_228080_5_) {
-         this.func_228081_c_(p_228080_1_, p_228080_2_, p_228080_3_, p_228080_4_, true, p_228080_6_, p_228080_7_, p_228080_8_, p_228080_9_, p_228080_10_);
+      if (dropShadow) {
+         this.renderStringAtPos(text, x, y, color, true, matrix, buffer, p_228080_8_, p_228080_9_, packedLight);
       }
 
-      Matrix4f matrix4f = p_228080_6_.func_226601_d_();
-      matrix4f.func_226597_a_(new Vector3f(0.0F, 0.0F, 0.001F));
-      p_228080_2_ = this.func_228081_c_(p_228080_1_, p_228080_2_, p_228080_3_, p_228080_4_, false, matrix4f, p_228080_7_, p_228080_8_, p_228080_9_, p_228080_10_);
-      return (int)p_228080_2_ + (p_228080_5_ ? 1 : 0);
+      Matrix4f matrix4f = matrix.copy();
+      matrix4f.translate(new Vector3f(0.0F, 0.0F, 0.001F));
+      x = this.renderStringAtPos(text, x, y, color, false, matrix4f, buffer, p_228080_8_, p_228080_9_, packedLight);
+      return (int)x + (dropShadow ? 1 : 0);
    }
 
-   private float func_228081_c_(String p_228081_1_, float p_228081_2_, float p_228081_3_, int p_228081_4_, boolean p_228081_5_, Matrix4f p_228081_6_, IRenderTypeBuffer p_228081_7_, boolean p_228081_8_, int p_228081_9_, int p_228081_10_) {
-      float f = p_228081_5_ ? 0.25F : 1.0F;
-      float f1 = (float)(p_228081_4_ >> 16 & 255) / 255.0F * f;
-      float f2 = (float)(p_228081_4_ >> 8 & 255) / 255.0F * f;
-      float f3 = (float)(p_228081_4_ & 255) / 255.0F * f;
-      float f4 = p_228081_2_;
+   private float renderStringAtPos(String text, float x, float y, int color, boolean isShadow, Matrix4f matrix, IRenderTypeBuffer buffer, boolean isTransparent, int p_228081_9_, int packedLight) {
+      float f = isShadow ? 0.25F : 1.0F;
+      float f1 = (float)(color >> 16 & 255) / 255.0F * f;
+      float f2 = (float)(color >> 8 & 255) / 255.0F * f;
+      float f3 = (float)(color & 255) / 255.0F * f;
+      float f4 = x;
       float f5 = f1;
       float f6 = f2;
       float f7 = f3;
-      float f8 = (float)(p_228081_4_ >> 24 & 255) / 255.0F;
+      float f8 = (float)(color >> 24 & 255) / 255.0F;
       boolean flag = false;
       boolean flag1 = false;
       boolean flag2 = false;
@@ -117,10 +117,10 @@ public class FontRenderer implements AutoCloseable {
       boolean flag4 = false;
       List<TexturedGlyph.Effect> list = Lists.newArrayList();
 
-      for(int i = 0; i < p_228081_1_.length(); ++i) {
-         char c0 = p_228081_1_.charAt(i);
-         if (c0 == 167 && i + 1 < p_228081_1_.length()) {
-            TextFormatting textformatting = TextFormatting.fromFormattingCode(p_228081_1_.charAt(i + 1));
+      for(int i = 0; i < text.length(); ++i) {
+         char c0 = text.charAt(i);
+         if (c0 == 167 && i + 1 < text.length()) {
+            TextFormatting textformatting = TextFormatting.fromFormattingCode(text.charAt(i + 1));
             if (textformatting != null) {
                if (textformatting.isNormalStyle()) {
                   flag = false;
@@ -157,19 +157,19 @@ public class FontRenderer implements AutoCloseable {
             TexturedGlyph texturedglyph = flag && c0 != ' ' ? this.font.obfuscate(iglyph) : this.font.getGlyph(c0);
             if (!(texturedglyph instanceof EmptyGlyph)) {
                float f9 = flag1 ? iglyph.getBoldOffset() : 0.0F;
-               float f10 = p_228081_5_ ? iglyph.getShadowOffset() : 0.0F;
-               IVertexBuilder ivertexbuilder = p_228081_7_.getBuffer(texturedglyph.func_228163_a_(p_228081_8_));
-               this.func_228077_a_(texturedglyph, flag1, flag2, f9, f4 + f10, p_228081_3_ + f10, p_228081_6_, ivertexbuilder, f5, f6, f7, f8, p_228081_10_);
+               float f10 = isShadow ? iglyph.getShadowOffset() : 0.0F;
+               IVertexBuilder ivertexbuilder = buffer.getBuffer(texturedglyph.getRenderType(isTransparent));
+               this.drawGlyph(texturedglyph, flag1, flag2, f9, f4 + f10, y + f10, matrix, ivertexbuilder, f5, f6, f7, f8, packedLight);
             }
 
             float f15 = iglyph.getAdvance(flag1);
-            float f16 = p_228081_5_ ? 1.0F : 0.0F;
+            float f16 = isShadow ? 1.0F : 0.0F;
             if (flag4) {
-               list.add(new TexturedGlyph.Effect(f4 + f16 - 1.0F, p_228081_3_ + f16 + 4.5F, f4 + f16 + f15, p_228081_3_ + f16 + 4.5F - 1.0F, -0.01F, f5, f6, f7, f8));
+               list.add(new TexturedGlyph.Effect(f4 + f16 - 1.0F, y + f16 + 4.5F, f4 + f16 + f15, y + f16 + 4.5F - 1.0F, -0.01F, f5, f6, f7, f8));
             }
 
             if (flag3) {
-               list.add(new TexturedGlyph.Effect(f4 + f16 - 1.0F, p_228081_3_ + f16 + 9.0F, f4 + f16 + f15, p_228081_3_ + f16 + 9.0F - 1.0F, -0.01F, f5, f6, f7, f8));
+               list.add(new TexturedGlyph.Effect(f4 + f16 - 1.0F, y + f16 + 9.0F, f4 + f16 + f15, y + f16 + 9.0F - 1.0F, -0.01F, f5, f6, f7, f8));
             }
 
             f4 += f15;
@@ -181,25 +181,25 @@ public class FontRenderer implements AutoCloseable {
          float f12 = (float)(p_228081_9_ >> 16 & 255) / 255.0F;
          float f13 = (float)(p_228081_9_ >> 8 & 255) / 255.0F;
          float f14 = (float)(p_228081_9_ & 255) / 255.0F;
-         list.add(new TexturedGlyph.Effect(p_228081_2_ - 1.0F, p_228081_3_ + 9.0F, f4 + 1.0F, p_228081_3_ - 1.0F, 0.01F, f12, f13, f14, f11));
+         list.add(new TexturedGlyph.Effect(x - 1.0F, y + 9.0F, f4 + 1.0F, y - 1.0F, 0.01F, f12, f13, f14, f11));
       }
 
       if (!list.isEmpty()) {
-         TexturedGlyph texturedglyph1 = this.font.func_228157_b_();
-         IVertexBuilder ivertexbuilder1 = p_228081_7_.getBuffer(texturedglyph1.func_228163_a_(p_228081_8_));
+         TexturedGlyph texturedglyph1 = this.font.getWhiteGlyph();
+         IVertexBuilder ivertexbuilder1 = buffer.getBuffer(texturedglyph1.getRenderType(isTransparent));
 
          for(TexturedGlyph.Effect texturedglyph$effect : list) {
-            texturedglyph1.func_228162_a_(texturedglyph$effect, p_228081_6_, ivertexbuilder1, p_228081_10_);
+            texturedglyph1.renderEffect(texturedglyph$effect, matrix, ivertexbuilder1, packedLight);
          }
       }
 
       return f4;
    }
 
-   private void func_228077_a_(TexturedGlyph p_228077_1_, boolean p_228077_2_, boolean p_228077_3_, float p_228077_4_, float p_228077_5_, float p_228077_6_, Matrix4f p_228077_7_, IVertexBuilder p_228077_8_, float p_228077_9_, float p_228077_10_, float p_228077_11_, float p_228077_12_, int p_228077_13_) {
-      p_228077_1_.func_225595_a_(p_228077_3_, p_228077_5_, p_228077_6_, p_228077_7_, p_228077_8_, p_228077_9_, p_228077_10_, p_228077_11_, p_228077_12_, p_228077_13_);
-      if (p_228077_2_) {
-         p_228077_1_.func_225595_a_(p_228077_3_, p_228077_5_ + p_228077_4_, p_228077_6_, p_228077_7_, p_228077_8_, p_228077_9_, p_228077_10_, p_228077_11_, p_228077_12_, p_228077_13_);
+   private void drawGlyph(TexturedGlyph glyphIn, boolean boldIn, boolean italicIn, float boldOffsetIn, float xIn, float yIn, Matrix4f matrix, IVertexBuilder bufferIn, float redIn, float greenIn, float blueIn, float alphaIn, int packedLight) {
+      glyphIn.render(italicIn, xIn, yIn, matrix, bufferIn, redIn, greenIn, blueIn, alphaIn, packedLight);
+      if (boldIn) {
+         glyphIn.render(italicIn, xIn + boldOffsetIn, yIn, matrix, bufferIn, redIn, greenIn, blueIn, alphaIn, packedLight);
       }
 
    }
@@ -294,7 +294,7 @@ public class FontRenderer implements AutoCloseable {
 
    private void renderSplitString(String str, int x, int y, int wrapWidth, int textColor) {
       List<String> list = this.listFormattedStringToWidth(str, wrapWidth);
-      Matrix4f matrix4f = TransformationMatrix.func_227983_a_().func_227988_c_();
+      Matrix4f matrix4f = TransformationMatrix.identity().getMatrix();
 
       for(String s : list) {
          float f = (float)x;
@@ -303,7 +303,7 @@ public class FontRenderer implements AutoCloseable {
             f += (float)(wrapWidth - i);
          }
 
-         this.func_228078_a_(s, f, (float)y, textColor, matrix4f, false);
+         this.renderString(s, f, (float)y, textColor, matrix4f, false);
          y += 9;
       }
 
@@ -394,24 +394,24 @@ public class FontRenderer implements AutoCloseable {
       return k != j && l != -1 && l < k ? l : k;
    }
 
-   public int func_216863_a(String p_216863_1_, int p_216863_2_, int p_216863_3_, boolean p_216863_4_) {
+   public int getWordPosition(String stringIn, int directionIn, int p_216863_3_, boolean p_216863_4_) {
       int i = p_216863_3_;
-      boolean flag = p_216863_2_ < 0;
-      int j = Math.abs(p_216863_2_);
+      boolean flag = directionIn < 0;
+      int j = Math.abs(directionIn);
 
       for(int k = 0; k < j; ++k) {
          if (flag) {
-            while(p_216863_4_ && i > 0 && (p_216863_1_.charAt(i - 1) == ' ' || p_216863_1_.charAt(i - 1) == '\n')) {
+            while(p_216863_4_ && i > 0 && (stringIn.charAt(i - 1) == ' ' || stringIn.charAt(i - 1) == '\n')) {
                --i;
             }
 
-            while(i > 0 && p_216863_1_.charAt(i - 1) != ' ' && p_216863_1_.charAt(i - 1) != '\n') {
+            while(i > 0 && stringIn.charAt(i - 1) != ' ' && stringIn.charAt(i - 1) != '\n') {
                --i;
             }
          } else {
-            int l = p_216863_1_.length();
-            int i1 = p_216863_1_.indexOf(32, i);
-            int j1 = p_216863_1_.indexOf(10, i);
+            int l = stringIn.length();
+            int i1 = stringIn.indexOf(32, i);
+            int j1 = stringIn.indexOf(10, i);
             if (i1 == -1 && j1 == -1) {
                i = -1;
             } else if (i1 != -1 && j1 != -1) {
@@ -425,7 +425,7 @@ public class FontRenderer implements AutoCloseable {
             if (i == -1) {
                i = l;
             } else {
-               while(p_216863_4_ && i < l && (p_216863_1_.charAt(i) == ' ' || p_216863_1_.charAt(i) == '\n')) {
+               while(p_216863_4_ && i < l && (stringIn.charAt(i) == ' ' || stringIn.charAt(i) == '\n')) {
                   ++i;
                }
             }

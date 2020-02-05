@@ -35,6 +35,10 @@ public class WeightedBakedModel implements IBakedModel {
       return this.baseModel.isGui3d();
    }
 
+   public boolean func_230044_c_() {
+      return this.baseModel.func_230044_c_();
+   }
+
    public boolean isBuiltInRenderer() {
       return this.baseModel.isBuiltInRenderer();
    }

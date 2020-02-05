@@ -19,7 +19,6 @@ import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
@@ -107,7 +106,7 @@ public class RealmsTextureManager {
                         bufferedimage = (new SkinProcessor()).func_225228_a(bufferedimage);
                         ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
                         ImageIO.write(bufferedimage, "png", bytearrayoutputstream);
-                        RealmsTextureManager.field_225211_c.put(p_225200_0_, DatatypeConverter.printBase64Binary(bytearrayoutputstream.toByteArray()));
+                        RealmsTextureManager.field_225211_c.put(p_225200_0_, (new Base64()).encodeToString(bytearrayoutputstream.toByteArray()));
                         RealmsTextureManager.field_225210_b.put(p_225200_0_, true);
                         return;
                      }
@@ -145,7 +144,7 @@ public class RealmsTextureManager {
          RenderSystem.deleteTexture(realmstexturemanager$realmstexture.field_225198_b);
          i = realmstexturemanager$realmstexture.field_225198_b;
       } else {
-         i = GlStateManager.func_227622_J_();
+         i = GlStateManager.genTexture();
       }
 
       IntBuffer intbuffer = null;
@@ -175,7 +174,7 @@ public class RealmsTextureManager {
 
       RenderSystem.activeTexture(33984);
       RenderSystem.bindTexture(i);
-      TextureUtil.func_225685_a_(intbuffer, j, k);
+      TextureUtil.initTexture(intbuffer, j, k);
       field_225209_a.put(p_225203_0_, new RealmsTextureManager.RealmsTexture(p_225203_1_, i));
       return i;
    }

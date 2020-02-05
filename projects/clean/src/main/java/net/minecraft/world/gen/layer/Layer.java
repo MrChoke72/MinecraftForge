@@ -22,7 +22,7 @@ public class Layer {
       Biome biome = Registry.BIOME.getByValue(p_215739_1_);
       if (biome == null) {
          if (SharedConstants.developmentMode) {
-            throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("Unknown biome id: " + p_215739_1_));
+            throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("Unknown biome id: " + p_215739_1_));
          } else {
             LOGGER.warn("Unknown biome id: ", (int)p_215739_1_);
             return Biomes.DEFAULT;

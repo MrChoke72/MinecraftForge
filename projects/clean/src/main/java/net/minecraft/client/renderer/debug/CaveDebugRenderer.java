@@ -31,12 +31,12 @@ public class CaveDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.caves.add(cavePos);
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       RenderSystem.pushMatrix();
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
       RenderSystem.disableTexture();
-      BlockPos blockpos = new BlockPos(p_225619_3_, 0.0D, p_225619_7_);
+      BlockPos blockpos = new BlockPos(camX, 0.0D, camZ);
       Tessellator tessellator = Tessellator.getInstance();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
@@ -49,13 +49,13 @@ public class CaveDebugRenderer implements DebugRenderer.IDebugRenderer {
          float f2 = (float)(blockpos2.getZ() * 128 % 256) / 256.0F;
          float f3 = this.sizes.get(blockpos1);
          if (blockpos.withinDistance(blockpos1, 160.0D)) {
-            WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)((float)blockpos1.getX() + 0.5F) - p_225619_3_ - (double)f3, (double)((float)blockpos1.getY() + 0.5F) - p_225619_5_ - (double)f3, (double)((float)blockpos1.getZ() + 0.5F) - p_225619_7_ - (double)f3, (double)((float)blockpos1.getX() + 0.5F) - p_225619_3_ + (double)f3, (double)((float)blockpos1.getY() + 0.5F) - p_225619_5_ + (double)f3, (double)((float)blockpos1.getZ() + 0.5F) - p_225619_7_ + (double)f3, f, f1, f2, 0.5F);
+            WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)((float)blockpos1.getX() + 0.5F) - camX - (double)f3, (double)((float)blockpos1.getY() + 0.5F) - camY - (double)f3, (double)((float)blockpos1.getZ() + 0.5F) - camZ - (double)f3, (double)((float)blockpos1.getX() + 0.5F) - camX + (double)f3, (double)((float)blockpos1.getY() + 0.5F) - camY + (double)f3, (double)((float)blockpos1.getZ() + 0.5F) - camZ + (double)f3, f, f1, f2, 0.5F);
          }
       }
 
       for(BlockPos blockpos3 : this.caves) {
          if (blockpos.withinDistance(blockpos3, 160.0D)) {
-            WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)blockpos3.getX() - p_225619_3_, (double)blockpos3.getY() - p_225619_5_, (double)blockpos3.getZ() - p_225619_7_, (double)((float)blockpos3.getX() + 1.0F) - p_225619_3_, (double)((float)blockpos3.getY() + 1.0F) - p_225619_5_, (double)((float)blockpos3.getZ() + 1.0F) - p_225619_7_, 1.0F, 1.0F, 1.0F, 1.0F);
+            WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)blockpos3.getX() - camX, (double)blockpos3.getY() - camY, (double)blockpos3.getZ() - camZ, (double)((float)blockpos3.getX() + 1.0F) - camX, (double)((float)blockpos3.getY() + 1.0F) - camY, (double)((float)blockpos3.getZ() + 1.0F) - camZ, 1.0F, 1.0F, 1.0F, 1.0F);
          }
       }
 

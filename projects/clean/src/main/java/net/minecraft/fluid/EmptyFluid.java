@@ -17,11 +17,11 @@ public class EmptyFluid extends Fluid {
       return Items.AIR;
    }
 
-   public boolean func_215665_a(IFluidState p_215665_1_, IBlockReader p_215665_2_, BlockPos p_215665_3_, Fluid p_215665_4_, Direction p_215665_5_) {
+   public boolean canDisplace(IFluidState p_215665_1_, IBlockReader p_215665_2_, BlockPos p_215665_3_, Fluid p_215665_4_, Direction p_215665_5_) {
       return true;
    }
 
-   public Vec3d func_215663_a(IBlockReader p_215663_1_, BlockPos p_215663_2_, IFluidState p_215663_3_) {
+   public Vec3d getFlow(IBlockReader p_215663_1_, BlockPos p_215663_2_, IFluidState p_215663_3_) {
       return Vec3d.ZERO;
    }
 
@@ -37,11 +37,11 @@ public class EmptyFluid extends Fluid {
       return 0.0F;
    }
 
-   public float func_215662_a(IFluidState p_215662_1_, IBlockReader p_215662_2_, BlockPos p_215662_3_) {
+   public float getActualHeight(IFluidState p_215662_1_, IBlockReader p_215662_2_, BlockPos p_215662_3_) {
       return 0.0F;
    }
 
-   public float func_223407_a(IFluidState p_223407_1_) {
+   public float getHeight(IFluidState p_223407_1_) {
       return 0.0F;
    }
 

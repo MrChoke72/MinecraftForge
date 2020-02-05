@@ -9,18 +9,18 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class OptionSlider extends AbstractSlider {
    private final SliderPercentageOption option;
 
-   public OptionSlider(GameSettings settings, int xIn, int yIn, int widthIn, int heightIn, SliderPercentageOption p_i51129_6_) {
-      super(settings, xIn, yIn, widthIn, heightIn, (double)((float)p_i51129_6_.func_216726_a(p_i51129_6_.get(settings))));
-      this.option = p_i51129_6_;
+   public OptionSlider(GameSettings settings, int xIn, int yIn, int widthIn, int heightIn, SliderPercentageOption optionIn) {
+      super(settings, xIn, yIn, widthIn, heightIn, (double)((float)optionIn.normalizeValue(optionIn.get(settings))));
+      this.option = optionIn;
       this.updateMessage();
    }
 
    protected void applyValue() {
-      this.option.set(this.options, this.option.func_216725_b(this.value));
+      this.option.set(this.options, this.option.denormalizeValue(this.value));
       this.options.saveOptions();
    }
 
    protected void updateMessage() {
-      this.setMessage(this.option.func_216730_c(this.options));
+      this.setMessage(this.option.getText(this.options));
    }
 }

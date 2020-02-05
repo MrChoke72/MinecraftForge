@@ -25,11 +25,11 @@ public class ChunkSection {
       this(yBaseIn, (short)0, (short)0, (short)0);
    }
 
-   public ChunkSection(int p_i49944_1_, short p_i49944_2_, short p_i49944_3_, short p_i49944_4_) {
-      this.yBase = p_i49944_1_;
-      this.blockRefCount = p_i49944_2_;
-      this.blockTickRefCount = p_i49944_3_;
-      this.fluidRefCount = p_i49944_4_;
+   public ChunkSection(int yBaseIn, short blockRefCountIn, short blockTickRefCountIn, short fluidRefCountIn) {
+      this.yBase = yBaseIn;
+      this.blockRefCount = blockRefCountIn;
+      this.blockTickRefCount = blockTickRefCountIn;
+      this.fluidRefCount = fluidRefCountIn;
       this.data = new PalettedContainer<>(REGISTRY_PALETTE, Block.BLOCK_STATE_IDS, NBTUtil::readBlockState, NBTUtil::writeBlockState, Blocks.AIR.getDefaultState());
    }
 
@@ -49,16 +49,16 @@ public class ChunkSection {
       this.data.unlock();
    }
 
-   public BlockState setBlockState(int p_222629_1_, int p_222629_2_, int p_222629_3_, BlockState p_222629_4_) {
-      return this.setBlockState(p_222629_1_, p_222629_2_, p_222629_3_, p_222629_4_, true);
+   public BlockState setBlockState(int x, int y, int z, BlockState blockStateIn) {
+      return this.setBlockState(x, y, z, blockStateIn, true);
    }
 
-   public BlockState setBlockState(int x, int y, int z, BlockState state, boolean p_177484_5_) {
+   public BlockState setBlockState(int x, int y, int z, BlockState state, boolean useLocks) {
       BlockState blockstate;
-      if (p_177484_5_) {
-         blockstate = this.data.func_222641_a(x, y, z, state);
+      if (useLocks) {
+         blockstate = this.data.lockedSwap(x, y, z, state);
       } else {
-         blockstate = this.data.func_222639_b(x, y, z, state);
+         blockstate = this.data.swap(x, y, z, state);
       }
 
       IFluidState ifluidstate = blockstate.getFluidState();
@@ -116,7 +116,7 @@ public class ChunkSection {
       this.blockRefCount = 0;
       this.blockTickRefCount = 0;
       this.fluidRefCount = 0;
-      this.data.func_225497_a((p_225496_1_, p_225496_2_) -> {
+      this.data.count((p_225496_1_, p_225496_2_) -> {
          IFluidState ifluidstate = p_225496_1_.getFluidState();
          if (!p_225496_1_.isAir()) {
             this.blockRefCount = (short)(this.blockRefCount + p_225496_2_);
@@ -140,14 +140,14 @@ public class ChunkSection {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void read(PacketBuffer p_222634_1_) {
-      this.blockRefCount = p_222634_1_.readShort();
-      this.data.read(p_222634_1_);
+   public void read(PacketBuffer packetBufferIn) {
+      this.blockRefCount = packetBufferIn.readShort();
+      this.data.read(packetBufferIn);
    }
 
-   public void write(PacketBuffer p_222630_1_) {
-      p_222630_1_.writeShort(this.blockRefCount);
-      this.data.write(p_222630_1_);
+   public void write(PacketBuffer packetBufferIn) {
+      packetBufferIn.writeShort(this.blockRefCount);
+      this.data.write(packetBufferIn);
    }
 
    public int getSize() {

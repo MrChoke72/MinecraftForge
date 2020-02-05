@@ -19,26 +19,26 @@ public class SnowManModel<T extends Entity> extends SegmentedModel<T> {
       float f = 4.0F;
       float f1 = 0.0F;
       this.head = (new ModelRenderer(this, 0, 0)).setTextureSize(64, 64);
-      this.head.func_228301_a_(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, -0.5F);
+      this.head.addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, -0.5F);
       this.head.setRotationPoint(0.0F, 4.0F, 0.0F);
       this.rightHand = (new ModelRenderer(this, 32, 0)).setTextureSize(64, 64);
-      this.rightHand.func_228301_a_(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
+      this.rightHand.addBox(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
       this.rightHand.setRotationPoint(0.0F, 6.0F, 0.0F);
       this.leftHand = (new ModelRenderer(this, 32, 0)).setTextureSize(64, 64);
-      this.leftHand.func_228301_a_(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
+      this.leftHand.addBox(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
       this.leftHand.setRotationPoint(0.0F, 6.0F, 0.0F);
       this.body = (new ModelRenderer(this, 0, 16)).setTextureSize(64, 64);
-      this.body.func_228301_a_(-5.0F, -10.0F, -5.0F, 10.0F, 10.0F, 10.0F, -0.5F);
+      this.body.addBox(-5.0F, -10.0F, -5.0F, 10.0F, 10.0F, 10.0F, -0.5F);
       this.body.setRotationPoint(0.0F, 13.0F, 0.0F);
       this.bottomBody = (new ModelRenderer(this, 0, 36)).setTextureSize(64, 64);
-      this.bottomBody.func_228301_a_(-6.0F, -12.0F, -6.0F, 12.0F, 12.0F, 12.0F, -0.5F);
+      this.bottomBody.addBox(-6.0F, -12.0F, -6.0F, 12.0F, 12.0F, 12.0F, -0.5F);
       this.bottomBody.setRotationPoint(0.0F, 24.0F, 0.0F);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      this.head.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F);
-      this.head.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
-      this.body.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F) * 0.25F;
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.head.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
+      this.head.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+      this.body.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F) * 0.25F;
       float f = MathHelper.sin(this.body.rotateAngleY);
       float f1 = MathHelper.cos(this.body.rotateAngleY);
       this.rightHand.rotateAngleZ = 1.0F;
@@ -51,7 +51,7 @@ public class SnowManModel<T extends Entity> extends SegmentedModel<T> {
       this.leftHand.rotationPointZ = f * 5.0F;
    }
 
-   public Iterable<ModelRenderer> func_225601_a_() {
+   public Iterable<ModelRenderer> getParts() {
       return ImmutableList.of(this.body, this.bottomBody, this.head, this.rightHand, this.leftHand);
    }
 

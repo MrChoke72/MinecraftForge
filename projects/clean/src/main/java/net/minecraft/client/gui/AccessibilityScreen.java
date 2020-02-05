@@ -14,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class AccessibilityScreen extends SettingsScreen {
-   private static final AbstractOption[] OPTIONS = new AbstractOption[]{AbstractOption.NARRATOR, AbstractOption.SHOW_SUBTITLES, AbstractOption.ACCESSIBILITY_TEXT_BACKGROUND_OPACITY, AbstractOption.ACCESSIBILITY_TEXT_BACKGROUND, AbstractOption.CHAT_OPACITY, AbstractOption.AUTO_JUMP, AbstractOption.field_228034_N_, AbstractOption.field_228035_O_};
+   private static final AbstractOption[] OPTIONS = new AbstractOption[]{AbstractOption.NARRATOR, AbstractOption.SHOW_SUBTITLES, AbstractOption.ACCESSIBILITY_TEXT_BACKGROUND_OPACITY, AbstractOption.ACCESSIBILITY_TEXT_BACKGROUND, AbstractOption.CHAT_OPACITY, AbstractOption.AUTO_JUMP, AbstractOption.SNEAK, AbstractOption.SPRINT};
    private Widget field_212989_d;
 
    public AccessibilityScreen(Screen p_i51123_1_, GameSettings p_i51123_2_) {
@@ -37,7 +37,7 @@ public class AccessibilityScreen extends SettingsScreen {
       }
 
       this.addButton(new Button(this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.format("gui.done"), (p_212984_1_) -> {
-         this.minecraft.displayGuiScreen(this.field_228182_a_);
+         this.minecraft.displayGuiScreen(this.parentScreen);
       }));
    }
 
@@ -48,6 +48,6 @@ public class AccessibilityScreen extends SettingsScreen {
    }
 
    public void func_212985_a() {
-      this.field_212989_d.setMessage(AbstractOption.NARRATOR.func_216720_c(this.field_228183_b_));
+      this.field_212989_d.setMessage(AbstractOption.NARRATOR.getText(this.gameSettings));
    }
 }

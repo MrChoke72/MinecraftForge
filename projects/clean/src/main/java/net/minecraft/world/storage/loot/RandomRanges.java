@@ -31,7 +31,7 @@ public class RandomRanges {
    public static JsonElement serialize(IRandomRange randomRange, JsonSerializationContext context) {
       JsonElement jsonelement = context.serialize(randomRange);
       if (jsonelement.isJsonObject()) {
-         jsonelement.getAsJsonObject().addProperty("type", randomRange.getLocation().toString());
+         jsonelement.getAsJsonObject().addProperty("type", randomRange.getType().toString());
       }
 
       return jsonelement;

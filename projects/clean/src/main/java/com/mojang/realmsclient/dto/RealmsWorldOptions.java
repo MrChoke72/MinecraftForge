@@ -36,8 +36,8 @@ public class RealmsWorldOptions extends ValueObject {
    private static final String templateImageDefault = null;
    private static final boolean adventureMapDefault = false;
 
-   public RealmsWorldOptions(Boolean p_i51651_1_, Boolean p_i51651_2_, Boolean p_i51651_3_, Boolean p_i51651_4_, Integer p_i51651_5_, Boolean p_i51651_6_, Integer p_i51651_7_, Integer p_i51651_8_, Boolean p_i51651_9_, String p_i51651_10_) {
-      this.pvp = p_i51651_1_;
+   public RealmsWorldOptions(Boolean atlasTexturesIn, Boolean p_i51651_2_, Boolean p_i51651_3_, Boolean p_i51651_4_, Integer p_i51651_5_, Boolean p_i51651_6_, Integer p_i51651_7_, Integer p_i51651_8_, Boolean p_i51651_9_, String p_i51651_10_) {
+      this.pvp = atlasTexturesIn;
       this.spawnAnimals = p_i51651_2_;
       this.spawnMonsters = p_i51651_3_;
       this.spawnNPCs = p_i51651_4_;

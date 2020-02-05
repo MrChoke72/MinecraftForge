@@ -51,10 +51,10 @@ public class SoundEngine {
    private final List<ITickableSound> field_229361_s_ = Lists.newArrayList();
    private final List<Sound> soundsToPreload = Lists.newArrayList();
 
-   public SoundEngine(SoundHandler p_i50892_1_, GameSettings p_i50892_2_, IResourceManager p_i50892_3_) {
-      this.sndHandler = p_i50892_1_;
-      this.options = p_i50892_2_;
-      this.audioStreamManager = new AudioStreamManager(p_i50892_3_);
+   public SoundEngine(SoundHandler sndHandlerIn, GameSettings optionsIn, IResourceManager resourceManagerIn) {
+      this.sndHandler = sndHandlerIn;
+      this.options = optionsIn;
+      this.audioStreamManager = new AudioStreamManager(resourceManagerIn);
    }
 
    public void reload() {
@@ -157,15 +157,15 @@ public class SoundEngine {
       this.listeners.remove(listener);
    }
 
-   public void tick(boolean p_217921_1_) {
-      if (!p_217921_1_) {
-         this.func_217927_h();
+   public void tick(boolean isGamePaused) {
+      if (!isGamePaused) {
+         this.tickNonPaused();
       }
 
       this.channelManager.tick();
    }
 
-   private void func_217927_h() {
+   private void tickNonPaused() {
       ++this.ticks;
       this.field_229361_s_.forEach(this::play);
       this.field_229361_s_.clear();
@@ -241,11 +241,11 @@ public class SoundEngine {
 
    }
 
-   public boolean isPlaying(ISound p_217933_1_) {
+   public boolean isPlaying(ISound soundIn) {
       if (!this.loaded) {
          return false;
       } else {
-         return this.playingSoundsStopTime.containsKey(p_217933_1_) && this.playingSoundsStopTime.get(p_217933_1_) <= this.ticks ? true : this.playingSoundsChannel.containsKey(p_217933_1_);
+         return this.playingSoundsStopTime.containsKey(soundIn) && this.playingSoundsStopTime.get(soundIn) <= this.ticks ? true : this.playingSoundsChannel.containsKey(soundIn);
       }
    }
 
@@ -373,8 +373,8 @@ public class SoundEngine {
    public void updateListener(ActiveRenderInfo p_217920_1_) {
       if (this.loaded && p_217920_1_.isValid()) {
          Vec3d vec3d = p_217920_1_.getProjectedView();
-         Vector3f vector3f = p_217920_1_.func_227996_l_();
-         Vector3f vector3f1 = p_217920_1_.func_227997_m_();
+         Vector3f vector3f = p_217920_1_.getViewVector();
+         Vector3f vector3f1 = p_217920_1_.getUpVector();
          this.executor.execute(() -> {
             this.listener.setPosition(vec3d);
             this.listener.func_227580_a_(vector3f, vector3f1);

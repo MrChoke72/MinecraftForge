@@ -19,10 +19,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CartographyTableScreen extends ContainerScreen<CartographyContainer> {
-   private static final ResourceLocation field_214109_k = new ResourceLocation("textures/gui/container/cartography_table.png");
+   private static final ResourceLocation CONTAINER_TEXTURE = new ResourceLocation("textures/gui/container/cartography_table.png");
 
-   public CartographyTableScreen(CartographyContainer p_i51096_1_, PlayerInventory p_i51096_2_, ITextComponent p_i51096_3_) {
-      super(p_i51096_1_, p_i51096_2_, p_i51096_3_);
+   public CartographyTableScreen(CartographyContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+      super(screenContainer, inv, titleIn);
    }
 
    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
@@ -38,7 +38,7 @@ public class CartographyTableScreen extends ContainerScreen<CartographyContainer
    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
       this.renderBackground();
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-      this.minecraft.getTextureManager().bindTexture(field_214109_k);
+      this.minecraft.getTextureManager().bindTexture(CONTAINER_TEXTURE);
       int i = this.guiLeft;
       int j = this.guiTop;
       this.blit(i, j, 0, 0, this.xSize, this.ySize);
@@ -50,7 +50,7 @@ public class CartographyTableScreen extends ContainerScreen<CartographyContainer
       boolean flag3 = false;
       MapData mapdata;
       if (itemstack.getItem() == Items.FILLED_MAP) {
-         mapdata = FilledMapItem.func_219994_a(itemstack, this.minecraft.world);
+         mapdata = FilledMapItem.getData(itemstack, this.minecraft.world);
          if (mapdata != null) {
             if (mapdata.locked) {
                flag3 = true;
@@ -68,47 +68,47 @@ public class CartographyTableScreen extends ContainerScreen<CartographyContainer
          mapdata = null;
       }
 
-      this.func_214107_a(mapdata, flag, flag1, flag2, flag3);
+      this.drawMap(mapdata, flag, flag1, flag2, flag3);
    }
 
-   private void func_214107_a(@Nullable MapData p_214107_1_, boolean p_214107_2_, boolean p_214107_3_, boolean p_214107_4_, boolean p_214107_5_) {
+   private void drawMap(@Nullable MapData mapDataIn, boolean isMap, boolean isPaper, boolean isGlassPane, boolean isLocked) {
       int i = this.guiLeft;
       int j = this.guiTop;
-      if (p_214107_3_ && !p_214107_5_) {
+      if (isPaper && !isLocked) {
          this.blit(i + 67, j + 13, this.xSize, 66, 66, 66);
-         this.func_214108_a(p_214107_1_, i + 85, j + 31, 0.226F);
-      } else if (p_214107_2_) {
+         this.drawMapItem(mapDataIn, i + 85, j + 31, 0.226F);
+      } else if (isMap) {
          this.blit(i + 67 + 16, j + 13, this.xSize, 132, 50, 66);
-         this.func_214108_a(p_214107_1_, i + 86, j + 16, 0.34F);
-         this.minecraft.getTextureManager().bindTexture(field_214109_k);
+         this.drawMapItem(mapDataIn, i + 86, j + 16, 0.34F);
+         this.minecraft.getTextureManager().bindTexture(CONTAINER_TEXTURE);
          RenderSystem.pushMatrix();
          RenderSystem.translatef(0.0F, 0.0F, 1.0F);
          this.blit(i + 67, j + 13 + 16, this.xSize, 132, 50, 66);
-         this.func_214108_a(p_214107_1_, i + 70, j + 32, 0.34F);
+         this.drawMapItem(mapDataIn, i + 70, j + 32, 0.34F);
          RenderSystem.popMatrix();
-      } else if (p_214107_4_) {
+      } else if (isGlassPane) {
          this.blit(i + 67, j + 13, this.xSize, 0, 66, 66);
-         this.func_214108_a(p_214107_1_, i + 71, j + 17, 0.45F);
-         this.minecraft.getTextureManager().bindTexture(field_214109_k);
+         this.drawMapItem(mapDataIn, i + 71, j + 17, 0.45F);
+         this.minecraft.getTextureManager().bindTexture(CONTAINER_TEXTURE);
          RenderSystem.pushMatrix();
          RenderSystem.translatef(0.0F, 0.0F, 1.0F);
          this.blit(i + 66, j + 12, 0, this.ySize, 66, 66);
          RenderSystem.popMatrix();
       } else {
          this.blit(i + 67, j + 13, this.xSize, 0, 66, 66);
-         this.func_214108_a(p_214107_1_, i + 71, j + 17, 0.45F);
+         this.drawMapItem(mapDataIn, i + 71, j + 17, 0.45F);
       }
 
    }
 
-   private void func_214108_a(@Nullable MapData p_214108_1_, int p_214108_2_, int p_214108_3_, float p_214108_4_) {
-      if (p_214108_1_ != null) {
+   private void drawMapItem(@Nullable MapData mapDataIn, int x, int y, float scale) {
+      if (mapDataIn != null) {
          RenderSystem.pushMatrix();
-         RenderSystem.translatef((float)p_214108_2_, (float)p_214108_3_, 1.0F);
-         RenderSystem.scalef(p_214108_4_, p_214108_4_, 1.0F);
-         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.func_228455_a_(Tessellator.getInstance().getBuffer());
-         this.minecraft.gameRenderer.getMapItemRenderer().func_228086_a_(new MatrixStack(), irendertypebuffer$impl, p_214108_1_, true, 15728880);
-         irendertypebuffer$impl.func_228461_a_();
+         RenderSystem.translatef((float)x, (float)y, 1.0F);
+         RenderSystem.scalef(scale, scale, 1.0F);
+         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+         this.minecraft.gameRenderer.getMapItemRenderer().renderMap(new MatrixStack(), irendertypebuffer$impl, mapDataIn, true, 15728880);
+         irendertypebuffer$impl.finish();
          RenderSystem.popMatrix();
       }
 

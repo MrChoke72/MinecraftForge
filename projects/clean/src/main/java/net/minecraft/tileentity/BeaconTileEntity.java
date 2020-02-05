@@ -50,7 +50,7 @@ public class BeaconTileEntity extends TileEntity implements INamedContainerProvi
    private Effect secondaryEffect;
    @Nullable
    private ITextComponent customName;
-   private LockCode field_213936_m = LockCode.EMPTY_CODE;
+   private LockCode lockCode = LockCode.EMPTY_CODE;
    private final IIntArray field_213937_n = new IIntArray() {
       public int get(int index) {
          switch(index) {
@@ -141,7 +141,7 @@ public class BeaconTileEntity extends TileEntity implements INamedContainerProvi
       int j1 = this.levels;
       if (this.world.getGameTime() % 80L == 0L) {
          if (!this.beamSegments.isEmpty()) {
-            this.func_213927_a(i, j, k);
+            this.checkBeaconLevel(i, j, k);
          }
 
          if (this.levels > 0 && !this.beamSegments.isEmpty()) {
@@ -170,19 +170,19 @@ public class BeaconTileEntity extends TileEntity implements INamedContainerProvi
 
    }
 
-   private void func_213927_a(int p_213927_1_, int p_213927_2_, int p_213927_3_) {
+   private void checkBeaconLevel(int beaconXIn, int beaconYIn, int beaconZIn) {
       this.levels = 0;
 
       for(int i = 1; i <= 4; this.levels = i++) {
-         int j = p_213927_2_ - i;
+         int j = beaconYIn - i;
          if (j < 0) {
             break;
          }
 
          boolean flag = true;
 
-         for(int k = p_213927_1_ - i; k <= p_213927_1_ + i && flag; ++k) {
-            for(int l = p_213927_3_ - i; l <= p_213927_3_ + i; ++l) {
+         for(int k = beaconXIn - i; k <= beaconXIn + i && flag; ++k) {
+            for(int l = beaconZIn - i; l <= beaconZIn + i; ++l) {
                Block block = this.world.getBlockState(new BlockPos(k, j, l)).getBlock();
                if (block != Blocks.EMERALD_BLOCK && block != Blocks.GOLD_BLOCK && block != Blocks.DIAMOND_BLOCK && block != Blocks.IRON_BLOCK) {
                   flag = false;
@@ -269,7 +269,7 @@ public class BeaconTileEntity extends TileEntity implements INamedContainerProvi
          this.customName = ITextComponent.Serializer.fromJson(compound.getString("CustomName"));
       }
 
-      this.field_213936_m = LockCode.read(compound);
+      this.lockCode = LockCode.read(compound);
    }
 
    public CompoundNBT write(CompoundNBT compound) {
@@ -281,7 +281,7 @@ public class BeaconTileEntity extends TileEntity implements INamedContainerProvi
          compound.putString("CustomName", ITextComponent.Serializer.toJson(this.customName));
       }
 
-      this.field_213936_m.write(compound);
+      this.lockCode.write(compound);
       return compound;
    }
 
@@ -291,7 +291,7 @@ public class BeaconTileEntity extends TileEntity implements INamedContainerProvi
 
    @Nullable
    public Container createMenu(int p_createMenu_1_, PlayerInventory p_createMenu_2_, PlayerEntity p_createMenu_3_) {
-      return LockableTileEntity.canUnlock(p_createMenu_3_, this.field_213936_m, this.getDisplayName()) ? new BeaconContainer(p_createMenu_1_, p_createMenu_2_, this.field_213937_n, IWorldPosCallable.of(this.world, this.getPos())) : null;
+      return LockableTileEntity.canUnlock(p_createMenu_3_, this.lockCode, this.getDisplayName()) ? new BeaconContainer(p_createMenu_1_, p_createMenu_2_, this.field_213937_n, IWorldPosCallable.of(this.world, this.getPos())) : null;
    }
 
    public ITextComponent getDisplayName() {

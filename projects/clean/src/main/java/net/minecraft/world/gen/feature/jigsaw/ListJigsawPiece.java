@@ -46,15 +46,15 @@ public class ListJigsawPiece extends JigsawPiece {
       }
    }
 
-   public List<Template.BlockInfo> func_214849_a(TemplateManager p_214849_1_, BlockPos p_214849_2_, Rotation p_214849_3_, Random p_214849_4_) {
-      return this.elements.get(0).func_214849_a(p_214849_1_, p_214849_2_, p_214849_3_, p_214849_4_);
+   public List<Template.BlockInfo> getJigsawBlocks(TemplateManager templateManagerIn, BlockPos pos, Rotation rotationIn, Random rand) {
+      return this.elements.get(0).getJigsawBlocks(templateManagerIn, pos, rotationIn, rand);
    }
 
-   public MutableBoundingBox func_214852_a(TemplateManager p_214852_1_, BlockPos p_214852_2_, Rotation p_214852_3_) {
+   public MutableBoundingBox getBoundingBox(TemplateManager templateManagerIn, BlockPos pos, Rotation rotationIn) {
       MutableBoundingBox mutableboundingbox = MutableBoundingBox.getNewBoundingBox();
 
       for(JigsawPiece jigsawpiece : this.elements) {
-         MutableBoundingBox mutableboundingbox1 = jigsawpiece.func_214852_a(p_214852_1_, p_214852_2_, p_214852_3_);
+         MutableBoundingBox mutableboundingbox1 = jigsawpiece.getBoundingBox(templateManagerIn, pos, rotationIn);
          mutableboundingbox.expandTo(mutableboundingbox1);
       }
 
@@ -75,17 +75,17 @@ public class ListJigsawPiece extends JigsawPiece {
       return IJigsawDeserializer.LIST_POOL_ELEMENT;
    }
 
-   public JigsawPiece setPlacementBehaviour(JigsawPattern.PlacementBehaviour p_214845_1_) {
-      super.setPlacementBehaviour(p_214845_1_);
-      this.func_214864_b(p_214845_1_);
+   public JigsawPiece setPlacementBehaviour(JigsawPattern.PlacementBehaviour placementBehaviour) {
+      super.setPlacementBehaviour(placementBehaviour);
+      this.func_214864_b(placementBehaviour);
       return this;
    }
 
-   public <T> Dynamic<T> serialize0(DynamicOps<T> p_214851_1_) {
-      T t = p_214851_1_.createList(this.elements.stream().map((p_214865_1_) -> {
-         return p_214865_1_.serialize(p_214851_1_).getValue();
+   public <T> Dynamic<T> serialize0(DynamicOps<T> ops) {
+      T t = ops.createList(this.elements.stream().map((p_214865_1_) -> {
+         return p_214865_1_.serialize(ops).getValue();
       }));
-      return new Dynamic<>(p_214851_1_, p_214851_1_.createMap(ImmutableMap.of(p_214851_1_.createString("elements"), t)));
+      return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("elements"), t)));
    }
 
    public String toString() {

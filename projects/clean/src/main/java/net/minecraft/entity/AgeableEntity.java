@@ -146,7 +146,7 @@ public abstract class AgeableEntity extends CreatureEntity {
       if (this.world.isRemote) {
          if (this.forcedAgeTimer > 0) {
             if (this.forcedAgeTimer % 4 == 0) {
-               this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.func_226282_d_(1.0D), this.func_226279_cv_() + 0.5D, this.func_226287_g_(1.0D), 0.0D, 0.0D, 0.0D);
+               this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), 0.0D, 0.0D, 0.0D);
             }
 
             --this.forcedAgeTimer;

@@ -20,7 +20,7 @@ public class DynamicLootEntry extends StandaloneLootEntry {
    }
 
    public void func_216154_a(Consumer<ItemStack> p_216154_1_, LootContext p_216154_2_) {
-      p_216154_2_.func_216034_a(this.name, p_216154_1_);
+      p_216154_2_.generateDynamicDrop(this.name, p_216154_1_);
    }
 
    public static StandaloneLootEntry.Builder<?> func_216162_a(ResourceLocation p_216162_0_) {

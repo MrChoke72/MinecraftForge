@@ -15,8 +15,8 @@ public class ElderGuardianRenderer extends GuardianRenderer {
       super(renderManagerIn, 1.2F);
    }
 
-   protected void func_225620_a_(GuardianEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
-      p_225620_2_.func_227862_a_(ElderGuardianEntity.field_213629_b, ElderGuardianEntity.field_213629_b, ElderGuardianEntity.field_213629_b);
+   protected void preRenderCallback(GuardianEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+      matrixStackIn.scale(ElderGuardianEntity.field_213629_b, ElderGuardianEntity.field_213629_b, ElderGuardianEntity.field_213629_b);
    }
 
    public ResourceLocation getEntityTexture(GuardianEntity entity) {

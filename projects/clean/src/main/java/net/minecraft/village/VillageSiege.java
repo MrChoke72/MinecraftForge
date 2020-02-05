@@ -68,7 +68,7 @@ public class VillageSiege {
       for(PlayerEntity playerentity : p_75529_1_.getPlayers()) {
          if (!playerentity.isSpectator()) {
             BlockPos blockpos = playerentity.getPosition();
-            if (p_75529_1_.isPosBelowEQSecLevel1(blockpos) && p_75529_1_.func_226691_t_(blockpos).getCategory() != Biome.Category.MUSHROOM) {
+            if (p_75529_1_.isPosBelowEQSecLevel1(blockpos) && p_75529_1_.getBiome(blockpos).getCategory() != Biome.Category.MUSHROOM) {
                for(int i = 0; i < 10; ++i) {
                   float f = p_75529_1_.rand.nextFloat() * ((float)Math.PI * 2F);
                   this.spawnX = blockpos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F);

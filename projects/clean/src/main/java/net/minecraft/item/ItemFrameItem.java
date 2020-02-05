@@ -11,7 +11,7 @@ public class ItemFrameItem extends HangingEntityItem {
       super(EntityType.ITEM_FRAME, builder);
    }
 
-   protected boolean canPlace(PlayerEntity p_200127_1_, Direction p_200127_2_, ItemStack p_200127_3_, BlockPos p_200127_4_) {
-      return !World.isOutsideBuildHeight(p_200127_4_) && p_200127_1_.canPlayerEdit(p_200127_4_, p_200127_2_, p_200127_3_);
+   protected boolean canPlace(PlayerEntity playerIn, Direction directionIn, ItemStack itemStackIn, BlockPos posIn) {
+      return !World.isOutsideBuildHeight(posIn) && playerIn.canPlayerEdit(posIn, directionIn, itemStackIn);
    }
 }

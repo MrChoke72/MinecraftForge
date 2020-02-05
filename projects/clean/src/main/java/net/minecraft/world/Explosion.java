@@ -78,7 +78,7 @@ public class Explosion {
       this.damageSource = DamageSource.causeExplosionDamage(this);
    }
 
-   public static float func_222259_a(Vec3d p_222259_0_, Entity p_222259_1_) {
+   public static float getBlockDensity(Vec3d p_222259_0_, Entity p_222259_1_) {
       AxisAlignedBB axisalignedbb = p_222259_1_.getBoundingBox();
       double d0 = 1.0D / ((axisalignedbb.maxX - axisalignedbb.minX) * 2.0D + 1.0D);
       double d1 = 1.0D / ((axisalignedbb.maxY - axisalignedbb.minY) * 2.0D + 1.0D);
@@ -174,14 +174,14 @@ public class Explosion {
             double d12 = (double)(MathHelper.sqrt(entity.getDistanceSq(vec3d)) / f3);
             if (d12 <= 1.0D) {
                double d5 = entity.getPosX() - this.x;
-               double d7 = entity.getPosYPlusEyeHeight() - this.y;
+               double d7 = entity.getPosYEye() - this.y;
                double d9 = entity.getPosZ() - this.z;
                double d13 = (double)MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
                if (d13 != 0.0D) {
                   d5 = d5 / d13;
                   d7 = d7 / d13;
                   d9 = d9 / d13;
-                  double d14 = (double)func_222259_a(vec3d, entity);
+                  double d14 = (double)getBlockDensity(vec3d, entity);
                   double d10 = (1.0D - d12) * d14;
                   entity.attackEntityFrom(this.getDamageSource(), (float)((int)((d10 * d10 + d10) / 2.0D * 7.0D * (double)f3 + 1.0D)));
                   double d11 = d10;

@@ -72,21 +72,21 @@ public class MineshaftStructure extends Structure<MineshaftConfig> {
       NORMAL("normal"),
       MESA("mesa");
 
-      private static final Map<String, MineshaftStructure.Type> field_214717_c = Arrays.stream(values()).collect(Collectors.toMap(MineshaftStructure.Type::func_214714_a, (p_214716_0_) -> {
+      private static final Map<String, MineshaftStructure.Type> BY_NAME = Arrays.stream(values()).collect(Collectors.toMap(MineshaftStructure.Type::getName, (p_214716_0_) -> {
          return p_214716_0_;
       }));
-      private final String field_214718_d;
+      private final String name;
 
-      private Type(String p_i50444_3_) {
-         this.field_214718_d = p_i50444_3_;
+      private Type(String nameIn) {
+         this.name = nameIn;
       }
 
-      public String func_214714_a() {
-         return this.field_214718_d;
+      public String getName() {
+         return this.name;
       }
 
-      public static MineshaftStructure.Type func_214715_a(String p_214715_0_) {
-         return field_214717_c.get(p_214715_0_);
+      public static MineshaftStructure.Type byName(String p_214715_0_) {
+         return BY_NAME.get(p_214715_0_);
       }
 
       public static MineshaftStructure.Type byId(int id) {

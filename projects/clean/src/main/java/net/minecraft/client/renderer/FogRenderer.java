@@ -28,11 +28,11 @@ public class FogRenderer {
    private static int waterFogColor = -1;
    private static long waterFogUpdateTime = -1L;
 
-   public static void func_228371_a_(ActiveRenderInfo p_228371_0_, float p_228371_1_, ClientWorld p_228371_2_, int p_228371_3_, float p_228371_4_) {
-      IFluidState ifluidstate = p_228371_0_.getFluidState();
+   public static void updateFogColor(ActiveRenderInfo activeRenderInfoIn, float partialTicks, ClientWorld worldIn, int renderDistanceChunks, float bossColorModifier) {
+      IFluidState ifluidstate = activeRenderInfoIn.getFluidState();
       if (ifluidstate.isTagged(FluidTags.WATER)) {
          long i = Util.milliTime();
-         int j = p_228371_2_.func_226691_t_(new BlockPos(p_228371_0_.getProjectedView())).getWaterFogColor();
+         int j = worldIn.getBiome(new BlockPos(activeRenderInfoIn.getProjectedView())).getWaterFogColor();
          if (waterFogUpdateTime < 0L) {
             lastWaterFogColor = j;
             waterFogColor = j;
@@ -63,26 +63,26 @@ public class FogRenderer {
          blue = 0.0F;
          waterFogUpdateTime = -1L;
       } else {
-         float f4 = 0.25F + 0.75F * (float)p_228371_3_ / 32.0F;
+         float f4 = 0.25F + 0.75F * (float)renderDistanceChunks / 32.0F;
          f4 = 1.0F - (float)Math.pow((double)f4, 0.25D);
-         Vec3d vec3d = p_228371_2_.func_228318_a_(p_228371_0_.getBlockPos(), p_228371_1_);
+         Vec3d vec3d = worldIn.getSkyColor(activeRenderInfoIn.getBlockPos(), partialTicks);
          float f5 = (float)vec3d.x;
          float f8 = (float)vec3d.y;
          float f11 = (float)vec3d.z;
-         Vec3d vec3d1 = p_228371_2_.func_228329_i_(p_228371_1_);
+         Vec3d vec3d1 = worldIn.getFogColor(partialTicks);
          red = (float)vec3d1.x;
          green = (float)vec3d1.y;
          blue = (float)vec3d1.z;
-         if (p_228371_3_ >= 4) {
-            float f12 = MathHelper.sin(p_228371_2_.getCelestialAngleRadians(p_228371_1_)) > 0.0F ? -1.0F : 1.0F;
+         if (renderDistanceChunks >= 4) {
+            float f12 = MathHelper.sin(worldIn.getCelestialAngleRadians(partialTicks)) > 0.0F ? -1.0F : 1.0F;
             Vector3f vector3f = new Vector3f(f12, 0.0F, 0.0F);
-            float f16 = p_228371_0_.func_227996_l_().dot(vector3f);
+            float f16 = activeRenderInfoIn.getViewVector().dot(vector3f);
             if (f16 < 0.0F) {
                f16 = 0.0F;
             }
 
             if (f16 > 0.0F) {
-               float[] afloat = p_228371_2_.dimension.calcSunriseSunsetColors(p_228371_2_.getCelestialAngle(p_228371_1_), p_228371_1_);
+               float[] afloat = worldIn.dimension.calcSunriseSunsetColors(worldIn.getCelestialAngle(partialTicks), partialTicks);
                if (afloat != null) {
                   f16 = f16 * afloat[3];
                   red = red * (1.0F - f16) + afloat[0] * f16;
@@ -95,7 +95,7 @@ public class FogRenderer {
          red += (f5 - red) * f4;
          green += (f8 - green) * f4;
          blue += (f11 - blue) * f4;
-         float f13 = p_228371_2_.getRainStrength(p_228371_1_);
+         float f13 = worldIn.getRainStrength(partialTicks);
          if (f13 > 0.0F) {
             float f14 = 1.0F - f13 * 0.5F;
             float f17 = 1.0F - f13 * 0.4F;
@@ -104,7 +104,7 @@ public class FogRenderer {
             blue *= f17;
          }
 
-         float f15 = p_228371_2_.getThunderStrength(p_228371_1_);
+         float f15 = worldIn.getThunderStrength(partialTicks);
          if (f15 > 0.0F) {
             float f18 = 1.0F - f15 * 0.5F;
             red *= f18;
@@ -115,9 +115,9 @@ public class FogRenderer {
          waterFogUpdateTime = -1L;
       }
 
-      double d0 = p_228371_0_.getProjectedView().y * p_228371_2_.dimension.getVoidFogYFactor();
-      if (p_228371_0_.getRenderViewEntity() instanceof LivingEntity && ((LivingEntity)p_228371_0_.getRenderViewEntity()).isPotionActive(Effects.BLINDNESS)) {
-         int i2 = ((LivingEntity)p_228371_0_.getRenderViewEntity()).getActivePotionEffect(Effects.BLINDNESS).getDuration();
+      double d0 = activeRenderInfoIn.getProjectedView().y * worldIn.dimension.getVoidFogYFactor();
+      if (activeRenderInfoIn.getRenderViewEntity() instanceof LivingEntity && ((LivingEntity)activeRenderInfoIn.getRenderViewEntity()).isPotionActive(Effects.BLINDNESS)) {
+         int i2 = ((LivingEntity)activeRenderInfoIn.getRenderViewEntity()).getActivePotionEffect(Effects.BLINDNESS).getDuration();
          if (i2 < 20) {
             d0 *= (double)(1.0F - (float)i2 / 20.0F);
          } else {
@@ -136,16 +136,16 @@ public class FogRenderer {
          blue = (float)((double)blue * d0);
       }
 
-      if (p_228371_4_ > 0.0F) {
-         red = red * (1.0F - p_228371_4_) + red * 0.7F * p_228371_4_;
-         green = green * (1.0F - p_228371_4_) + green * 0.6F * p_228371_4_;
-         blue = blue * (1.0F - p_228371_4_) + blue * 0.6F * p_228371_4_;
+      if (bossColorModifier > 0.0F) {
+         red = red * (1.0F - bossColorModifier) + red * 0.7F * bossColorModifier;
+         green = green * (1.0F - bossColorModifier) + green * 0.6F * bossColorModifier;
+         blue = blue * (1.0F - bossColorModifier) + blue * 0.6F * bossColorModifier;
       }
 
       if (ifluidstate.isTagged(FluidTags.WATER)) {
          float f6 = 0.0F;
-         if (p_228371_0_.getRenderViewEntity() instanceof ClientPlayerEntity) {
-            ClientPlayerEntity clientplayerentity = (ClientPlayerEntity)p_228371_0_.getRenderViewEntity();
+         if (activeRenderInfoIn.getRenderViewEntity() instanceof ClientPlayerEntity) {
+            ClientPlayerEntity clientplayerentity = (ClientPlayerEntity)activeRenderInfoIn.getRenderViewEntity();
             f6 = clientplayerentity.getWaterBrightness();
          }
 
@@ -153,8 +153,8 @@ public class FogRenderer {
          red = red * (1.0F - f6) + red * f9 * f6;
          green = green * (1.0F - f6) + green * f9 * f6;
          blue = blue * (1.0F - f6) + blue * f9 * f6;
-      } else if (p_228371_0_.getRenderViewEntity() instanceof LivingEntity && ((LivingEntity)p_228371_0_.getRenderViewEntity()).isPotionActive(Effects.NIGHT_VISION)) {
-         float f7 = GameRenderer.getNightVisionBrightness((LivingEntity)p_228371_0_.getRenderViewEntity(), p_228371_1_);
+      } else if (activeRenderInfoIn.getRenderViewEntity() instanceof LivingEntity && ((LivingEntity)activeRenderInfoIn.getRenderViewEntity()).isPotionActive(Effects.NIGHT_VISION)) {
+         float f7 = GameRenderer.getNightVisionBrightness((LivingEntity)activeRenderInfoIn.getRenderViewEntity(), partialTicks);
          float f10 = Math.min(1.0F / red, Math.min(1.0F / green, 1.0F / blue));
          red = red * (1.0F - f7) + red * f10 * f7;
          green = green * (1.0F - f7) + green * f10 * f7;
@@ -164,14 +164,14 @@ public class FogRenderer {
       RenderSystem.clearColor(red, green, blue, 0.0F);
    }
 
-   public static void func_228370_a_() {
+   public static void resetFog() {
       RenderSystem.fogDensity(0.0F);
       RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
    }
 
-   public static void func_228372_a_(ActiveRenderInfo p_228372_0_, FogRenderer.FogType p_228372_1_, float p_228372_2_, boolean p_228372_3_) {
-      IFluidState ifluidstate = p_228372_0_.getFluidState();
-      Entity entity = p_228372_0_.getRenderViewEntity();
+   public static void setupFog(ActiveRenderInfo activeRenderInfoIn, FogRenderer.FogType fogTypeIn, float farPlaneDistance, boolean nearFog) {
+      IFluidState ifluidstate = activeRenderInfoIn.getFluidState();
+      Entity entity = activeRenderInfoIn.getRenderViewEntity();
       boolean flag = ifluidstate.getFluid() != Fluids.EMPTY;
       if (flag) {
          float f = 1.0F;
@@ -180,7 +180,7 @@ public class FogRenderer {
             if (entity instanceof ClientPlayerEntity) {
                ClientPlayerEntity clientplayerentity = (ClientPlayerEntity)entity;
                f -= clientplayerentity.getWaterBrightness() * clientplayerentity.getWaterBrightness() * 0.03F;
-               Biome biome = clientplayerentity.world.func_226691_t_(new BlockPos(clientplayerentity));
+               Biome biome = clientplayerentity.world.getBiome(new BlockPos(clientplayerentity));
                if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
                   f += 0.005F;
                }
@@ -196,23 +196,23 @@ public class FogRenderer {
          float f3;
          if (entity instanceof LivingEntity && ((LivingEntity)entity).isPotionActive(Effects.BLINDNESS)) {
             int i = ((LivingEntity)entity).getActivePotionEffect(Effects.BLINDNESS).getDuration();
-            float f1 = MathHelper.lerp(Math.min(1.0F, (float)i / 20.0F), p_228372_2_, 5.0F);
-            if (p_228372_1_ == FogRenderer.FogType.FOG_SKY) {
+            float f1 = MathHelper.lerp(Math.min(1.0F, (float)i / 20.0F), farPlaneDistance, 5.0F);
+            if (fogTypeIn == FogRenderer.FogType.FOG_SKY) {
                f2 = 0.0F;
                f3 = f1 * 0.8F;
             } else {
                f2 = f1 * 0.25F;
                f3 = f1;
             }
-         } else if (p_228372_3_) {
-            f2 = p_228372_2_ * 0.05F;
-            f3 = Math.min(p_228372_2_, 192.0F) * 0.5F;
-         } else if (p_228372_1_ == FogRenderer.FogType.FOG_SKY) {
+         } else if (nearFog) {
+            f2 = farPlaneDistance * 0.05F;
+            f3 = Math.min(farPlaneDistance, 192.0F) * 0.5F;
+         } else if (fogTypeIn == FogRenderer.FogType.FOG_SKY) {
             f2 = 0.0F;
-            f3 = p_228372_2_;
+            f3 = farPlaneDistance;
          } else {
-            f2 = p_228372_2_ * 0.75F;
-            f3 = p_228372_2_;
+            f2 = farPlaneDistance * 0.75F;
+            f3 = farPlaneDistance;
          }
 
          RenderSystem.fogStart(f2);
@@ -223,7 +223,7 @@ public class FogRenderer {
 
    }
 
-   public static void func_228373_b_() {
+   public static void applyFog() {
       RenderSystem.fog(2918, red, green, blue, 1.0F);
    }
 

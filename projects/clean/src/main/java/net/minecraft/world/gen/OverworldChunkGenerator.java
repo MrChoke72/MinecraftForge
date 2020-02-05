@@ -30,36 +30,36 @@ public class OverworldChunkGenerator extends NoiseChunkGenerator<OverworldGenSet
 
    });
    private final OctavesNoiseGenerator depthNoise;
-   private final boolean field_222577_j;
+   private final boolean isAmplified;
    private final PhantomSpawner phantomSpawner = new PhantomSpawner();
    private final PatrolSpawner patrolSpawner = new PatrolSpawner();
    private final CatSpawner catSpawner = new CatSpawner();
-   private final VillageSiege villageSiege = new VillageSiege();
+   private final VillageSiege field_225495_n = new VillageSiege();
 
    public OverworldChunkGenerator(IWorld worldIn, BiomeProvider provider, OverworldGenSettings settingsIn) {
       super(worldIn, provider, 4, 8, 256, settingsIn, true);
       this.randomSeed.skip(2620);
       this.depthNoise = new OctavesNoiseGenerator(this.randomSeed, 15, 0);
-      this.field_222577_j = worldIn.getWorldInfo().getGenerator() == WorldType.AMPLIFIED;
+      this.isAmplified = worldIn.getWorldInfo().getGenerator() == WorldType.AMPLIFIED;
    }
 
    public void spawnMobs(WorldGenRegion region) {
       int i = region.getMainChunkX();
       int j = region.getMainChunkZ();
-      Biome biome = region.func_226691_t_((new ChunkPos(i, j)).asBlockPos());
+      Biome biome = region.getBiome((new ChunkPos(i, j)).asBlockPos());
       SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
       sharedseedrandom.setDecorationSeed(region.getSeed(), i << 4, j << 4);
       WorldEntitySpawner.performWorldGenSpawning(region, biome, i, j, sharedseedrandom);
    }
 
-   protected void func_222548_a(double[] p_222548_1_, int p_222548_2_, int p_222548_3_) {
+   protected void fillNoiseColumn(double[] noiseColumn, int noiseX, int noiseZ) {
       double d0 = (double)684.412F;
       double d1 = (double)684.412F;
       double d2 = 8.555149841308594D;
       double d3 = 4.277574920654297D;
       int i = -10;
       int j = 3;
-      this.func_222546_a(p_222548_1_, p_222548_2_, p_222548_3_, (double)684.412F, (double)684.412F, 8.555149841308594D, 4.277574920654297D, 3, -10);
+      this.func_222546_a(noiseColumn, noiseX, noiseZ, (double)684.412F, (double)684.412F, 8.555149841308594D, 4.277574920654297D, 3, -10);
    }
 
    protected double func_222545_a(double p_222545_1_, double p_222545_3_, int p_222545_5_) {
@@ -72,21 +72,21 @@ public class OverworldChunkGenerator extends NoiseChunkGenerator<OverworldGenSet
       return d1;
    }
 
-   protected double[] func_222549_a(int p_222549_1_, int p_222549_2_) {
+   protected double[] getBiomeNoiseColumn(int noiseX, int noiseZ) {
       double[] adouble = new double[2];
       float f = 0.0F;
       float f1 = 0.0F;
       float f2 = 0.0F;
       int i = 2;
       int j = this.getSeaLevel();
-      float f3 = this.biomeProvider.func_225526_b_(p_222549_1_, j, p_222549_2_).getDepth();
+      float f3 = this.biomeProvider.getNoiseBiome(noiseX, j, noiseZ).getDepth();
 
       for(int k = -2; k <= 2; ++k) {
          for(int l = -2; l <= 2; ++l) {
-            Biome biome = this.biomeProvider.func_225526_b_(p_222549_1_ + k, j, p_222549_2_ + l);
+            Biome biome = this.biomeProvider.getNoiseBiome(noiseX + k, j, noiseZ + l);
             float f4 = biome.getDepth();
             float f5 = biome.getScale();
-            if (this.field_222577_j && f4 > 0.0F) {
+            if (this.isAmplified && f4 > 0.0F) {
                f4 = 1.0F + f4 * 2.0F;
                f5 = 1.0F + f5 * 4.0F;
             }
@@ -106,13 +106,13 @@ public class OverworldChunkGenerator extends NoiseChunkGenerator<OverworldGenSet
       f1 = f1 / f2;
       f = f * 0.9F + 0.1F;
       f1 = (f1 * 4.0F - 1.0F) / 8.0F;
-      adouble[0] = (double)f1 + this.func_222574_c(p_222549_1_, p_222549_2_);
+      adouble[0] = (double)f1 + this.getNoiseDepthAt(noiseX, noiseZ);
       adouble[1] = (double)f;
       return adouble;
    }
 
-   private double func_222574_c(int p_222574_1_, int p_222574_2_) {
-      double d0 = this.depthNoise.func_215462_a((double)(p_222574_1_ * 200), 10.0D, (double)(p_222574_2_ * 200), 1.0D, 0.0D, true) * 65535.0D / 8000.0D;
+   private double getNoiseDepthAt(int noiseX, int noiseZ) {
+      double d0 = this.depthNoise.getValue((double)(noiseX * 200), 10.0D, (double)(noiseZ * 200), 1.0D, 0.0D, true) * 65535.0D / 8000.0D;
       if (d0 < 0.0D) {
          d0 = -d0 * 0.3D;
       }
@@ -157,7 +157,7 @@ public class OverworldChunkGenerator extends NoiseChunkGenerator<OverworldGenSet
       this.phantomSpawner.tick(worldIn, spawnHostileMobs, spawnPeacefulMobs);
       this.patrolSpawner.tick(worldIn, spawnHostileMobs, spawnPeacefulMobs);
       this.catSpawner.tick(worldIn, spawnHostileMobs, spawnPeacefulMobs);
-      this.villageSiege.func_225477_a(worldIn, spawnHostileMobs, spawnPeacefulMobs);
+      this.field_225495_n.func_225477_a(worldIn, spawnHostileMobs, spawnPeacefulMobs);
    }
 
    public int getGroundHeight() {

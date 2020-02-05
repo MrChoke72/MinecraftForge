@@ -33,7 +33,7 @@ public abstract class ParentedLootEntry extends LootEntry {
    protected abstract ILootEntry combineChildren(ILootEntry[] p_216146_1_);
 
    public final boolean expand(LootContext p_expand_1_, Consumer<ILootGenerator> p_expand_2_) {
-      return !this.func_216141_a(p_expand_1_) ? false : this.field_216148_e.expand(p_expand_1_, p_expand_2_);
+      return !this.test(p_expand_1_) ? false : this.field_216148_e.expand(p_expand_1_, p_expand_2_);
    }
 
    public static <T extends ParentedLootEntry> ParentedLootEntry.AbstractSerializer<T> func_216145_a(ResourceLocation p_216145_0_, Class<T> p_216145_1_, final ParentedLootEntry.IFactory<T> p_216145_2_) {

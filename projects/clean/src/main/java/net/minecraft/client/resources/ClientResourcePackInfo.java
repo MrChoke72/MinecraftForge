@@ -23,8 +23,8 @@ public class ClientResourcePackInfo extends ResourcePackInfo {
    @Nullable
    private ResourceLocation field_195810_b;
 
-   public ClientResourcePackInfo(String p_i48113_1_, boolean p_i48113_2_, Supplier<IResourcePack> p_i48113_3_, IResourcePack p_i48113_4_, PackMetadataSection p_i48113_5_, ResourcePackInfo.Priority p_i48113_6_) {
-      super(p_i48113_1_, p_i48113_2_, p_i48113_3_, p_i48113_4_, p_i48113_5_, p_i48113_6_);
+   public ClientResourcePackInfo(String nameIn, boolean isAlwaysEnabled, Supplier<IResourcePack> resourcePackSupplierIn, IResourcePack p_i48113_4_, PackMetadataSection p_i48113_5_, ResourcePackInfo.Priority priorityIn) {
+      super(nameIn, isAlwaysEnabled, resourcePackSupplierIn, p_i48113_4_, p_i48113_5_, priorityIn);
       NativeImage nativeimage = null;
 
       try (InputStream inputstream = p_i48113_4_.getRootResourceStream("pack.png")) {
@@ -36,8 +36,8 @@ public class ClientResourcePackInfo extends ResourcePackInfo {
       this.field_195809_a = nativeimage;
    }
 
-   public ClientResourcePackInfo(String p_i48114_1_, boolean p_i48114_2_, Supplier<IResourcePack> p_i48114_3_, ITextComponent p_i48114_4_, ITextComponent p_i48114_5_, PackCompatibility p_i48114_6_, ResourcePackInfo.Priority p_i48114_7_, boolean p_i48114_8_, @Nullable NativeImage p_i48114_9_) {
-      super(p_i48114_1_, p_i48114_2_, p_i48114_3_, p_i48114_4_, p_i48114_5_, p_i48114_6_, p_i48114_7_, p_i48114_8_);
+   public ClientResourcePackInfo(String nameIn, boolean isAlwaysEnabled, Supplier<IResourcePack> resourcePackSupplierIn, ITextComponent titleIn, ITextComponent descriptionIn, PackCompatibility compatibilityIn, ResourcePackInfo.Priority priorityIn, boolean isOrderLocked, @Nullable NativeImage p_i48114_9_) {
+      super(nameIn, isAlwaysEnabled, resourcePackSupplierIn, titleIn, descriptionIn, compatibilityIn, priorityIn, isOrderLocked);
       this.field_195809_a = p_i48114_9_;
    }
 

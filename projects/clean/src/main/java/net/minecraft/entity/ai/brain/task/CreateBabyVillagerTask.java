@@ -31,8 +31,8 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
    }
 
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
-      VillagerEntity villagerentity = this.func_220482_a(entityIn);
-      BrainUtil.func_220618_a(entityIn, villagerentity);
+      VillagerEntity villagerentity = this.getBreedTarget(entityIn);
+      BrainUtil.lookApproachEachOther(entityIn, villagerentity);
       worldIn.setEntityState(villagerentity, (byte)18);
       worldIn.setEntityState(entityIn, (byte)18);
       int i = 275 + entityIn.getRNG().nextInt(50);
@@ -40,9 +40,9 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
    }
 
    protected void updateTask(ServerWorld worldIn, VillagerEntity owner, long gameTime) {
-      VillagerEntity villagerentity = this.func_220482_a(owner);
+      VillagerEntity villagerentity = this.getBreedTarget(owner);
       if (!(owner.getDistanceSq(villagerentity) > 5.0D)) {
-         BrainUtil.func_220618_a(owner, villagerentity);
+         BrainUtil.lookApproachEachOther(owner, villagerentity);
          if (gameTime >= this.field_220483_a) {
             owner.func_223346_ep();
             villagerentity.func_223346_ep();
@@ -65,7 +65,7 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
          if (optional1.isPresent()) {
             this.func_220477_a(p_223521_1_, optional1.get(), optional.get());
          } else {
-            p_223521_1_.getPoiMgr().removePoiLocation(optional.get());
+            p_223521_1_.getPointOfInterestManager().removePoiLocation(optional.get());
             DebugPacketSender.func_218801_c(p_223521_1_, optional.get());
          }
       }
@@ -76,7 +76,7 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
       entityIn.getBrain().removeMemory(MemoryModuleType.BREED_TARGET);
    }
 
-   private VillagerEntity func_220482_a(VillagerEntity p_220482_1_) {
+   private VillagerEntity getBreedTarget(VillagerEntity p_220482_1_) {
       return p_220482_1_.getBrain().getMemory(MemoryModuleType.BREED_TARGET).get();
    }
 
@@ -85,13 +85,13 @@ public class CreateBabyVillagerTask extends Task<VillagerEntity> {
       if (!brain.getMemory(MemoryModuleType.BREED_TARGET).isPresent()) {
          return false;
       } else {
-         VillagerEntity villagerentity = this.func_220482_a(p_220478_1_);
+         VillagerEntity villagerentity = this.getBreedTarget(p_220478_1_);
          return BrainUtil.isCorrectVisibleType(brain, MemoryModuleType.BREED_TARGET, EntityType.VILLAGER) && p_220478_1_.canBreed() && villagerentity.canBreed();
       }
    }
 
    private Optional<BlockPos> func_220479_b(ServerWorld p_220479_1_, VillagerEntity p_220479_2_) {
-      return p_220479_1_.getPoiMgr().claimPoiPos(PointOfInterestType.HOME.getPoiTypePred(), (p_220481_2_) -> {
+      return p_220479_1_.getPointOfInterestManager().claimPoiPos(PointOfInterestType.HOME.getPoiTypePred(), (p_220481_2_) -> {
          return this.func_223520_a(p_220479_2_, p_220481_2_);
       }, new BlockPos(p_220479_2_), 48);
    }

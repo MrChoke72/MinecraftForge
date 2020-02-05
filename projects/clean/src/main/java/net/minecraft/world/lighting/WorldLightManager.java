@@ -16,30 +16,30 @@ public class WorldLightManager implements ILightListener {
    @Nullable
    private final LightEngine<?, ?> skyLight;
 
-   public WorldLightManager(IChunkLightProvider p_i51290_1_, boolean p_i51290_2_, boolean p_i51290_3_) {
-      this.blockLight = p_i51290_2_ ? new BlockLightEngine(p_i51290_1_) : null;
-      this.skyLight = p_i51290_3_ ? new SkyLightEngine(p_i51290_1_) : null;
+   public WorldLightManager(IChunkLightProvider provider, boolean hasBlockLight, boolean hasSkyLight) {
+      this.blockLight = hasBlockLight ? new BlockLightEngine(provider) : null;
+      this.skyLight = hasSkyLight ? new SkyLightEngine(provider) : null;
    }
 
-   public void checkBlock(BlockPos p_215568_1_) {
+   public void checkBlock(BlockPos blockPosIn) {
       if (this.blockLight != null) {
-         this.blockLight.checkLight(p_215568_1_);
+         this.blockLight.checkLight(blockPosIn);
       }
 
       if (this.skyLight != null) {
-         this.skyLight.checkLight(p_215568_1_);
+         this.skyLight.checkLight(blockPosIn);
       }
 
    }
 
-   public void func_215573_a(BlockPos p_215573_1_, int p_215573_2_) {
+   public void onBlockEmissionIncrease(BlockPos blockPosIn, int p_215573_2_) {
       if (this.blockLight != null) {
-         this.blockLight.func_215623_a(p_215573_1_, p_215573_2_);
+         this.blockLight.func_215623_a(blockPosIn, p_215573_2_);
       }
 
    }
 
-   public boolean func_215570_a() {
+   public boolean hasLightWork() {
       if (this.skyLight != null && this.skyLight.func_215619_a()) {
          return true;
       } else {
@@ -72,7 +72,7 @@ public class WorldLightManager implements ILightListener {
 
    }
 
-   public void func_215571_a(ChunkPos p_215571_1_, boolean p_215571_2_) {
+   public void enableLightSources(ChunkPos p_215571_1_, boolean p_215571_2_) {
       if (this.blockLight != null) {
          this.blockLight.func_215620_a(p_215571_1_, p_215571_2_);
       }
@@ -92,7 +92,7 @@ public class WorldLightManager implements ILightListener {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public String func_215572_a(LightType p_215572_1_, SectionPos p_215572_2_) {
+   public String getDebugInfo(LightType p_215572_1_, SectionPos p_215572_2_) {
       if (p_215572_1_ == LightType.BLOCK) {
          if (this.blockLight != null) {
             return this.blockLight.getDebugString(p_215572_2_.asLong());
@@ -126,9 +126,9 @@ public class WorldLightManager implements ILightListener {
 
    }
 
-   public int func_227470_b_(BlockPos p_227470_1_, int p_227470_2_) {
-      int i = this.skyLight == null ? 0 : this.skyLight.getLightFor(p_227470_1_) - p_227470_2_;
-      int j = this.blockLight == null ? 0 : this.blockLight.getLightFor(p_227470_1_);
+   public int getLightSubtracted(BlockPos blockPosIn, int amount) {
+      int i = this.skyLight == null ? 0 : this.skyLight.getLightFor(blockPosIn) - amount;
+      int j = this.blockLight == null ? 0 : this.blockLight.getLightFor(blockPosIn);
       return Math.max(j, i);
    }
 }

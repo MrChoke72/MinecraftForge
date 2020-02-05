@@ -72,9 +72,9 @@ public class BeehiveBlock extends ContainerBlock {
          if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) == 0) {
             beehivetileentity.func_226963_a_(player, state, BeehiveTileEntity.State.EMERGENCY);
             worldIn.updateComparatorOutputLevel(pos, this);
+            this.func_226881_b_(worldIn, pos);
          }
 
-         this.func_226881_b_(worldIn, pos);
          CriteriaTriggers.field_229865_L_.func_226223_a_((ServerPlayerEntity)player, state.getBlock(), stack, beehivetileentity.func_226971_j_());
       }
 
@@ -96,32 +96,29 @@ public class BeehiveBlock extends ContainerBlock {
    }
 
    public static void func_226878_a_(World p_226878_0_, BlockPos p_226878_1_) {
-      for(int i = 0; i < 3; ++i) {
-         spawnAsEntity(p_226878_0_, p_226878_1_, new ItemStack(Items.field_226635_pU_, 1));
-      }
-
+      spawnAsEntity(p_226878_0_, p_226878_1_, new ItemStack(Items.HONEYCOMB, 3));
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      ItemStack itemstack = p_225533_4_.getHeldItem(p_225533_5_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      ItemStack itemstack = player.getHeldItem(handIn);
       ItemStack itemstack1 = itemstack.copy();
-      int i = p_225533_1_.get(field_226873_c_);
+      int i = state.get(field_226873_c_);
       boolean flag = false;
       if (i >= 5) {
          if (itemstack.getItem() == Items.SHEARS) {
-            p_225533_2_.playSound(p_225533_4_, p_225533_4_.getPosX(), p_225533_4_.getPosY(), p_225533_4_.getPosZ(), SoundEvents.field_226133_ah_, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-            func_226878_a_(p_225533_2_, p_225533_3_);
-            itemstack.damageItem(1, p_225533_4_, (p_226874_1_) -> {
-               p_226874_1_.sendBreakAnimation(p_225533_5_);
+            worldIn.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.field_226133_ah_, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+            func_226878_a_(worldIn, pos);
+            itemstack.damageItem(1, player, (p_226874_1_) -> {
+               p_226874_1_.sendBreakAnimation(handIn);
             });
             flag = true;
          } else if (itemstack.getItem() == Items.GLASS_BOTTLE) {
             itemstack.shrink(1);
-            p_225533_2_.playSound(p_225533_4_, p_225533_4_.getPosX(), p_225533_4_.getPosY(), p_225533_4_.getPosZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+            worldIn.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
             if (itemstack.isEmpty()) {
-               p_225533_4_.setHeldItem(p_225533_5_, new ItemStack(Items.field_226638_pX_));
-            } else if (!p_225533_4_.inventory.addItemStackToInventory(new ItemStack(Items.field_226638_pX_))) {
-               p_225533_4_.dropItem(new ItemStack(Items.field_226638_pX_), false);
+               player.setHeldItem(handIn, new ItemStack(Items.HONEY_BOTTLE));
+            } else if (!player.inventory.addItemStackToInventory(new ItemStack(Items.HONEY_BOTTLE))) {
+               player.dropItem(new ItemStack(Items.HONEY_BOTTLE), false);
             }
 
             flag = true;
@@ -129,22 +126,22 @@ public class BeehiveBlock extends ContainerBlock {
       }
 
       if (flag) {
-         if (!CampfireBlock.func_226914_b_(p_225533_2_, p_225533_3_, 5)) {
-            if (this.func_226882_d_(p_225533_2_, p_225533_3_)) {
-               this.func_226881_b_(p_225533_2_, p_225533_3_);
+         if (!CampfireBlock.func_226914_b_(worldIn, pos, 5)) {
+            if (this.func_226882_d_(worldIn, pos)) {
+               this.func_226881_b_(worldIn, pos);
             }
 
-            this.func_226877_a_(p_225533_2_, p_225533_1_, p_225533_3_, p_225533_4_, BeehiveTileEntity.State.EMERGENCY);
+            this.func_226877_a_(worldIn, state, pos, player, BeehiveTileEntity.State.EMERGENCY);
          } else {
-            this.func_226876_a_(p_225533_2_, p_225533_1_, p_225533_3_);
-            if (p_225533_4_ instanceof ServerPlayerEntity) {
-               CriteriaTriggers.field_229863_J_.func_226695_a_((ServerPlayerEntity)p_225533_4_, p_225533_3_, itemstack1);
+            this.func_226876_a_(worldIn, state, pos);
+            if (player instanceof ServerPlayerEntity) {
+               CriteriaTriggers.field_229863_J_.func_226695_a_((ServerPlayerEntity)player, pos, itemstack1);
             }
          }
 
          return ActionResultType.SUCCESS;
       } else {
-         return super.func_225533_a_(p_225533_1_, p_225533_2_, p_225533_3_, p_225533_4_, p_225533_5_, p_225533_6_);
+         return super.onBlockActivated(state, worldIn, pos, player, handIn, p_225533_6_);
       }
    }
 
@@ -196,7 +193,7 @@ public class BeehiveBlock extends ContainerBlock {
                BlockState blockstate = p_226879_1_.getBlockState(blockpos);
                VoxelShape voxelshape1 = blockstate.getCollisionShape(p_226879_1_, blockpos);
                double d2 = voxelshape1.getEnd(Direction.Axis.Y);
-               if ((d2 < 1.0D || !blockstate.func_224756_o(p_226879_1_, blockpos)) && blockstate.getFluidState().isEmpty()) {
+               if ((d2 < 1.0D || !blockstate.isCollisionShapeOpaque(p_226879_1_, blockpos)) && blockstate.getFluidState().isEmpty()) {
                   this.func_226880_a_(p_226879_1_, p_226879_2_, voxelshape, (double)p_226879_2_.getY() - 0.05D);
                }
             }
@@ -212,7 +209,7 @@ public class BeehiveBlock extends ContainerBlock {
 
    @OnlyIn(Dist.CLIENT)
    private void func_226875_a_(World p_226875_1_, double p_226875_2_, double p_226875_4_, double p_226875_6_, double p_226875_8_, double p_226875_10_) {
-      p_226875_1_.addParticle(ParticleTypes.field_229427_ag_, MathHelper.lerp(p_226875_1_.rand.nextDouble(), p_226875_2_, p_226875_4_), p_226875_10_, MathHelper.lerp(p_226875_1_.rand.nextDouble(), p_226875_6_, p_226875_8_), 0.0D, 0.0D, 0.0D);
+      p_226875_1_.addParticle(ParticleTypes.DRIPPING_HONEY, MathHelper.lerp(p_226875_1_.rand.nextDouble(), p_226875_2_, p_226875_4_), p_226875_10_, MathHelper.lerp(p_226875_1_.rand.nextDouble(), p_226875_6_, p_226875_8_), 0.0D, 0.0D, 0.0D);
    }
 
    public BlockState getStateForPlacement(BlockItemUseContext context) {

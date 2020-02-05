@@ -37,7 +37,7 @@ public abstract class VoxelShape {
 
    public AxisAlignedBB getBoundingBox() {
       if (this.isEmpty()) {
-         throw (UnsupportedOperationException)Util.func_229757_c_(new UnsupportedOperationException("No bounds for empty shape."));
+         throw (UnsupportedOperationException)Util.spinlockIfDevMode(new UnsupportedOperationException("No bounds for empty shape."));
       } else {
          return new AxisAlignedBB(this.getStart(Direction.Axis.X), this.getStart(Direction.Axis.Y), this.getStart(Direction.Axis.Z), this.getEnd(Direction.Axis.X), this.getEnd(Direction.Axis.Y), this.getEnd(Direction.Axis.Z));
       }

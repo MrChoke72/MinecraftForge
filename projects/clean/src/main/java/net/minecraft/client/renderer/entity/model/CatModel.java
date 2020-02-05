@@ -63,8 +63,8 @@ public class CatModel<T extends CatEntity> extends OcelotModel<T> {
 
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      super.func_225597_a_(p_225597_1_, p_225597_2_, p_225597_3_, p_225597_4_, p_225597_5_, p_225597_6_);
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
       if (this.field_217155_m > 0.0F) {
          this.ocelotHead.rotateAngleZ = ModelUtils.func_228283_a_(this.ocelotHead.rotateAngleZ, -1.2707963F, this.field_217155_m);
          this.ocelotHead.rotateAngleY = ModelUtils.func_228283_a_(this.ocelotHead.rotateAngleY, 1.2707963F, this.field_217155_m);

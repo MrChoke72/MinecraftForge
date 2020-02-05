@@ -12,8 +12,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ShulkerBoxScreen extends ContainerScreen<ShulkerBoxContainer> {
    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation("textures/gui/container/shulker_box.png");
 
-   public ShulkerBoxScreen(ShulkerBoxContainer p_i51078_1_, PlayerInventory p_i51078_2_, ITextComponent p_i51078_3_) {
-      super(p_i51078_1_, p_i51078_2_, p_i51078_3_);
+   public ShulkerBoxScreen(ShulkerBoxContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+      super(screenContainer, inv, titleIn);
       ++this.ySize;
    }
 

@@ -80,7 +80,7 @@ public class WorldSummary implements Comparable<WorldSummary> {
       return this.cheatsEnabled;
    }
 
-   public ITextComponent func_200538_i() {
+   public ITextComponent getVersionName() {
       return (ITextComponent)(StringUtils.isNullOrEmpty(this.versionName) ? new TranslationTextComponent("selectWorld.versionUnknown") : new StringTextComponent(this.versionName));
    }
 

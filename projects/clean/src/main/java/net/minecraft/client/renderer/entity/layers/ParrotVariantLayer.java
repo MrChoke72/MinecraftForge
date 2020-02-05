@@ -16,27 +16,27 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ParrotVariantLayer<T extends PlayerEntity> extends LayerRenderer<T, PlayerModel<T>> {
-   private final ParrotModel field_215346_a = new ParrotModel();
+   private final ParrotModel parrotModel = new ParrotModel();
 
-   public ParrotVariantLayer(IEntityRenderer<T, PlayerModel<T>> p_i50929_1_) {
-      super(p_i50929_1_);
+   public ParrotVariantLayer(IEntityRenderer<T, PlayerModel<T>> rendererIn) {
+      super(rendererIn);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, T p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      this.func_229136_a_(p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, p_225628_5_, p_225628_6_, p_225628_9_, p_225628_10_, true);
-      this.func_229136_a_(p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, p_225628_5_, p_225628_6_, p_225628_9_, p_225628_10_, false);
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.renderParrot(matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, netHeadYaw, headPitch, true);
+      this.renderParrot(matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, netHeadYaw, headPitch, false);
    }
 
-   private void func_229136_a_(MatrixStack p_229136_1_, IRenderTypeBuffer p_229136_2_, int p_229136_3_, T p_229136_4_, float p_229136_5_, float p_229136_6_, float p_229136_7_, float p_229136_8_, boolean p_229136_9_) {
-      CompoundNBT compoundnbt = p_229136_9_ ? p_229136_4_.getLeftShoulderEntity() : p_229136_4_.getRightShoulderEntity();
+   private void renderParrot(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float netHeadYaw, float headPitch, boolean leftShoulderIn) {
+      CompoundNBT compoundnbt = leftShoulderIn ? entitylivingbaseIn.getLeftShoulderEntity() : entitylivingbaseIn.getRightShoulderEntity();
       EntityType.byKey(compoundnbt.getString("id")).filter((p_215344_0_) -> {
          return p_215344_0_ == EntityType.PARROT;
       }).ifPresent((p_229137_11_) -> {
-         p_229136_1_.func_227860_a_();
-         p_229136_1_.func_227861_a_(p_229136_9_ ? (double)0.4F : (double)-0.4F, p_229136_4_.isCrouching() ? (double)-1.3F : -1.5D, 0.0D);
-         IVertexBuilder ivertexbuilder = p_229136_2_.getBuffer(this.field_215346_a.func_228282_a_(ParrotRenderer.PARROT_TEXTURES[compoundnbt.getInt("Variant")]));
-         this.field_215346_a.func_228284_a_(p_229136_1_, ivertexbuilder, p_229136_3_, OverlayTexture.field_229196_a_, p_229136_5_, p_229136_6_, p_229136_7_, p_229136_8_, p_229136_4_.ticksExisted);
-         p_229136_1_.func_227865_b_();
+         matrixStackIn.push();
+         matrixStackIn.translate(leftShoulderIn ? (double)0.4F : (double)-0.4F, entitylivingbaseIn.isCrouching() ? (double)-1.3F : -1.5D, 0.0D);
+         IVertexBuilder ivertexbuilder = bufferIn.getBuffer(this.parrotModel.getRenderType(ParrotRenderer.PARROT_TEXTURES[compoundnbt.getInt("Variant")]));
+         this.parrotModel.renderOnShoulder(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_LIGHT, limbSwing, limbSwingAmount, netHeadYaw, headPitch, entitylivingbaseIn.ticksExisted);
+         matrixStackIn.pop();
       });
    }
 }

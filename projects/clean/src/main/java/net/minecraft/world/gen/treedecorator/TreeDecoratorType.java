@@ -13,7 +13,7 @@ public class TreeDecoratorType<P extends TreeDecorator> {
    private final Function<Dynamic<?>, P> field_227430_f_;
 
    private static <P extends TreeDecorator> TreeDecoratorType<P> func_227432_a_(String p_227432_0_, Function<Dynamic<?>, P> p_227432_1_) {
-      return Registry.register(Registry.field_229390_w_, p_227432_0_, new TreeDecoratorType<>(p_227432_1_));
+      return Registry.register(Registry.TREE_DECORATOR_TYPE, p_227432_0_, new TreeDecoratorType<>(p_227432_1_));
    }
 
    private TreeDecoratorType(Function<Dynamic<?>, P> p_i225872_1_) {

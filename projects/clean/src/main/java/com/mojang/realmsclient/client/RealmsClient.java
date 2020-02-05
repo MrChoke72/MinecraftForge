@@ -308,14 +308,6 @@ public class RealmsClient {
       return Boolean.valueOf(s1);
    }
 
-   public RealmsServer func_224936_a(String p_224936_1_, String p_224936_2_) throws RealmsServiceException, IOException {
-      RealmsDescriptionDto realmsdescriptiondto = new RealmsDescriptionDto(p_224936_1_, p_224936_2_);
-      String s = field_224949_f.toJson(realmsdescriptiondto);
-      String s1 = this.func_224926_c("trial");
-      String s2 = this.func_224938_a(Request.func_224959_a(s1, s, 5000, 10000));
-      return RealmsServer.parse(s2);
-   }
-
    public void func_224916_h(long p_224916_1_) throws RealmsServiceException, IOException {
       String s = this.func_224926_c("worlds" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(p_224916_1_)));
       this.func_224938_a(Request.func_224952_b(s));

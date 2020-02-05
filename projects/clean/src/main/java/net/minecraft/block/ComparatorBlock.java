@@ -90,15 +90,15 @@ public class ComparatorBlock extends RedstoneDiodeBlock implements ITileEntityPr
       return list.size() == 1 ? list.get(0) : null;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (!p_225533_4_.abilities.allowEdit) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (!player.abilities.allowEdit) {
          return ActionResultType.PASS;
       } else {
-         p_225533_1_ = p_225533_1_.cycle(MODE);
-         float f = p_225533_1_.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
-         p_225533_2_.playSound(p_225533_4_, p_225533_3_, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-         p_225533_2_.setBlockState(p_225533_3_, p_225533_1_, 2);
-         this.onStateChange(p_225533_2_, p_225533_3_, p_225533_1_);
+         state = state.cycle(MODE);
+         float f = state.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
+         worldIn.playSound(player, pos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
+         worldIn.setBlockState(pos, state, 2);
+         this.onStateChange(worldIn, pos, state);
          return ActionResultType.SUCCESS;
       }
    }
@@ -140,8 +140,8 @@ public class ComparatorBlock extends RedstoneDiodeBlock implements ITileEntityPr
 
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      this.onStateChange(p_225534_2_, p_225534_3_, p_225534_1_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      this.onStateChange(worldIn, pos, state);
    }
 
    public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {

@@ -33,13 +33,13 @@ public class ChunkInfoDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.client = client;
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       double d0 = (double)Util.nanoTime();
       if (d0 - this.field_217679_b > 3.0E9D) {
          this.field_217679_b = d0;
          IntegratedServer integratedserver = this.client.getIntegratedServer();
          if (integratedserver != null) {
-            this.field_217681_d = new ChunkInfoDebugRenderer.Entry(integratedserver, p_225619_3_, p_225619_7_);
+            this.field_217681_d = new ChunkInfoDebugRenderer.Entry(integratedserver, camX, camZ);
          } else {
             this.field_217681_d = null;
          }
@@ -65,7 +65,7 @@ public class ChunkInfoDebugRenderer implements DebugRenderer.IDebugRenderer {
             int i = 0;
 
             for(String s1 : astring) {
-               DebugRenderer.func_217729_a(s1, (double)((chunkpos.x << 4) + 8), d1 + (double)i, (double)((chunkpos.z << 4) + 8), -1, 0.15F);
+               DebugRenderer.renderText(s1, (double)((chunkpos.x << 4) + 8), d1 + (double)i, (double)((chunkpos.z << 4) + 8), -1, 0.15F);
                i -= 2;
             }
          }

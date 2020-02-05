@@ -27,7 +27,7 @@ public class NBTDynamicOps implements DynamicOps<INBT> {
    }
 
    public INBT empty() {
-      return EndNBT.field_229686_b_;
+      return EndNBT.INSTANCE;
    }
 
    public Type<?> getType(INBT p_getType_1_) {
@@ -68,35 +68,35 @@ public class NBTDynamicOps implements DynamicOps<INBT> {
    }
 
    public INBT createNumeric(Number p_createNumeric_1_) {
-      return DoubleNBT.func_229684_a_(p_createNumeric_1_.doubleValue());
+      return DoubleNBT.valueOf(p_createNumeric_1_.doubleValue());
    }
 
    public INBT createByte(byte p_createByte_1_) {
-      return ByteNBT.func_229671_a_(p_createByte_1_);
+      return ByteNBT.valueOf(p_createByte_1_);
    }
 
    public INBT createShort(short p_createShort_1_) {
-      return ShortNBT.func_229701_a_(p_createShort_1_);
+      return ShortNBT.valueOf(p_createShort_1_);
    }
 
    public INBT createInt(int p_createInt_1_) {
-      return IntNBT.func_229692_a_(p_createInt_1_);
+      return IntNBT.valueOf(p_createInt_1_);
    }
 
    public INBT createLong(long p_createLong_1_) {
-      return LongNBT.func_229698_a_(p_createLong_1_);
+      return LongNBT.valueOf(p_createLong_1_);
    }
 
    public INBT createFloat(float p_createFloat_1_) {
-      return FloatNBT.func_229689_a_(p_createFloat_1_);
+      return FloatNBT.valueOf(p_createFloat_1_);
    }
 
    public INBT createDouble(double p_createDouble_1_) {
-      return DoubleNBT.func_229684_a_(p_createDouble_1_);
+      return DoubleNBT.valueOf(p_createDouble_1_);
    }
 
    public INBT createBoolean(boolean p_createBoolean_1_) {
-      return ByteNBT.func_229672_a_(p_createBoolean_1_);
+      return ByteNBT.valueOf(p_createBoolean_1_);
    }
 
    public Optional<String> getStringValue(INBT p_getStringValue_1_) {
@@ -104,7 +104,7 @@ public class NBTDynamicOps implements DynamicOps<INBT> {
    }
 
    public INBT createString(String p_createString_1_) {
-      return StringNBT.func_229705_a_(p_createString_1_);
+      return StringNBT.valueOf(p_createString_1_);
    }
 
    public INBT mergeInto(INBT p_mergeInto_1_, INBT p_mergeInto_2_) {

@@ -24,13 +24,13 @@ public class ConfiguredFeature<FC extends IFeatureConfig, F extends Feature<FC>>
       this.config = configIn;
    }
 
-   public ConfiguredFeature(F p_i49901_1_, Dynamic<?> dynamicIn) {
-      this(p_i49901_1_, (FC)p_i49901_1_.createConfig(dynamicIn));
+   public ConfiguredFeature(F featureIn, Dynamic<?> dynamicIn) {
+      this(featureIn, (FC)featureIn.createConfig(dynamicIn));
    }
 
    public ConfiguredFeature<?, ?> func_227228_a_(ConfiguredPlacement<?> p_227228_1_) {
       Feature<DecoratedFeatureConfig> feature = this.feature instanceof FlowersFeature ? Feature.DECORATED_FLOWER : Feature.DECORATED;
-      return feature.func_225566_b_(new DecoratedFeatureConfig(this, p_227228_1_));
+      return feature.withConfiguration(new DecoratedFeatureConfig(this, p_227228_1_));
    }
 
    public ConfiguredRandomFeatureList<FC> func_227227_a_(float p_227227_1_) {
@@ -53,7 +53,7 @@ public class ConfiguredFeature<FC extends IFeatureConfig, F extends Feature<FC>>
          return new ConfiguredFeature<>(feature, p_222736_0_.get("config").orElseEmptyMap());
       } catch (RuntimeException var4) {
          field_227226_a_.warn("Error while deserializing {}", (Object)s);
-         return new ConfiguredFeature<>(Feature.field_227245_q_, NoFeatureConfig.NO_FEATURE_CONFIG);
+         return new ConfiguredFeature<>(Feature.NO_OP, NoFeatureConfig.NO_FEATURE_CONFIG);
       }
    }
 }

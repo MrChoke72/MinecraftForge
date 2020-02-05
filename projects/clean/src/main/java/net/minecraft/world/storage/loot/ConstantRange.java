@@ -23,7 +23,7 @@ public final class ConstantRange implements IRandomRange {
       return this.value;
    }
 
-   public ResourceLocation getLocation() {
+   public ResourceLocation getType() {
       return CONSTANT;
    }
 

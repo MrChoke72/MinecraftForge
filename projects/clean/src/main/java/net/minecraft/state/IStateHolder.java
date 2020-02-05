@@ -14,17 +14,17 @@ public interface IStateHolder<C> {
 
    ImmutableMap<IProperty<?>, Comparable<?>> getValues();
 
-   static <T extends Comparable<T>> String func_215670_b(IProperty<T> p_215670_0_, Comparable<?> p_215670_1_) {
-      return p_215670_0_.getName((T)p_215670_1_);
+   static <T extends Comparable<T>> String writePropertyValueToString(IProperty<T> propertyIn, Comparable<?> value) {
+      return propertyIn.getName((T)value);
    }
 
-   static <S extends IStateHolder<S>, T extends Comparable<T>> S func_215671_a(S p_215671_0_, IProperty<T> p_215671_1_, String p_215671_2_, String p_215671_3_, String p_215671_4_) {
-      Optional<T> optional = p_215671_1_.parseValue(p_215671_4_);
+   static <S extends IStateHolder<S>, T extends Comparable<T>> S withString(S state, IProperty<T> propertyIn, String propertyNameIn, String inputIn, String valueIn) {
+      Optional<T> optional = propertyIn.parseValue(valueIn);
       if (optional.isPresent()) {
-         return (S)(p_215671_0_.with(p_215671_1_, (T)(optional.get())));
+         return (S)(state.with(propertyIn, (T)(optional.get())));
       } else {
-         field_215672_b.warn("Unable to read property: {} with value: {} for input: {}", p_215671_2_, p_215671_4_, p_215671_3_);
-         return p_215671_0_;
+         field_215672_b.warn("Unable to read property: {} with value: {} for input: {}", propertyNameIn, valueIn, inputIn);
+         return state;
       }
    }
 }

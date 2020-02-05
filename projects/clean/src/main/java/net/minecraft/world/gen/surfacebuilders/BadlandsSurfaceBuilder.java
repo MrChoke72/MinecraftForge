@@ -188,7 +188,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderConfig>
    }
 
    protected BlockState func_215431_a(int p_215431_1_, int p_215431_2_, int p_215431_3_) {
-      int i = (int)Math.round(this.field_215439_e.func_215464_a((double)p_215431_1_ / 512.0D, (double)p_215431_3_ / 512.0D, false) * 2.0D);
+      int i = (int)Math.round(this.field_215439_e.noiseAt((double)p_215431_1_ / 512.0D, (double)p_215431_3_ / 512.0D, false) * 2.0D);
       return this.field_215432_a[(p_215431_2_ + i + 64) % 64];
    }
 }

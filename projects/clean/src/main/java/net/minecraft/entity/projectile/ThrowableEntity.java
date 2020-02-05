@@ -44,7 +44,7 @@ public abstract class ThrowableEntity extends Entity implements IProjectile {
    }
 
    protected ThrowableEntity(EntityType<? extends ThrowableEntity> type, LivingEntity livingEntityIn, World worldIn) {
-      this(type, livingEntityIn.getPosX(), livingEntityIn.getPosYPlusEyeHeight() - (double)0.1F, livingEntityIn.getPosZ(), worldIn);
+      this(type, livingEntityIn.getPosX(), livingEntityIn.getPosYEye() - (double)0.1F, livingEntityIn.getPosZ(), worldIn);
       this.owner = livingEntityIn;
       this.ownerId = livingEntityIn.getUniqueID();
    }
@@ -72,7 +72,7 @@ public abstract class ThrowableEntity extends Entity implements IProjectile {
    public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
       Vec3d vec3d = (new Vec3d(x, y, z)).normalize().add(this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy, this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy, this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy).scale((double)velocity);
       this.setMotion(vec3d);
-      float f = MathHelper.sqrt(func_213296_b(vec3d));
+      float f = MathHelper.sqrt(horizontalMag(vec3d));
       this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * (double)(180F / (float)Math.PI));
       this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * (double)(180F / (float)Math.PI));
       this.prevRotationYaw = this.rotationYaw;
@@ -120,7 +120,7 @@ public abstract class ThrowableEntity extends Entity implements IProjectile {
          }
       }
 
-      RayTraceResult raytraceresult = ProjectileHelper.func_221267_a(this, axisalignedbb, (p_213880_1_) -> {
+      RayTraceResult raytraceresult = ProjectileHelper.rayTrace(this, axisalignedbb, (p_213880_1_) -> {
          return !p_213880_1_.isSpectator() && p_213880_1_.canBeCollidedWith() && p_213880_1_ != this.ignoreEntity;
       }, RayTraceContext.BlockMode.OUTLINE, true);
       if (this.ignoreEntity != null && this.ignoreTime-- <= 0) {
@@ -139,7 +139,7 @@ public abstract class ThrowableEntity extends Entity implements IProjectile {
       double d0 = this.getPosX() + vec3d.x;
       double d1 = this.getPosY() + vec3d.y;
       double d2 = this.getPosZ() + vec3d.z;
-      float f = MathHelper.sqrt(func_213296_b(vec3d));
+      float f = MathHelper.sqrt(horizontalMag(vec3d));
       this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * (double)(180F / (float)Math.PI));
 
       for(this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * (double)(180F / (float)Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {

@@ -64,7 +64,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
    private final ChunkStatus[] recentStatuses = new ChunkStatus[4];
    private final IChunk[] recentChunks = new IChunk[4];
 
-   public ServerChunkProvider(ServerWorld worldIn, File worldDirectory, DataFixer dataFixer, TemplateManager p_i51537_4_, Executor p_i51537_5_, ChunkGenerator<?> chunkGeneratorIn, int viewDistance, IChunkStatusListener p_i51537_8_, Supplier<DimensionSavedDataManager> p_i51537_9_) {
+   public ServerChunkProvider(ServerWorld worldIn, File worldDirectory, DataFixer dataFixer, TemplateManager templateManagerIn, Executor executorIn, ChunkGenerator<?> chunkGeneratorIn, int viewDistance, IChunkStatusListener p_i51537_8_, Supplier<DimensionSavedDataManager> p_i51537_9_) {
       this.world = worldIn;
       this.executor = new ServerChunkProvider.ChunkExecutor(worldIn);
       this.generator = chunkGeneratorIn;
@@ -73,9 +73,9 @@ public class ServerChunkProvider extends AbstractChunkProvider {
       File file2 = new File(file1, "data");
       file2.mkdirs();
       this.savedData = new DimensionSavedDataManager(file2, dataFixer);
-      this.chunkManager = new ChunkManager(worldIn, worldDirectory, dataFixer, p_i51537_4_, p_i51537_5_, this.executor, this, this.getChunkGenerator(), p_i51537_8_, p_i51537_9_, viewDistance);
+      this.chunkManager = new ChunkManager(worldIn, worldDirectory, dataFixer, templateManagerIn, executorIn, this.executor, this, this.getChunkGenerator(), p_i51537_8_, p_i51537_9_, viewDistance);
       this.lightManager = this.chunkManager.getLightManager();
-      this.ticketManager = this.chunkManager.func_219246_e();
+      this.ticketManager = this.chunkManager.getTicketManager();
       this.invalidateCaches();
    }
 
@@ -111,6 +111,8 @@ public class ServerChunkProvider extends AbstractChunkProvider {
             return this.getChunk(chunkX, chunkZ, requiredStatus, load);
          }, this.executor).join();
       } else {
+         IProfiler iprofiler = this.world.getProfiler();
+         iprofiler.func_230035_c_("getChunk");
          long i = ChunkPos.asLong(chunkX, chunkZ);
 
          for(int j = 0; j < 4; ++j) {
@@ -122,13 +124,14 @@ public class ServerChunkProvider extends AbstractChunkProvider {
             }
          }
 
+         iprofiler.func_230035_c_("getChunkCacheMiss");
          CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> completablefuture = this.func_217233_c(chunkX, chunkZ, requiredStatus, load);
          this.executor.driveUntil(completablefuture::isDone);
          IChunk ichunk1 = completablefuture.join().map((p_222874_0_) -> {
             return p_222874_0_;
          }, (p_222870_1_) -> {
             if (load) {
-               throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("Chunk not there when requested: " + p_222870_1_));
+               throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("Chunk not there when requested: " + p_222870_1_));
             } else {
                return null;
             }
@@ -143,6 +146,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
       if (Thread.currentThread() != this.mainThread) {
          return null;
       } else {
+         this.world.getProfiler().func_230035_c_("getChunkNow");
          long i = ChunkPos.asLong(p_225313_1_, p_225313_2_);
 
          for(int j = 0; j < 4; ++j) {
@@ -181,15 +185,15 @@ public class ServerChunkProvider extends AbstractChunkProvider {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> func_217232_b(int p_217232_1_, int p_217232_2_, ChunkStatus p_217232_3_, boolean p_217232_4_) {
+   public CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> func_217232_b(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load) {
       boolean flag = Thread.currentThread() == this.mainThread;
       CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> completablefuture;
       if (flag) {
-         completablefuture = this.func_217233_c(p_217232_1_, p_217232_2_, p_217232_3_, p_217232_4_);
+         completablefuture = this.func_217233_c(chunkX, chunkZ, requiredStatus, load);
          this.executor.driveUntil(completablefuture::isDone);
       } else {
          completablefuture = CompletableFuture.supplyAsync(() -> {
-            return this.func_217233_c(p_217232_1_, p_217232_2_, p_217232_3_, p_217232_4_);
+            return this.func_217233_c(chunkX, chunkZ, requiredStatus, load);
          }, this.executor).thenCompose((p_217211_0_) -> {
             return p_217211_0_;
          });
@@ -201,7 +205,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
    private CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> func_217233_c(int chunkX, int chunkZ, ChunkStatus requiredStatus, boolean load) {
       ChunkPos chunkpos = new ChunkPos(chunkX, chunkZ);
       long i = chunkpos.asLong();
-      int j = 33 + ChunkStatus.func_222599_a(requiredStatus);
+      int j = 33 + ChunkStatus.getDistance(requiredStatus);
       ChunkHolder chunkholder = this.func_217213_a(i);
       if (load) {
          this.ticketManager.registerWithLevel(TicketType.UNKNOWN, chunkpos, j, chunkpos);
@@ -212,7 +216,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
             chunkholder = this.func_217213_a(i);
             iprofiler.endSection();
             if (this.func_217224_a(chunkholder, j)) {
-               throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("No chunk holder after ticket has been added"));
+               throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("No chunk holder after ticket has been added"));
             }
          }
       }
@@ -220,13 +224,13 @@ public class ServerChunkProvider extends AbstractChunkProvider {
       return this.func_217224_a(chunkholder, j) ? ChunkHolder.MISSING_CHUNK_FUTURE : chunkholder.func_219276_a(requiredStatus, this.chunkManager);
    }
 
-   private boolean func_217224_a(@Nullable ChunkHolder p_217224_1_, int p_217224_2_) {
-      return p_217224_1_ == null || p_217224_1_.func_219299_i() > p_217224_2_;
+   private boolean func_217224_a(@Nullable ChunkHolder chunkHolderIn, int p_217224_2_) {
+      return chunkHolderIn == null || chunkHolderIn.func_219299_i() > p_217224_2_;
    }
 
    public boolean chunkExists(int x, int z) {
       ChunkHolder chunkholder = this.func_217213_a((new ChunkPos(x, z)).asLong());
-      int i = 33 + ChunkStatus.func_222599_a(ChunkStatus.FULL);
+      int i = 33 + ChunkStatus.getDistance(ChunkStatus.FULL);
       return !this.func_217224_a(chunkholder, i);
    }
 
@@ -258,13 +262,13 @@ public class ServerChunkProvider extends AbstractChunkProvider {
       return this.world;
    }
 
-   public boolean func_217234_d() {
+   public boolean driveOneTask() {
       return this.executor.driveOne();
    }
 
    private boolean func_217235_l() {
-      boolean flag = this.ticketManager.func_219353_a(this.chunkManager);
-      boolean flag1 = this.chunkManager.func_219245_b();
+      boolean flag = this.ticketManager.processUpdates(this.chunkManager);
+      boolean flag1 = this.chunkManager.refreshOffThreadCache();
       if (!flag && !flag1) {
          return false;
       } else {
@@ -318,14 +322,14 @@ public class ServerChunkProvider extends AbstractChunkProvider {
       this.ticketManager.tick();
       this.func_217235_l();
       this.world.getProfiler().endStartSection("chunks");
-      this.func_217220_m();
+      this.tickChunks();
       this.world.getProfiler().endStartSection("unload");
       this.chunkManager.tick(hasTimeLeft);
       this.world.getProfiler().endSection();
       this.invalidateCaches();
    }
 
-   private void func_217220_m() {
+   private void tickChunks() {
       long i = this.world.getGameTime();
       long j = i - this.lastGameTime;
       this.lastGameTime = i;
@@ -342,7 +346,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
          EntityClassification[] aentityclassification = EntityClassification.values();
          Object2IntMap<EntityClassification> object2intmap = this.world.countEntities();
          this.world.getProfiler().endSection();
-         this.chunkManager.func_223491_f().forEach((p_223434_10_) -> {
+         this.chunkManager.getLoadedChunksIterable().forEach((p_223434_10_) -> {
             Optional<Chunk> optional = p_223434_10_.func_219297_b().getNow(ChunkHolder.UNLOADED_CHUNK).left();
             if (optional.isPresent()) {
                Chunk chunk = optional.get();
@@ -359,7 +363,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
                         if (entityclassification != EntityClassification.MISC && (!entityclassification.getPeacefulCreature() || this.spawnPassives) && (entityclassification.getPeacefulCreature() || this.spawnHostiles) && (!entityclassification.getAnimal() || flag2)) {
                            int i1 = entityclassification.getMaxNumberOfCreature() * l / field_217238_b;
                            if (object2intmap.getInt(entityclassification) <= i1) {
-                              WorldEntitySpawner.spawnEntities(entityclassification, this.world, chunk, blockpos);
+                              WorldEntitySpawner.func_226701_a_(entityclassification, this.world, chunk, blockpos);
                            }
                         }
                      }
@@ -367,7 +371,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
                      this.world.getProfiler().endSection();
                   }
 
-                  this.world.func_217441_a(chunk, k);
+                  this.world.tickEnvironment(chunk, k);
                }
             }
          });
@@ -389,7 +393,7 @@ public class ServerChunkProvider extends AbstractChunkProvider {
 
    @VisibleForTesting
    public int func_225314_f() {
-      return this.executor.func_223704_be();
+      return this.executor.getQueueSize();
    }
 
    public ChunkGenerator<?> getChunkGenerator() {
@@ -420,12 +424,12 @@ public class ServerChunkProvider extends AbstractChunkProvider {
       });
    }
 
-   public <T> void func_217228_a(TicketType<T> p_217228_1_, ChunkPos p_217228_2_, int p_217228_3_, T p_217228_4_) {
-      this.ticketManager.register(p_217228_1_, p_217228_2_, p_217228_3_, p_217228_4_);
+   public <T> void registerTicket(TicketType<T> type, ChunkPos pos, int distance, T value) {
+      this.ticketManager.register(type, pos, distance, value);
    }
 
-   public <T> void func_217222_b(TicketType<T> p_217222_1_, ChunkPos p_217222_2_, int p_217222_3_, T p_217222_4_) {
-      this.ticketManager.release(p_217222_1_, p_217222_2_, p_217222_3_, p_217222_4_);
+   public <T> void releaseTicket(TicketType<T> type, ChunkPos pos, int distance, T value) {
+      this.ticketManager.release(type, pos, distance, value);
    }
 
    public void forceChunk(ChunkPos pos, boolean add) {
@@ -452,8 +456,8 @@ public class ServerChunkProvider extends AbstractChunkProvider {
       this.chunkManager.sendToAllTracking(entityIn, packet);
    }
 
-   public void func_217219_a(int p_217219_1_) {
-      this.chunkManager.setViewDistance(p_217219_1_);
+   public void setViewDistance(int viewDistance) {
+      this.chunkManager.setViewDistance(viewDistance);
    }
 
    public void setAllowedSpawnTypes(boolean hostile, boolean peaceful) {
@@ -470,13 +474,13 @@ public class ServerChunkProvider extends AbstractChunkProvider {
       return this.savedData;
    }
 
-   public PointOfInterestManager func_217231_i() {
-      return this.chunkManager.getPoiMgr();
+   public PointOfInterestManager getPointOfInterestManager() {
+      return this.chunkManager.getPointOfInterestManager();
    }
 
    final class ChunkExecutor extends ThreadTaskExecutor<Runnable> {
-      private ChunkExecutor(World p_i50985_2_) {
-         super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getKey(p_i50985_2_.getDimension().getType()));
+      private ChunkExecutor(World worldIn) {
+         super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getKey(worldIn.getDimension().getType()));
       }
 
       protected Runnable wrapTask(Runnable runnable) {
@@ -493,6 +497,11 @@ public class ServerChunkProvider extends AbstractChunkProvider {
 
       protected Thread getExecutionThread() {
          return ServerChunkProvider.this.mainThread;
+      }
+
+      protected void run(Runnable taskIn) {
+         ServerChunkProvider.this.world.getProfiler().func_230035_c_("runTask");
+         super.run(taskIn);
       }
 
       protected boolean driveOne() {

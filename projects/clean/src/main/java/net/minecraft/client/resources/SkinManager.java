@@ -54,7 +54,7 @@ public class SkinManager {
    public ResourceLocation loadSkin(MinecraftProfileTexture profileTexture, Type textureType, @Nullable SkinManager.ISkinAvailableCallback skinAvailableCallback) {
       String s = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
       ResourceLocation resourcelocation = new ResourceLocation("skins/" + s);
-      Texture texture = this.textureManager.func_229267_b_(resourcelocation);
+      Texture texture = this.textureManager.getTexture(resourcelocation);
       if (texture != null) {
          if (skinAvailableCallback != null) {
             skinAvailableCallback.onSkinTextureAvailable(textureType, resourcelocation, profileTexture);
@@ -68,7 +68,7 @@ public class SkinManager {
             }
 
          });
-         this.textureManager.func_229263_a_(resourcelocation, downloadingtexture);
+         this.textureManager.loadTexture(resourcelocation, downloadingtexture);
       }
 
       return resourcelocation;

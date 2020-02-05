@@ -33,22 +33,22 @@ public final class MissingTextureSprite extends TextureAtlasSprite {
       nativeimage.untrack();
       return nativeimage;
    });
-   private static final TextureAtlasSprite.Info field_229175_e_ = new TextureAtlasSprite.Info(LOCATION, 16, 16, new AnimationMetadataSection(Lists.newArrayList(new AnimationFrame(0, -1)), 16, 16, 1, false));
+   private static final TextureAtlasSprite.Info spriteInfo = new TextureAtlasSprite.Info(LOCATION, 16, 16, new AnimationMetadataSection(Lists.newArrayList(new AnimationFrame(0, -1)), 16, 16, 1, false));
 
-   private MissingTextureSprite(AtlasTexture p_i226044_1_, int p_i226044_2_, int p_i226044_3_, int p_i226044_4_, int p_i226044_5_, int p_i226044_6_) {
-      super(p_i226044_1_, field_229175_e_, p_i226044_2_, p_i226044_3_, p_i226044_4_, p_i226044_5_, p_i226044_6_, IMAGE.getValue());
+   private MissingTextureSprite(AtlasTexture atlasTextureIn, int mipmapLevelIn, int atlasWidthIn, int atlasHeightIn, int xIn, int yIn) {
+      super(atlasTextureIn, spriteInfo, mipmapLevelIn, atlasWidthIn, atlasHeightIn, xIn, yIn, IMAGE.getValue());
    }
 
-   public static MissingTextureSprite func_229176_a_(AtlasTexture p_229176_0_, int p_229176_1_, int p_229176_2_, int p_229176_3_, int p_229176_4_, int p_229176_5_) {
-      return new MissingTextureSprite(p_229176_0_, p_229176_1_, p_229176_2_, p_229176_3_, p_229176_4_, p_229176_5_);
+   public static MissingTextureSprite create(AtlasTexture atlasTextureIn, int mipmapLevelIn, int atlasWidthIn, int atlasHeightIn, int xIn, int yIn) {
+      return new MissingTextureSprite(atlasTextureIn, mipmapLevelIn, atlasWidthIn, atlasHeightIn, xIn, yIn);
    }
 
    public static ResourceLocation getLocation() {
       return LOCATION;
    }
 
-   public static TextureAtlasSprite.Info func_229177_b_() {
-      return field_229175_e_;
+   public static TextureAtlasSprite.Info getSpriteInfo() {
+      return spriteInfo;
    }
 
    public void close() {
@@ -61,7 +61,7 @@ public final class MissingTextureSprite extends TextureAtlasSprite {
    public static DynamicTexture getDynamicTexture() {
       if (dynamicTexture == null) {
          dynamicTexture = new DynamicTexture(IMAGE.getValue());
-         Minecraft.getInstance().getTextureManager().func_229263_a_(LOCATION, dynamicTexture);
+         Minecraft.getInstance().getTextureManager().loadTexture(LOCATION, dynamicTexture);
       }
 
       return dynamicTexture;

@@ -32,7 +32,7 @@ public class ThornsEnchantment extends Enchantment {
 
    public void onUserHurt(LivingEntity user, Entity attacker, int level) {
       Random random = user.getRNG();
-      Entry<EquipmentSlotType, ItemStack> entry = EnchantmentHelper.func_222189_b(Enchantments.THORNS, user);
+      Entry<EquipmentSlotType, ItemStack> entry = EnchantmentHelper.getRandomItemWithEnchantment(Enchantments.THORNS, user);
       if (shouldHit(level, random)) {
          if (attacker != null) {
             attacker.attackEntityFrom(DamageSource.causeThornsDamage(user), (float)getDamage(level, random));

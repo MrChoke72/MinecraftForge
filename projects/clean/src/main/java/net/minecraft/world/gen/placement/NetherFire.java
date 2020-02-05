@@ -13,13 +13,13 @@ public class NetherFire extends SimplePlacement<FrequencyConfig> {
       super(p_i51356_1_);
    }
 
-   public Stream<BlockPos> getPositions(Random p_212852_1_, FrequencyConfig p_212852_2_, BlockPos p_212852_3_) {
+   public Stream<BlockPos> getPositions(Random random, FrequencyConfig p_212852_2_, BlockPos pos) {
       List<BlockPos> list = Lists.newArrayList();
 
-      for(int i = 0; i < p_212852_1_.nextInt(p_212852_1_.nextInt(p_212852_2_.count) + 1) + 1; ++i) {
-         int j = p_212852_1_.nextInt(16) + p_212852_3_.getX();
-         int k = p_212852_1_.nextInt(16) + p_212852_3_.getZ();
-         int l = p_212852_1_.nextInt(120) + 4;
+      for(int i = 0; i < random.nextInt(random.nextInt(p_212852_2_.count) + 1) + 1; ++i) {
+         int j = random.nextInt(16) + pos.getX();
+         int k = random.nextInt(16) + pos.getZ();
+         int l = random.nextInt(120) + 4;
          list.add(new BlockPos(j, l, k));
       }
 

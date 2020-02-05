@@ -210,7 +210,7 @@ public class Tag<T> {
 
       public void populate(Collection<T> itemsIn) {
          if (this.tag == null) {
-            throw Util.func_229757_c_((new IllegalStateException("Cannot build unresolved tag entry")));
+            throw Util.spinlockIfDevMode((new IllegalStateException("Cannot build unresolved tag entry")));
          } else {
             itemsIn.addAll(this.tag.getAllElements());
          }

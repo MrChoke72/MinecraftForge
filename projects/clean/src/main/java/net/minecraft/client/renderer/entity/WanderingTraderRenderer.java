@@ -13,8 +13,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class WanderingTraderRenderer extends MobRenderer<WanderingTraderEntity, VillagerModel<WanderingTraderEntity>> {
    private static final ResourceLocation field_217780_a = new ResourceLocation("textures/entity/wandering_trader.png");
 
-   public WanderingTraderRenderer(EntityRendererManager p_i50953_1_) {
-      super(p_i50953_1_, new VillagerModel<>(0.0F), 0.5F);
+   public WanderingTraderRenderer(EntityRendererManager renderManagerIn) {
+      super(renderManagerIn, new VillagerModel<>(0.0F), 0.5F);
       this.addLayer(new HeadLayer<>(this));
       this.addLayer(new CrossedArmsItemLayer<>(this));
    }
@@ -23,8 +23,8 @@ public class WanderingTraderRenderer extends MobRenderer<WanderingTraderEntity, 
       return field_217780_a;
    }
 
-   protected void func_225620_a_(WanderingTraderEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
+   protected void preRenderCallback(WanderingTraderEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
       float f = 0.9375F;
-      p_225620_2_.func_227862_a_(0.9375F, 0.9375F, 0.9375F);
+      matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
    }
 }

@@ -51,7 +51,7 @@ public final class Ticket<T> implements Comparable<Ticket<?>> {
       return this.level;
    }
 
-   protected void func_229861_a_(long p_229861_1_) {
+   protected void setTimestamp(long p_229861_1_) {
       this.timestamp = p_229861_1_;
    }
 

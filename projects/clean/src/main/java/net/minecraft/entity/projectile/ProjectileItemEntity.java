@@ -33,8 +33,8 @@ public abstract class ProjectileItemEntity extends ThrowableEntity implements IR
       super(type, livingEntityIn, worldIn);
    }
 
-   public void func_213884_b(ItemStack stack) {
-      if (stack.getItem() != this.func_213885_i() || stack.hasTag()) {
+   public void setItem(ItemStack stack) {
+      if (stack.getItem() != this.getDefaultItem() || stack.hasTag()) {
          this.getDataManager().set(ITEMSTACK_DATA, Util.make(stack.copy(), (p_213883_0_) -> {
             p_213883_0_.setCount(1);
          }));
@@ -42,7 +42,7 @@ public abstract class ProjectileItemEntity extends ThrowableEntity implements IR
 
    }
 
-   protected abstract Item func_213885_i();
+   protected abstract Item getDefaultItem();
 
    protected ItemStack func_213882_k() {
       return this.getDataManager().get(ITEMSTACK_DATA);
@@ -51,7 +51,7 @@ public abstract class ProjectileItemEntity extends ThrowableEntity implements IR
    @OnlyIn(Dist.CLIENT)
    public ItemStack getItem() {
       ItemStack itemstack = this.func_213882_k();
-      return itemstack.isEmpty() ? new ItemStack(this.func_213885_i()) : itemstack;
+      return itemstack.isEmpty() ? new ItemStack(this.getDefaultItem()) : itemstack;
    }
 
    protected void registerData() {
@@ -70,6 +70,6 @@ public abstract class ProjectileItemEntity extends ThrowableEntity implements IR
    public void readAdditional(CompoundNBT compound) {
       super.readAdditional(compound);
       ItemStack itemstack = ItemStack.read(compound.getCompound("Item"));
-      this.func_213884_b(itemstack);
+      this.setItem(itemstack);
    }
 }

@@ -259,4 +259,8 @@ public class CrashReport {
 
       return crashreport;
    }
+
+   public static void func_230188_h_() {
+      (new CrashReport("Don't panic!", new Throwable())).getCompleteReport();
+   }
 }

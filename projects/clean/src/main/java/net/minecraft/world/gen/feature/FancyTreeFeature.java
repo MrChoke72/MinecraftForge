@@ -77,7 +77,7 @@ public class FancyTreeFeature extends AbstractTreeFeature<TreeFeatureConfig> {
          for(int j = 0; j <= i; ++j) {
             BlockPos blockpos1 = p_227235_3_.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * f1), (double)(0.5F + (float)j * f2));
             if (p_227235_5_) {
-               this.func_227217_a_(p_227235_1_, blockpos1, p_227235_8_.field_227368_m_.func_225574_a_(p_227235_2_, blockpos1).with(LogBlock.AXIS, this.func_227238_a_(p_227235_3_, blockpos1)), p_227235_7_);
+               this.func_227217_a_(p_227235_1_, blockpos1, p_227235_8_.trunkProvider.func_225574_a_(p_227235_2_, blockpos1).with(LogBlock.AXIS, this.func_227238_a_(p_227235_3_, blockpos1)), p_227235_7_);
                p_227235_6_.add(blockpos1);
             } else if (!func_214587_a(p_227235_1_, blockpos1)) {
                return j;

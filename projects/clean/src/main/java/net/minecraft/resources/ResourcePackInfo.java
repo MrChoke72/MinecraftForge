@@ -24,7 +24,7 @@ public class ResourcePackInfo implements AutoCloseable {
    private static final PackMetadataSection field_212500_b = new PackMetadataSection((new TranslationTextComponent("resourcePack.broken_assets")).applyTextStyles(new TextFormatting[]{TextFormatting.RED, TextFormatting.ITALIC}), SharedConstants.getVersion().getPackVersion());
    private final String name;
    private final Supplier<IResourcePack> resourcePackSupplier;
-   private final ITextComponent field_195802_d;
+   private final ITextComponent title;
    private final ITextComponent description;
    private final PackCompatibility compatibility;
    private final ResourcePackInfo.Priority priority;
@@ -53,24 +53,24 @@ public class ResourcePackInfo implements AutoCloseable {
       return (T)null;
    }
 
-   public ResourcePackInfo(String nameIn, boolean p_i47907_2_, Supplier<IResourcePack> resourcePackSupplierIn, ITextComponent p_i47907_4_, ITextComponent p_i47907_5_, PackCompatibility p_i47907_6_, ResourcePackInfo.Priority p_i47907_7_, boolean p_i47907_8_) {
+   public ResourcePackInfo(String nameIn, boolean isAlwaysEnabled, Supplier<IResourcePack> resourcePackSupplierIn, ITextComponent titleIn, ITextComponent descriptionIn, PackCompatibility compatibilityIn, ResourcePackInfo.Priority priorityIn, boolean isOrderLocked) {
       this.name = nameIn;
       this.resourcePackSupplier = resourcePackSupplierIn;
-      this.field_195802_d = p_i47907_4_;
-      this.description = p_i47907_5_;
-      this.compatibility = p_i47907_6_;
-      this.alwaysEnabled = p_i47907_2_;
-      this.priority = p_i47907_7_;
-      this.orderLocked = p_i47907_8_;
+      this.title = titleIn;
+      this.description = descriptionIn;
+      this.compatibility = compatibilityIn;
+      this.alwaysEnabled = isAlwaysEnabled;
+      this.priority = priorityIn;
+      this.orderLocked = isOrderLocked;
    }
 
-   public ResourcePackInfo(String p_i47908_1_, boolean p_i47908_2_, Supplier<IResourcePack> p_i47908_3_, IResourcePack p_i47908_4_, PackMetadataSection p_i47908_5_, ResourcePackInfo.Priority p_i47908_6_) {
-      this(p_i47908_1_, p_i47908_2_, p_i47908_3_, new StringTextComponent(p_i47908_4_.getName()), p_i47908_5_.getDescription(), PackCompatibility.func_198969_a(p_i47908_5_.getPackFormat()), p_i47908_6_, false);
+   public ResourcePackInfo(String nameIn, boolean isAlwaysEnabled, Supplier<IResourcePack> resourcePackSupplierIn, IResourcePack p_i47908_4_, PackMetadataSection p_i47908_5_, ResourcePackInfo.Priority priorityIn) {
+      this(nameIn, isAlwaysEnabled, resourcePackSupplierIn, new StringTextComponent(p_i47908_4_.getName()), p_i47908_5_.getDescription(), PackCompatibility.getCompatibility(p_i47908_5_.getPackFormat()), priorityIn, false);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public ITextComponent func_195789_b() {
-      return this.field_195802_d;
+   public ITextComponent getTitle() {
+      return this.title;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -80,7 +80,7 @@ public class ResourcePackInfo implements AutoCloseable {
 
    public ITextComponent func_195794_a(boolean p_195794_1_) {
       return TextComponentUtils.wrapInSquareBrackets(new StringTextComponent(this.name)).applyTextStyle((p_211689_2_) -> {
-         p_211689_2_.setColor(p_195794_1_ ? TextFormatting.GREEN : TextFormatting.RED).setInsertion(StringArgumentType.escapeIfRequired(this.name)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new StringTextComponent("")).appendSibling(this.field_195802_d).appendText("\n").appendSibling(this.description)));
+         p_211689_2_.setColor(p_195794_1_ ? TextFormatting.GREEN : TextFormatting.RED).setInsertion(StringArgumentType.escapeIfRequired(this.name)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new StringTextComponent("")).appendSibling(this.title).appendText("\n").appendSibling(this.description)));
       });
    }
 
@@ -137,7 +137,7 @@ public class ResourcePackInfo implements AutoCloseable {
       BOTTOM;
 
       public <T, P extends ResourcePackInfo> int func_198993_a(List<T> p_198993_1_, T p_198993_2_, Function<T, P> p_198993_3_, boolean p_198993_4_) {
-         ResourcePackInfo.Priority resourcepackinfo$priority = p_198993_4_ ? this.func_198992_a() : this;
+         ResourcePackInfo.Priority resourcepackinfo$priority = p_198993_4_ ? this.opposite() : this;
          if (resourcepackinfo$priority == BOTTOM) {
             int j;
             for(j = 0; j < p_198993_1_.size(); ++j) {
@@ -163,7 +163,7 @@ public class ResourcePackInfo implements AutoCloseable {
          }
       }
 
-      public ResourcePackInfo.Priority func_198992_a() {
+      public ResourcePackInfo.Priority opposite() {
          return this == TOP ? BOTTOM : TOP;
       }
    }

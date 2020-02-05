@@ -12,12 +12,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class DisconnectedScreen extends Screen {
    private final ITextComponent message;
    private List<String> multilineMessage;
-   private final Screen field_146307_h;
+   private final Screen nextScreen;
    private int textHeight;
 
    public DisconnectedScreen(Screen screen, String reasonLocalizationKey, ITextComponent chatComp) {
       super(new TranslationTextComponent(reasonLocalizationKey));
-      this.field_146307_h = screen;
+      this.nextScreen = screen;
       this.message = chatComp;
    }
 
@@ -29,7 +29,7 @@ public class DisconnectedScreen extends Screen {
       this.multilineMessage = this.font.listFormattedStringToWidth(this.message.getFormattedText(), this.width - 50);
       this.textHeight = this.multilineMessage.size() * 9;
       this.addButton(new Button(this.width / 2 - 100, Math.min(this.height / 2 + this.textHeight / 2 + 9, this.height - 30), 200, 20, I18n.format("gui.toMenu"), (p_213033_1_) -> {
-         this.minecraft.displayGuiScreen(this.field_146307_h);
+         this.minecraft.displayGuiScreen(this.nextScreen);
       }));
    }
 

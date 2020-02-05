@@ -72,16 +72,16 @@ public class PaletteArray<T> implements IPalette<T> {
    }
 
    public int getSerializedSize() {
-      int i = PacketBuffer.getVarIntSize(this.func_202137_b());
+      int i = PacketBuffer.getVarIntSize(this.getPaletteSize());
 
-      for(int j = 0; j < this.func_202137_b(); ++j) {
+      for(int j = 0; j < this.getPaletteSize(); ++j) {
          i += PacketBuffer.getVarIntSize(this.registry.get(this.states[j]));
       }
 
       return i;
    }
 
-   public int func_202137_b() {
+   public int getPaletteSize() {
       return this.arraySize;
    }
 

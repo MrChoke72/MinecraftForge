@@ -41,12 +41,12 @@ public class RedstoneOreBlock extends Block {
       super.onEntityWalk(worldIn, pos, entityIn);
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
-         spawnParticles(p_225533_2_, p_225533_3_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
+         spawnParticles(worldIn, pos);
          return ActionResultType.SUCCESS;
       } else {
-         activate(p_225533_1_, p_225533_2_, p_225533_3_);
+         activate(state, worldIn, pos);
          return ActionResultType.PASS;
       }
    }
@@ -59,9 +59,9 @@ public class RedstoneOreBlock extends Block {
 
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_1_.get(LIT)) {
-         p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(LIT, Boolean.valueOf(false)), 3);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (state.get(LIT)) {
+         worldIn.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), 3);
       }
 
    }

@@ -25,7 +25,7 @@ public class SoundSource {
    static SoundSource func_216426_a() {
       int[] aint = new int[1];
       AL10.alGenSources(aint);
-      return ALUtils.func_216483_a("Allocate new source") ? null : new SoundSource(aint[0]);
+      return ALUtils.checkALError("Allocate new source") ? null : new SoundSource(aint[0]);
    }
 
    private SoundSource(int p_i51178_1_) {
@@ -35,7 +35,7 @@ public class SoundSource {
    public void func_216436_b() {
       if (this.field_216442_c.compareAndSet(true, false)) {
          AL10.alSourceStop(this.field_216441_b);
-         ALUtils.func_216483_a("Stop");
+         ALUtils.checkALError("Stop");
          if (this.field_216444_e != null) {
             try {
                this.field_216444_e.close();
@@ -48,7 +48,7 @@ public class SoundSource {
          }
 
          AL10.alDeleteSources(new int[]{this.field_216441_b});
-         ALUtils.func_216483_a("Cleanup");
+         ALUtils.checkALError("Cleanup");
       }
 
    }
@@ -78,7 +78,7 @@ public class SoundSource {
    public void func_216418_f() {
       if (this.field_216442_c.get()) {
          AL10.alSourceStop(this.field_216441_b);
-         ALUtils.func_216483_a("Stop");
+         ALUtils.checkALError("Stop");
       }
 
    }
@@ -166,9 +166,9 @@ public class SoundSource {
       if (i > 0) {
          int[] aint = new int[i];
          AL10.alSourceUnqueueBuffers(this.field_216441_b, aint);
-         ALUtils.func_216483_a("Unqueue buffers");
+         ALUtils.checkALError("Unqueue buffers");
          AL10.alDeleteBuffers(aint);
-         ALUtils.func_216483_a("Remove processed buffers");
+         ALUtils.checkALError("Remove processed buffers");
       }
 
       return i;

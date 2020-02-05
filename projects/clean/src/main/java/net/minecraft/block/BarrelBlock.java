@@ -36,14 +36,14 @@ public class BarrelBlock extends ContainerBlock {
       this.setDefaultState(this.stateContainer.getBaseState().with(PROPERTY_FACING, Direction.NORTH).with(PROPERTY_OPEN, Boolean.valueOf(false)));
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         TileEntity tileentity = p_225533_2_.getTileEntity(p_225533_3_);
+         TileEntity tileentity = worldIn.getTileEntity(pos);
          if (tileentity instanceof BarrelTileEntity) {
-            p_225533_4_.openContainer((BarrelTileEntity)tileentity);
-            p_225533_4_.addStat(Stats.OPEN_BARREL);
+            player.openContainer((BarrelTileEntity)tileentity);
+            player.addStat(Stats.OPEN_BARREL);
          }
 
          return ActionResultType.SUCCESS;
@@ -62,10 +62,10 @@ public class BarrelBlock extends ContainerBlock {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      TileEntity tileentity = p_225534_2_.getTileEntity(p_225534_3_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      TileEntity tileentity = worldIn.getTileEntity(pos);
       if (tileentity instanceof BarrelTileEntity) {
-         ((BarrelTileEntity)tileentity).func_213962_h();
+         ((BarrelTileEntity)tileentity).barrelTick();
       }
 
    }

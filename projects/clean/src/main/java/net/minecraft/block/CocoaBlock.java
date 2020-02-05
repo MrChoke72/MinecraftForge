@@ -29,11 +29,11 @@ public class CocoaBlock extends HorizontalBlock implements IGrowable {
       this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(AGE, Integer.valueOf(0)));
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_2_.rand.nextInt(5) == 0) {
-         int i = p_225534_1_.get(AGE);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (worldIn.rand.nextInt(5) == 0) {
+         int i = state.get(AGE);
          if (i < 2) {
-            p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(AGE, Integer.valueOf(i + 1)), 2);
+            worldIn.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), 2);
          }
       }
 
@@ -89,7 +89,7 @@ public class CocoaBlock extends HorizontalBlock implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       p_225535_1_.setBlockState(p_225535_3_, p_225535_4_.with(AGE, Integer.valueOf(p_225535_4_.get(AGE) + 1)), 2);
    }
 

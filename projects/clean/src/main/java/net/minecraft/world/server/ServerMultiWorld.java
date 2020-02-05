@@ -10,8 +10,8 @@ import net.minecraft.world.storage.DerivedWorldInfo;
 import net.minecraft.world.storage.SaveHandler;
 
 public class ServerMultiWorld extends ServerWorld {
-   public ServerMultiWorld(ServerWorld p_i50708_1_, MinecraftServer p_i50708_2_, Executor p_i50708_3_, SaveHandler p_i50708_4_, DimensionType p_i50708_5_, IProfiler p_i50708_6_, IChunkStatusListener p_i50708_7_) {
-      super(p_i50708_2_, p_i50708_3_, p_i50708_4_, new DerivedWorldInfo(p_i50708_1_.getWorldInfo()), p_i50708_5_, p_i50708_6_, p_i50708_7_);
+   public ServerMultiWorld(ServerWorld p_i50708_1_, MinecraftServer serverIn, Executor p_i50708_3_, SaveHandler p_i50708_4_, DimensionType dimType, IProfiler p_i50708_6_, IChunkStatusListener p_i50708_7_) {
+      super(serverIn, p_i50708_3_, p_i50708_4_, new DerivedWorldInfo(p_i50708_1_.getWorldInfo()), dimType, p_i50708_6_, p_i50708_7_);
       p_i50708_1_.getWorldBorder().addListener(new IBorderListener.Impl(this.getWorldBorder()));
    }
 

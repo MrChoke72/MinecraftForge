@@ -19,11 +19,13 @@ public class IronGolemCracksLayer extends LayerRenderer<IronGolemEntity, IronGol
       super(p_i226040_1_);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, IronGolemEntity p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      IronGolemEntity.Cracks irongolementity$cracks = p_225628_4_.func_226512_l_();
-      if (irongolementity$cracks != IronGolemEntity.Cracks.NONE) {
-         ResourceLocation resourcelocation = field_229134_a_.get(irongolementity$cracks);
-         func_229141_a_(this.getEntityModel(), resourcelocation, p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, 1.0F, 1.0F, 1.0F);
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, IronGolemEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      if (!entitylivingbaseIn.isInvisible()) {
+         IronGolemEntity.Cracks irongolementity$cracks = entitylivingbaseIn.func_226512_l_();
+         if (irongolementity$cracks != IronGolemEntity.Cracks.NONE) {
+            ResourceLocation resourcelocation = field_229134_a_.get(irongolementity$cracks);
+            renderCutoutModel(this.getEntityModel(), resourcelocation, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
+         }
       }
    }
 }

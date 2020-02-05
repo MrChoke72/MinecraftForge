@@ -22,27 +22,27 @@ public abstract class StuckInBodyLayer<T extends LivingEntity, M extends PlayerM
 
    protected abstract void func_225632_a_(MatrixStack p_225632_1_, IRenderTypeBuffer p_225632_2_, int p_225632_3_, Entity p_225632_4_, float p_225632_5_, float p_225632_6_, float p_225632_7_, float p_225632_8_);
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, T p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      int i = this.func_225631_a_(p_225628_4_);
-      Random random = new Random((long)p_225628_4_.getEntityId());
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      int i = this.func_225631_a_(entitylivingbaseIn);
+      Random random = new Random((long)entitylivingbaseIn.getEntityId());
       if (i > 0) {
          for(int j = 0; j < i; ++j) {
-            p_225628_1_.func_227860_a_();
-            ModelRenderer modelrenderer = ((PlayerModel)this.getEntityModel()).func_228288_a_(random);
-            ModelRenderer.ModelBox modelrenderer$modelbox = modelrenderer.func_228310_a_(random);
-            modelrenderer.func_228307_a_(p_225628_1_);
+            matrixStackIn.push();
+            ModelRenderer modelrenderer = ((PlayerModel)this.getEntityModel()).getRandomModelRenderer(random);
+            ModelRenderer.ModelBox modelrenderer$modelbox = modelrenderer.getRandomCube(random);
+            modelrenderer.setAnglesAndRotation(matrixStackIn);
             float f = random.nextFloat();
             float f1 = random.nextFloat();
             float f2 = random.nextFloat();
             float f3 = MathHelper.lerp(f, modelrenderer$modelbox.posX1, modelrenderer$modelbox.posX2) / 16.0F;
             float f4 = MathHelper.lerp(f1, modelrenderer$modelbox.posY1, modelrenderer$modelbox.posY2) / 16.0F;
             float f5 = MathHelper.lerp(f2, modelrenderer$modelbox.posZ1, modelrenderer$modelbox.posZ2) / 16.0F;
-            p_225628_1_.func_227861_a_((double)f3, (double)f4, (double)f5);
+            matrixStackIn.translate((double)f3, (double)f4, (double)f5);
             f = -1.0F * (f * 2.0F - 1.0F);
             f1 = -1.0F * (f1 * 2.0F - 1.0F);
             f2 = -1.0F * (f2 * 2.0F - 1.0F);
-            this.func_225632_a_(p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, f, f1, f2, p_225628_7_);
-            p_225628_1_.func_227865_b_();
+            this.func_225632_a_(matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, f, f1, f2, partialTicks);
+            matrixStackIn.pop();
          }
 
       }

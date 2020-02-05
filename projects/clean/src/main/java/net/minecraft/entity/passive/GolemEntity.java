@@ -12,7 +12,7 @@ public abstract class GolemEntity extends CreatureEntity {
       super(type, worldIn);
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 

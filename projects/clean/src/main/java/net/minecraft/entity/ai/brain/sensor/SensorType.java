@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.brain.sensor;
 import java.util.function.Supplier;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
+import com.mrchoke.entity.ai.brain.sensor.InteractableTrapDoorsSensor;
 
 public class SensorType<U extends Sensor<?>> {
    public static final SensorType<DummySensor> DUMMY = register("dummy", DummySensor::new);

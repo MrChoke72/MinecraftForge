@@ -22,30 +22,30 @@ public class BlockFaceUV {
       this.rotation = rotationIn;
    }
 
-   public float getVertexU(int p_178348_1_) {
+   public float getVertexU(int indexIn) {
       if (this.uvs == null) {
          throw new NullPointerException("uvs");
       } else {
-         int i = this.getVertexRotated(p_178348_1_);
+         int i = this.getVertexRotated(indexIn);
          return this.uvs[i != 0 && i != 1 ? 2 : 0];
       }
    }
 
-   public float getVertexV(int p_178346_1_) {
+   public float getVertexV(int indexIn) {
       if (this.uvs == null) {
          throw new NullPointerException("uvs");
       } else {
-         int i = this.getVertexRotated(p_178346_1_);
+         int i = this.getVertexRotated(indexIn);
          return this.uvs[i != 0 && i != 3 ? 3 : 1];
       }
    }
 
-   private int getVertexRotated(int p_178347_1_) {
-      return (p_178347_1_ + this.rotation / 90) % 4;
+   private int getVertexRotated(int indexIn) {
+      return (indexIn + this.rotation / 90) % 4;
    }
 
-   public int getVertexRotatedRev(int p_178345_1_) {
-      return (p_178345_1_ + 4 - this.rotation / 90) % 4;
+   public int getVertexRotatedRev(int indexIn) {
+      return (indexIn + 4 - this.rotation / 90) % 4;
    }
 
    public void setUvs(float[] uvsIn) {

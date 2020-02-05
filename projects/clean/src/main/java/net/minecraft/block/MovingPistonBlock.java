@@ -69,13 +69,13 @@ public class MovingPistonBlock extends ContainerBlock {
       return false;
    }
 
-   public boolean func_229869_c_(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
+   public boolean causesSuffocation(BlockState state, IBlockReader worldIn, BlockPos pos) {
       return false;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (!p_225533_2_.isRemote && p_225533_2_.getTileEntity(p_225533_3_) == null) {
-         p_225533_2_.removeBlock(p_225533_3_, false);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (!worldIn.isRemote && worldIn.getTileEntity(pos) == null) {
+         worldIn.removeBlock(pos, false);
          return ActionResultType.CONSUME;
       } else {
          return ActionResultType.PASS;
@@ -83,7 +83,7 @@ public class MovingPistonBlock extends ContainerBlock {
    }
 
    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
-      PistonTileEntity pistontileentity = this.func_220170_a(builder.getWorld(), builder.assertPresent(LootParameters.POSITION));
+      PistonTileEntity pistontileentity = this.getTileEntity(builder.getWorld(), builder.assertPresent(LootParameters.POSITION));
       return pistontileentity == null ? Collections.emptyList() : pistontileentity.getPistonState().getDrops(builder);
    }
 
@@ -92,12 +92,12 @@ public class MovingPistonBlock extends ContainerBlock {
    }
 
    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-      PistonTileEntity pistontileentity = this.func_220170_a(worldIn, pos);
+      PistonTileEntity pistontileentity = this.getTileEntity(worldIn, pos);
       return pistontileentity != null ? pistontileentity.getCollisionShape(worldIn, pos) : VoxelShapes.empty();
    }
 
    @Nullable
-   private PistonTileEntity func_220170_a(IBlockReader p_220170_1_, BlockPos p_220170_2_) {
+   private PistonTileEntity getTileEntity(IBlockReader p_220170_1_, BlockPos p_220170_2_) {
       TileEntity tileentity = p_220170_1_.getTileEntity(p_220170_2_);
       return tileentity instanceof PistonTileEntity ? (PistonTileEntity)tileentity : null;
    }

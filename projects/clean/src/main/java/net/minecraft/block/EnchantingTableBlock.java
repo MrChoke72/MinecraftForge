@@ -33,7 +33,7 @@ public class EnchantingTableBlock extends ContainerBlock {
       super(builder);
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 
@@ -76,11 +76,11 @@ public class EnchantingTableBlock extends ContainerBlock {
       return new EnchantingTableTileEntity();
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         p_225533_4_.openContainer(p_225533_1_.getContainer(p_225533_2_, p_225533_3_));
+         player.openContainer(state.getContainer(worldIn, pos));
          return ActionResultType.SUCCESS;
       }
    }

@@ -23,7 +23,7 @@ public class BlockStateProvidingFeatureConfig implements IFeatureConfig {
    }
 
    public static <T> BlockStateProvidingFeatureConfig func_227269_a_(Dynamic<T> p_227269_0_) {
-      BlockStateProviderType<?> blockstateprovidertype = Registry.field_229387_t_.getOrDefault(new ResourceLocation(p_227269_0_.get("state_provider").get("type").asString().orElseThrow(RuntimeException::new)));
+      BlockStateProviderType<?> blockstateprovidertype = Registry.BLOCK_STATE_PROVIDER_TYPE.getOrDefault(new ResourceLocation(p_227269_0_.get("state_provider").get("type").asString().orElseThrow(RuntimeException::new)));
       return new BlockStateProvidingFeatureConfig(blockstateprovidertype.func_227399_a_(p_227269_0_.get("state_provider").orElseEmptyMap()));
    }
 }

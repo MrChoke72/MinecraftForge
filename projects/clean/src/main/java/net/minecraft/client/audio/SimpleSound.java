@@ -37,16 +37,16 @@ public class SimpleSound extends LocatableSound {
       this(soundIn.getName(), categoryIn, volumeIn, pitchIn, repeatIn, repeatDelayIn, attenuationTypeIn, xIn, yIn, zIn, false);
    }
 
-   public SimpleSound(ResourceLocation p_i50897_1_, SoundCategory p_i50897_2_, float p_i50897_3_, float p_i50897_4_, boolean p_i50897_5_, int p_i50897_6_, ISound.AttenuationType p_i50897_7_, float p_i50897_8_, float p_i50897_9_, float p_i50897_10_, boolean p_i50897_11_) {
-      super(p_i50897_1_, p_i50897_2_);
-      this.volume = p_i50897_3_;
-      this.pitch = p_i50897_4_;
-      this.x = p_i50897_8_;
-      this.y = p_i50897_9_;
-      this.z = p_i50897_10_;
-      this.repeat = p_i50897_5_;
-      this.repeatDelay = p_i50897_6_;
-      this.attenuationType = p_i50897_7_;
-      this.global = p_i50897_11_;
+   public SimpleSound(ResourceLocation soundIdIn, SoundCategory categoryIn, float volumeIn, float pitchIn, boolean repeatIn, int repeatDelayIn, ISound.AttenuationType attenuationTypeIn, float xIn, float yIn, float zIn, boolean globalIn) {
+      super(soundIdIn, categoryIn);
+      this.volume = volumeIn;
+      this.pitch = pitchIn;
+      this.x = xIn;
+      this.y = yIn;
+      this.z = zIn;
+      this.repeat = repeatIn;
+      this.repeatDelay = repeatDelayIn;
+      this.attenuationType = attenuationTypeIn;
+      this.global = globalIn;
    }
 }

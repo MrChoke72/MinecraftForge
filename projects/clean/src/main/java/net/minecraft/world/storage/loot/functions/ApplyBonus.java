@@ -23,12 +23,12 @@ import net.minecraft.world.storage.loot.conditions.ILootCondition;
 
 public class ApplyBonus extends LootFunction {
    private static final Map<ResourceLocation, ApplyBonus.IFormulaDeserializer> field_215875_a = Maps.newHashMap();
-   private final Enchantment field_215876_c;
+   private final Enchantment enchantment;
    private final ApplyBonus.IFormula field_215877_d;
 
-   private ApplyBonus(ILootCondition[] p_i51246_1_, Enchantment p_i51246_2_, ApplyBonus.IFormula p_i51246_3_) {
-      super(p_i51246_1_);
-      this.field_215876_c = p_i51246_2_;
+   private ApplyBonus(ILootCondition[] conditionsIn, Enchantment enchantmentIn, ApplyBonus.IFormula p_i51246_3_) {
+      super(conditionsIn);
+      this.enchantment = enchantmentIn;
       this.field_215877_d = p_i51246_3_;
    }
 
@@ -39,7 +39,7 @@ public class ApplyBonus extends LootFunction {
    public ItemStack doApply(ItemStack stack, LootContext context) {
       ItemStack itemstack = context.get(LootParameters.TOOL);
       if (itemstack != null) {
-         int i = EnchantmentHelper.getEnchantmentLevel(this.field_215876_c, itemstack);
+         int i = EnchantmentHelper.getEnchantmentLevel(this.enchantment, itemstack);
          int j = this.field_215877_d.func_216204_a(context.getRandom(), stack.getCount(), i);
          stack.setCount(j);
       }
@@ -47,25 +47,25 @@ public class ApplyBonus extends LootFunction {
       return stack;
    }
 
-   public static LootFunction.Builder<?> func_215870_a(Enchantment p_215870_0_, float p_215870_1_, int p_215870_2_) {
+   public static LootFunction.Builder<?> binomialWithBonusCount(Enchantment p_215870_0_, float p_215870_1_, int p_215870_2_) {
       return builder((p_215864_3_) -> {
          return new ApplyBonus(p_215864_3_, p_215870_0_, new ApplyBonus.BinomialWithBonusCountFormula(p_215870_2_, p_215870_1_));
       });
    }
 
-   public static LootFunction.Builder<?> func_215869_a(Enchantment p_215869_0_) {
+   public static LootFunction.Builder<?> oreDrops(Enchantment p_215869_0_) {
       return builder((p_215866_1_) -> {
          return new ApplyBonus(p_215866_1_, p_215869_0_, new ApplyBonus.OreDropsFormula());
       });
    }
 
-   public static LootFunction.Builder<?> func_215871_b(Enchantment p_215871_0_) {
+   public static LootFunction.Builder<?> uniformBonusCount(Enchantment p_215871_0_) {
       return builder((p_215872_1_) -> {
          return new ApplyBonus(p_215872_1_, p_215871_0_, new ApplyBonus.UniformBonusCountFormula(1));
       });
    }
 
-   public static LootFunction.Builder<?> func_215865_a(Enchantment p_215865_0_, int p_215865_1_) {
+   public static LootFunction.Builder<?> uniformBonusCount(Enchantment p_215865_0_, int p_215865_1_) {
       return builder((p_215868_2_) -> {
          return new ApplyBonus(p_215868_2_, p_215865_0_, new ApplyBonus.UniformBonusCountFormula(p_215865_1_));
       });
@@ -163,7 +163,7 @@ public class ApplyBonus extends LootFunction {
 
       public void serialize(JsonObject object, ApplyBonus functionClazz, JsonSerializationContext serializationContext) {
          super.serialize(object, functionClazz, serializationContext);
-         object.addProperty("enchantment", Registry.ENCHANTMENT.getKey(functionClazz.field_215876_c).toString());
+         object.addProperty("enchantment", Registry.ENCHANTMENT.getKey(functionClazz.enchantment).toString());
          object.addProperty("formula", functionClazz.field_215877_d.func_216203_a().toString());
          JsonObject jsonobject = new JsonObject();
          functionClazz.field_215877_d.func_216202_a(jsonobject, serializationContext);

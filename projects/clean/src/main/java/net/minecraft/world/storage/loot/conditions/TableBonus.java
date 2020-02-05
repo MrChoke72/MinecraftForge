@@ -36,9 +36,9 @@ public class TableBonus implements ILootCondition {
       return p_test_1_.getRandom().nextFloat() < f;
    }
 
-   public static ILootCondition.IBuilder builder(Enchantment p_215955_0_, float... p_215955_1_) {
+   public static ILootCondition.IBuilder builder(Enchantment enchantmentIn, float... chancesIn) {
       return () -> {
-         return new TableBonus(p_215955_0_, p_215955_1_);
+         return new TableBonus(enchantmentIn, chancesIn);
       };
    }
 

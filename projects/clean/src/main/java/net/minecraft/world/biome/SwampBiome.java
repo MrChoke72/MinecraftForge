@@ -17,8 +17,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public final class SwampBiome extends Biome {
    protected SwampBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.SWAMP, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.RAIN).category(Biome.Category.SWAMP).depth(-0.2F).scale(0.1F).temperature(0.8F).downfall(0.9F).waterColor(6388580).waterFogColor(2302743).parent((String)null));
-      this.func_226711_a_(Feature.SWAMP_HUT.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.SWAMP_HUT.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -28,9 +28,9 @@ public final class SwampBiome extends Biome {
       DefaultBiomeFeatures.addSwampClayDisks(this);
       DefaultBiomeFeatures.addSwampVegetation(this);
       DefaultBiomeFeatures.addMushrooms(this);
-      DefaultBiomeFeatures.func_222329_ae(this);
+      DefaultBiomeFeatures.addExtraReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);
-      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.SEAGRASS.func_225566_b_(new SeaGrassConfig(64, 0.6D)).func_227228_a_(Placement.TOP_SOLID_HEIGHTMAP.func_227446_a_(IPlacementConfig.NO_PLACEMENT_CONFIG)));
+      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.SEAGRASS.withConfiguration(new SeaGrassConfig(64, 0.6D)).func_227228_a_(Placement.TOP_SOLID_HEIGHTMAP.func_227446_a_(IPlacementConfig.NO_PLACEMENT_CONFIG)));
       DefaultBiomeFeatures.addFossils(this);
       DefaultBiomeFeatures.addFreezeTopLayer(this);
       this.addSpawn(EntityClassification.CREATURE, new Biome.SpawnListEntry(EntityType.SHEEP, 12, 4, 4));
@@ -55,13 +55,13 @@ public final class SwampBiome extends Biome {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225528_a_(double p_225528_1_, double p_225528_3_) {
-      double d0 = INFO_NOISE.func_215464_a(p_225528_1_ * 0.0225D, p_225528_3_ * 0.0225D, false);
+   public int getGrassColor(double p_225528_1_, double p_225528_3_) {
+      double d0 = INFO_NOISE.noiseAt(p_225528_1_ * 0.0225D, p_225528_3_ * 0.0225D, false);
       return d0 < -0.1D ? 5011004 : 6975545;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225527_a_() {
+   public int getFoliageColor() {
       return 6975545;
    }
 }

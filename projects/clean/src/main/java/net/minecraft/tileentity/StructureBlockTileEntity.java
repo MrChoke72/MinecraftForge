@@ -442,7 +442,7 @@ public class StructureBlockTileEntity extends TileEntity {
       } else {
          PlacementSettings placementsettings = (new PlacementSettings()).setMirror(this.mirror).setRotation(this.rotation).setIgnoreEntities(this.ignoreEntities).setChunk((ChunkPos)null);
          if (this.integrity < 1.0F) {
-            placementsettings.func_215219_b().addProcessor(new IntegrityProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F))).setRandom(func_214074_b(this.seed));
+            placementsettings.clearProcessors().addProcessor(new IntegrityProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F))).setRandom(func_214074_b(this.seed));
          }
 
          BlockPos blockpos2 = blockpos.add(this.position);

@@ -11,28 +11,28 @@ import org.lwjgl.system.MemoryUtil;
 
 @OnlyIn(Dist.CLIENT)
 public class WorldVertexBufferUploader {
-   public static void draw(BufferBuilder p_181679_0_) {
+   public static void draw(BufferBuilder bufferBuilderIn) {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            Pair<BufferBuilder.DrawState, ByteBuffer> pair1 = p_181679_0_.func_227832_f_();
+            Pair<BufferBuilder.DrawState, ByteBuffer> pair1 = bufferBuilderIn.getAndResetData();
             BufferBuilder.DrawState bufferbuilder$drawstate1 = pair1.getFirst();
-            func_227844_a_(pair1.getSecond(), bufferbuilder$drawstate1.func_227840_c_(), bufferbuilder$drawstate1.func_227838_a_(), bufferbuilder$drawstate1.func_227839_b_());
+            draw(pair1.getSecond(), bufferbuilder$drawstate1.getDrawMode(), bufferbuilder$drawstate1.getFormat(), bufferbuilder$drawstate1.getVertexCount());
          });
       } else {
-         Pair<BufferBuilder.DrawState, ByteBuffer> pair = p_181679_0_.func_227832_f_();
+         Pair<BufferBuilder.DrawState, ByteBuffer> pair = bufferBuilderIn.getAndResetData();
          BufferBuilder.DrawState bufferbuilder$drawstate = pair.getFirst();
-         func_227844_a_(pair.getSecond(), bufferbuilder$drawstate.func_227840_c_(), bufferbuilder$drawstate.func_227838_a_(), bufferbuilder$drawstate.func_227839_b_());
+         draw(pair.getSecond(), bufferbuilder$drawstate.getDrawMode(), bufferbuilder$drawstate.getFormat(), bufferbuilder$drawstate.getVertexCount());
       }
 
    }
 
-   private static void func_227844_a_(ByteBuffer p_227844_0_, int p_227844_1_, VertexFormat p_227844_2_, int p_227844_3_) {
+   private static void draw(ByteBuffer bufferIn, int modeIn, VertexFormat vertexFormatIn, int countIn) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-      p_227844_0_.clear();
-      if (p_227844_3_ > 0) {
-         p_227844_2_.func_227892_a_(MemoryUtil.memAddress(p_227844_0_));
-         GlStateManager.func_227719_f_(p_227844_1_, 0, p_227844_3_);
-         p_227844_2_.func_227895_d_();
+      bufferIn.clear();
+      if (countIn > 0) {
+         vertexFormatIn.setupBufferState(MemoryUtil.memAddress(bufferIn));
+         GlStateManager.drawArrays(modeIn, 0, countIn);
+         vertexFormatIn.clearBufferState();
       }
    }
 }

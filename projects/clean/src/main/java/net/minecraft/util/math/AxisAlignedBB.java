@@ -35,7 +35,7 @@ public class AxisAlignedBB {
       this(min.x, min.y, min.z, max.x, max.y, max.z);
    }
 
-   public static AxisAlignedBB func_216363_a(MutableBoundingBox p_216363_0_) {
+   public static AxisAlignedBB toImmutable(MutableBoundingBox p_216363_0_) {
       return new AxisAlignedBB((double)p_216363_0_.minX, (double)p_216363_0_.minY, (double)p_216363_0_.minZ, (double)(p_216363_0_.maxX + 1), (double)(p_216363_0_.maxY + 1), (double)(p_216363_0_.maxZ + 1));
    }
 

@@ -12,11 +12,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class HangingEntityItem extends Item {
-   private final EntityType<? extends HangingEntity> field_220001_a;
+   private final EntityType<? extends HangingEntity> hangingEntity;
 
-   public HangingEntityItem(EntityType<? extends HangingEntity> p_i50043_1_, Item.Properties p_i50043_2_) {
-      super(p_i50043_2_);
-      this.field_220001_a = p_i50043_1_;
+   public HangingEntityItem(EntityType<? extends HangingEntity> entityTypeIn, Item.Properties properties) {
+      super(properties);
+      this.hangingEntity = entityTypeIn;
    }
 
    public ActionResultType onItemUse(ItemUseContext context) {
@@ -30,10 +30,10 @@ public class HangingEntityItem extends Item {
       } else {
          World world = context.getWorld();
          HangingEntity hangingentity;
-         if (this.field_220001_a == EntityType.PAINTING) {
+         if (this.hangingEntity == EntityType.PAINTING) {
             hangingentity = new PaintingEntity(world, blockpos1, direction);
          } else {
-            if (this.field_220001_a != EntityType.ITEM_FRAME) {
+            if (this.hangingEntity != EntityType.ITEM_FRAME) {
                return ActionResultType.SUCCESS;
             }
 
@@ -59,7 +59,7 @@ public class HangingEntityItem extends Item {
       }
    }
 
-   protected boolean canPlace(PlayerEntity p_200127_1_, Direction p_200127_2_, ItemStack p_200127_3_, BlockPos p_200127_4_) {
-      return !p_200127_2_.getAxis().isVertical() && p_200127_1_.canPlayerEdit(p_200127_4_, p_200127_2_, p_200127_3_);
+   protected boolean canPlace(PlayerEntity playerIn, Direction directionIn, ItemStack itemStackIn, BlockPos posIn) {
+      return !directionIn.getAxis().isVertical() && playerIn.canPlayerEdit(posIn, directionIn, itemStackIn);
    }
 }

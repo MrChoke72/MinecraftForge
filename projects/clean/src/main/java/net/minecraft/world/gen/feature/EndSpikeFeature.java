@@ -28,45 +28,45 @@ import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.GenerationSettings;
 
 public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
-   private static final LoadingCache<Long, List<EndSpikeFeature.EndSpike>> field_214555_a = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build(new EndSpikeFeature.EndSpikeCacheLoader());
+   private static final LoadingCache<Long, List<EndSpikeFeature.EndSpike>> LOADING_CACHE = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build(new EndSpikeFeature.EndSpikeCacheLoader());
 
    public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> p_i51432_1_) {
       super(p_i51432_1_);
    }
 
-   public static List<EndSpikeFeature.EndSpike> func_214554_a(IWorld p_214554_0_) {
-      Random random = new Random(p_214554_0_.getSeed());
+   public static List<EndSpikeFeature.EndSpike> generateSpikes(IWorld worldIn) {
+      Random random = new Random(worldIn.getSeed());
       long i = random.nextLong() & 65535L;
-      return field_214555_a.getUnchecked(i);
+      return LOADING_CACHE.getUnchecked(i);
    }
 
    public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, EndSpikeFeatureConfig config) {
-      List<EndSpikeFeature.EndSpike> list = config.func_214671_b();
+      List<EndSpikeFeature.EndSpike> list = config.getSpikes();
       if (list.isEmpty()) {
-         list = func_214554_a(worldIn);
+         list = generateSpikes(worldIn);
       }
 
       for(EndSpikeFeature.EndSpike endspikefeature$endspike : list) {
          if (endspikefeature$endspike.doesStartInChunk(pos)) {
-            this.func_214553_a(worldIn, rand, config, endspikefeature$endspike);
+            this.placeSpike(worldIn, rand, config, endspikefeature$endspike);
          }
       }
 
       return true;
    }
 
-   private void func_214553_a(IWorld p_214553_1_, Random p_214553_2_, EndSpikeFeatureConfig p_214553_3_, EndSpikeFeature.EndSpike p_214553_4_) {
-      int i = p_214553_4_.getRadius();
+   private void placeSpike(IWorld worldIn, Random rand, EndSpikeFeatureConfig config, EndSpikeFeature.EndSpike spike) {
+      int i = spike.getRadius();
 
-      for(BlockPos blockpos : BlockPos.getAllInBoxMutable(new BlockPos(p_214553_4_.getCenterX() - i, 0, p_214553_4_.getCenterZ() - i), new BlockPos(p_214553_4_.getCenterX() + i, p_214553_4_.getHeight() + 10, p_214553_4_.getCenterZ() + i))) {
-         if (blockpos.distanceSq((double)p_214553_4_.getCenterX(), (double)blockpos.getY(), (double)p_214553_4_.getCenterZ(), false) <= (double)(i * i + 1) && blockpos.getY() < p_214553_4_.getHeight()) {
-            this.setBlockState(p_214553_1_, blockpos, Blocks.OBSIDIAN.getDefaultState());
+      for(BlockPos blockpos : BlockPos.getAllInBoxMutable(new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
+         if (blockpos.distanceSq((double)spike.getCenterX(), (double)blockpos.getY(), (double)spike.getCenterZ(), false) <= (double)(i * i + 1) && blockpos.getY() < spike.getHeight()) {
+            this.setBlockState(worldIn, blockpos, Blocks.OBSIDIAN.getDefaultState());
          } else if (blockpos.getY() > 65) {
-            this.setBlockState(p_214553_1_, blockpos, Blocks.AIR.getDefaultState());
+            this.setBlockState(worldIn, blockpos, Blocks.AIR.getDefaultState());
          }
       }
 
-      if (p_214553_4_.isGuarded()) {
+      if (spike.isGuarded()) {
          int j1 = -2;
          int k1 = 2;
          int j = 3;
@@ -82,19 +82,19 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
                      boolean flag3 = k == -2 || k == 2 || flag2;
                      boolean flag4 = l == -2 || l == 2 || flag2;
                      BlockState blockstate = Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, Boolean.valueOf(flag3 && l != -2)).with(PaneBlock.SOUTH, Boolean.valueOf(flag3 && l != 2)).with(PaneBlock.WEST, Boolean.valueOf(flag4 && k != -2)).with(PaneBlock.EAST, Boolean.valueOf(flag4 && k != 2));
-                     this.setBlockState(p_214553_1_, blockpos$mutable.setPos(p_214553_4_.getCenterX() + k, p_214553_4_.getHeight() + i1, p_214553_4_.getCenterZ() + l), blockstate);
+                     this.setBlockState(worldIn, blockpos$mutable.setPos(spike.getCenterX() + k, spike.getHeight() + i1, spike.getCenterZ() + l), blockstate);
                   }
                }
             }
          }
       }
 
-      EnderCrystalEntity endercrystalentity = EntityType.END_CRYSTAL.create(p_214553_1_.getWorld());
-      endercrystalentity.setBeamTarget(p_214553_3_.func_214668_c());
-      endercrystalentity.setInvulnerable(p_214553_3_.func_214669_a());
-      endercrystalentity.setLocationAndAngles((double)((float)p_214553_4_.getCenterX() + 0.5F), (double)(p_214553_4_.getHeight() + 1), (double)((float)p_214553_4_.getCenterZ() + 0.5F), p_214553_2_.nextFloat() * 360.0F, 0.0F);
-      p_214553_1_.addEntity(endercrystalentity);
-      this.setBlockState(p_214553_1_, new BlockPos(p_214553_4_.getCenterX(), p_214553_4_.getHeight(), p_214553_4_.getCenterZ()), Blocks.BEDROCK.getDefaultState());
+      EnderCrystalEntity endercrystalentity = EntityType.END_CRYSTAL.create(worldIn.getWorld());
+      endercrystalentity.setBeamTarget(config.getCrystalBeamTarget());
+      endercrystalentity.setInvulnerable(config.isCrystalInvulnerable());
+      endercrystalentity.setLocationAndAngles((double)((float)spike.getCenterX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)spike.getCenterZ() + 0.5F), rand.nextFloat() * 360.0F, 0.0F);
+      worldIn.addEntity(endercrystalentity);
+      this.setBlockState(worldIn, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
    }
 
    public static class EndSpike {
@@ -105,17 +105,17 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
       private final boolean guarded;
       private final AxisAlignedBB topBoundingBox;
 
-      public EndSpike(int p_i47020_1_, int p_i47020_2_, int p_i47020_3_, int p_i47020_4_, boolean p_i47020_5_) {
-         this.centerX = p_i47020_1_;
-         this.centerZ = p_i47020_2_;
-         this.radius = p_i47020_3_;
-         this.height = p_i47020_4_;
-         this.guarded = p_i47020_5_;
-         this.topBoundingBox = new AxisAlignedBB((double)(p_i47020_1_ - p_i47020_3_), 0.0D, (double)(p_i47020_2_ - p_i47020_3_), (double)(p_i47020_1_ + p_i47020_3_), 256.0D, (double)(p_i47020_2_ + p_i47020_3_));
+      public EndSpike(int centerXIn, int centerZIn, int radiusIn, int heightIn, boolean guardedIn) {
+         this.centerX = centerXIn;
+         this.centerZ = centerZIn;
+         this.radius = radiusIn;
+         this.height = heightIn;
+         this.guarded = guardedIn;
+         this.topBoundingBox = new AxisAlignedBB((double)(centerXIn - radiusIn), 0.0D, (double)(centerZIn - radiusIn), (double)(centerXIn + radiusIn), 256.0D, (double)(centerZIn + radiusIn));
       }
 
-      public boolean doesStartInChunk(BlockPos p_186154_1_) {
-         return p_186154_1_.getX() >> 4 == this.centerX >> 4 && p_186154_1_.getZ() >> 4 == this.centerZ >> 4;
+      public boolean doesStartInChunk(BlockPos pos) {
+         return pos.getX() >> 4 == this.centerX >> 4 && pos.getZ() >> 4 == this.centerZ >> 4;
       }
 
       public int getCenterX() {
@@ -142,14 +142,14 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
          return this.topBoundingBox;
       }
 
-      public <T> Dynamic<T> func_214749_a(DynamicOps<T> p_214749_1_) {
+      public <T> Dynamic<T> func_214749_a(DynamicOps<T> ops) {
          Builder<T, T> builder = ImmutableMap.builder();
-         builder.put(p_214749_1_.createString("centerX"), p_214749_1_.createInt(this.centerX));
-         builder.put(p_214749_1_.createString("centerZ"), p_214749_1_.createInt(this.centerZ));
-         builder.put(p_214749_1_.createString("radius"), p_214749_1_.createInt(this.radius));
-         builder.put(p_214749_1_.createString("height"), p_214749_1_.createInt(this.height));
-         builder.put(p_214749_1_.createString("guarded"), p_214749_1_.createBoolean(this.guarded));
-         return new Dynamic<>(p_214749_1_, p_214749_1_.createMap(builder.build()));
+         builder.put(ops.createString("centerX"), ops.createInt(this.centerX));
+         builder.put(ops.createString("centerZ"), ops.createInt(this.centerZ));
+         builder.put(ops.createString("radius"), ops.createInt(this.radius));
+         builder.put(ops.createString("height"), ops.createInt(this.height));
+         builder.put(ops.createString("guarded"), ops.createBoolean(this.guarded));
+         return new Dynamic<>(ops, ops.createMap(builder.build()));
       }
 
       public static <T> EndSpikeFeature.EndSpike func_214747_a(Dynamic<T> p_214747_0_) {

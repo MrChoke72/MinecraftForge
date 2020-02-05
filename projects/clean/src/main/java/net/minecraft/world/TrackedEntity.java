@@ -183,15 +183,15 @@ public class TrackedEntity {
 
    }
 
-   public void untrack(ServerPlayerEntity p_219454_1_) {
-      this.trackedEntity.removeTrackingPlayer(p_219454_1_);
-      p_219454_1_.removeEntity(this.trackedEntity);
+   public void untrack(ServerPlayerEntity player) {
+      this.trackedEntity.removeTrackingPlayer(player);
+      player.removeEntity(this.trackedEntity);
    }
 
-   public void track(ServerPlayerEntity p_219455_1_) {
-      this.sendSpawnPackets(p_219455_1_.connection::sendPacket);
-      this.trackedEntity.addTrackingPlayer(p_219455_1_);
-      p_219455_1_.addEntity(this.trackedEntity);
+   public void track(ServerPlayerEntity player) {
+      this.sendSpawnPackets(player.connection::sendPacket);
+      this.trackedEntity.addTrackingPlayer(player);
+      player.addEntity(this.trackedEntity);
    }
 
    public void sendSpawnPackets(Consumer<IPacket<?>> p_219452_1_) {

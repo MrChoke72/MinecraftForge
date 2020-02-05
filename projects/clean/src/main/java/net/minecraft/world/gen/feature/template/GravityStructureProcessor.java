@@ -18,14 +18,14 @@ public class GravityStructureProcessor extends StructureProcessor {
    }
 
    public GravityStructureProcessor(Dynamic<?> p_i51329_1_) {
-      this(Heightmap.Type.func_203501_a(p_i51329_1_.get("heightmap").asString(Heightmap.Type.WORLD_SURFACE_WG.getId())), p_i51329_1_.get("offset").asInt(0));
+      this(Heightmap.Type.getTypeFromId(p_i51329_1_.get("heightmap").asString(Heightmap.Type.WORLD_SURFACE_WG.getId())), p_i51329_1_.get("offset").asInt(0));
    }
 
    @Nullable
-   public Template.BlockInfo process(IWorldReader p_215194_1_, BlockPos p_215194_2_, Template.BlockInfo p_215194_3_, Template.BlockInfo p_215194_4_, PlacementSettings p_215194_5_) {
-      int i = p_215194_1_.getHeight(this.heightmap, p_215194_4_.pos.getX(), p_215194_4_.pos.getZ()) + this.offset;
+   public Template.BlockInfo process(IWorldReader worldReaderIn, BlockPos pos, Template.BlockInfo p_215194_3_, Template.BlockInfo blockInfo, PlacementSettings placementSettingsIn) {
+      int i = worldReaderIn.getHeight(this.heightmap, blockInfo.pos.getX(), blockInfo.pos.getZ()) + this.offset;
       int j = p_215194_3_.pos.getY();
-      return new Template.BlockInfo(new BlockPos(p_215194_4_.pos.getX(), i + j, p_215194_4_.pos.getZ()), p_215194_4_.state, p_215194_4_.nbt);
+      return new Template.BlockInfo(new BlockPos(blockInfo.pos.getX(), i + j, blockInfo.pos.getZ()), blockInfo.state, blockInfo.nbt);
    }
 
    protected IStructureProcessorType getType() {

@@ -20,8 +20,8 @@ public class PufferfishRenderer extends MobRenderer<PufferfishEntity, EntityMode
    private final PufferFishMediumModel<PufferfishEntity> field_203774_l = new PufferFishMediumModel<>();
    private final PufferFishBigModel<PufferfishEntity> field_203775_m = new PufferFishBigModel<>();
 
-   public PufferfishRenderer(EntityRendererManager p_i48863_1_) {
-      super(p_i48863_1_, new PufferFishBigModel<>(), 0.2F);
+   public PufferfishRenderer(EntityRendererManager renderManagerIn) {
+      super(renderManagerIn, new PufferFishBigModel<>(), 0.2F);
       this.field_203772_j = 3;
    }
 
@@ -29,8 +29,8 @@ public class PufferfishRenderer extends MobRenderer<PufferfishEntity, EntityMode
       return field_203771_a;
    }
 
-   public void func_225623_a_(PufferfishEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      int i = p_225623_1_.getPuffState();
+   public void render(PufferfishEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      int i = entityIn.getPuffState();
       if (i != this.field_203772_j) {
          if (i == 0) {
             this.entityModel = this.field_203773_k;
@@ -43,11 +43,11 @@ public class PufferfishRenderer extends MobRenderer<PufferfishEntity, EntityMode
 
       this.field_203772_j = i;
       this.shadowSize = 0.1F + 0.1F * (float)i;
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
-   protected void func_225621_a_(PufferfishEntity p_225621_1_, MatrixStack p_225621_2_, float p_225621_3_, float p_225621_4_, float p_225621_5_) {
-      p_225621_2_.func_227861_a_(0.0D, (double)(MathHelper.cos(p_225621_3_ * 0.05F) * 0.08F), 0.0D);
-      super.func_225621_a_(p_225621_1_, p_225621_2_, p_225621_3_, p_225621_4_, p_225621_5_);
+   protected void applyRotations(PufferfishEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
+      matrixStackIn.translate(0.0D, (double)(MathHelper.cos(ageInTicks * 0.05F) * 0.08F), 0.0D);
+      super.applyRotations(entityLiving, matrixStackIn, ageInTicks, rotationYaw, partialTicks);
    }
 }

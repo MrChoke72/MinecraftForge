@@ -20,7 +20,7 @@ public class Stats {
    public static final ResourceLocation PLAY_ONE_MINUTE = registerCustom("play_one_minute", IStatFormatter.TIME);
    public static final ResourceLocation TIME_SINCE_DEATH = registerCustom("time_since_death", IStatFormatter.TIME);
    public static final ResourceLocation TIME_SINCE_REST = registerCustom("time_since_rest", IStatFormatter.TIME);
-   public static final ResourceLocation field_226147_n_ = registerCustom("sneak_time", IStatFormatter.TIME);
+   public static final ResourceLocation SNEAK_TIME = registerCustom("sneak_time", IStatFormatter.TIME);
    public static final ResourceLocation WALK_ONE_CM = registerCustom("walk_one_cm", IStatFormatter.DISTANCE);
    public static final ResourceLocation CROUCH_ONE_CM = registerCustom("crouch_one_cm", IStatFormatter.DISTANCE);
    public static final ResourceLocation SPRINT_ONE_CM = registerCustom("sprint_one_cm", IStatFormatter.DISTANCE);
@@ -85,8 +85,8 @@ public class Stats {
    public static final ResourceLocation BELL_RING = registerCustom("bell_ring", IStatFormatter.DEFAULT);
    public static final ResourceLocation RAID_TRIGGER = registerCustom("raid_trigger", IStatFormatter.DEFAULT);
    public static final ResourceLocation RAID_WIN = registerCustom("raid_win", IStatFormatter.DEFAULT);
-   public static final ResourceLocation field_226145_aA_ = registerCustom("interact_with_anvil", IStatFormatter.DEFAULT);
-   public static final ResourceLocation field_226146_aB_ = registerCustom("interact_with_grindstone", IStatFormatter.DEFAULT);
+   public static final ResourceLocation INTERACT_WITH_ANVIL = registerCustom("interact_with_anvil", IStatFormatter.DEFAULT);
+   public static final ResourceLocation INTERACT_WITH_GRINDSTONE = registerCustom("interact_with_grindstone", IStatFormatter.DEFAULT);
 
    private static ResourceLocation registerCustom(String key, IStatFormatter formatter) {
       ResourceLocation resourcelocation = new ResourceLocation(key);

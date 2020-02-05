@@ -17,7 +17,7 @@ public abstract class RecipeBookContainer<C extends IInventory> extends Containe
       (new ServerRecipePlacer(this)).place(p_217056_3_, p_217056_2_, p_217056_1_);
    }
 
-   public abstract void func_201771_a(RecipeItemHelper p_201771_1_);
+   public abstract void fillStackedContents(RecipeItemHelper itemHelperIn);
 
    public abstract void clear();
 

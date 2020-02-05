@@ -1,17 +1,18 @@
 package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.BannerTileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.LoomContainer;
 import net.minecraft.inventory.container.Slot;
@@ -36,7 +37,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
    private static final int field_214114_l = (BannerPattern.field_222480_O - 5 - 1 + 4 - 1) / 4;
    private final ModelRenderer field_228188_m_;
    @Nullable
-   private BannerTileEntity field_228189_n_;
+   private List<Pair<BannerPattern, DyeColor>> field_230155_n_;
    private ItemStack field_214119_q = ItemStack.EMPTY;
    private ItemStack field_214120_r = ItemStack.EMPTY;
    private ItemStack field_214121_s = ItemStack.EMPTY;
@@ -87,71 +88,75 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 
       int k = (int)(41.0F * this.field_214126_x);
       this.blit(i + 119, j + 13 + k, 232 + (this.field_214123_u ? 0 : 12), 0, 12, 15);
-      if (this.field_228189_n_ != null && !this.field_214125_w) {
-         RenderSystem.pushMatrix();
-         RenderSystem.translatef((float)(i + 139), (float)(j + 52), 0.0F);
-         RenderSystem.scalef(24.0F, -24.0F, 1.0F);
-         this.field_228189_n_.func_226954_a_(true);
-         TileEntityRendererDispatcher.instance.func_228851_a_(this.field_228189_n_, new MatrixStack());
-         this.field_228189_n_.func_226954_a_(false);
-         RenderSystem.popMatrix();
+      RenderHelper.setupGuiFlatDiffuseLighting();
+      if (this.field_230155_n_ != null && !this.field_214125_w) {
+         IRenderTypeBuffer.Impl irendertypebuffer$impl = this.minecraft.getRenderTypeBuffers().getBufferSource();
+         MatrixStack matrixstack = new MatrixStack();
+         matrixstack.translate((double)(i + 139), (double)(j + 52), 0.0D);
+         matrixstack.scale(24.0F, -24.0F, 1.0F);
+         matrixstack.translate(0.5D, 0.5D, 0.5D);
+         float f = 0.6666667F;
+         matrixstack.scale(0.6666667F, -0.6666667F, -0.6666667F);
+         this.field_228188_m_.rotateAngleX = 0.0F;
+         this.field_228188_m_.rotationPointY = -32.0F;
+         BannerTileEntityRenderer.func_230180_a_(matrixstack, irendertypebuffer$impl, 15728880, OverlayTexture.DEFAULT_LIGHT, this.field_228188_m_, ModelBakery.LOCATION_BANNER_BASE, true, this.field_230155_n_);
+         irendertypebuffer$impl.finish();
       } else if (this.field_214125_w) {
          this.blit(i + slot3.xPos - 2, j + slot3.yPos - 2, this.xSize, 17, 17, 16);
       }
 
       if (this.field_214123_u) {
-         int l = i + 60;
-         int i1 = j + 13;
-         int j1 = this.field_214128_z + 16;
+         int i2 = i + 60;
+         int k2 = j + 13;
+         int i3 = this.field_214128_z + 16;
 
-         for(int k1 = this.field_214128_z; k1 < j1 && k1 < BannerPattern.field_222480_O - 5; ++k1) {
-            int l1 = k1 - this.field_214128_z;
-            int i2 = l + l1 % 4 * 14;
-            int j2 = i1 + l1 / 4 * 14;
+         for(int l = this.field_214128_z; l < i3 && l < BannerPattern.field_222480_O - 5; ++l) {
+            int i1 = l - this.field_214128_z;
+            int j1 = i2 + i1 % 4 * 14;
+            int k1 = k2 + i1 / 4 * 14;
             this.minecraft.getTextureManager().bindTexture(field_214113_k);
-            int k2 = this.ySize;
-            if (k1 == this.container.func_217023_e()) {
-               k2 += 14;
-            } else if (mouseX >= i2 && mouseY >= j2 && mouseX < i2 + 14 && mouseY < j2 + 14) {
-               k2 += 28;
+            int l1 = this.ySize;
+            if (l == this.container.func_217023_e()) {
+               l1 += 14;
+            } else if (mouseX >= j1 && mouseY >= k1 && mouseX < j1 + 14 && mouseY < k1 + 14) {
+               l1 += 28;
             }
 
-            this.blit(i2, j2, 0, k2, 14, 14);
-            this.func_228190_b_(k1, i2, j2);
+            this.blit(j1, k1, 0, l1, 14, 14);
+            this.func_228190_b_(l, j1, k1);
          }
       } else if (this.field_214124_v) {
-         int l2 = i + 60;
-         int i3 = j + 13;
+         int j2 = i + 60;
+         int l2 = j + 13;
          this.minecraft.getTextureManager().bindTexture(field_214113_k);
-         this.blit(l2, i3, 0, this.ySize, 14, 14);
+         this.blit(j2, l2, 0, this.ySize, 14, 14);
          int j3 = this.container.func_217023_e();
-         this.func_228190_b_(j3, l2, i3);
+         this.func_228190_b_(j3, j2, l2);
       }
 
+      RenderHelper.setupGui3DDiffuseLighting();
    }
 
    private void func_228190_b_(int p_228190_1_, int p_228190_2_, int p_228190_3_) {
-      BannerTileEntity bannertileentity = new BannerTileEntity();
-      bannertileentity.func_226954_a_(true);
       ItemStack itemstack = new ItemStack(Items.GRAY_BANNER);
       CompoundNBT compoundnbt = itemstack.getOrCreateChildTag("BlockEntityTag");
       ListNBT listnbt = (new BannerPattern.Builder()).func_222477_a(BannerPattern.BASE, DyeColor.GRAY).func_222477_a(BannerPattern.values()[p_228190_1_], DyeColor.WHITE).func_222476_a();
       compoundnbt.put("Patterns", listnbt);
-      bannertileentity.loadFromItemStack(itemstack, DyeColor.GRAY);
       MatrixStack matrixstack = new MatrixStack();
-      matrixstack.func_227860_a_();
-      matrixstack.func_227861_a_((double)((float)p_228190_2_ + 0.5F), (double)(p_228190_3_ + 16), 0.0D);
-      matrixstack.func_227862_a_(6.0F, -6.0F, 1.0F);
-      matrixstack.func_227861_a_(0.5D, 0.5D, 0.0D);
+      matrixstack.push();
+      matrixstack.translate((double)((float)p_228190_2_ + 0.5F), (double)(p_228190_3_ + 16), 0.0D);
+      matrixstack.scale(6.0F, -6.0F, 1.0F);
+      matrixstack.translate(0.5D, 0.5D, 0.0D);
+      matrixstack.translate(0.5D, 0.5D, 0.5D);
       float f = 0.6666667F;
-      matrixstack.func_227861_a_(0.5D, 0.5D, 0.5D);
-      matrixstack.func_227862_a_(0.6666667F, -0.6666667F, -0.6666667F);
-      IRenderTypeBuffer.Impl irendertypebuffer$impl = this.minecraft.func_228019_au_().func_228487_b_();
+      matrixstack.scale(0.6666667F, -0.6666667F, -0.6666667F);
+      IRenderTypeBuffer.Impl irendertypebuffer$impl = this.minecraft.getRenderTypeBuffers().getBufferSource();
       this.field_228188_m_.rotateAngleX = 0.0F;
       this.field_228188_m_.rotationPointY = -32.0F;
-      BannerTileEntityRenderer.func_228837_a_(bannertileentity, matrixstack, irendertypebuffer$impl, 15728880, OverlayTexture.field_229196_a_, this.field_228188_m_, ModelBakery.field_229315_f_, true);
-      matrixstack.func_227865_b_();
-      irendertypebuffer$impl.func_228461_a_();
+      List<Pair<BannerPattern, DyeColor>> list = BannerTileEntity.func_230138_a_(DyeColor.GRAY, BannerTileEntity.func_230139_a_(itemstack));
+      BannerTileEntityRenderer.func_230180_a_(matrixstack, irendertypebuffer$impl, 15728880, OverlayTexture.DEFAULT_LIGHT, this.field_228188_m_, ModelBakery.LOCATION_BANNER_BASE, true, list);
+      matrixstack.pop();
+      irendertypebuffer$impl.finish();
    }
 
    public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
@@ -212,17 +217,16 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
       return true;
    }
 
-   protected boolean hasClickedOutside(double p_195361_1_, double p_195361_3_, int p_195361_5_, int p_195361_6_, int p_195361_7_) {
-      return p_195361_1_ < (double)p_195361_5_ || p_195361_3_ < (double)p_195361_6_ || p_195361_1_ >= (double)(p_195361_5_ + this.xSize) || p_195361_3_ >= (double)(p_195361_6_ + this.ySize);
+   protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
+      return mouseX < (double)guiLeftIn || mouseY < (double)guiTopIn || mouseX >= (double)(guiLeftIn + this.xSize) || mouseY >= (double)(guiTopIn + this.ySize);
    }
 
    private void func_214111_b() {
       ItemStack itemstack = this.container.func_217026_i().getStack();
       if (itemstack.isEmpty()) {
-         this.field_228189_n_ = null;
+         this.field_230155_n_ = null;
       } else {
-         this.field_228189_n_ = new BannerTileEntity();
-         this.field_228189_n_.loadFromItemStack(itemstack, ((BannerItem)itemstack.getItem()).getColor());
+         this.field_230155_n_ = BannerTileEntity.func_230138_a_(((BannerItem)itemstack.getItem()).getColor(), BannerTileEntity.func_230139_a_(itemstack));
       }
 
       ItemStack itemstack1 = this.container.func_217024_f().getStack();
@@ -231,7 +235,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
       CompoundNBT compoundnbt = itemstack1.getOrCreateChildTag("BlockEntityTag");
       this.field_214125_w = compoundnbt.contains("Patterns", 9) && !itemstack1.isEmpty() && compoundnbt.getList("Patterns", 10).size() >= 6;
       if (this.field_214125_w) {
-         this.field_228189_n_ = null;
+         this.field_230155_n_ = null;
       }
 
       if (!ItemStack.areItemStacksEqual(itemstack1, this.field_214119_q) || !ItemStack.areItemStacksEqual(itemstack2, this.field_214120_r) || !ItemStack.areItemStacksEqual(itemstack3, this.field_214121_s)) {

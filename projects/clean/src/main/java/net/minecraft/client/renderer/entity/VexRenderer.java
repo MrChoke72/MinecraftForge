@@ -16,7 +16,7 @@ public class VexRenderer extends BipedRenderer<VexEntity, VexModel> {
       super(renderManagerIn, new VexModel(), 0.3F);
    }
 
-   protected int func_225624_a_(VexEntity p_225624_1_, float p_225624_2_) {
+   protected int getBlockLight(VexEntity entityIn, float partialTicks) {
       return 15;
    }
 
@@ -24,7 +24,7 @@ public class VexRenderer extends BipedRenderer<VexEntity, VexModel> {
       return entity.isCharging() ? VEX_CHARGING_TEXTURE : VEX_TEXTURE;
    }
 
-   protected void func_225620_a_(VexEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
-      p_225620_2_.func_227862_a_(0.4F, 0.4F, 0.4F);
+   protected void preRenderCallback(VexEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+      matrixStackIn.scale(0.4F, 0.4F, 0.4F);
    }
 }

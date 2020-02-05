@@ -18,7 +18,6 @@ import com.mojang.realmsclient.gui.RealmsDataFetcher;
 import com.mojang.realmsclient.gui.screens.RealmsClientOutdatedScreen;
 import com.mojang.realmsclient.gui.screens.RealmsConfigureWorldScreen;
 import com.mojang.realmsclient.gui.screens.RealmsCreateRealmScreen;
-import com.mojang.realmsclient.gui.screens.RealmsCreateTrialScreen;
 import com.mojang.realmsclient.gui.screens.RealmsGenericErrorScreen;
 import com.mojang.realmsclient.gui.screens.RealmsLongConfirmationScreen;
 import com.mojang.realmsclient.gui.screens.RealmsLongRunningMcoTaskScreen;
@@ -423,10 +422,6 @@ public class RealmsMainScreen extends RealmsScreen {
       this.func_223939_y();
    }
 
-   public void func_223954_a(boolean p_223954_1_) {
-      this.field_223993_A = p_223954_1_;
-   }
-
    private void func_223914_p() {
       RealmsServer realmsserver = this.func_223967_a(this.field_224021_j);
       if (realmsserver != null) {
@@ -444,7 +439,8 @@ public class RealmsMainScreen extends RealmsScreen {
 
    private void func_223988_r() {
       if (this.field_224037_z && !this.field_223993_A) {
-         Realms.setScreen(new RealmsCreateTrialScreen(this));
+         RealmsUtil.func_225190_c("https://aka.ms/startjavarealmstrial");
+         Realms.setScreen(this.field_224019_h);
       }
    }
 
@@ -624,8 +620,8 @@ public class RealmsMainScreen extends RealmsScreen {
                         realmsclient.func_224912_c(realmsserver.id);
                         RealmsMainScreen.field_224017_f.func_225085_a(realmsserver);
                         RealmsMainScreen.this.field_224028_q.remove(realmsserver);
-                        RealmsMainScreen.this.field_224020_i.children().removeIf((p_230035_1_) -> {
-                           return p_230035_1_ instanceof RealmsMainScreen.ServerEntry && ((RealmsMainScreen.ServerEntry)p_230035_1_).field_223734_a.id == RealmsMainScreen.this.field_224021_j;
+                        RealmsMainScreen.this.field_224020_i.children().removeIf((p_230230_1_) -> {
+                           return p_230230_1_ instanceof RealmsMainScreen.ServerEntry && ((RealmsMainScreen.ServerEntry)p_230230_1_).field_223734_a.id == RealmsMainScreen.this.field_224021_j;
                         });
                         RealmsMainScreen.this.field_224020_i.setSelected(-1);
                         RealmsMainScreen.this.func_223915_a((RealmsServer)null);
@@ -1110,13 +1106,6 @@ public class RealmsMainScreen extends RealmsScreen {
       return new RealmsMainScreen(this.field_224019_h);
    }
 
-   public void func_223948_g() {
-      if (this.func_223990_b() && this.field_224035_x) {
-         this.field_224035_x = false;
-      }
-
-   }
-
    public static void func_227932_a_(IResourceManager p_227932_0_) {
       Collection<ResourceLocation> collection = p_227932_0_.getAllResourceLocations("textures/gui/images", (p_227934_0_) -> {
          return p_227934_0_.endsWith(".png");
@@ -1240,8 +1229,8 @@ public class RealmsMainScreen extends RealmsScreen {
    class ServerEntry extends RealmListEntry {
       final RealmsServer field_223734_a;
 
-      public ServerEntry(RealmsServer p_i51666_2_) {
-         this.field_223734_a = p_i51666_2_;
+      public ServerEntry(RealmsServer resourceManagerIn) {
+         this.field_223734_a = resourceManagerIn;
       }
 
       public void render(int p_render_1_, int p_render_2_, int p_render_3_, int p_render_4_, int p_render_5_, int p_render_6_, int p_render_7_, boolean p_render_8_, float p_render_9_) {

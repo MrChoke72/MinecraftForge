@@ -28,11 +28,11 @@ public class RepeaterBlock extends RedstoneDiodeBlock {
       this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(DELAY, Integer.valueOf(1)).with(LOCKED, Boolean.valueOf(false)).with(POWERED, Boolean.valueOf(false)));
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (!p_225533_4_.abilities.allowEdit) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (!player.abilities.allowEdit) {
          return ActionResultType.PASS;
       } else {
-         p_225533_2_.setBlockState(p_225533_3_, p_225533_1_.cycle(DELAY), 3);
+         worldIn.setBlockState(pos, state.cycle(DELAY), 3);
          return ActionResultType.SUCCESS;
       }
    }

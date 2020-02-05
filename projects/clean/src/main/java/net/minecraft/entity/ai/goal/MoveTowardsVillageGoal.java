@@ -44,6 +44,6 @@ public class MoveTowardsVillageGoal extends RandomWalkingGoal {
       }
        */
       
-      return sectionpos1 != sectionpos ? RandomPositionGenerator.findRandomTargetToward(this.creature, 10, 7, new Vec3d(sectionpos1.getCenter())) : null;
+      return sectionpos1 != sectionpos ? RandomPositionGenerator.findRandomTargetBlockTowards(this.creature, 10, 7, new Vec3d(sectionpos1.getCenter())) : null;
    }
 }

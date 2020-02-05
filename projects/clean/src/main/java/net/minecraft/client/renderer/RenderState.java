@@ -16,102 +16,102 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class RenderState {
-   protected final String field_228509_a_;
-   private final Runnable field_228507_Q_;
-   private final Runnable field_228508_R_;
-   protected static final RenderState.TransparencyState field_228510_b_ = new RenderState.TransparencyState("no_transparency", () -> {
+   protected final String name;
+   private final Runnable enabler;
+   private final Runnable disabler;
+   protected static final RenderState.TransparencyState NO_TRANSPARENCY = new RenderState.TransparencyState("no_transparency", () -> {
       RenderSystem.disableBlend();
    }, () -> {
    });
-   protected static final RenderState.TransparencyState field_228511_c_ = new RenderState.TransparencyState("additive_transparency", () -> {
+   protected static final RenderState.TransparencyState ADDITIVE_TRANSPARENCY = new RenderState.TransparencyState("additive_transparency", () -> {
       RenderSystem.enableBlend();
       RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
    }, () -> {
       RenderSystem.disableBlend();
       RenderSystem.defaultBlendFunc();
    });
-   protected static final RenderState.TransparencyState field_228512_d_ = new RenderState.TransparencyState("lightning_transparency", () -> {
+   protected static final RenderState.TransparencyState LIGHTNING_TRANSPARENCY = new RenderState.TransparencyState("lightning_transparency", () -> {
       RenderSystem.enableBlend();
       RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
    }, () -> {
       RenderSystem.disableBlend();
       RenderSystem.defaultBlendFunc();
    });
-   protected static final RenderState.TransparencyState field_228513_e_ = new RenderState.TransparencyState("glint_transparency", () -> {
+   protected static final RenderState.TransparencyState GLINT_TRANSPARENCY = new RenderState.TransparencyState("glint_transparency", () -> {
       RenderSystem.enableBlend();
       RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
    }, () -> {
       RenderSystem.disableBlend();
       RenderSystem.defaultBlendFunc();
    });
-   protected static final RenderState.TransparencyState field_228514_f_ = new RenderState.TransparencyState("crumbling_transparency", () -> {
+   protected static final RenderState.TransparencyState CRUMBLING_TRANSPARENCY = new RenderState.TransparencyState("crumbling_transparency", () -> {
       RenderSystem.enableBlend();
       RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
    }, () -> {
       RenderSystem.disableBlend();
       RenderSystem.defaultBlendFunc();
    });
-   protected static final RenderState.TransparencyState field_228515_g_ = new RenderState.TransparencyState("translucent_transparency", () -> {
+   protected static final RenderState.TransparencyState TRANSLUCENT_TRANSPARENCY = new RenderState.TransparencyState("translucent_transparency", () -> {
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
    }, () -> {
       RenderSystem.disableBlend();
    });
-   protected static final RenderState.AlphaState field_228516_h_ = new RenderState.AlphaState(0.0F);
-   protected static final RenderState.AlphaState field_228517_i_ = new RenderState.AlphaState(0.003921569F);
-   protected static final RenderState.AlphaState field_228518_j_ = new RenderState.AlphaState(0.5F);
-   protected static final RenderState.ShadeModelState field_228519_k_ = new RenderState.ShadeModelState(false);
-   protected static final RenderState.ShadeModelState field_228520_l_ = new RenderState.ShadeModelState(true);
-   protected static final RenderState.TextureState field_228521_m_ = new RenderState.TextureState(AtlasTexture.LOCATION_BLOCKS_TEXTURE, false, true);
-   protected static final RenderState.TextureState field_228522_n_ = new RenderState.TextureState(AtlasTexture.LOCATION_BLOCKS_TEXTURE, false, false);
-   protected static final RenderState.TextureState field_228523_o_ = new RenderState.TextureState();
-   protected static final RenderState.TexturingState field_228524_p_ = new RenderState.TexturingState("default_texturing", () -> {
+   protected static final RenderState.AlphaState ZERO_ALPHA = new RenderState.AlphaState(0.0F);
+   protected static final RenderState.AlphaState DEFAULT_ALPHA = new RenderState.AlphaState(0.003921569F);
+   protected static final RenderState.AlphaState HALF_ALPHA = new RenderState.AlphaState(0.5F);
+   protected static final RenderState.ShadeModelState SHADE_DISABLED = new RenderState.ShadeModelState(false);
+   protected static final RenderState.ShadeModelState SHADE_ENABLED = new RenderState.ShadeModelState(true);
+   protected static final RenderState.TextureState BLOCK_SHEET_MIPPED = new RenderState.TextureState(AtlasTexture.LOCATION_BLOCKS_TEXTURE, false, true);
+   protected static final RenderState.TextureState BLOCK_SHEET = new RenderState.TextureState(AtlasTexture.LOCATION_BLOCKS_TEXTURE, false, false);
+   protected static final RenderState.TextureState NO_TEXTURE = new RenderState.TextureState();
+   protected static final RenderState.TexturingState DEFAULT_TEXTURING = new RenderState.TexturingState("default_texturing", () -> {
    }, () -> {
    });
-   protected static final RenderState.TexturingState field_228525_q_ = new RenderState.TexturingState("outline_texturing", () -> {
+   protected static final RenderState.TexturingState OUTLINE_TEXTURING = new RenderState.TexturingState("outline_texturing", () -> {
       RenderSystem.setupOutline();
    }, () -> {
       RenderSystem.teardownOutline();
    });
-   protected static final RenderState.TexturingState field_228526_r_ = new RenderState.TexturingState("glint_texturing", () -> {
-      func_228548_a_(8.0F);
+   protected static final RenderState.TexturingState GLINT_TEXTURING = new RenderState.TexturingState("glint_texturing", () -> {
+      setupGlintTexturing(8.0F);
    }, () -> {
       RenderSystem.matrixMode(5890);
       RenderSystem.popMatrix();
       RenderSystem.matrixMode(5888);
    });
-   protected static final RenderState.TexturingState field_228527_s_ = new RenderState.TexturingState("entity_glint_texturing", () -> {
-      func_228548_a_(0.16F);
+   protected static final RenderState.TexturingState ENTITY_GLINT_TEXTURING = new RenderState.TexturingState("entity_glint_texturing", () -> {
+      setupGlintTexturing(0.16F);
    }, () -> {
       RenderSystem.matrixMode(5890);
       RenderSystem.popMatrix();
       RenderSystem.matrixMode(5888);
    });
-   protected static final RenderState.LightmapState field_228528_t_ = new RenderState.LightmapState(true);
-   protected static final RenderState.LightmapState field_228529_u_ = new RenderState.LightmapState(false);
-   protected static final RenderState.OverlayState field_228530_v_ = new RenderState.OverlayState(true);
-   protected static final RenderState.OverlayState field_228531_w_ = new RenderState.OverlayState(false);
-   protected static final RenderState.DiffuseLightingState field_228532_x_ = new RenderState.DiffuseLightingState(true);
-   protected static final RenderState.DiffuseLightingState field_228533_y_ = new RenderState.DiffuseLightingState(false);
-   protected static final RenderState.CullState field_228534_z_ = new RenderState.CullState(true);
-   protected static final RenderState.CullState field_228491_A_ = new RenderState.CullState(false);
-   protected static final RenderState.DepthTestState field_228492_B_ = new RenderState.DepthTestState(519);
-   protected static final RenderState.DepthTestState field_228493_C_ = new RenderState.DepthTestState(514);
-   protected static final RenderState.DepthTestState field_228494_D_ = new RenderState.DepthTestState(515);
-   protected static final RenderState.WriteMaskState field_228495_E_ = new RenderState.WriteMaskState(true, true);
-   protected static final RenderState.WriteMaskState field_228496_F_ = new RenderState.WriteMaskState(true, false);
-   protected static final RenderState.WriteMaskState field_228497_G_ = new RenderState.WriteMaskState(false, true);
-   protected static final RenderState.LayerState field_228498_H_ = new RenderState.LayerState("no_layering", () -> {
+   protected static final RenderState.LightmapState LIGHTMAP_ENABLED = new RenderState.LightmapState(true);
+   protected static final RenderState.LightmapState LIGHTMAP_DISABLED = new RenderState.LightmapState(false);
+   protected static final RenderState.OverlayState OVERLAY_ENABLED = new RenderState.OverlayState(true);
+   protected static final RenderState.OverlayState OVERLAY_DISABLED = new RenderState.OverlayState(false);
+   protected static final RenderState.DiffuseLightingState DIFFUSE_LIGHTING_ENABLED = new RenderState.DiffuseLightingState(true);
+   protected static final RenderState.DiffuseLightingState DIFFUSE_LIGHTING_DISABLED = new RenderState.DiffuseLightingState(false);
+   protected static final RenderState.CullState CULL_ENABLED = new RenderState.CullState(true);
+   protected static final RenderState.CullState CULL_DISABLED = new RenderState.CullState(false);
+   protected static final RenderState.DepthTestState DEPTH_ALWAYS = new RenderState.DepthTestState(519);
+   protected static final RenderState.DepthTestState DEPTH_EQUAL = new RenderState.DepthTestState(514);
+   protected static final RenderState.DepthTestState DEPTH_LEQUAL = new RenderState.DepthTestState(515);
+   protected static final RenderState.WriteMaskState COLOR_DEPTH_WRITE = new RenderState.WriteMaskState(true, true);
+   protected static final RenderState.WriteMaskState COLOR_WRITE = new RenderState.WriteMaskState(true, false);
+   protected static final RenderState.WriteMaskState DEPTH_WRITE = new RenderState.WriteMaskState(false, true);
+   protected static final RenderState.LayerState NO_LAYERING = new RenderState.LayerState("no_layering", () -> {
    }, () -> {
    });
-   protected static final RenderState.LayerState field_228499_I_ = new RenderState.LayerState("polygon_offset_layering", () -> {
+   protected static final RenderState.LayerState POLYGON_OFFSET_LAYERING = new RenderState.LayerState("polygon_offset_layering", () -> {
       RenderSystem.polygonOffset(-1.0F, -10.0F);
       RenderSystem.enablePolygonOffset();
    }, () -> {
       RenderSystem.polygonOffset(0.0F, 0.0F);
       RenderSystem.disablePolygonOffset();
    });
-   protected static final RenderState.LayerState field_228500_J_ = new RenderState.LayerState("projection_layering", () -> {
+   protected static final RenderState.LayerState PROJECTION_LAYERING = new RenderState.LayerState("projection_layering", () -> {
       RenderSystem.matrixMode(5889);
       RenderSystem.pushMatrix();
       RenderSystem.scalef(1.0F, 1.0F, 0.999F);
@@ -121,44 +121,44 @@ public abstract class RenderState {
       RenderSystem.popMatrix();
       RenderSystem.matrixMode(5888);
    });
-   protected static final RenderState.FogState field_228501_K_ = new RenderState.FogState("no_fog", () -> {
+   protected static final RenderState.FogState NO_FOG = new RenderState.FogState("no_fog", () -> {
    }, () -> {
    });
-   protected static final RenderState.FogState field_228502_L_ = new RenderState.FogState("fog", () -> {
-      FogRenderer.func_228373_b_();
+   protected static final RenderState.FogState FOG = new RenderState.FogState("fog", () -> {
+      FogRenderer.applyFog();
       RenderSystem.enableFog();
    }, () -> {
       RenderSystem.disableFog();
    });
-   protected static final RenderState.FogState field_228503_M_ = new RenderState.FogState("black_fog", () -> {
+   protected static final RenderState.FogState BLACK_FOG = new RenderState.FogState("black_fog", () -> {
       RenderSystem.fog(2918, 0.0F, 0.0F, 0.0F, 1.0F);
       RenderSystem.enableFog();
    }, () -> {
-      FogRenderer.func_228373_b_();
+      FogRenderer.applyFog();
       RenderSystem.disableFog();
    });
-   protected static final RenderState.TargetState field_228504_N_ = new RenderState.TargetState("main_target", () -> {
+   protected static final RenderState.TargetState MAIN_TARGET = new RenderState.TargetState("main_target", () -> {
    }, () -> {
    });
-   protected static final RenderState.TargetState field_228505_O_ = new RenderState.TargetState("outline_target", () -> {
-      Minecraft.getInstance().worldRenderer.func_228448_p_().bindFramebuffer(false);
+   protected static final RenderState.TargetState OUTLINE_TARGET = new RenderState.TargetState("outline_target", () -> {
+      Minecraft.getInstance().worldRenderer.getEntityOutlineFramebuffer().bindFramebuffer(false);
    }, () -> {
       Minecraft.getInstance().getFramebuffer().bindFramebuffer(false);
    });
-   protected static final RenderState.LineState field_228506_P_ = new RenderState.LineState(OptionalDouble.of(1.0D));
+   protected static final RenderState.LineState DEFAULT_LINE = new RenderState.LineState(OptionalDouble.of(1.0D));
 
-   public RenderState(String p_i225973_1_, Runnable p_i225973_2_, Runnable p_i225973_3_) {
-      this.field_228509_a_ = p_i225973_1_;
-      this.field_228507_Q_ = p_i225973_2_;
-      this.field_228508_R_ = p_i225973_3_;
+   public RenderState(String nameIn, Runnable setupTaskIn, Runnable clearTaskIn) {
+      this.name = nameIn;
+      this.enabler = setupTaskIn;
+      this.disabler = clearTaskIn;
    }
 
-   public void func_228547_a_() {
-      this.field_228507_Q_.run();
+   public void enable() {
+      this.enabler.run();
    }
 
-   public void func_228549_b_() {
-      this.field_228508_R_.run();
+   public void disable() {
+      this.disabler.run();
    }
 
    public boolean equals(@Nullable Object p_equals_1_) {
@@ -166,17 +166,17 @@ public abstract class RenderState {
          return true;
       } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
          RenderState renderstate = (RenderState)p_equals_1_;
-         return this.field_228509_a_.equals(renderstate.field_228509_a_);
+         return this.name.equals(renderstate.name);
       } else {
          return false;
       }
    }
 
    public int hashCode() {
-      return this.field_228509_a_.hashCode();
+      return this.name.hashCode();
    }
 
-   private static void func_228548_a_(float p_228548_0_) {
+   private static void setupGlintTexturing(float scaleIn) {
       RenderSystem.matrixMode(5890);
       RenderSystem.pushMatrix();
       RenderSystem.loadIdentity();
@@ -185,19 +185,19 @@ public abstract class RenderState {
       float f1 = (float)(i % 30000L) / 30000.0F;
       RenderSystem.translatef(-f, f1, 0.0F);
       RenderSystem.rotatef(10.0F, 0.0F, 0.0F, 1.0F);
-      RenderSystem.scalef(p_228548_0_, p_228548_0_, p_228548_0_);
+      RenderSystem.scalef(scaleIn, scaleIn, scaleIn);
       RenderSystem.matrixMode(5888);
    }
 
    @OnlyIn(Dist.CLIENT)
    public static class AlphaState extends RenderState {
-      private final float field_228574_Q_;
+      private final float ref;
 
-      public AlphaState(float p_i225974_1_) {
+      public AlphaState(float refIn) {
          super("alpha", () -> {
-            if (p_i225974_1_ > 0.0F) {
+            if (refIn > 0.0F) {
                RenderSystem.enableAlphaTest();
-               RenderSystem.alphaFunc(516, p_i225974_1_);
+               RenderSystem.alphaFunc(516, refIn);
             } else {
                RenderSystem.disableAlphaTest();
             }
@@ -206,7 +206,7 @@ public abstract class RenderState {
             RenderSystem.disableAlphaTest();
             RenderSystem.defaultAlphaFunc();
          });
-         this.field_228574_Q_ = p_i225974_1_;
+         this.ref = refIn;
       }
 
       public boolean equals(@Nullable Object p_equals_1_) {
@@ -216,7 +216,7 @@ public abstract class RenderState {
             if (!super.equals(p_equals_1_)) {
                return false;
             } else {
-               return this.field_228574_Q_ == ((RenderState.AlphaState)p_equals_1_).field_228574_Q_;
+               return this.ref == ((RenderState.AlphaState)p_equals_1_).ref;
             }
          } else {
             return false;
@@ -224,17 +224,17 @@ public abstract class RenderState {
       }
 
       public int hashCode() {
-         return Objects.hash(super.hashCode(), this.field_228574_Q_);
+         return Objects.hash(super.hashCode(), this.ref);
       }
    }
 
    @OnlyIn(Dist.CLIENT)
    static class BooleanState extends RenderState {
-      private final boolean field_228577_Q_;
+      private final boolean enabled;
 
       public BooleanState(String p_i225975_1_, Runnable p_i225975_2_, Runnable p_i225975_3_, boolean p_i225975_4_) {
          super(p_i225975_1_, p_i225975_2_, p_i225975_3_);
-         this.field_228577_Q_ = p_i225975_4_;
+         this.enabled = p_i225975_4_;
       }
 
       public boolean equals(Object p_equals_1_) {
@@ -242,14 +242,14 @@ public abstract class RenderState {
             return true;
          } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
             RenderState.BooleanState renderstate$booleanstate = (RenderState.BooleanState)p_equals_1_;
-            return this.field_228577_Q_ == renderstate$booleanstate.field_228577_Q_;
+            return this.enabled == renderstate$booleanstate.enabled;
          } else {
             return false;
          }
       }
 
       public int hashCode() {
-         return Boolean.hashCode(this.field_228577_Q_);
+         return Boolean.hashCode(this.enabled);
       }
    }
 
@@ -272,7 +272,7 @@ public abstract class RenderState {
 
    @OnlyIn(Dist.CLIENT)
    public static class DepthTestState extends RenderState {
-      private final int field_228580_Q_;
+      private final int func;
 
       public DepthTestState(int p_i225977_1_) {
          super("depth_test", () -> {
@@ -288,7 +288,7 @@ public abstract class RenderState {
             }
 
          });
-         this.field_228580_Q_ = p_i225977_1_;
+         this.func = p_i225977_1_;
       }
 
       public boolean equals(Object p_equals_1_) {
@@ -296,14 +296,14 @@ public abstract class RenderState {
             return true;
          } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
             RenderState.DepthTestState renderstate$depthteststate = (RenderState.DepthTestState)p_equals_1_;
-            return this.field_228580_Q_ == renderstate$depthteststate.field_228580_Q_;
+            return this.func == renderstate$depthteststate.func;
          } else {
             return false;
          }
       }
 
       public int hashCode() {
-         return Integer.hashCode(this.field_228580_Q_);
+         return Integer.hashCode(this.func);
       }
    }
 
@@ -312,7 +312,7 @@ public abstract class RenderState {
       public DiffuseLightingState(boolean p_i225978_1_) {
          super("diffuse_lighting", () -> {
             if (p_i225978_1_) {
-               RenderHelper.func_227780_a_();
+               RenderHelper.enableStandardItemLighting();
             }
 
          }, () -> {
@@ -343,12 +343,12 @@ public abstract class RenderState {
       public LightmapState(boolean p_i225981_1_) {
          super("lightmap", () -> {
             if (p_i225981_1_) {
-               Minecraft.getInstance().gameRenderer.func_228384_l_().enableLightmap();
+               Minecraft.getInstance().gameRenderer.getLightTexture().enableLightmap();
             }
 
          }, () -> {
             if (p_i225981_1_) {
-               Minecraft.getInstance().gameRenderer.func_228384_l_().disableLightmap();
+               Minecraft.getInstance().gameRenderer.getLightTexture().disableLightmap();
             }
 
          }, p_i225981_1_);
@@ -357,7 +357,7 @@ public abstract class RenderState {
 
    @OnlyIn(Dist.CLIENT)
    public static class LineState extends RenderState {
-      private final OptionalDouble field_228587_Q_;
+      private final OptionalDouble width;
 
       public LineState(OptionalDouble p_i225982_1_) {
          super("alpha", () -> {
@@ -365,7 +365,7 @@ public abstract class RenderState {
                if (p_i225982_1_.isPresent()) {
                   RenderSystem.lineWidth((float)p_i225982_1_.getAsDouble());
                } else {
-                  RenderSystem.lineWidth(Math.max(2.5F, (float)Minecraft.getInstance().func_228018_at_().getFramebufferWidth() / 1920.0F * 2.5F));
+                  RenderSystem.lineWidth(Math.max(2.5F, (float)Minecraft.getInstance().getMainWindow().getFramebufferWidth() / 1920.0F * 2.5F));
                }
             }
 
@@ -375,28 +375,28 @@ public abstract class RenderState {
             }
 
          });
-         this.field_228587_Q_ = p_i225982_1_;
+         this.width = p_i225982_1_;
       }
 
       public boolean equals(@Nullable Object p_equals_1_) {
          if (this == p_equals_1_) {
             return true;
          } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
-            return !super.equals(p_equals_1_) ? false : Objects.equals(this.field_228587_Q_, ((RenderState.LineState)p_equals_1_).field_228587_Q_);
+            return !super.equals(p_equals_1_) ? false : Objects.equals(this.width, ((RenderState.LineState)p_equals_1_).width);
          } else {
             return false;
          }
       }
 
       public int hashCode() {
-         return Objects.hash(super.hashCode(), this.field_228587_Q_);
+         return Objects.hash(super.hashCode(), this.width);
       }
    }
 
    @OnlyIn(Dist.CLIENT)
    public static final class OffsetTexturingState extends RenderState.TexturingState {
-      private final float field_228590_Q_;
-      private final float field_228591_R_;
+      private final float offsetU;
+      private final float offsetV;
 
       public OffsetTexturingState(float p_i225983_1_, float p_i225983_2_) {
          super("offset_texturing", () -> {
@@ -410,8 +410,8 @@ public abstract class RenderState {
             RenderSystem.popMatrix();
             RenderSystem.matrixMode(5888);
          });
-         this.field_228590_Q_ = p_i225983_1_;
-         this.field_228591_R_ = p_i225983_2_;
+         this.offsetU = p_i225983_1_;
+         this.offsetV = p_i225983_2_;
       }
 
       public boolean equals(Object p_equals_1_) {
@@ -419,14 +419,14 @@ public abstract class RenderState {
             return true;
          } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
             RenderState.OffsetTexturingState renderstate$offsettexturingstate = (RenderState.OffsetTexturingState)p_equals_1_;
-            return Float.compare(renderstate$offsettexturingstate.field_228590_Q_, this.field_228590_Q_) == 0 && Float.compare(renderstate$offsettexturingstate.field_228591_R_, this.field_228591_R_) == 0;
+            return Float.compare(renderstate$offsettexturingstate.offsetU, this.offsetU) == 0 && Float.compare(renderstate$offsettexturingstate.offsetV, this.offsetV) == 0;
          } else {
             return false;
          }
       }
 
       public int hashCode() {
-         return Objects.hash(this.field_228590_Q_, this.field_228591_R_);
+         return Objects.hash(this.offsetU, this.offsetV);
       }
    }
 
@@ -435,12 +435,12 @@ public abstract class RenderState {
       public OverlayState(boolean p_i225985_1_) {
          super("overlay", () -> {
             if (p_i225985_1_) {
-               Minecraft.getInstance().gameRenderer.func_228385_m_().func_229198_a_();
+               Minecraft.getInstance().gameRenderer.getOverlayTexture().setupOverlayColor();
             }
 
          }, () -> {
             if (p_i225985_1_) {
-               Minecraft.getInstance().gameRenderer.func_228385_m_().func_229203_b_();
+               Minecraft.getInstance().gameRenderer.getOverlayTexture().teardownOverlayColor();
             }
 
          }, p_i225985_1_);
@@ -449,7 +449,7 @@ public abstract class RenderState {
 
    @OnlyIn(Dist.CLIENT)
    public static final class PortalTexturingState extends RenderState.TexturingState {
-      private final int field_228596_Q_;
+      private final int iteration;
 
       public PortalTexturingState(int p_i225986_1_) {
          super("portal_texturing", () -> {
@@ -470,7 +470,7 @@ public abstract class RenderState {
             RenderSystem.matrixMode(5888);
             RenderSystem.clearTexGen();
          });
-         this.field_228596_Q_ = p_i225986_1_;
+         this.iteration = p_i225986_1_;
       }
 
       public boolean equals(Object p_equals_1_) {
@@ -478,20 +478,20 @@ public abstract class RenderState {
             return true;
          } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
             RenderState.PortalTexturingState renderstate$portaltexturingstate = (RenderState.PortalTexturingState)p_equals_1_;
-            return this.field_228596_Q_ == renderstate$portaltexturingstate.field_228596_Q_;
+            return this.iteration == renderstate$portaltexturingstate.iteration;
          } else {
             return false;
          }
       }
 
       public int hashCode() {
-         return Integer.hashCode(this.field_228596_Q_);
+         return Integer.hashCode(this.iteration);
       }
    }
 
    @OnlyIn(Dist.CLIENT)
    public static class ShadeModelState extends RenderState {
-      private final boolean field_228599_Q_;
+      private final boolean smooth;
 
       public ShadeModelState(boolean p_i225987_1_) {
          super("shade_model", () -> {
@@ -499,7 +499,7 @@ public abstract class RenderState {
          }, () -> {
             RenderSystem.shadeModel(7424);
          });
-         this.field_228599_Q_ = p_i225987_1_;
+         this.smooth = p_i225987_1_;
       }
 
       public boolean equals(Object p_equals_1_) {
@@ -507,14 +507,14 @@ public abstract class RenderState {
             return true;
          } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
             RenderState.ShadeModelState renderstate$shademodelstate = (RenderState.ShadeModelState)p_equals_1_;
-            return this.field_228599_Q_ == renderstate$shademodelstate.field_228599_Q_;
+            return this.smooth == renderstate$shademodelstate.smooth;
          } else {
             return false;
          }
       }
 
       public int hashCode() {
-         return Boolean.hashCode(this.field_228599_Q_);
+         return Boolean.hashCode(this.smooth);
       }
    }
 
@@ -527,21 +527,21 @@ public abstract class RenderState {
 
    @OnlyIn(Dist.CLIENT)
    public static class TextureState extends RenderState {
-      private final Optional<ResourceLocation> field_228602_Q_;
-      private final boolean field_228603_R_;
-      private final boolean field_228604_S_;
+      private final Optional<ResourceLocation> texture;
+      private final boolean blur;
+      private final boolean mipmap;
 
       public TextureState(ResourceLocation p_i225988_1_, boolean p_i225988_2_, boolean p_i225988_3_) {
          super("texture", () -> {
             RenderSystem.enableTexture();
             TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
             texturemanager.bindTexture(p_i225988_1_);
-            texturemanager.func_229267_b_(p_i225988_1_).setBlurMipmapDirect(p_i225988_2_, p_i225988_3_);
+            texturemanager.getTexture(p_i225988_1_).setBlurMipmapDirect(p_i225988_2_, p_i225988_3_);
          }, () -> {
          });
-         this.field_228602_Q_ = Optional.of(p_i225988_1_);
-         this.field_228603_R_ = p_i225988_2_;
-         this.field_228604_S_ = p_i225988_3_;
+         this.texture = Optional.of(p_i225988_1_);
+         this.blur = p_i225988_2_;
+         this.mipmap = p_i225988_3_;
       }
 
       public TextureState() {
@@ -550,9 +550,9 @@ public abstract class RenderState {
          }, () -> {
             RenderSystem.enableTexture();
          });
-         this.field_228602_Q_ = Optional.empty();
-         this.field_228603_R_ = false;
-         this.field_228604_S_ = false;
+         this.texture = Optional.empty();
+         this.blur = false;
+         this.mipmap = false;
       }
 
       public boolean equals(Object p_equals_1_) {
@@ -560,18 +560,18 @@ public abstract class RenderState {
             return true;
          } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
             RenderState.TextureState renderstate$texturestate = (RenderState.TextureState)p_equals_1_;
-            return this.field_228602_Q_.equals(renderstate$texturestate.field_228602_Q_) && this.field_228603_R_ == renderstate$texturestate.field_228603_R_ && this.field_228604_S_ == renderstate$texturestate.field_228604_S_;
+            return this.texture.equals(renderstate$texturestate.texture) && this.blur == renderstate$texturestate.blur && this.mipmap == renderstate$texturestate.mipmap;
          } else {
             return false;
          }
       }
 
       public int hashCode() {
-         return this.field_228602_Q_.hashCode();
+         return this.texture.hashCode();
       }
 
       protected Optional<ResourceLocation> func_228606_c_() {
-         return this.field_228602_Q_;
+         return this.texture;
       }
    }
 
@@ -591,8 +591,8 @@ public abstract class RenderState {
 
    @OnlyIn(Dist.CLIENT)
    public static class WriteMaskState extends RenderState {
-      private final boolean field_228610_Q_;
-      private final boolean field_228611_R_;
+      private final boolean colorMask;
+      private final boolean depthMask;
 
       public WriteMaskState(boolean p_i225991_1_, boolean p_i225991_2_) {
          super("write_mask_state", () -> {
@@ -614,8 +614,8 @@ public abstract class RenderState {
             }
 
          });
-         this.field_228610_Q_ = p_i225991_1_;
-         this.field_228611_R_ = p_i225991_2_;
+         this.colorMask = p_i225991_1_;
+         this.depthMask = p_i225991_2_;
       }
 
       public boolean equals(Object p_equals_1_) {
@@ -623,14 +623,14 @@ public abstract class RenderState {
             return true;
          } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
             RenderState.WriteMaskState renderstate$writemaskstate = (RenderState.WriteMaskState)p_equals_1_;
-            return this.field_228610_Q_ == renderstate$writemaskstate.field_228610_Q_ && this.field_228611_R_ == renderstate$writemaskstate.field_228611_R_;
+            return this.colorMask == renderstate$writemaskstate.colorMask && this.depthMask == renderstate$writemaskstate.depthMask;
          } else {
             return false;
          }
       }
 
       public int hashCode() {
-         return Objects.hash(this.field_228610_Q_, this.field_228611_R_);
+         return Objects.hash(this.colorMask, this.depthMask);
       }
    }
 }

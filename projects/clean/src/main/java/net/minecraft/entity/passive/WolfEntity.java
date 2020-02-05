@@ -490,8 +490,8 @@ public class WolfEntity extends TameableEntity {
       }
 
       public boolean shouldExecute() {
-         if (super.shouldExecute() && this.field_75376_d instanceof LlamaEntity) {
-            return !this.wolf.isTamed() && this.avoidLlama((LlamaEntity)this.field_75376_d);
+         if (super.shouldExecute() && this.avoidTarget instanceof LlamaEntity) {
+            return !this.wolf.isTamed() && this.avoidLlama((LlamaEntity)this.avoidTarget);
          } else {
             return false;
          }

@@ -39,10 +39,10 @@ public class JigsawBlock extends DirectionalBlock implements ITileEntityProvider
       return new JigsawTileEntity();
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      TileEntity tileentity = p_225533_2_.getTileEntity(p_225533_3_);
-      if (tileentity instanceof JigsawTileEntity && p_225533_4_.canUseCommandBlock()) {
-         p_225533_4_.func_213826_a((JigsawTileEntity)tileentity);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      TileEntity tileentity = worldIn.getTileEntity(pos);
+      if (tileentity instanceof JigsawTileEntity && player.canUseCommandBlock()) {
+         player.openJigsaw((JigsawTileEntity)tileentity);
          return ActionResultType.SUCCESS;
       } else {
          return ActionResultType.PASS;

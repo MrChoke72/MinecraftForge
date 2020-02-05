@@ -21,7 +21,7 @@ import net.minecraft.world.gen.feature.template.TemplateManager;
 public class StrongholdStructure extends Structure<NoFeatureConfig> {
    private boolean ranBiomeCheck;
    private ChunkPos[] structureCoords;
-   private final List<StructureStart> field_214561_aT = Lists.newArrayList();
+   private final List<StructureStart> structureStarts = Lists.newArrayList();
    private long seed;
 
    public StrongholdStructure(Function<Dynamic<?>, ? extends NoFeatureConfig> p_i51428_1_) {
@@ -50,7 +50,7 @@ public class StrongholdStructure extends Structure<NoFeatureConfig> {
    private void resetData() {
       this.ranBiomeCheck = false;
       this.structureCoords = null;
-      this.field_214561_aT.clear();
+      this.structureStarts.clear();
    }
 
    public Structure.IStartFactory getStartFactory() {
@@ -115,7 +115,7 @@ public class StrongholdStructure extends Structure<NoFeatureConfig> {
       this.structureCoords = new ChunkPos[j2];
       int j = 0;
 
-      for(StructureStart structurestart : this.field_214561_aT) {
+      for(StructureStart structurestart : this.structureStarts) {
          if (j < this.structureCoords.length) {
             this.structureCoords[j++] = new ChunkPos(structurestart.getChunkPosX(), structurestart.getChunkPosZ());
          }
@@ -189,7 +189,7 @@ public class StrongholdStructure extends Structure<NoFeatureConfig> {
             }
          }
 
-         ((StrongholdStructure)this.getStructure()).field_214561_aT.add(this);
+         ((StrongholdStructure)this.getStructure()).structureStarts.add(this);
       }
    }
 }

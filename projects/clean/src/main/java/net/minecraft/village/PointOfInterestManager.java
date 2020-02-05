@@ -161,7 +161,7 @@ public class PointOfInterestManager extends RegionSectionCache<PointOfInterestDa
    //AH REFACTOR
    private boolean isPoiAtPosOccupied(long posPacked) {
    //private boolean func_219154_f(long p_219154_1_) {
-      Optional<PointOfInterestData> optional = this.getPoiDataOptByPos(posPacked);
+      Optional<PointOfInterestData> optional = this.checkPoiDataOptByPos(posPacked);
       return optional == null ? false : optional.map((poiData) -> {
          return poiData.poiStreamByPoiTypePredStatus(PointOfInterestType.POI_TYPE_PRED_TRUE, PointOfInterestManager.Status.IS_OCCUPIED).count() > 0L;
       }).orElse(false);

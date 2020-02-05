@@ -12,76 +12,76 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public interface IRenderTypeBuffer {
-   static IRenderTypeBuffer.Impl func_228455_a_(BufferBuilder p_228455_0_) {
-      return func_228456_a_(ImmutableMap.of(), p_228455_0_);
+   static IRenderTypeBuffer.Impl getImpl(BufferBuilder builderIn) {
+      return getImpl(ImmutableMap.of(), builderIn);
    }
 
-   static IRenderTypeBuffer.Impl func_228456_a_(Map<RenderType, BufferBuilder> p_228456_0_, BufferBuilder p_228456_1_) {
-      return new IRenderTypeBuffer.Impl(p_228456_1_, p_228456_0_);
+   static IRenderTypeBuffer.Impl getImpl(Map<RenderType, BufferBuilder> mapBuildersIn, BufferBuilder builderIn) {
+      return new IRenderTypeBuffer.Impl(builderIn, mapBuildersIn);
    }
 
    IVertexBuilder getBuffer(RenderType p_getBuffer_1_);
 
    @OnlyIn(Dist.CLIENT)
    public static class Impl implements IRenderTypeBuffer {
-      protected final BufferBuilder field_228457_a_;
-      protected final Map<RenderType, BufferBuilder> field_228458_b_;
-      protected Optional<RenderType> field_228459_c_ = Optional.empty();
-      protected final Set<BufferBuilder> field_228460_d_ = Sets.newHashSet();
+      protected final BufferBuilder defaultBuffer;
+      protected final Map<RenderType, BufferBuilder> buffersByType;
+      protected Optional<RenderType> lastRenderType = Optional.empty();
+      protected final Set<BufferBuilder> startedBuffers = Sets.newHashSet();
 
-      protected Impl(BufferBuilder p_i225969_1_, Map<RenderType, BufferBuilder> p_i225969_2_) {
-         this.field_228457_a_ = p_i225969_1_;
-         this.field_228458_b_ = p_i225969_2_;
+      protected Impl(BufferBuilder bufferIn, Map<RenderType, BufferBuilder> fixedBuffersIn) {
+         this.defaultBuffer = bufferIn;
+         this.buffersByType = fixedBuffersIn;
       }
 
       public IVertexBuilder getBuffer(RenderType p_getBuffer_1_) {
-         Optional<RenderType> optional = Optional.of(p_getBuffer_1_);
-         BufferBuilder bufferbuilder = this.func_228463_b_(p_getBuffer_1_);
-         if (!Objects.equals(this.field_228459_c_, optional)) {
-            if (this.field_228459_c_.isPresent()) {
-               RenderType rendertype = this.field_228459_c_.get();
-               if (!this.field_228458_b_.containsKey(rendertype)) {
-                  this.func_228462_a_(rendertype);
+         Optional<RenderType> optional = p_getBuffer_1_.func_230169_u_();
+         BufferBuilder bufferbuilder = this.getOrDefault(p_getBuffer_1_);
+         if (!Objects.equals(this.lastRenderType, optional)) {
+            if (this.lastRenderType.isPresent()) {
+               RenderType rendertype = this.lastRenderType.get();
+               if (!this.buffersByType.containsKey(rendertype)) {
+                  this.finish(rendertype);
                }
             }
 
-            if (this.field_228460_d_.add(bufferbuilder)) {
-               bufferbuilder.begin(p_getBuffer_1_.func_228664_q_(), p_getBuffer_1_.func_228663_p_());
+            if (this.startedBuffers.add(bufferbuilder)) {
+               bufferbuilder.begin(p_getBuffer_1_.getGlMode(), p_getBuffer_1_.getVertexFormat());
             }
 
-            this.field_228459_c_ = optional;
+            this.lastRenderType = optional;
          }
 
          return bufferbuilder;
       }
 
-      private BufferBuilder func_228463_b_(RenderType p_228463_1_) {
-         return this.field_228458_b_.getOrDefault(p_228463_1_, this.field_228457_a_);
+      private BufferBuilder getOrDefault(RenderType renderTypeIn) {
+         return this.buffersByType.getOrDefault(renderTypeIn, this.defaultBuffer);
       }
 
-      public void func_228461_a_() {
-         this.field_228459_c_.ifPresent((p_228464_1_) -> {
+      public void finish() {
+         this.lastRenderType.ifPresent((p_228464_1_) -> {
             IVertexBuilder ivertexbuilder = this.getBuffer(p_228464_1_);
-            if (ivertexbuilder == this.field_228457_a_) {
-               this.func_228462_a_(p_228464_1_);
+            if (ivertexbuilder == this.defaultBuffer) {
+               this.finish(p_228464_1_);
             }
 
          });
 
-         for(RenderType rendertype : this.field_228458_b_.keySet()) {
-            this.func_228462_a_(rendertype);
+         for(RenderType rendertype : this.buffersByType.keySet()) {
+            this.finish(rendertype);
          }
 
       }
 
-      public void func_228462_a_(RenderType p_228462_1_) {
-         BufferBuilder bufferbuilder = this.func_228463_b_(p_228462_1_);
-         boolean flag = Objects.equals(this.field_228459_c_, Optional.of(p_228462_1_));
-         if (flag || bufferbuilder != this.field_228457_a_) {
-            if (this.field_228460_d_.remove(bufferbuilder)) {
-               p_228462_1_.func_228631_a_(bufferbuilder, 0, 0, 0);
+      public void finish(RenderType renderTypeIn) {
+         BufferBuilder bufferbuilder = this.getOrDefault(renderTypeIn);
+         boolean flag = Objects.equals(this.lastRenderType, renderTypeIn.func_230169_u_());
+         if (flag || bufferbuilder != this.defaultBuffer) {
+            if (this.startedBuffers.remove(bufferbuilder)) {
+               renderTypeIn.finish(bufferbuilder, 0, 0, 0);
                if (flag) {
-                  this.field_228459_c_ = Optional.empty();
+                  this.lastRenderType = Optional.empty();
                }
 
             }

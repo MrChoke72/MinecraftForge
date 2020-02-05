@@ -111,7 +111,7 @@ public class CompressedStreamTools {
    private static INBT read(DataInput input, int depth, NBTSizeTracker accounter) throws IOException {
       byte b0 = input.readByte();
       if (b0 == 0) {
-         return EndNBT.field_229686_b_;
+         return EndNBT.INSTANCE;
       } else {
          input.readUTF();
 

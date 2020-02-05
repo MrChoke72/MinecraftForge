@@ -30,8 +30,8 @@ public class ScanningSittingPhase extends SittingPhase {
             float f = (float)vec3d1.dotProduct(vec3d);
             float f1 = (float)(Math.acos((double)f) * (double)(180F / (float)Math.PI)) + 0.5F;
             if (f1 < 0.0F || f1 > 10.0F) {
-               double d0 = livingentity.getPosX() - this.dragon.field_70986_h.getPosX();
-               double d1 = livingentity.getPosZ() - this.dragon.field_70986_h.getPosZ();
+               double d0 = livingentity.getPosX() - this.dragon.dragonPartHead.getPosX();
+               double d1 = livingentity.getPosZ() - this.dragon.dragonPartHead.getPosZ();
                double d2 = MathHelper.clamp(MathHelper.wrapDegrees(180.0D - MathHelper.atan2(d0, d1) * (double)(180F / (float)Math.PI) - (double)this.dragon.rotationYaw), -100.0D, 100.0D);
                this.dragon.field_226525_bB_ *= 0.8F;
                float f2 = MathHelper.sqrt(d0 * d0 + d1 * d1) + 1.0F;

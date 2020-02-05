@@ -27,11 +27,11 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
    public float rotateElytraX;
    public float rotateElytraY;
    public float rotateElytraZ;
-   public final ClientWorld field_213837_d;
+   public final ClientWorld worldClient;
 
    public AbstractClientPlayerEntity(ClientWorld p_i50991_1_, GameProfile p_i50991_2_) {
       super(p_i50991_1_, p_i50991_2_);
-      this.field_213837_d = p_i50991_1_;
+      this.worldClient = p_i50991_1_;
    }
 
    public boolean isSpectator() {
@@ -85,10 +85,10 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
    public static DownloadingTexture getDownloadImageSkin(ResourceLocation resourceLocationIn, String username) {
       TextureManager texturemanager = Minecraft.getInstance().getTextureManager();
-      Texture texture = texturemanager.func_229267_b_(resourceLocationIn);
+      Texture texture = texturemanager.getTexture(resourceLocationIn);
       if (texture == null) {
          texture = new DownloadingTexture((File)null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", StringUtils.stripControlCodes(username)), DefaultPlayerSkin.getDefaultSkin(getOfflineUUID(username)), true, (Runnable)null);
-         texturemanager.func_229263_a_(resourceLocationIn, texture);
+         texturemanager.loadTexture(resourceLocationIn, texture);
       }
 
       return (DownloadingTexture)texture;

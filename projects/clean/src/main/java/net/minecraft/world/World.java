@@ -85,7 +85,7 @@ public abstract class World implements IWorld, AutoCloseable {
    public final boolean isRemote;
    protected boolean processingLoadedTiles;
    private final WorldBorder worldBorder;
-   private final BiomeManager field_226689_w_;
+   private final BiomeManager biomeManager;
 
    protected World(WorldInfo info, DimensionType dimType, BiFunction<World, Dimension, AbstractChunkProvider> provider, IProfiler profilerIn, boolean remote) {
       this.profiler = profilerIn;
@@ -95,7 +95,7 @@ public abstract class World implements IWorld, AutoCloseable {
       this.isRemote = remote;
       this.worldBorder = this.dimension.createWorldBorder();
       this.mainThread = Thread.currentThread();
-      this.field_226689_w_ = new BiomeManager(this, remote ? info.getSeed() : WorldInfo.func_227498_c_(info.getSeed()), dimType.func_227176_e_());
+      this.biomeManager = new BiomeManager(this, remote ? info.getSeed() : WorldInfo.byHashing(info.getSeed()), dimType.getMagnifier());
    }
 
    public boolean isRemote() {
@@ -163,7 +163,7 @@ public abstract class World implements IWorld, AutoCloseable {
             return false;
          } else {
             BlockState blockstate1 = this.getBlockState(pos);
-            if (blockstate1 != blockstate && (blockstate1.getOpacity(this, pos) != blockstate.getOpacity(this, pos) || blockstate1.getLightValue() != blockstate.getLightValue() || blockstate1.func_215691_g() || blockstate.func_215691_g())) {
+            if (blockstate1 != blockstate && (blockstate1.getOpacity(this, pos) != blockstate.getOpacity(this, pos) || blockstate1.getLightValue() != blockstate.getLightValue() || blockstate1.isTransparent() || blockstate.isTransparent())) {
                this.profiler.startSection("queueCheckLight");
                this.getChunkProvider().getLightManager().checkBlock(pos);
                this.profiler.endSection();
@@ -171,10 +171,10 @@ public abstract class World implements IWorld, AutoCloseable {
 
             if (blockstate1 == newState) {
                if (blockstate != blockstate1) {
-                  this.func_225319_b(pos, blockstate, blockstate1);
+                  this.markBlockRangeForRenderUpdate(pos, blockstate, blockstate1);
                }
 
-               if ((flags & 2) != 0 && (!this.isRemote || (flags & 4) == 0) && (this.isRemote || chunk.func_217321_u() != null && chunk.func_217321_u().isAtLeast(ChunkHolder.LocationType.TICKING))) {
+               if ((flags & 2) != 0 && (!this.isRemote || (flags & 4) == 0) && (this.isRemote || chunk.getLocationType() != null && chunk.getLocationType().isAtLeast(ChunkHolder.LocationType.TICKING))) {
                   this.notifyBlockUpdate(pos, blockstate, newState, flags);
                }
 
@@ -192,7 +192,7 @@ public abstract class World implements IWorld, AutoCloseable {
                   newState.updateDiagonalNeighbors(this, pos, i);
                }
 
-               this.updatePoiMgr(pos, blockstate, blockstate1);
+               this.onBlockStateChange(pos, blockstate, blockstate1);
             }
 
             return true;
@@ -200,7 +200,7 @@ public abstract class World implements IWorld, AutoCloseable {
       }
    }
 
-   public void updatePoiMgr(BlockPos p_217393_1_, BlockState p_217393_2_, BlockState p_217393_3_) {
+   public void onBlockStateChange(BlockPos p_217393_1_, BlockState p_217393_2_, BlockState p_217393_3_) {
    }
 
    public boolean removeBlock(BlockPos pos, boolean isMoving) {
@@ -237,7 +237,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
    }
 
-   public void func_225319_b(BlockPos p_225319_1_, BlockState p_225319_2_, BlockState p_225319_3_) {
+   public void markBlockRangeForRenderUpdate(BlockPos blockPosIn, BlockState oldState, BlockState newState) {
    }
 
    public void notifyNeighborsOfStateChange(BlockPos pos, Block blockIn) {
@@ -313,7 +313,7 @@ public abstract class World implements IWorld, AutoCloseable {
       return i;
    }
 
-   public WorldLightManager getLightMgr() {
+   public WorldLightManager getLightManager() {
       return this.getChunkProvider().getLightManager();
    }
 
@@ -339,7 +339,7 @@ public abstract class World implements IWorld, AutoCloseable {
       return this.dimension.getType() == DimensionType.OVERWORLD && this.skylightSubtracted < 4;
    }
 
-   public boolean func_226690_K_() {
+   public boolean isNightTime() {
       return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDaytime();
    }
 
@@ -349,7 +349,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
    public abstract void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch);
 
-   public abstract void playMovingSound(@Nullable PlayerEntity p_217384_1_, Entity p_217384_2_, SoundEvent p_217384_3_, SoundCategory p_217384_4_, float p_217384_5_, float p_217384_6_);
+   public abstract void playMovingSound(@Nullable PlayerEntity playerIn, Entity entityIn, SoundEvent eventIn, SoundCategory categoryIn, float volume, float pitch);
 
    public void playSound(double x, double y, double z, SoundEvent soundIn, SoundCategory category, float volume, float pitch, boolean distanceDelay) {
    }
@@ -364,7 +364,7 @@ public abstract class World implements IWorld, AutoCloseable {
    public void addOptionalParticle(IParticleData particleData, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
    }
 
-   public void func_217404_b(IParticleData p_217404_1_, boolean p_217404_2_, double p_217404_3_, double p_217404_5_, double p_217404_7_, double p_217404_9_, double p_217404_11_, double p_217404_13_) {
+   public void addOptionalParticle(IParticleData particleData, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
    }
 
    public float getCelestialAngleRadians(float partialTicks) {
@@ -404,7 +404,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
    }
 
-   public void func_217391_K() {
+   public void tickBlockEntities() {
       IProfiler iprofiler = this.getProfiler();
       iprofiler.startSection("blockEntities");
       if (!this.tileEntitiesToBeRemoved.isEmpty()) {
@@ -475,13 +475,13 @@ public abstract class World implements IWorld, AutoCloseable {
       iprofiler.endSection();
    }
 
-   public void func_217390_a(Consumer<Entity> p_217390_1_, Entity p_217390_2_) {
+   public void guardEntityTick(Consumer<Entity> consumerEntity, Entity entityIn) {
       try {
-         p_217390_1_.accept(p_217390_2_);
+         consumerEntity.accept(entityIn);
       } catch (Throwable throwable) {
          CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Ticking entity");
          CrashReportCategory crashreportcategory = crashreport.makeCategory("Entity being ticked");
-         p_217390_2_.fillCrashReport(crashreportcategory);
+         entityIn.fillCrashReport(crashreportcategory);
          throw new ReportedException(crashreport);
       }
    }
@@ -581,18 +581,18 @@ public abstract class World implements IWorld, AutoCloseable {
       });
    }
 
-   public Explosion createExplosion(@Nullable Entity p_217385_1_, double p_217385_2_, double p_217385_4_, double p_217385_6_, float p_217385_8_, Explosion.Mode p_217385_9_) {
-      return this.createExplosion(p_217385_1_, (DamageSource)null, p_217385_2_, p_217385_4_, p_217385_6_, p_217385_8_, false, p_217385_9_);
+   public Explosion createExplosion(@Nullable Entity entityIn, double xIn, double yIn, double zIn, float explosionRadius, Explosion.Mode modeIn) {
+      return this.createExplosion(entityIn, (DamageSource)null, xIn, yIn, zIn, explosionRadius, false, modeIn);
    }
 
-   public Explosion createExplosion(@Nullable Entity p_217398_1_, double p_217398_2_, double p_217398_4_, double p_217398_6_, float p_217398_8_, boolean p_217398_9_, Explosion.Mode p_217398_10_) {
-      return this.createExplosion(p_217398_1_, (DamageSource)null, p_217398_2_, p_217398_4_, p_217398_6_, p_217398_8_, p_217398_9_, p_217398_10_);
+   public Explosion createExplosion(@Nullable Entity entityIn, double xIn, double yIn, double zIn, float explosionRadius, boolean causesFire, Explosion.Mode modeIn) {
+      return this.createExplosion(entityIn, (DamageSource)null, xIn, yIn, zIn, explosionRadius, causesFire, modeIn);
    }
 
-   public Explosion createExplosion(@Nullable Entity p_217401_1_, @Nullable DamageSource p_217401_2_, double p_217401_3_, double p_217401_5_, double p_217401_7_, float p_217401_9_, boolean p_217401_10_, Explosion.Mode p_217401_11_) {
-      Explosion explosion = new Explosion(this, p_217401_1_, p_217401_3_, p_217401_5_, p_217401_7_, p_217401_9_, p_217401_10_, p_217401_11_);
-      if (p_217401_2_ != null) {
-         explosion.setDamageSource(p_217401_2_);
+   public Explosion createExplosion(@Nullable Entity entityIn, @Nullable DamageSource damageSourceIn, double xIn, double yIn, double zIn, float explosionRadius, boolean causesFire, Explosion.Mode modeIn) {
+      Explosion explosion = new Explosion(this, entityIn, xIn, yIn, zIn, explosionRadius, causesFire, modeIn);
+      if (damageSourceIn != null) {
+         explosion.setDamageSource(damageSourceIn);
       }
 
       explosion.doExplosionA();
@@ -656,7 +656,7 @@ public abstract class World implements IWorld, AutoCloseable {
       if (!isOutsideBuildHeight(pos)) {
          if (tileEntityIn != null && !tileEntityIn.isRemoved()) {
             if (this.processingLoadedTiles) {
-               tileEntityIn.func_226984_a_(this, pos);
+               tileEntityIn.setWorldAndPos(this, pos);
                Iterator<TileEntity> iterator = this.addedTileEntityList.iterator();
 
                while(iterator.hasNext()) {
@@ -698,12 +698,12 @@ public abstract class World implements IWorld, AutoCloseable {
       return isOutsideBuildHeight(pos) ? false : this.chunkProvider.chunkExists(pos.getX() >> 4, pos.getZ() >> 4);
    }
 
-   public boolean func_217400_a(BlockPos pos, Entity entity) {
-      if (isOutsideBuildHeight(pos)) {
+   public boolean isTopSolid(BlockPos p_217400_1_, Entity p_217400_2_) {
+      if (isOutsideBuildHeight(p_217400_1_)) {
          return false;
       } else {
-         IChunk ichunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
-         return ichunk == null ? false : ichunk.getBlockState(pos).isUpSideFilled(this, pos, entity);
+         IChunk ichunk = this.getChunk(p_217400_1_.getX() >> 4, p_217400_1_.getZ() >> 4, ChunkStatus.FULL, false);
+         return ichunk == null ? false : ichunk.getBlockState(p_217400_1_).isTopSolid(this, p_217400_1_, p_217400_2_);
       }
    }
 
@@ -733,11 +733,12 @@ public abstract class World implements IWorld, AutoCloseable {
    }
 
    @Nullable
-   public IBlockReader func_225522_c_(int p_225522_1_, int p_225522_2_) {
+   public IBlockReader getBlockReader(int p_225522_1_, int p_225522_2_) {
       return this.getChunk(p_225522_1_, p_225522_2_, ChunkStatus.FULL, false);
    }
 
    public List<Entity> getEntitiesInAABBexcluding(@Nullable Entity entityIn, AxisAlignedBB boundingBox, @Nullable Predicate<? super Entity> predicate) {
+      this.getProfiler().func_230035_c_("getEntities");
       List<Entity> list = Lists.newArrayList();
       int i = MathHelper.floor((boundingBox.minX - 2.0D) / 16.0D);
       int j = MathHelper.floor((boundingBox.maxX + 2.0D) / 16.0D);
@@ -756,18 +757,19 @@ public abstract class World implements IWorld, AutoCloseable {
       return list;
    }
 
-   public <T extends Entity> List<T> getEntitiesWithinAABB(@Nullable EntityType<T> p_217394_1_, AxisAlignedBB p_217394_2_, Predicate<? super T> p_217394_3_) {
-      int i = MathHelper.floor((p_217394_2_.minX - 2.0D) / 16.0D);
-      int j = MathHelper.ceil((p_217394_2_.maxX + 2.0D) / 16.0D);
-      int k = MathHelper.floor((p_217394_2_.minZ - 2.0D) / 16.0D);
-      int l = MathHelper.ceil((p_217394_2_.maxZ + 2.0D) / 16.0D);
+   public <T extends Entity> List<T> getEntitiesWithinAABB(@Nullable EntityType<T> type, AxisAlignedBB boundingBox, Predicate<? super T> predicate) {
+      this.getProfiler().func_230035_c_("getEntities");
+      int i = MathHelper.floor((boundingBox.minX - 2.0D) / 16.0D);
+      int j = MathHelper.ceil((boundingBox.maxX + 2.0D) / 16.0D);
+      int k = MathHelper.floor((boundingBox.minZ - 2.0D) / 16.0D);
+      int l = MathHelper.ceil((boundingBox.maxZ + 2.0D) / 16.0D);
       List<T> list = Lists.newArrayList();
 
       for(int i1 = i; i1 < j; ++i1) {
          for(int j1 = k; j1 < l; ++j1) {
             Chunk chunk = this.getChunkProvider().getChunk(i1, j1, false);
             if (chunk != null) {
-               chunk.func_217313_a(p_217394_1_, p_217394_2_, list, p_217394_3_);
+               chunk.getEntitiesWithinAABBForList(type, boundingBox, list, predicate);
             }
          }
       }
@@ -776,6 +778,7 @@ public abstract class World implements IWorld, AutoCloseable {
    }
 
    public <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter) {
+      this.getProfiler().func_230035_c_("getEntities");
       int i = MathHelper.floor((aabb.minX - 2.0D) / 16.0D);
       int j = MathHelper.ceil((aabb.maxX + 2.0D) / 16.0D);
       int k = MathHelper.floor((aabb.minZ - 2.0D) / 16.0D);
@@ -795,11 +798,12 @@ public abstract class World implements IWorld, AutoCloseable {
       return list;
    }
 
-   public <T extends Entity> List<T> getEntitiesWithinAABBDef(Class<? extends T> entityClass, AxisAlignedBB boundingBox, @Nullable Predicate<? super T> entityPred) {
-      int i = MathHelper.floor((boundingBox.minX - 2.0D) / 16.0D);
-      int j = MathHelper.ceil((boundingBox.maxX + 2.0D) / 16.0D);
-      int k = MathHelper.floor((boundingBox.minZ - 2.0D) / 16.0D);
-      int l = MathHelper.ceil((boundingBox.maxZ + 2.0D) / 16.0D);
+   public <T extends Entity> List<T> func_225316_b(Class<? extends T> p_225316_1_, AxisAlignedBB p_225316_2_, @Nullable Predicate<? super T> p_225316_3_) {
+      this.getProfiler().func_230035_c_("getLoadedEntities");
+      int i = MathHelper.floor((p_225316_2_.minX - 2.0D) / 16.0D);
+      int j = MathHelper.ceil((p_225316_2_.maxX + 2.0D) / 16.0D);
+      int k = MathHelper.floor((p_225316_2_.minZ - 2.0D) / 16.0D);
+      int l = MathHelper.ceil((p_225316_2_.maxZ + 2.0D) / 16.0D);
       List<T> list = Lists.newArrayList();
       AbstractChunkProvider abstractchunkprovider = this.getChunkProvider();
 
@@ -807,7 +811,7 @@ public abstract class World implements IWorld, AutoCloseable {
          for(int j1 = k; j1 < l; ++j1) {
             Chunk chunk = abstractchunkprovider.func_225313_a(i1, j1);
             if (chunk != null) {
-               chunk.getEntitiesOfTypeWithinAABB(entityClass, boundingBox, list, entityPred);
+               chunk.getEntitiesOfTypeWithinAABB(p_225316_1_, p_225316_2_, list, p_225316_3_);
             }
          }
       }
@@ -1013,24 +1017,24 @@ public abstract class World implements IWorld, AutoCloseable {
    public boolean isRainingAt(BlockPos position) {
       if (!this.isRaining()) {
          return false;
-      } else if (!this.isMaxLightLevel(position)) {
+      } else if (!this.canSeeSky(position)) {
          return false;
       } else if (this.getHeight(Heightmap.Type.MOTION_BLOCKING, position).getY() > position.getY()) {
          return false;
       } else {
-         return this.func_226691_t_(position).getPrecipitation() == Biome.RainType.RAIN;
+         return this.getBiome(position).getPrecipitation() == Biome.RainType.RAIN;
       }
    }
 
    public boolean isBlockinHighHumidity(BlockPos pos) {
-      Biome biome = this.func_226691_t_(pos);
+      Biome biome = this.getBiome(pos);
       return biome.isHighHumidity();
    }
 
    @Nullable
-   public abstract MapData func_217406_a(String p_217406_1_);
+   public abstract MapData getMapData(String mapName);
 
-   public abstract void func_217399_a(MapData p_217399_1_);
+   public abstract void registerMapData(MapData mapDataIn);
 
    public abstract int getNextMapId();
 
@@ -1102,7 +1106,7 @@ public abstract class World implements IWorld, AutoCloseable {
       return this.skylightSubtracted;
    }
 
-   public void func_225605_c_(int p_225605_1_) {
+   public void setTimeLightningFlash(int timeFlashIn) {
    }
 
    public WorldBorder getWorldBorder() {
@@ -1129,7 +1133,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
    public abstract NetworkTagManager getTags();
 
-   public BlockPos func_217383_a(int p_217383_1_, int p_217383_2_, int p_217383_3_, int p_217383_4_) {
+   public BlockPos getBlockRandomPos(int p_217383_1_, int p_217383_2_, int p_217383_3_, int p_217383_4_) {
       this.updateLCG = this.updateLCG * 3 + 1013904223;
       int i = this.updateLCG >> 2;
       return new BlockPos(p_217383_1_ + (i & 15), p_217383_2_ + (i >> 16 & p_217383_4_), p_217383_3_ + (i >> 8 & 15));
@@ -1143,7 +1147,7 @@ public abstract class World implements IWorld, AutoCloseable {
       return this.profiler;
    }
 
-   public BiomeManager func_225523_d_() {
-      return this.field_226689_w_;
+   public BiomeManager getBiomeManager() {
+      return this.biomeManager;
    }
 }

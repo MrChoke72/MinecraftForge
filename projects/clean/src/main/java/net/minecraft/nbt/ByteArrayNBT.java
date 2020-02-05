@@ -10,7 +10,7 @@ import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class ByteArrayNBT extends CollectionNBT<ByteNBT> {
-   public static final INBTType<ByteArrayNBT> field_229667_a_ = new INBTType<ByteArrayNBT>() {
+   public static final INBTType<ByteArrayNBT> TYPE = new INBTType<ByteArrayNBT>() {
       public ByteArrayNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(192L);
          int i = p_225649_1_.readInt();
@@ -58,8 +58,8 @@ public class ByteArrayNBT extends CollectionNBT<ByteNBT> {
       return 7;
    }
 
-   public INBTType<ByteArrayNBT> func_225647_b_() {
-      return field_229667_a_;
+   public INBTType<ByteArrayNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {
@@ -119,13 +119,13 @@ public class ByteArrayNBT extends CollectionNBT<ByteNBT> {
    }
 
    public ByteNBT get(int p_get_1_) {
-      return ByteNBT.func_229671_a_(this.data[p_get_1_]);
+      return ByteNBT.valueOf(this.data[p_get_1_]);
    }
 
    public ByteNBT set(int p_set_1_, ByteNBT p_set_2_) {
       byte b0 = this.data[p_set_1_];
       this.data[p_set_1_] = p_set_2_.getByte();
-      return ByteNBT.func_229671_a_(b0);
+      return ByteNBT.valueOf(b0);
    }
 
    public void add(int p_add_1_, ByteNBT p_add_2_) {
@@ -153,7 +153,7 @@ public class ByteArrayNBT extends CollectionNBT<ByteNBT> {
    public ByteNBT remove(int p_remove_1_) {
       byte b0 = this.data[p_remove_1_];
       this.data = ArrayUtils.remove(this.data, p_remove_1_);
-      return ByteNBT.func_229671_a_(b0);
+      return ByteNBT.valueOf(b0);
    }
 
    public void clear() {

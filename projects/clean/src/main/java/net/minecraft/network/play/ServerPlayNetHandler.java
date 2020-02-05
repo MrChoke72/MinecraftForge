@@ -261,7 +261,7 @@ public class ServerPlayNetHandler implements IServerPlayNetHandler {
    }
 
    private boolean func_217264_d() {
-      return this.server.func_213199_b(this.player.getGameProfile());
+      return this.server.isServerOwner(this.player.getGameProfile());
    }
 
    public void disconnect(ITextComponent textComponent) {
@@ -618,15 +618,15 @@ public class ServerPlayNetHandler implements IServerPlayNetHandler {
                      itemstack2.setTag(compoundnbt.copy());
                   }
 
-                  itemstack2.setTagInfo("author", StringNBT.func_229705_a_(this.player.getName().getString()));
-                  itemstack2.setTagInfo("title", StringNBT.func_229705_a_(itemstack.getTag().getString("title")));
+                  itemstack2.setTagInfo("author", StringNBT.valueOf(this.player.getName().getString()));
+                  itemstack2.setTagInfo("title", StringNBT.valueOf(itemstack.getTag().getString("title")));
                   ListNBT listnbt = itemstack.getTag().getList("pages", 8);
 
                   for(int i = 0; i < listnbt.size(); ++i) {
                      String s = listnbt.getString(i);
                      ITextComponent itextcomponent = new StringTextComponent(s);
                      s = ITextComponent.Serializer.toJson(itextcomponent);
-                     listnbt.set(i, (INBT)StringNBT.func_229705_a_(s));
+                     listnbt.set(i, (INBT)StringNBT.valueOf(s));
                   }
 
                   itemstack2.setTagInfo("pages", listnbt);
@@ -847,7 +847,7 @@ public class ServerPlayNetHandler implements IServerPlayNetHandler {
       if (blockpos.getY() < this.server.getBuildLimit() - 1 || direction != Direction.UP && blockpos.getY() < this.server.getBuildLimit()) {
          if (this.targetPos == null && this.player.getDistanceSq((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.5D, (double)blockpos.getZ() + 0.5D) < 64.0D && serverworld.isBlockModifiable(this.player, blockpos)) {
             ActionResultType actionresulttype = this.player.interactionManager.func_219441_a(this.player, serverworld, itemstack, hand, blockraytraceresult);
-            if (actionresulttype.func_226247_b_()) {
+            if (actionresulttype.isSuccess()) {
                this.player.func_226292_a_(hand, true);
             }
          }
@@ -1062,7 +1062,7 @@ public class ServerPlayNetHandler implements IServerPlayNetHandler {
             } else if (packetIn.getAction() == CUseEntityPacket.Action.INTERACT_AT) {
                Hand hand1 = packetIn.getHand();
                ActionResultType actionresulttype = entity.applyPlayerInteraction(this.player, packetIn.getHitVec(), hand1);
-               if (actionresulttype.func_226247_b_()) {
+               if (actionresulttype.isSuccess()) {
                   this.player.func_226292_a_(hand1, true);
                }
             } else if (packetIn.getAction() == CUseEntityPacket.Action.ATTACK) {

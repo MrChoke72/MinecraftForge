@@ -24,8 +24,8 @@ public class SoulSandBlock extends Block {
       return SHAPE;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      BubbleColumnBlock.placeBubbleColumn(p_225534_2_, p_225534_3_.up(), false);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      BubbleColumnBlock.placeBubbleColumn(worldIn, pos.up(), false);
    }
 
    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
@@ -53,7 +53,7 @@ public class SoulSandBlock extends Block {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_229870_f_(BlockState p_229870_1_, IBlockReader p_229870_2_, BlockPos p_229870_3_) {
+   public boolean isViewBlocking(BlockState p_229870_1_, IBlockReader p_229870_2_, BlockPos p_229870_3_) {
       return true;
    }
 }

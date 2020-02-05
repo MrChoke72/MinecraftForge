@@ -28,23 +28,23 @@ public interface IWorldReader extends ILightReader, ICollisionReader, BiomeManag
 
    int getSkylightSubtracted();
 
-   BiomeManager func_225523_d_();
+   BiomeManager getBiomeManager();
 
-   default Biome func_226691_t_(BlockPos pos) {
-      return this.func_225523_d_().func_226836_a_(pos);
+   default Biome getBiome(BlockPos p_226691_1_) {
+      return this.getBiomeManager().getBiome(p_226691_1_);
    }
 
    @OnlyIn(Dist.CLIENT)
-   default int func_225525_a_(BlockPos p_225525_1_, ColorResolver p_225525_2_) {
-      return p_225525_2_.getColor(this.func_226691_t_(p_225525_1_), (double)p_225525_1_.getX(), (double)p_225525_1_.getZ());
+   default int getBlockColor(BlockPos blockPosIn, ColorResolver colorResolverIn) {
+      return colorResolverIn.getColor(this.getBiome(blockPosIn), (double)blockPosIn.getX(), (double)blockPosIn.getZ());
    }
 
-   default Biome func_225526_b_(int p_225526_1_, int p_225526_2_, int p_225526_3_) {
-      IChunk ichunk = this.getChunk(p_225526_1_ >> 2, p_225526_3_ >> 2, ChunkStatus.BIOMES, false);
-      return ichunk != null && ichunk.func_225549_i_() != null ? ichunk.func_225549_i_().func_225526_b_(p_225526_1_, p_225526_2_, p_225526_3_) : this.func_225604_a_(p_225526_1_, p_225526_2_, p_225526_3_);
+   default Biome getNoiseBiome(int x, int y, int z) {
+      IChunk ichunk = this.getChunk(x >> 2, z >> 2, ChunkStatus.BIOMES, false);
+      return ichunk != null && ichunk.getBiomes() != null ? ichunk.getBiomes().getNoiseBiome(x, y, z) : this.getNoiseBiomeRaw(x, y, z);
    }
 
-   Biome func_225604_a_(int p_225604_1_, int p_225604_2_, int p_225604_3_);
+   Biome getNoiseBiomeRaw(int x, int y, int z);
 
    boolean isRemote();
 
@@ -62,10 +62,10 @@ public interface IWorldReader extends ILightReader, ICollisionReader, BiomeManag
 
    default boolean canBlockSeeSky(BlockPos pos) {
       if (pos.getY() >= this.getSeaLevel()) {
-         return this.isMaxLightLevel(pos);
+         return this.canSeeSky(pos);
       } else {
          BlockPos blockpos = new BlockPos(pos.getX(), this.getSeaLevel(), pos.getZ());
-         if (!this.isMaxLightLevel(blockpos)) {
+         if (!this.canSeeSky(blockpos)) {
             return false;
          } else {
             for(BlockPos blockpos1 = blockpos.down(); blockpos1.getY() > pos.getY(); blockpos1 = blockpos1.down()) {
@@ -82,7 +82,7 @@ public interface IWorldReader extends ILightReader, ICollisionReader, BiomeManag
 
    @Deprecated
    default float getBrightness(BlockPos pos) {
-      return this.getDimension().func_227174_a_(this.getLight(pos));
+      return this.getDimension().getLightBrightness(this.getLight(pos));
    }
 
    default int getStrongPower(BlockPos pos, Direction direction) {
@@ -102,7 +102,7 @@ public interface IWorldReader extends ILightReader, ICollisionReader, BiomeManag
    }
 
    @Nullable
-   default IBlockReader func_225522_c_(int p_225522_1_, int p_225522_2_) {
+   default IBlockReader getBlockReader(int p_225522_1_, int p_225522_2_) {
       return this.getChunk(p_225522_1_, p_225522_2_, ChunkStatus.EMPTY, false);
    }
 
@@ -140,7 +140,7 @@ public interface IWorldReader extends ILightReader, ICollisionReader, BiomeManag
    }
 
    default int getNeighborAwareLightSubtracted(BlockPos pos, int amount) {
-      return pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000 ? this.func_226659_b_(pos, amount) : 15;
+      return pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000 ? this.getLightSubtracted(pos, amount) : 15;
    }
 
    @Deprecated
@@ -154,15 +154,15 @@ public interface IWorldReader extends ILightReader, ICollisionReader, BiomeManag
    }
 
    @Deprecated
-   default boolean isAreaLoaded(int p_217344_1_, int p_217344_2_, int p_217344_3_, int p_217344_4_, int p_217344_5_, int p_217344_6_) {
-      if (p_217344_5_ >= 0 && p_217344_2_ < 256) {
-         p_217344_1_ = p_217344_1_ >> 4;
-         p_217344_3_ = p_217344_3_ >> 4;
-         p_217344_4_ = p_217344_4_ >> 4;
-         p_217344_6_ = p_217344_6_ >> 4;
+   default boolean isAreaLoaded(int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
+      if (toY >= 0 && fromY < 256) {
+         fromX = fromX >> 4;
+         fromZ = fromZ >> 4;
+         toX = toX >> 4;
+         toZ = toZ >> 4;
 
-         for(int i = p_217344_1_; i <= p_217344_4_; ++i) {
-            for(int j = p_217344_3_; j <= p_217344_6_; ++j) {
+         for(int i = fromX; i <= toX; ++i) {
+            for(int j = fromZ; j <= toZ; ++j) {
                if (!this.chunkExists(i, j)) {
                   return false;
                }

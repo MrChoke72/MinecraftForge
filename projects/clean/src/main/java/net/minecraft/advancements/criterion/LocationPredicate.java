@@ -70,7 +70,7 @@ public class LocationPredicate {
       } else {
          BlockPos blockpos = new BlockPos((double)x, (double)y, (double)z);
          boolean flag = world.isBlockPresent(blockpos);
-         if (this.biome == null || flag && this.biome == world.func_226691_t_(blockpos)) {
+         if (this.biome == null || flag && this.biome == world.getBiome(blockpos)) {
             if (this.feature == null || flag && this.feature.isPositionInsideStructure(world, blockpos)) {
                if (!this.field_226864_h_.func_226858_a_(world, blockpos)) {
                   return false;

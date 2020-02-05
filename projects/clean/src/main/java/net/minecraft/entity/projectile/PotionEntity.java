@@ -48,16 +48,16 @@ public class PotionEntity extends ThrowableEntity implements IRendersAsItem {
    private static final Logger LOGGER = LogManager.getLogger();
    public static final Predicate<LivingEntity> WATER_SENSITIVE = PotionEntity::isWaterSensitiveEntity;
 
-   public PotionEntity(EntityType<? extends PotionEntity> p_i50149_1_, World p_i50149_2_) {
-      super(p_i50149_1_, p_i50149_2_);
+   public PotionEntity(EntityType<? extends PotionEntity> typeIn, World worldIn) {
+      super(typeIn, worldIn);
    }
 
-   public PotionEntity(World p_i50150_1_, LivingEntity p_i50150_2_) {
-      super(EntityType.POTION, p_i50150_2_, p_i50150_1_);
+   public PotionEntity(World worldIn, LivingEntity livingEntityIn) {
+      super(EntityType.POTION, livingEntityIn, worldIn);
    }
 
-   public PotionEntity(World p_i50151_1_, double p_i50151_2_, double p_i50151_4_, double p_i50151_6_) {
-      super(EntityType.POTION, p_i50151_2_, p_i50151_4_, p_i50151_6_, p_i50151_1_);
+   public PotionEntity(World worldIn, double x, double y, double z) {
+      super(EntityType.POTION, x, y, z, worldIn);
    }
 
    protected void registerData() {

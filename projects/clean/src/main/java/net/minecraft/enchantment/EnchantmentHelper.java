@@ -242,8 +242,8 @@ public class EnchantmentHelper {
    }
 
    @Nullable
-   public static Entry<EquipmentSlotType, ItemStack> func_222189_b(Enchantment p_222189_0_, LivingEntity p_222189_1_) {
-      Map<EquipmentSlotType, ItemStack> map = p_222189_0_.getEntityEquipment(p_222189_1_);
+   public static Entry<EquipmentSlotType, ItemStack> getRandomItemWithEnchantment(Enchantment targetEnchantment, LivingEntity entityIn) {
+      Map<EquipmentSlotType, ItemStack> map = targetEnchantment.getEntityEquipment(entityIn);
       if (map.isEmpty()) {
          return null;
       } else {
@@ -251,12 +251,12 @@ public class EnchantmentHelper {
 
          for(Entry<EquipmentSlotType, ItemStack> entry : map.entrySet()) {
             ItemStack itemstack = entry.getValue();
-            if (!itemstack.isEmpty() && getEnchantmentLevel(p_222189_0_, itemstack) > 0) {
+            if (!itemstack.isEmpty() && getEnchantmentLevel(targetEnchantment, itemstack) > 0) {
                list.add(entry);
             }
          }
 
-         return list.isEmpty() ? null : list.get(p_222189_1_.getRNG().nextInt(list.size()));
+         return list.isEmpty() ? null : list.get(entityIn.getRNG().nextInt(list.size()));
       }
    }
 
@@ -312,7 +312,7 @@ public class EnchantmentHelper {
             list.add(WeightedRandom.getRandomItem(randomIn, list1));
 
             while(randomIn.nextInt(50) <= level) {
-               removeIncompatible(list1, Util.func_223378_a(list));
+               removeIncompatible(list1, Util.getLast(list));
                if (list1.isEmpty()) {
                   break;
                }

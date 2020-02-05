@@ -222,7 +222,7 @@ public class EditStructureScreen extends Screen {
       this.updateToggleAirButton();
       this.showBoundingBox = this.tileStructure.showsBoundingBox();
       this.updateToggleBoundingBox();
-      this.func_212928_a(this.nameEdit);
+      this.setFocusedDefault(this.nameEdit);
    }
 
    public void resize(Minecraft p_resize_1_, int p_resize_2_, int p_resize_3_) {

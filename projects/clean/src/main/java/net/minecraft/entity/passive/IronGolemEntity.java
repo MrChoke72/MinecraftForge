@@ -113,7 +113,7 @@ public class IronGolemEntity extends GolemEntity {
          --this.holdRoseTick;
       }
 
-      if (func_213296_b(this.getMotion()) > (double)2.5000003E-7F && this.rand.nextInt(5) == 0) {
+      if (horizontalMag(this.getMotion()) > (double)2.5000003E-7F && this.rand.nextInt(5) == 0) {
          int i = MathHelper.floor(this.getPosX());
          int j = MathHelper.floor(this.getPosY() - (double)0.2F);
          int k = MathHelper.floor(this.getPosZ());
@@ -268,7 +268,7 @@ public class IronGolemEntity extends GolemEntity {
       BlockPos blockpos = new BlockPos(this);
       BlockPos blockpos1 = blockpos.down();
       BlockState blockstate = worldIn.getBlockState(blockpos1);
-      if (!blockstate.isUpSideFilled(worldIn, blockpos1, this)) {
+      if (!blockstate.isTopSolid(worldIn, blockpos1, this)) {
          return false;
       } else {
          for(int i = 1; i < 3; ++i) {

@@ -7,7 +7,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class EmptyProfileResult implements IProfileResult {
-   public static final EmptyProfileResult field_219926_a = new EmptyProfileResult();
+   public static final EmptyProfileResult INSTANCE = new EmptyProfileResult();
 
    private EmptyProfileResult() {
    }

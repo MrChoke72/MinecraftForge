@@ -38,11 +38,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class CrossbowItem extends ShootableItem {
-   private boolean field_220034_c = false;
-   private boolean field_220035_d = false;
+   private boolean isLoadingStart = false;
+   private boolean isLoadingMiddle = false;
 
-   public CrossbowItem(Item.Properties p_i50052_1_) {
-      super(p_i50052_1_);
+   public CrossbowItem(Item.Properties propertiesIn) {
+      super(propertiesIn);
       this.addPropertyOverride(new ResourceLocation("pull"), (p_220022_1_, p_220022_2_, p_220022_3_) -> {
          if (p_220022_3_ != null && p_220022_1_.getItem() == this) {
             return isCharged(p_220022_1_) ? 0.0F : (float)(p_220022_1_.getUseDuration() - p_220022_3_.getItemInUseCount()) / (float)getChargeTime(p_220022_1_);
@@ -77,8 +77,8 @@ public class CrossbowItem extends ShootableItem {
          return ActionResult.func_226249_b_(itemstack);
       } else if (!playerIn.findAmmo(itemstack).isEmpty()) {
          if (!isCharged(itemstack)) {
-            this.field_220034_c = false;
-            this.field_220035_d = false;
+            this.isLoadingStart = false;
+            this.isLoadingMiddle = false;
             playerIn.setActiveHand(handIn);
          }
 
@@ -201,36 +201,36 @@ public class CrossbowItem extends ShootableItem {
       });
    }
 
-   private static void func_220016_a(World p_220016_0_, LivingEntity p_220016_1_, Hand p_220016_2_, ItemStack p_220016_3_, ItemStack p_220016_4_, float p_220016_5_, boolean p_220016_6_, float p_220016_7_, float p_220016_8_, float p_220016_9_) {
-      if (!p_220016_0_.isRemote) {
-         boolean flag = p_220016_4_.getItem() == Items.FIREWORK_ROCKET;
+   private static void fireProjectile(World worldIn, LivingEntity shooter, Hand handIn, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean isCreativeMode, float velocity, float inaccuracy, float projectileAngle) {
+      if (!worldIn.isRemote) {
+         boolean flag = projectile.getItem() == Items.FIREWORK_ROCKET;
          IProjectile iprojectile;
          if (flag) {
-            iprojectile = new FireworkRocketEntity(p_220016_0_, p_220016_4_, p_220016_1_.getPosX(), p_220016_1_.getPosYPlusEyeHeight() - (double)0.15F, p_220016_1_.getPosZ(), true);
+            iprojectile = new FireworkRocketEntity(worldIn, projectile, shooter.getPosX(), shooter.getPosYEye() - (double)0.15F, shooter.getPosZ(), true);
          } else {
-            iprojectile = createArrow(p_220016_0_, p_220016_1_, p_220016_3_, p_220016_4_);
-            if (p_220016_6_ || p_220016_9_ != 0.0F) {
+            iprojectile = createArrow(worldIn, shooter, crossbow, projectile);
+            if (isCreativeMode || projectileAngle != 0.0F) {
                ((AbstractArrowEntity)iprojectile).pickupStatus = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
             }
          }
 
-         if (p_220016_1_ instanceof ICrossbowUser) {
-            ICrossbowUser icrossbowuser = (ICrossbowUser)p_220016_1_;
-            icrossbowuser.shoot(icrossbowuser.getAttackTarget(), p_220016_3_, iprojectile, p_220016_9_);
+         if (shooter instanceof ICrossbowUser) {
+            ICrossbowUser icrossbowuser = (ICrossbowUser)shooter;
+            icrossbowuser.shoot(icrossbowuser.getAttackTarget(), crossbow, iprojectile, projectileAngle);
          } else {
-            Vec3d vec3d1 = p_220016_1_.func_213286_i(1.0F);
-            Quaternion quaternion = new Quaternion(new Vector3f(vec3d1), p_220016_9_, true);
-            Vec3d vec3d = p_220016_1_.getLook(1.0F);
+            Vec3d vec3d1 = shooter.getUpVector(1.0F);
+            Quaternion quaternion = new Quaternion(new Vector3f(vec3d1), projectileAngle, true);
+            Vec3d vec3d = shooter.getLook(1.0F);
             Vector3f vector3f = new Vector3f(vec3d);
-            vector3f.func_214905_a(quaternion);
-            iprojectile.shoot((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), p_220016_7_, p_220016_8_);
+            vector3f.transform(quaternion);
+            iprojectile.shoot((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), velocity, inaccuracy);
          }
 
-         p_220016_3_.damageItem(flag ? 3 : 1, p_220016_1_, (p_220017_1_) -> {
-            p_220017_1_.sendBreakAnimation(p_220016_2_);
+         crossbow.damageItem(flag ? 3 : 1, shooter, (p_220017_1_) -> {
+            p_220017_1_.sendBreakAnimation(handIn);
          });
-         p_220016_0_.addEntity((Entity)iprojectile);
-         p_220016_0_.playSound((PlayerEntity)null, p_220016_1_.getPosX(), p_220016_1_.getPosY(), p_220016_1_.getPosZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, p_220016_5_);
+         worldIn.addEntity((Entity)iprojectile);
+         worldIn.playSound((PlayerEntity)null, shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
       }
    }
 
@@ -242,10 +242,10 @@ public class CrossbowItem extends ShootableItem {
       }
 
       abstractarrowentity.setHitSound(SoundEvents.ITEM_CROSSBOW_HIT);
-      abstractarrowentity.func_213865_o(true);
+      abstractarrowentity.setShotFromCrossbow(true);
       int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.PIERCING, crossbow);
       if (i > 0) {
-         abstractarrowentity.func_213872_b((byte)i);
+         abstractarrowentity.setPierceLevel((byte)i);
       }
 
       return abstractarrowentity;
@@ -253,66 +253,66 @@ public class CrossbowItem extends ShootableItem {
 
    public static void fireProjectiles(World worldIn, LivingEntity shooter, Hand handIn, ItemStack stack, float velocityIn, float inaccuracyIn) {
       List<ItemStack> list = getChargedProjectiles(stack);
-      float[] afloat = func_220028_a(shooter.getRNG());
+      float[] afloat = getRandomSoundPitches(shooter.getRNG());
 
       for(int i = 0; i < list.size(); ++i) {
          ItemStack itemstack = list.get(i);
          boolean flag = shooter instanceof PlayerEntity && ((PlayerEntity)shooter).abilities.isCreativeMode;
          if (!itemstack.isEmpty()) {
             if (i == 0) {
-               func_220016_a(worldIn, shooter, handIn, stack, itemstack, afloat[i], flag, velocityIn, inaccuracyIn, 0.0F);
+               fireProjectile(worldIn, shooter, handIn, stack, itemstack, afloat[i], flag, velocityIn, inaccuracyIn, 0.0F);
             } else if (i == 1) {
-               func_220016_a(worldIn, shooter, handIn, stack, itemstack, afloat[i], flag, velocityIn, inaccuracyIn, -10.0F);
+               fireProjectile(worldIn, shooter, handIn, stack, itemstack, afloat[i], flag, velocityIn, inaccuracyIn, -10.0F);
             } else if (i == 2) {
-               func_220016_a(worldIn, shooter, handIn, stack, itemstack, afloat[i], flag, velocityIn, inaccuracyIn, 10.0F);
+               fireProjectile(worldIn, shooter, handIn, stack, itemstack, afloat[i], flag, velocityIn, inaccuracyIn, 10.0F);
             }
          }
       }
 
-      func_220015_a(worldIn, shooter, stack);
+      fireProjectilesAfter(worldIn, shooter, stack);
    }
 
-   private static float[] func_220028_a(Random p_220028_0_) {
-      boolean flag = p_220028_0_.nextBoolean();
-      return new float[]{1.0F, func_220032_a(flag), func_220032_a(!flag)};
+   private static float[] getRandomSoundPitches(Random rand) {
+      boolean flag = rand.nextBoolean();
+      return new float[]{1.0F, getRandomSoundPitch(flag), getRandomSoundPitch(!flag)};
    }
 
-   private static float func_220032_a(boolean p_220032_0_) {
-      float f = p_220032_0_ ? 0.63F : 0.43F;
+   private static float getRandomSoundPitch(boolean flagIn) {
+      float f = flagIn ? 0.63F : 0.43F;
       return 1.0F / (random.nextFloat() * 0.5F + 1.8F) + f;
    }
 
-   private static void func_220015_a(World p_220015_0_, LivingEntity p_220015_1_, ItemStack p_220015_2_) {
-      if (p_220015_1_ instanceof ServerPlayerEntity) {
-         ServerPlayerEntity serverplayerentity = (ServerPlayerEntity)p_220015_1_;
-         if (!p_220015_0_.isRemote) {
-            CriteriaTriggers.SHOT_CROSSBOW.func_215111_a(serverplayerentity, p_220015_2_);
+   private static void fireProjectilesAfter(World worldIn, LivingEntity shooter, ItemStack stack) {
+      if (shooter instanceof ServerPlayerEntity) {
+         ServerPlayerEntity serverplayerentity = (ServerPlayerEntity)shooter;
+         if (!worldIn.isRemote) {
+            CriteriaTriggers.SHOT_CROSSBOW.func_215111_a(serverplayerentity, stack);
          }
 
-         serverplayerentity.addStat(Stats.ITEM_USED.get(p_220015_2_.getItem()));
+         serverplayerentity.addStat(Stats.ITEM_USED.get(stack.getItem()));
       }
 
-      clearProjectiles(p_220015_2_);
+      clearProjectiles(stack);
    }
 
-   public void func_219972_a(World worldIn, LivingEntity livingEntityIn, ItemStack stack, int p_219972_4_) {
+   public void func_219972_a(World worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
       if (!worldIn.isRemote) {
          int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.QUICK_CHARGE, stack);
-         SoundEvent soundevent = this.func_220025_a(i);
+         SoundEvent soundevent = this.getSoundEvent(i);
          SoundEvent soundevent1 = i == 0 ? SoundEvents.ITEM_CROSSBOW_LOADING_MIDDLE : null;
-         float f = (float)(stack.getUseDuration() - p_219972_4_) / (float)getChargeTime(stack);
+         float f = (float)(stack.getUseDuration() - count) / (float)getChargeTime(stack);
          if (f < 0.2F) {
-            this.field_220034_c = false;
-            this.field_220035_d = false;
+            this.isLoadingStart = false;
+            this.isLoadingMiddle = false;
          }
 
-         if (f >= 0.2F && !this.field_220034_c) {
-            this.field_220034_c = true;
+         if (f >= 0.2F && !this.isLoadingStart) {
+            this.isLoadingStart = true;
             worldIn.playSound((PlayerEntity)null, livingEntityIn.getPosX(), livingEntityIn.getPosY(), livingEntityIn.getPosZ(), soundevent, SoundCategory.PLAYERS, 0.5F, 1.0F);
          }
 
-         if (f >= 0.5F && soundevent1 != null && !this.field_220035_d) {
-            this.field_220035_d = true;
+         if (f >= 0.5F && soundevent1 != null && !this.isLoadingMiddle) {
+            this.isLoadingMiddle = true;
             worldIn.playSound((PlayerEntity)null, livingEntityIn.getPosX(), livingEntityIn.getPosY(), livingEntityIn.getPosZ(), soundevent1, SoundCategory.PLAYERS, 0.5F, 1.0F);
          }
       }
@@ -332,8 +332,8 @@ public class CrossbowItem extends ShootableItem {
       return UseAction.CROSSBOW;
    }
 
-   private SoundEvent func_220025_a(int p_220025_1_) {
-      switch(p_220025_1_) {
+   private SoundEvent getSoundEvent(int enchantmentLevel) {
+      switch(enchantmentLevel) {
       case 1:
          return SoundEvents.ITEM_CROSSBOW_QUICK_CHARGE_1;
       case 2:

@@ -10,21 +10,21 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class TurtleRenderer extends MobRenderer<TurtleEntity, TurtleModel<TurtleEntity>> {
-   private static final ResourceLocation field_203091_a = new ResourceLocation("textures/entity/turtle/big_sea_turtle.png");
+   private static final ResourceLocation BIG_SEA_TURTLE = new ResourceLocation("textures/entity/turtle/big_sea_turtle.png");
 
-   public TurtleRenderer(EntityRendererManager p_i48827_1_) {
-      super(p_i48827_1_, new TurtleModel<>(0.0F), 0.7F);
+   public TurtleRenderer(EntityRendererManager renderManagerIn) {
+      super(renderManagerIn, new TurtleModel<>(0.0F), 0.7F);
    }
 
-   public void func_225623_a_(TurtleEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      if (p_225623_1_.isChild()) {
+   public void render(TurtleEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      if (entityIn.isChild()) {
          this.shadowSize *= 0.5F;
       }
 
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
    public ResourceLocation getEntityTexture(TurtleEntity entity) {
-      return field_203091_a;
+      return BIG_SEA_TURTLE;
    }
 }

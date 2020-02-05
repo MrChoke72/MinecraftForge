@@ -111,6 +111,7 @@ public class BeehiveTileEntity extends TileEntity implements ITickableTileEntity
 
    public void func_226962_a_(Entity p_226962_1_, boolean p_226962_2_, int p_226962_3_) {
       if (this.field_226958_a_.size() < 3) {
+         p_226962_1_.stopRiding();
          p_226962_1_.removePassengers();
          CompoundNBT compoundnbt = new CompoundNBT();
          p_226962_1_.writeUnlessPassenger(compoundnbt);
@@ -133,7 +134,7 @@ public class BeehiveTileEntity extends TileEntity implements ITickableTileEntity
 
    private boolean func_226967_a_(BlockState p_226967_1_, CompoundNBT p_226967_2_, @Nullable List<Entity> p_226967_3_, BeehiveTileEntity.State p_226967_4_) {
       BlockPos blockpos = this.getPos();
-      if ((this.world.func_226690_K_() || this.world.isRaining()) && p_226967_4_ != BeehiveTileEntity.State.EMERGENCY) {
+      if ((this.world.isNightTime() || this.world.isRaining()) && p_226967_4_ != BeehiveTileEntity.State.EMERGENCY) {
          return false;
       } else {
          p_226967_2_.remove("Passengers");
@@ -141,7 +142,8 @@ public class BeehiveTileEntity extends TileEntity implements ITickableTileEntity
          p_226967_2_.func_229681_c_("UUID");
          Direction direction = p_226967_1_.get(BeehiveBlock.field_226872_b_);
          BlockPos blockpos1 = blockpos.offset(direction);
-         if (!this.world.getBlockState(blockpos1).getCollisionShape(this.world, blockpos1).isEmpty()) {
+         boolean flag = !this.world.getBlockState(blockpos1).getCollisionShape(this.world, blockpos1).isEmpty();
+         if (flag && p_226967_4_ != BeehiveTileEntity.State.EMERGENCY) {
             return false;
          } else {
             Entity entity = EntityType.func_220335_a(p_226967_2_, this.world, (p_226960_0_) -> {
@@ -149,7 +151,7 @@ public class BeehiveTileEntity extends TileEntity implements ITickableTileEntity
             });
             if (entity != null) {
                float f = entity.getWidth();
-               double d0 = 0.55D + (double)(f / 2.0F);
+               double d0 = flag ? 0.0D : 0.55D + (double)(f / 2.0F);
                double d1 = (double)blockpos.getX() + 0.5D + d0 * (double)direction.getXOffset();
                double d2 = (double)blockpos.getY() + 0.5D - (double)(entity.getHeight() / 2.0F);
                double d3 = (double)blockpos.getZ() + 0.5D + d0 * (double)direction.getZOffset();

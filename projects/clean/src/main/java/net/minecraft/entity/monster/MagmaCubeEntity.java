@@ -22,8 +22,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTables;
 
 public class MagmaCubeEntity extends SlimeEntity {
-   public MagmaCubeEntity(EntityType<? extends MagmaCubeEntity> p_i50202_1_, World p_i50202_2_) {
-      super(p_i50202_1_, p_i50202_2_);
+   public MagmaCubeEntity(EntityType<? extends MagmaCubeEntity> type, World worldIn) {
+      super(type, worldIn);
    }
 
    protected void registerAttributes() {
@@ -85,7 +85,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 

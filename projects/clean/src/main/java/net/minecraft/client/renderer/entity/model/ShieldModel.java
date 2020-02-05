@@ -14,13 +14,13 @@ public class ShieldModel extends Model {
    private final ModelRenderer handle;
 
    public ShieldModel() {
-      super(RenderType::func_228634_a_);
+      super(RenderType::entitySolid);
       this.textureWidth = 64;
       this.textureHeight = 64;
       this.plate = new ModelRenderer(this, 0, 0);
-      this.plate.func_228301_a_(-6.0F, -11.0F, -2.0F, 12.0F, 22.0F, 1.0F, 0.0F);
+      this.plate.addBox(-6.0F, -11.0F, -2.0F, 12.0F, 22.0F, 1.0F, 0.0F);
       this.handle = new ModelRenderer(this, 26, 0);
-      this.handle.func_228301_a_(-1.0F, -3.0F, -1.0F, 2.0F, 6.0F, 6.0F, 0.0F);
+      this.handle.addBox(-1.0F, -3.0F, -1.0F, 2.0F, 6.0F, 6.0F, 0.0F);
    }
 
    public ModelRenderer func_228293_a_() {
@@ -31,8 +31,8 @@ public class ShieldModel extends Model {
       return this.handle;
    }
 
-   public void func_225598_a_(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
-      this.plate.func_228309_a_(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_, p_225598_8_);
-      this.handle.func_228309_a_(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_, p_225598_8_);
+   public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+      this.plate.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+      this.handle.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
    }
 }

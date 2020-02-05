@@ -47,7 +47,7 @@ public abstract class FlowingFluid extends Fluid {
       builder.add(FALLING);
    }
 
-   public Vec3d func_215663_a(IBlockReader p_215663_1_, BlockPos p_215663_2_, IFluidState p_215663_3_) {
+   public Vec3d getFlow(IBlockReader p_215663_1_, BlockPos p_215663_2_, IFluidState p_215663_3_) {
       double d0 = 0.0D;
       double d1 = 0.0D;
 
@@ -57,21 +57,21 @@ public abstract class FlowingFluid extends Fluid {
             blockpos$pooledmutable.setPos(p_215663_2_).move(direction);
             IFluidState ifluidstate = p_215663_1_.getFluidState(blockpos$pooledmutable);
             if (this.isSameOrEmpty(ifluidstate)) {
-               float f = ifluidstate.func_223408_f();
+               float f = ifluidstate.getHeight();
                float f1 = 0.0F;
                if (f == 0.0F) {
                   if (!p_215663_1_.getBlockState(blockpos$pooledmutable).getMaterial().blocksMovement()) {
                      BlockPos blockpos = blockpos$pooledmutable.down();
                      IFluidState ifluidstate1 = p_215663_1_.getFluidState(blockpos);
                      if (this.isSameOrEmpty(ifluidstate1)) {
-                        f = ifluidstate1.func_223408_f();
+                        f = ifluidstate1.getHeight();
                         if (f > 0.0F) {
-                           f1 = p_215663_3_.func_223408_f() - (f - 0.8888889F);
+                           f1 = p_215663_3_.getHeight() - (f - 0.8888889F);
                         }
                      }
                   }
                } else if (f > 0.0F) {
-                  f1 = p_215663_3_.func_223408_f() - f;
+                  f1 = p_215663_3_.getHeight() - f;
                }
 
                if (f1 != 0.0F) {
@@ -110,7 +110,7 @@ public abstract class FlowingFluid extends Fluid {
       } else if (side == Direction.UP) {
          return true;
       } else {
-         return blockstate.getMaterial() == Material.ICE ? false : blockstate.func_224755_d(worldIn, neighborPos, side);
+         return blockstate.getMaterial() == Material.ICE ? false : blockstate.isSolidSide(worldIn, neighborPos, side);
       }
    }
 
@@ -162,7 +162,7 @@ public abstract class FlowingFluid extends Fluid {
          BlockPos blockpos = pos.offset(direction);
          BlockState blockstate = worldIn.getBlockState(blockpos);
          IFluidState ifluidstate = blockstate.getFluidState();
-         if (ifluidstate.getFluid().isEquivalentTo(this) && this.func_212751_a(direction, worldIn, pos, blockStateIn, blockpos, blockstate)) {
+         if (ifluidstate.getFluid().isEquivalentTo(this) && this.doesSideHaveHoles(direction, worldIn, pos, blockStateIn, blockpos, blockstate)) {
             if (ifluidstate.isSource()) {
                ++j;
             }
@@ -182,7 +182,7 @@ public abstract class FlowingFluid extends Fluid {
       BlockPos blockpos1 = pos.up();
       BlockState blockstate2 = worldIn.getBlockState(blockpos1);
       IFluidState ifluidstate2 = blockstate2.getFluidState();
-      if (!ifluidstate2.isEmpty() && ifluidstate2.getFluid().isEquivalentTo(this) && this.func_212751_a(Direction.UP, worldIn, pos, blockStateIn, blockpos1, blockstate2)) {
+      if (!ifluidstate2.isEmpty() && ifluidstate2.getFluid().isEquivalentTo(this) && this.doesSideHaveHoles(Direction.UP, worldIn, pos, blockStateIn, blockpos1, blockstate2)) {
          return this.getFlowingFluidState(8, true);
       } else {
          int k = i - this.getLevelDecreasePerBlock(worldIn);
@@ -190,7 +190,7 @@ public abstract class FlowingFluid extends Fluid {
       }
    }
 
-   private boolean func_212751_a(Direction p_212751_1_, IBlockReader p_212751_2_, BlockPos p_212751_3_, BlockState p_212751_4_, BlockPos p_212751_5_, BlockState p_212751_6_) {
+   private boolean doesSideHaveHoles(Direction p_212751_1_, IBlockReader p_212751_2_, BlockPos p_212751_3_, BlockState p_212751_4_, BlockPos p_212751_5_, BlockState p_212751_6_) {
       Object2ByteLinkedOpenHashMap<Block.RenderSideCacheKey> object2bytelinkedopenhashmap;
       if (!p_212751_4_.getBlock().isVariableOpacity() && !p_212751_6_.getBlock().isVariableOpacity()) {
          object2bytelinkedopenhashmap = field_212756_e.get();
@@ -295,7 +295,7 @@ public abstract class FlowingFluid extends Fluid {
    }
 
    private boolean func_211759_a(IBlockReader p_211759_1_, Fluid p_211759_2_, BlockPos p_211759_3_, BlockState p_211759_4_, BlockPos p_211759_5_, BlockState p_211759_6_) {
-      if (!this.func_212751_a(Direction.DOWN, p_211759_1_, p_211759_3_, p_211759_4_, p_211759_5_, p_211759_6_)) {
+      if (!this.doesSideHaveHoles(Direction.DOWN, p_211759_1_, p_211759_3_, p_211759_4_, p_211759_5_, p_211759_6_)) {
          return false;
       } else {
          return p_211759_6_.getFluidState().getFluid().isEquivalentTo(this) ? true : this.isBlocked(p_211759_1_, p_211759_5_, p_211759_6_, p_211759_2_);
@@ -303,7 +303,7 @@ public abstract class FlowingFluid extends Fluid {
    }
 
    private boolean func_211760_a(IBlockReader p_211760_1_, Fluid p_211760_2_, BlockPos p_211760_3_, BlockState p_211760_4_, Direction p_211760_5_, BlockPos p_211760_6_, BlockState p_211760_7_, IFluidState p_211760_8_) {
-      return !this.isSameAs(p_211760_8_) && this.func_212751_a(p_211760_5_, p_211760_1_, p_211760_3_, p_211760_4_, p_211760_6_, p_211760_7_) && this.isBlocked(p_211760_1_, p_211760_6_, p_211760_7_, p_211760_2_);
+      return !this.isSameAs(p_211760_8_) && this.doesSideHaveHoles(p_211760_5_, p_211760_1_, p_211760_3_, p_211760_4_, p_211760_6_, p_211760_7_) && this.isBlocked(p_211760_1_, p_211760_6_, p_211760_7_, p_211760_2_);
    }
 
    private boolean isSameAs(IFluidState stateIn) {
@@ -386,7 +386,7 @@ public abstract class FlowingFluid extends Fluid {
    }
 
    protected boolean canFlow(IBlockReader worldIn, BlockPos fromPos, BlockState fromBlockState, Direction direction, BlockPos toPos, BlockState toBlockState, IFluidState toFluidState, Fluid fluidIn) {
-      return toFluidState.func_215677_a(worldIn, toPos, fluidIn, direction) && this.func_212751_a(direction, worldIn, fromPos, fromBlockState, toPos, toBlockState) && this.isBlocked(worldIn, toPos, toBlockState, fluidIn);
+      return toFluidState.canDisplace(worldIn, toPos, fluidIn, direction) && this.doesSideHaveHoles(direction, worldIn, fromPos, fromBlockState, toPos, toBlockState) && this.isBlocked(worldIn, toPos, toBlockState, fluidIn);
    }
 
    protected abstract int getLevelDecreasePerBlock(IWorldReader worldIn);
@@ -418,21 +418,21 @@ public abstract class FlowingFluid extends Fluid {
       return state.isSource() ? 0 : 8 - Math.min(state.getLevel(), 8) + (state.get(FALLING) ? 8 : 0);
    }
 
-   private static boolean func_215666_c(IFluidState p_215666_0_, IBlockReader p_215666_1_, BlockPos p_215666_2_) {
+   private static boolean isFullHeight(IFluidState p_215666_0_, IBlockReader p_215666_1_, BlockPos p_215666_2_) {
       return p_215666_0_.getFluid().isEquivalentTo(p_215666_1_.getFluidState(p_215666_2_.up()).getFluid());
    }
 
-   public float func_215662_a(IFluidState p_215662_1_, IBlockReader p_215662_2_, BlockPos p_215662_3_) {
-      return func_215666_c(p_215662_1_, p_215662_2_, p_215662_3_) ? 1.0F : p_215662_1_.func_223408_f();
+   public float getActualHeight(IFluidState p_215662_1_, IBlockReader p_215662_2_, BlockPos p_215662_3_) {
+      return isFullHeight(p_215662_1_, p_215662_2_, p_215662_3_) ? 1.0F : p_215662_1_.getHeight();
    }
 
-   public float func_223407_a(IFluidState p_223407_1_) {
+   public float getHeight(IFluidState p_223407_1_) {
       return (float)p_223407_1_.getLevel() / 9.0F;
    }
 
    public VoxelShape func_215664_b(IFluidState p_215664_1_, IBlockReader p_215664_2_, BlockPos p_215664_3_) {
-      return p_215664_1_.getLevel() == 9 && func_215666_c(p_215664_1_, p_215664_2_, p_215664_3_) ? VoxelShapes.fullCube() : this.field_215669_f.computeIfAbsent(p_215664_1_, (p_215668_2_) -> {
-         return VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, (double)p_215668_2_.func_215679_a(p_215664_2_, p_215664_3_), 1.0D);
+      return p_215664_1_.getLevel() == 9 && isFullHeight(p_215664_1_, p_215664_2_, p_215664_3_) ? VoxelShapes.fullCube() : this.field_215669_f.computeIfAbsent(p_215664_1_, (p_215668_2_) -> {
+         return VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, (double)p_215668_2_.getActualHeight(p_215664_2_, p_215664_3_), 1.0D);
       });
    }
 }

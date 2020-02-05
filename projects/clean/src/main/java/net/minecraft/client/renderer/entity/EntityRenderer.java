@@ -26,36 +26,36 @@ public abstract class EntityRenderer<T extends Entity> {
       this.renderManager = renderManager;
    }
 
-   public final int func_229100_c_(T p_229100_1_, float p_229100_2_) {
-      return LightTexture.func_228451_a_(this.func_225624_a_(p_229100_1_, p_229100_2_), p_229100_1_.world.getLightLevel(LightType.SKY, new BlockPos(p_229100_1_.getEyePosition(p_229100_2_))));
+   public final int getPackedLight(T entityIn, float partialTicks) {
+      return LightTexture.packLight(this.getBlockLight(entityIn, partialTicks), entityIn.world.getLightFor(LightType.SKY, new BlockPos(entityIn.getEyePosition(partialTicks))));
    }
 
-   protected int func_225624_a_(T p_225624_1_, float p_225624_2_) {
-      return p_225624_1_.isBurning() ? 15 : p_225624_1_.world.getLightLevel(LightType.BLOCK, new BlockPos(p_225624_1_.getEyePosition(p_225624_2_)));
+   protected int getBlockLight(T entityIn, float partialTicks) {
+      return entityIn.isBurning() ? 15 : entityIn.world.getLightFor(LightType.BLOCK, new BlockPos(entityIn.getEyePosition(partialTicks)));
    }
 
-   public boolean func_225626_a_(T p_225626_1_, ClippingHelperImpl p_225626_2_, double p_225626_3_, double p_225626_5_, double p_225626_7_) {
-      if (!p_225626_1_.isInRangeToRender3d(p_225626_3_, p_225626_5_, p_225626_7_)) {
+   public boolean shouldRender(T livingEntityIn, ClippingHelperImpl camera, double camX, double camY, double camZ) {
+      if (!livingEntityIn.isInRangeToRender3d(camX, camY, camZ)) {
          return false;
-      } else if (p_225626_1_.ignoreFrustumCheck) {
+      } else if (livingEntityIn.ignoreFrustumCheck) {
          return true;
       } else {
-         AxisAlignedBB axisalignedbb = p_225626_1_.getRenderBoundingBox().grow(0.5D);
+         AxisAlignedBB axisalignedbb = livingEntityIn.getRenderBoundingBox().grow(0.5D);
          if (axisalignedbb.hasNaN() || axisalignedbb.getAverageEdgeLength() == 0.0D) {
-            axisalignedbb = new AxisAlignedBB(p_225626_1_.getPosX() - 2.0D, p_225626_1_.getPosY() - 2.0D, p_225626_1_.getPosZ() - 2.0D, p_225626_1_.getPosX() + 2.0D, p_225626_1_.getPosY() + 2.0D, p_225626_1_.getPosZ() + 2.0D);
+            axisalignedbb = new AxisAlignedBB(livingEntityIn.getPosX() - 2.0D, livingEntityIn.getPosY() - 2.0D, livingEntityIn.getPosZ() - 2.0D, livingEntityIn.getPosX() + 2.0D, livingEntityIn.getPosY() + 2.0D, livingEntityIn.getPosZ() + 2.0D);
          }
 
-         return p_225626_2_.func_228957_a_(axisalignedbb);
+         return camera.isBoundingBoxInFrustum(axisalignedbb);
       }
    }
 
-   public Vec3d func_225627_b_(T p_225627_1_, float p_225627_2_) {
+   public Vec3d getRenderOffset(T entityIn, float partialTicks) {
       return Vec3d.ZERO;
    }
 
-   public void func_225623_a_(T p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      if (this.canRenderName(p_225623_1_)) {
-         this.func_225629_a_(p_225623_1_, p_225623_1_.getDisplayName().getFormattedText(), p_225623_4_, p_225623_5_, p_225623_6_);
+   public void render(T entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      if (this.canRenderName(entityIn)) {
+         this.renderName(entityIn, entityIn.getDisplayName().getFormattedText(), matrixStackIn, bufferIn, packedLightIn);
       }
    }
 
@@ -69,27 +69,27 @@ public abstract class EntityRenderer<T extends Entity> {
       return this.renderManager.getFontRenderer();
    }
 
-   protected void func_225629_a_(T p_225629_1_, String p_225629_2_, MatrixStack p_225629_3_, IRenderTypeBuffer p_225629_4_, int p_225629_5_) {
-      double d0 = this.renderManager.func_229099_b_(p_225629_1_);
+   protected void renderName(T entityIn, String displayNameIn, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      double d0 = this.renderManager.squareDistanceTo(entityIn);
       if (!(d0 > 4096.0D)) {
-         boolean flag = !p_225629_1_.func_226273_bm_();
-         float f = p_225629_1_.getHeight() + 0.5F;
-         int i = "deadmau5".equals(p_225629_2_) ? -10 : 0;
-         p_225629_3_.func_227860_a_();
-         p_225629_3_.func_227861_a_(0.0D, (double)f, 0.0D);
-         p_225629_3_.func_227863_a_(this.renderManager.func_229098_b_());
-         p_225629_3_.func_227862_a_(-0.025F, -0.025F, 0.025F);
-         Matrix4f matrix4f = p_225629_3_.func_227866_c_().func_227870_a_();
-         float f1 = Minecraft.getInstance().gameSettings.func_216840_a(0.25F);
+         boolean flag = !entityIn.isDiscrete();
+         float f = entityIn.getHeight() + 0.5F;
+         int i = "deadmau5".equals(displayNameIn) ? -10 : 0;
+         matrixStackIn.push();
+         matrixStackIn.translate(0.0D, (double)f, 0.0D);
+         matrixStackIn.rotate(this.renderManager.getCameraOrientation());
+         matrixStackIn.scale(-0.025F, -0.025F, 0.025F);
+         Matrix4f matrix4f = matrixStackIn.getLast().getPositionMatrix();
+         float f1 = Minecraft.getInstance().gameSettings.getTextBackgroundOpacity(0.25F);
          int j = (int)(f1 * 255.0F) << 24;
          FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
-         float f2 = (float)(-fontrenderer.getStringWidth(p_225629_2_) / 2);
-         fontrenderer.func_228079_a_(p_225629_2_, f2, (float)i, 553648127, false, matrix4f, p_225629_4_, flag, j, p_225629_5_);
+         float f2 = (float)(-fontrenderer.getStringWidth(displayNameIn) / 2);
+         fontrenderer.renderString(displayNameIn, f2, (float)i, 553648127, false, matrix4f, bufferIn, flag, j, packedLightIn);
          if (flag) {
-            fontrenderer.func_228079_a_(p_225629_2_, f2, (float)i, -1, false, matrix4f, p_225629_4_, false, 0, p_225629_5_);
+            fontrenderer.renderString(displayNameIn, f2, (float)i, -1, false, matrix4f, bufferIn, false, 0, packedLightIn);
          }
 
-         p_225629_3_.func_227865_b_();
+         matrixStackIn.pop();
       }
    }
 

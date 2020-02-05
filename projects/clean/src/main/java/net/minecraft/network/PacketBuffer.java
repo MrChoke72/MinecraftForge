@@ -360,15 +360,15 @@ public class PacketBuffer extends ByteBuf {
       return new BlockRayTraceResult(new Vec3d((double)((float)blockpos.getX() + f), (double)((float)blockpos.getY() + f1), (double)((float)blockpos.getZ() + f2)), direction, blockpos, flag);
    }
 
-   public void writeBlockRay(BlockRayTraceResult p_218668_1_) {
-      BlockPos blockpos = p_218668_1_.getPos();
+   public void writeBlockRay(BlockRayTraceResult resultIn) {
+      BlockPos blockpos = resultIn.getPos();
       this.writeBlockPos(blockpos);
-      this.writeEnumValue(p_218668_1_.getFace());
-      Vec3d vec3d = p_218668_1_.getHitVec();
+      this.writeEnumValue(resultIn.getFace());
+      Vec3d vec3d = resultIn.getHitVec();
       this.writeFloat((float)(vec3d.x - (double)blockpos.getX()));
       this.writeFloat((float)(vec3d.y - (double)blockpos.getY()));
       this.writeFloat((float)(vec3d.z - (double)blockpos.getZ()));
-      this.writeBoolean(p_218668_1_.isInside());
+      this.writeBoolean(resultIn.isInside());
    }
 
    public int capacity() {

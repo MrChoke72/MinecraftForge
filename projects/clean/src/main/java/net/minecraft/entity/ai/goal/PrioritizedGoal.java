@@ -1,7 +1,5 @@
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.monster.HuskEntity;
-
 import java.util.EnumSet;
 import javax.annotation.Nullable;
 
@@ -49,8 +47,8 @@ public class PrioritizedGoal extends Goal {
       this.inner.tick();
    }
 
-   public void setMutexFlags(EnumSet<Goal.Flag> p_220684_1_) {
-      this.inner.setMutexFlags(p_220684_1_);
+   public void setMutexFlags(EnumSet<Goal.Flag> flagSet) {
+      this.inner.setMutexFlags(flagSet);
    }
 
    public EnumSet<Goal.Flag> getMutexFlags() {

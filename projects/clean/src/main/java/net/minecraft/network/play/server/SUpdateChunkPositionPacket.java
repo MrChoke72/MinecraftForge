@@ -30,7 +30,7 @@ public class SUpdateChunkPositionPacket implements IPacket<IClientPlayNetHandler
    }
 
    public void processPacket(IClientPlayNetHandler handler) {
-      handler.func_217267_a(this);
+      handler.handleChunkPositionPacket(this);
    }
 
    @OnlyIn(Dist.CLIENT)

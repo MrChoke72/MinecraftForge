@@ -42,10 +42,10 @@ public class SaveFormat {
    private static final DateTimeFormatter BACKUP_DATE_FORMAT = (new DateTimeFormatterBuilder()).appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD).appendLiteral('-').appendValue(ChronoField.MONTH_OF_YEAR, 2).appendLiteral('-').appendValue(ChronoField.DAY_OF_MONTH, 2).appendLiteral('_').appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('-').appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendLiteral('-').appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter();
    private final Path savesDir;
    private final Path backupsDir;
-   private final DataFixer field_215788_e;
+   private final DataFixer dataFixer;
 
    public SaveFormat(Path p_i51277_1_, Path p_i51277_2_, DataFixer p_i51277_3_) {
-      this.field_215788_e = p_i51277_3_;
+      this.dataFixer = p_i51277_3_;
 
       try {
          Files.createDirectories(Files.exists(p_i51277_1_) ? p_i51277_1_.toRealPath() : p_i51277_1_);
@@ -96,7 +96,7 @@ public class SaveFormat {
    }
 
    public SaveHandler getSaveLoader(String saveName, @Nullable MinecraftServer server) {
-      return func_215783_a(this.savesDir, this.field_215788_e, saveName, server);
+      return func_215783_a(this.savesDir, this.dataFixer, saveName, server);
    }
 
    protected static SaveHandler func_215783_a(Path p_215783_0_, DataFixer p_215783_1_, String p_215783_2_, @Nullable MinecraftServer p_215783_3_) {
@@ -109,12 +109,12 @@ public class SaveFormat {
    }
 
    public boolean convertMapFormat(String filename, IProgressUpdate progressCallback) {
-      return AnvilSaveConverter.func_215792_a(this.savesDir, this.field_215788_e, filename, progressCallback);
+      return AnvilSaveConverter.func_215792_a(this.savesDir, this.dataFixer, filename, progressCallback);
    }
 
    @Nullable
    public WorldInfo getWorldInfo(String saveName) {
-      return func_215779_a(this.savesDir, this.field_215788_e, saveName);
+      return func_215779_a(this.savesDir, this.dataFixer, saveName);
    }
 
    @Nullable

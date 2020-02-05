@@ -76,42 +76,42 @@ public class BedBlock extends HorizontalBlock implements ITileEntityProvider {
       return blockstate.getBlock() instanceof BedBlock ? blockstate.get(HORIZONTAL_FACING) : null;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.CONSUME;
       } else {
-         if (p_225533_1_.get(PART) != BedPart.HEAD) {
-            p_225533_3_ = p_225533_3_.offset(p_225533_1_.get(HORIZONTAL_FACING));
-            p_225533_1_ = p_225533_2_.getBlockState(p_225533_3_);
-            if (p_225533_1_.getBlock() != this) {
+         if (state.get(PART) != BedPart.HEAD) {
+            pos = pos.offset(state.get(HORIZONTAL_FACING));
+            state = worldIn.getBlockState(pos);
+            if (state.getBlock() != this) {
                return ActionResultType.CONSUME;
             }
          }
 
-         if (p_225533_2_.dimension.canRespawnHere() && p_225533_2_.func_226691_t_(p_225533_3_) != Biomes.NETHER) {
-            if (p_225533_1_.get(OCCUPIED)) {
-               if (!this.func_226861_a_(p_225533_2_, p_225533_3_)) {
-                  p_225533_4_.sendStatusMessage(new TranslationTextComponent("block.minecraft.bed.occupied"), true);
+         if (worldIn.dimension.canRespawnHere() && worldIn.getBiome(pos) != Biomes.NETHER) {
+            if (state.get(OCCUPIED)) {
+               if (!this.func_226861_a_(worldIn, pos)) {
+                  player.sendStatusMessage(new TranslationTextComponent("block.minecraft.bed.occupied"), true);
                }
 
                return ActionResultType.SUCCESS;
             } else {
-               p_225533_4_.trySleep(p_225533_3_).ifLeft((p_220173_1_) -> {
+               player.trySleep(pos).ifLeft((p_220173_1_) -> {
                   if (p_220173_1_ != null) {
-                     p_225533_4_.sendStatusMessage(p_220173_1_.getMessage(), true);
+                     player.sendStatusMessage(p_220173_1_.getMessage(), true);
                   }
 
                });
                return ActionResultType.SUCCESS;
             }
          } else {
-            p_225533_2_.removeBlock(p_225533_3_, false);
-            BlockPos blockpos = p_225533_3_.offset(p_225533_1_.get(HORIZONTAL_FACING).getOpposite());
-            if (p_225533_2_.getBlockState(blockpos).getBlock() == this) {
-               p_225533_2_.removeBlock(blockpos, false);
+            worldIn.removeBlock(pos, false);
+            BlockPos blockpos = pos.offset(state.get(HORIZONTAL_FACING).getOpposite());
+            if (worldIn.getBlockState(blockpos).getBlock() == this) {
+               worldIn.removeBlock(blockpos, false);
             }
 
-            p_225533_2_.createExplosion((Entity)null, DamageSource.netherBedExplosion(), (double)p_225533_3_.getX() + 0.5D, (double)p_225533_3_.getY() + 0.5D, (double)p_225533_3_.getZ() + 0.5D, 5.0F, true, Explosion.Mode.DESTROY);
+            worldIn.createExplosion((Entity)null, DamageSource.netherBedExplosion(), (double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, 5.0F, true, Explosion.Mode.DESTROY);
             return ActionResultType.SUCCESS;
          }
       }
@@ -132,7 +132,7 @@ public class BedBlock extends HorizontalBlock implements ITileEntityProvider {
    }
 
    public void onLanded(IBlockReader worldIn, Entity entityIn) {
-      if (entityIn.func_226272_bl_()) {
+      if (entityIn.isSuppressingBounce()) {
          super.onLanded(worldIn, entityIn);
       } else {
          this.func_226860_a_(entityIn);

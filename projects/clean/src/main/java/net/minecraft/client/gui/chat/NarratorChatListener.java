@@ -17,13 +17,13 @@ import org.apache.logging.log4j.Logger;
 
 @OnlyIn(Dist.CLIENT)
 public class NarratorChatListener implements IChatListener {
-   public static final ITextComponent field_216868_a = new StringTextComponent("");
+   public static final ITextComponent EMPTY = new StringTextComponent("");
    private static final Logger LOGGER = LogManager.getLogger();
    public static final NarratorChatListener INSTANCE = new NarratorChatListener();
    private final Narrator narrator = Narrator.getNarrator();
 
    public void say(ChatType chatTypeIn, ITextComponent message) {
-      NarratorStatus narratorstatus = func_223131_d();
+      NarratorStatus narratorstatus = getNarratorStatus();
       if (narratorstatus != NarratorStatus.OFF && this.narrator.active()) {
          if (narratorstatus == NarratorStatus.ALL || narratorstatus == NarratorStatus.CHAT && chatTypeIn == ChatType.CHAT || narratorstatus == NarratorStatus.SYSTEM && chatTypeIn == ChatType.SYSTEM) {
             ITextComponent itextcomponent;
@@ -33,26 +33,26 @@ public class NarratorChatListener implements IChatListener {
                itextcomponent = message;
             }
 
-            this.func_216866_a(chatTypeIn.func_218690_b(), itextcomponent.getString());
+            this.say(chatTypeIn.getInterrupts(), itextcomponent.getString());
          }
 
       }
    }
 
-   public void func_216864_a(String p_216864_1_) {
-      NarratorStatus narratorstatus = func_223131_d();
+   public void say(String p_216864_1_) {
+      NarratorStatus narratorstatus = getNarratorStatus();
       if (this.narrator.active() && narratorstatus != NarratorStatus.OFF && narratorstatus != NarratorStatus.CHAT && !p_216864_1_.isEmpty()) {
          this.narrator.clear();
-         this.func_216866_a(true, p_216864_1_);
+         this.say(true, p_216864_1_);
       }
 
    }
 
-   private static NarratorStatus func_223131_d() {
+   private static NarratorStatus getNarratorStatus() {
       return Minecraft.getInstance().gameSettings.narrator;
    }
 
-   private void func_216866_a(boolean p_216866_1_, String p_216866_2_) {
+   private void say(boolean p_216866_1_, String p_216866_2_) {
       if (SharedConstants.developmentMode) {
          LOGGER.debug("Narrating: {}", (Object)p_216866_2_);
       }
@@ -60,15 +60,15 @@ public class NarratorChatListener implements IChatListener {
       this.narrator.say(p_216866_2_, p_216866_1_);
    }
 
-   public void func_216865_a(NarratorStatus p_216865_1_) {
+   public void announceMode(NarratorStatus p_216865_1_) {
       this.clear();
-      this.narrator.say((new TranslationTextComponent("options.narrator")).getString() + " : " + (new TranslationTextComponent(p_216865_1_.func_216824_b())).getString(), true);
+      this.narrator.say((new TranslationTextComponent("options.narrator")).getString() + " : " + (new TranslationTextComponent(p_216865_1_.getResourceKey())).getString(), true);
       ToastGui toastgui = Minecraft.getInstance().getToastGui();
       if (this.narrator.active()) {
          if (p_216865_1_ == NarratorStatus.OFF) {
             SystemToast.addOrUpdate(toastgui, SystemToast.Type.NARRATOR_TOGGLE, new TranslationTextComponent("narrator.toast.disabled"), (ITextComponent)null);
          } else {
-            SystemToast.addOrUpdate(toastgui, SystemToast.Type.NARRATOR_TOGGLE, new TranslationTextComponent("narrator.toast.enabled"), new TranslationTextComponent(p_216865_1_.func_216824_b()));
+            SystemToast.addOrUpdate(toastgui, SystemToast.Type.NARRATOR_TOGGLE, new TranslationTextComponent("narrator.toast.enabled"), new TranslationTextComponent(p_216865_1_.getResourceKey()));
          }
       } else {
          SystemToast.addOrUpdate(toastgui, SystemToast.Type.NARRATOR_TOGGLE, new TranslationTextComponent("narrator.toast.disabled"), new TranslationTextComponent("options.narrator.notavailable"));
@@ -81,12 +81,12 @@ public class NarratorChatListener implements IChatListener {
    }
 
    public void clear() {
-      if (func_223131_d() != NarratorStatus.OFF && this.narrator.active()) {
+      if (getNarratorStatus() != NarratorStatus.OFF && this.narrator.active()) {
          this.narrator.clear();
       }
    }
 
-   public void func_216867_c() {
+   public void close() {
       this.narrator.destroy();
    }
 }

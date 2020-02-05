@@ -64,8 +64,8 @@ public class DataCommand {
 
       for(DataCommand.IDataProvider datacommand$idataprovider : field_218955_b) {
          literalargumentbuilder.then(datacommand$idataprovider.createArgument(Commands.literal("merge"), (p_198943_1_) -> {
-            return p_198943_1_.then(Commands.argument("nbt", NBTCompoundTagArgument.func_218043_a()).executes((p_198936_1_) -> {
-               return merge(p_198936_1_.getSource(), datacommand$idataprovider.createAccessor(p_198936_1_), NBTCompoundTagArgument.func_218042_a(p_198936_1_, "nbt"));
+            return p_198943_1_.then(Commands.argument("nbt", NBTCompoundTagArgument.nbt()).executes((p_198936_1_) -> {
+               return merge(p_198936_1_.getSource(), datacommand$idataprovider.createAccessor(p_198936_1_), NBTCompoundTagArgument.getNbt(p_198936_1_, "nbt"));
             }));
          })).then(datacommand$idataprovider.createArgument(Commands.literal("get"), (p_198940_1_) -> {
             return p_198940_1_.executes((p_198944_1_) -> {

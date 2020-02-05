@@ -74,7 +74,7 @@ public class LightningBoltEntity extends Entity {
 
       if (this.lightningState >= 0) {
          if (this.world.isRemote) {
-            this.world.func_225605_c_(2);
+            this.world.setTimeLightningFlash(2);
          } else if (!this.effectOnly) {
             double d0 = 3.0D;
             List<Entity> list = this.world.getEntitiesInAABBexcluding(this, new AxisAlignedBB(this.getPosX() - 3.0D, this.getPosY() - 3.0D, this.getPosZ() - 3.0D, this.getPosX() + 3.0D, this.getPosY() + 6.0D + 3.0D, this.getPosZ() + 3.0D), Entity::isAlive);

@@ -95,15 +95,15 @@ public class ShowWaresTask extends Task<VillagerEntity> {
 
    private void func_220555_b(VillagerEntity p_220555_1_) {
       for(MerchantOffer merchantoffer : p_220555_1_.getOffers()) {
-         if (!merchantoffer.func_222217_o() && this.func_220554_a(merchantoffer)) {
-            this.field_220560_b.add(merchantoffer.func_222200_d());
+         if (!merchantoffer.hasNoUsesLeft() && this.func_220554_a(merchantoffer)) {
+            this.field_220560_b.add(merchantoffer.getSellingStack());
          }
       }
 
    }
 
    private boolean func_220554_a(MerchantOffer p_220554_1_) {
-      return ItemStack.areItemsEqual(this.field_220559_a, p_220554_1_.func_222205_b()) || ItemStack.areItemsEqual(this.field_220559_a, p_220554_1_.func_222202_c());
+      return ItemStack.areItemsEqual(this.field_220559_a, p_220554_1_.func_222205_b()) || ItemStack.areItemsEqual(this.field_220559_a, p_220554_1_.getBuyingStackSecond());
    }
 
    private LivingEntity func_220557_c(VillagerEntity p_220557_1_) {

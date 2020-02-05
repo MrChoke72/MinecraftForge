@@ -36,7 +36,7 @@ public class SerializableTickList<T> implements ITickList<T> {
       return false;
    }
 
-   public void func_219497_a(Stream<NextTickListEntry<T>> p_219497_1_) {
+   public void addAll(Stream<NextTickListEntry<T>> p_219497_1_) {
       p_219497_1_.forEach(this.field_219500_a::add);
    }
 

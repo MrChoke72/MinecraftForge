@@ -24,17 +24,17 @@ public class ChorusFlowerBlock extends Block {
       this.setDefaultState(this.stateContainer.getBaseState().with(AGE, Integer.valueOf(0)));
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!p_225534_1_.isValidPosition(p_225534_2_, p_225534_3_)) {
-         p_225534_2_.destroyBlock(p_225534_3_, true);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!state.isValidPosition(worldIn, pos)) {
+         worldIn.destroyBlock(pos, true);
       } else {
-         BlockPos blockpos = p_225534_3_.up();
-         if (p_225534_2_.isAirBlock(blockpos) && blockpos.getY() < 256) {
-            int i = p_225534_1_.get(AGE);
+         BlockPos blockpos = pos.up();
+         if (worldIn.isAirBlock(blockpos) && blockpos.getY() < 256) {
+            int i = state.get(AGE);
             if (i < 5) {
                boolean flag = false;
                boolean flag1 = false;
-               BlockState blockstate = p_225534_2_.getBlockState(p_225534_3_.down());
+               BlockState blockstate = worldIn.getBlockState(pos.down());
                Block block = blockstate.getBlock();
                if (block == Blocks.END_STONE) {
                   flag = true;
@@ -42,7 +42,7 @@ public class ChorusFlowerBlock extends Block {
                   int j = 1;
 
                   for(int k = 0; k < 4; ++k) {
-                     Block block1 = p_225534_2_.getBlockState(p_225534_3_.down(j + 1)).getBlock();
+                     Block block1 = worldIn.getBlockState(pos.down(j + 1)).getBlock();
                      if (block1 != this.field_196405_b) {
                         if (block1 == Blocks.END_STONE) {
                            flag1 = true;
@@ -53,18 +53,18 @@ public class ChorusFlowerBlock extends Block {
                      ++j;
                   }
 
-                  if (j < 2 || j <= p_225534_4_.nextInt(flag1 ? 5 : 4)) {
+                  if (j < 2 || j <= rand.nextInt(flag1 ? 5 : 4)) {
                      flag = true;
                   }
                } else if (blockstate.isAir()) {
                   flag = true;
                }
 
-               if (flag && areAllNeighborsEmpty(p_225534_2_, blockpos, (Direction)null) && p_225534_2_.isAirBlock(p_225534_3_.up(2))) {
-                  p_225534_2_.setBlockState(p_225534_3_, this.field_196405_b.makeConnections(p_225534_2_, p_225534_3_), 2);
-                  this.placeGrownFlower(p_225534_2_, blockpos, i);
+               if (flag && areAllNeighborsEmpty(worldIn, blockpos, (Direction)null) && worldIn.isAirBlock(pos.up(2))) {
+                  worldIn.setBlockState(pos, this.field_196405_b.makeConnections(worldIn, pos), 2);
+                  this.placeGrownFlower(worldIn, blockpos, i);
                } else if (i < 4) {
-                  int l = p_225534_4_.nextInt(4);
+                  int l = rand.nextInt(4);
                   if (flag1) {
                      ++l;
                   }
@@ -72,21 +72,21 @@ public class ChorusFlowerBlock extends Block {
                   boolean flag2 = false;
 
                   for(int i1 = 0; i1 < l; ++i1) {
-                     Direction direction = Direction.Plane.HORIZONTAL.random(p_225534_4_);
-                     BlockPos blockpos1 = p_225534_3_.offset(direction);
-                     if (p_225534_2_.isAirBlock(blockpos1) && p_225534_2_.isAirBlock(blockpos1.down()) && areAllNeighborsEmpty(p_225534_2_, blockpos1, direction.getOpposite())) {
-                        this.placeGrownFlower(p_225534_2_, blockpos1, i + 1);
+                     Direction direction = Direction.Plane.HORIZONTAL.random(rand);
+                     BlockPos blockpos1 = pos.offset(direction);
+                     if (worldIn.isAirBlock(blockpos1) && worldIn.isAirBlock(blockpos1.down()) && areAllNeighborsEmpty(worldIn, blockpos1, direction.getOpposite())) {
+                        this.placeGrownFlower(worldIn, blockpos1, i + 1);
                         flag2 = true;
                      }
                   }
 
                   if (flag2) {
-                     p_225534_2_.setBlockState(p_225534_3_, this.field_196405_b.makeConnections(p_225534_2_, p_225534_3_), 2);
+                     worldIn.setBlockState(pos, this.field_196405_b.makeConnections(worldIn, pos), 2);
                   } else {
-                     this.placeDeadFlower(p_225534_2_, p_225534_3_);
+                     this.placeDeadFlower(worldIn, pos);
                   }
                } else {
-                  this.placeDeadFlower(p_225534_2_, p_225534_3_);
+                  this.placeDeadFlower(worldIn, pos);
                }
 
             }

@@ -25,7 +25,7 @@ public class TallFlowerBlock extends DoublePlantBlock implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       spawnAsEntity(p_225535_1_, p_225535_3_, new ItemStack(this));
    }
 }

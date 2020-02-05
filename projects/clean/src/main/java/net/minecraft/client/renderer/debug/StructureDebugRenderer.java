@@ -29,16 +29,16 @@ public class StructureDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.minecraft = minecraftIn;
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       ActiveRenderInfo activerenderinfo = this.minecraft.gameRenderer.getActiveRenderInfo();
       IWorld iworld = this.minecraft.world;
       DimensionType dimensiontype = iworld.getDimension().getType();
       BlockPos blockpos = new BlockPos(activerenderinfo.getProjectedView().x, 0.0D, activerenderinfo.getProjectedView().z);
-      IVertexBuilder ivertexbuilder = p_225619_2_.getBuffer(RenderType.func_228659_m_());
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.lines());
       if (this.mainBoxes.containsKey(dimensiontype)) {
          for(MutableBoundingBox mutableboundingbox : this.mainBoxes.get(dimensiontype).values()) {
             if (blockpos.withinDistance(mutableboundingbox.func_215126_f(), 500.0D)) {
-               WorldRenderer.func_228432_a_(ivertexbuilder, (double)mutableboundingbox.minX - p_225619_3_, (double)mutableboundingbox.minY - p_225619_5_, (double)mutableboundingbox.minZ - p_225619_7_, (double)(mutableboundingbox.maxX + 1) - p_225619_3_, (double)(mutableboundingbox.maxY + 1) - p_225619_5_, (double)(mutableboundingbox.maxZ + 1) - p_225619_7_, 1.0F, 1.0F, 1.0F, 1.0F);
+               WorldRenderer.drawBoundingBox(ivertexbuilder, (double)mutableboundingbox.minX - camX, (double)mutableboundingbox.minY - camY, (double)mutableboundingbox.minZ - camZ, (double)(mutableboundingbox.maxX + 1) - camX, (double)(mutableboundingbox.maxY + 1) - camY, (double)(mutableboundingbox.maxZ + 1) - camZ, 1.0F, 1.0F, 1.0F, 1.0F);
             }
          }
       }
@@ -50,9 +50,9 @@ public class StructureDebugRenderer implements DebugRenderer.IDebugRenderer {
             Boolean obool = this.subBoxFlags.get(dimensiontype).get(s);
             if (blockpos.withinDistance(mutableboundingbox1.func_215126_f(), 500.0D)) {
                if (obool) {
-                  WorldRenderer.func_228432_a_(ivertexbuilder, (double)mutableboundingbox1.minX - p_225619_3_, (double)mutableboundingbox1.minY - p_225619_5_, (double)mutableboundingbox1.minZ - p_225619_7_, (double)(mutableboundingbox1.maxX + 1) - p_225619_3_, (double)(mutableboundingbox1.maxY + 1) - p_225619_5_, (double)(mutableboundingbox1.maxZ + 1) - p_225619_7_, 0.0F, 1.0F, 0.0F, 1.0F);
+                  WorldRenderer.drawBoundingBox(ivertexbuilder, (double)mutableboundingbox1.minX - camX, (double)mutableboundingbox1.minY - camY, (double)mutableboundingbox1.minZ - camZ, (double)(mutableboundingbox1.maxX + 1) - camX, (double)(mutableboundingbox1.maxY + 1) - camY, (double)(mutableboundingbox1.maxZ + 1) - camZ, 0.0F, 1.0F, 0.0F, 1.0F);
                } else {
-                  WorldRenderer.func_228432_a_(ivertexbuilder, (double)mutableboundingbox1.minX - p_225619_3_, (double)mutableboundingbox1.minY - p_225619_5_, (double)mutableboundingbox1.minZ - p_225619_7_, (double)(mutableboundingbox1.maxX + 1) - p_225619_3_, (double)(mutableboundingbox1.maxY + 1) - p_225619_5_, (double)(mutableboundingbox1.maxZ + 1) - p_225619_7_, 0.0F, 0.0F, 1.0F, 1.0F);
+                  WorldRenderer.drawBoundingBox(ivertexbuilder, (double)mutableboundingbox1.minX - camX, (double)mutableboundingbox1.minY - camY, (double)mutableboundingbox1.minZ - camZ, (double)(mutableboundingbox1.maxX + 1) - camX, (double)(mutableboundingbox1.maxY + 1) - camY, (double)(mutableboundingbox1.maxZ + 1) - camZ, 0.0F, 0.0F, 1.0F, 1.0F);
                }
             }
          }
@@ -81,7 +81,7 @@ public class StructureDebugRenderer implements DebugRenderer.IDebugRenderer {
 
    }
 
-   public void func_217675_a() {
+   public void clear() {
       this.mainBoxes.clear();
       this.subBoxes.clear();
       this.subBoxFlags.clear();

@@ -41,20 +41,20 @@ public enum DyeColor implements IStringSerializable {
    private final int swappedColorValue;
    private final float[] colorComponentValues;
    private final int fireworkColor;
-   private final int field_218390_z;
+   private final int textColor;
 
-   private DyeColor(int p_i50049_3_, String p_i50049_4_, int p_i50049_5_, MaterialColor p_i50049_6_, int p_i50049_7_, int p_i50049_8_) {
-      this.id = p_i50049_3_;
-      this.translationKey = p_i50049_4_;
-      this.colorValue = p_i50049_5_;
-      this.mapColor = p_i50049_6_;
-      this.field_218390_z = p_i50049_8_;
-      int i = (p_i50049_5_ & 16711680) >> 16;
-      int j = (p_i50049_5_ & '\uff00') >> 8;
-      int k = (p_i50049_5_ & 255) >> 0;
+   private DyeColor(int idIn, String translationKeyIn, int colorValueIn, MaterialColor mapColorIn, int fireworkColorIn, int textColorIn) {
+      this.id = idIn;
+      this.translationKey = translationKeyIn;
+      this.colorValue = colorValueIn;
+      this.mapColor = mapColorIn;
+      this.textColor = textColorIn;
+      int i = (colorValueIn & 16711680) >> 16;
+      int j = (colorValueIn & '\uff00') >> 8;
+      int k = (colorValueIn & 255) >> 0;
       this.swappedColorValue = k << 16 | j << 8 | i << 0;
       this.colorComponentValues = new float[]{(float)i / 255.0F, (float)j / 255.0F, (float)k / 255.0F};
-      this.fireworkColor = p_i50049_7_;
+      this.fireworkColor = fireworkColorIn;
    }
 
    public int getId() {
@@ -77,8 +77,8 @@ public enum DyeColor implements IStringSerializable {
       return this.fireworkColor;
    }
 
-   public int func_218388_g() {
-      return this.field_218390_z;
+   public int getTextColor() {
+      return this.textColor;
    }
 
    public static DyeColor byId(int p_196056_0_) {

@@ -25,29 +25,29 @@ import java.util.stream.Stream;
 import net.minecraft.util.Util;
 
 public class GossipManager {
-   private final Map<UUID, GossipManager.Gossips> field_220928_a = Maps.newHashMap();
+   private final Map<UUID, GossipManager.Gossips> uuid_gossips_mapping = Maps.newHashMap();
 
-   public void func_223538_b() {
-      Iterator<GossipManager.Gossips> iterator = this.field_220928_a.values().iterator();
+   public void tick() {
+      Iterator<GossipManager.Gossips> iterator = this.uuid_gossips_mapping.values().iterator();
 
       while(iterator.hasNext()) {
          GossipManager.Gossips gossipmanager$gossips = iterator.next();
          gossipmanager$gossips.func_223529_a();
-         if (gossipmanager$gossips.func_223530_b()) {
+         if (gossipmanager$gossips.isGossipTypeMapEmpty()) {
             iterator.remove();
          }
       }
 
    }
 
-   private Stream<GossipManager.GossipEntry> func_220911_b() {
-      return this.field_220928_a.entrySet().stream().flatMap((p_220917_0_) -> {
+   private Stream<GossipManager.GossipEntry> getGossipEntries() {
+      return this.uuid_gossips_mapping.entrySet().stream().flatMap((p_220917_0_) -> {
          return p_220917_0_.getValue().func_220895_a(p_220917_0_.getKey());
       });
    }
 
    private Collection<GossipManager.GossipEntry> func_220920_a(Random p_220920_1_, int p_220920_2_) {
-      List<GossipManager.GossipEntry> list = this.func_220911_b().collect(Collectors.toList());
+      List<GossipManager.GossipEntry> list = this.getGossipEntries().collect(Collectors.toList());
       if (list.isEmpty()) {
          return Collections.emptyList();
       } else {
@@ -73,7 +73,7 @@ public class GossipManager {
    }
 
    private GossipManager.Gossips func_220926_a(UUID p_220926_1_) {
-      return this.field_220928_a.computeIfAbsent(p_220926_1_, (p_220922_0_) -> {
+      return this.uuid_gossips_mapping.computeIfAbsent(p_220926_1_, (p_220922_0_) -> {
          return new GossipManager.Gossips();
       });
    }
@@ -83,48 +83,48 @@ public class GossipManager {
       collection.forEach((p_220923_1_) -> {
          int i = p_220923_1_.value - p_220923_1_.type.field_220935_k;
          if (i >= 2) {
-            this.func_220926_a(p_220923_1_.target).field_220900_a.mergeInt(p_220923_1_.type, i, GossipManager::func_220924_a);
+            this.func_220926_a(p_220923_1_.target).gossipTypeMap.mergeInt(p_220923_1_.type, i, GossipManager::getMax);
          }
 
       });
    }
 
-   public int func_220921_a(UUID uuid, Predicate<GossipType> gossipPred) {
-      GossipManager.Gossips gossipmanager$gossips = this.field_220928_a.get(uuid);
-      return gossipmanager$gossips != null ? gossipmanager$gossips.func_220896_a(gossipPred) : 0;
+   public int func_220921_a(UUID p_220921_1_, Predicate<GossipType> p_220921_2_) {
+      GossipManager.Gossips gossipmanager$gossips = this.uuid_gossips_mapping.get(p_220921_1_);
+      return gossipmanager$gossips != null ? gossipmanager$gossips.func_220896_a(p_220921_2_) : 0;
    }
 
    public void func_220916_a(UUID p_220916_1_, GossipType p_220916_2_, int p_220916_3_) {
       GossipManager.Gossips gossipmanager$gossips = this.func_220926_a(p_220916_1_);
-      gossipmanager$gossips.field_220900_a.mergeInt(p_220916_2_, p_220916_3_, (p_220915_2_, p_220915_3_) -> {
+      gossipmanager$gossips.gossipTypeMap.mergeInt(p_220916_2_, p_220916_3_, (p_220915_2_, p_220915_3_) -> {
          return this.func_220925_a(p_220916_2_, p_220915_2_, p_220915_3_);
       });
-      gossipmanager$gossips.func_223531_a(p_220916_2_);
-      if (gossipmanager$gossips.func_223530_b()) {
-         this.field_220928_a.remove(p_220916_1_);
+      gossipmanager$gossips.putGossipType(p_220916_2_);
+      if (gossipmanager$gossips.isGossipTypeMapEmpty()) {
+         this.uuid_gossips_mapping.remove(p_220916_1_);
       }
 
    }
 
-   public <T> Dynamic<T> func_220914_a(DynamicOps<T> p_220914_1_) {
-      return new Dynamic<>(p_220914_1_, p_220914_1_.createList(this.func_220911_b().map((p_220919_1_) -> {
+   public <T> Dynamic<T> serialize(DynamicOps<T> p_220914_1_) {
+      return new Dynamic<>(p_220914_1_, p_220914_1_.createList(this.getGossipEntries().map((p_220919_1_) -> {
          return p_220919_1_.serialize(p_220914_1_);
       }).map(Dynamic::getValue)));
    }
 
-   public void func_220918_a(Dynamic<?> p_220918_1_) {
+   public void deserialize(Dynamic<?> p_220918_1_) {
       p_220918_1_.asStream().map(GossipManager.GossipEntry::deserialize).<GossipManager.GossipEntry>flatMap(Util::streamOptional).forEach((p_220927_1_) -> {
-         this.func_220926_a(p_220927_1_.target).field_220900_a.put(p_220927_1_.type, p_220927_1_.value);
+         this.func_220926_a(p_220927_1_.target).gossipTypeMap.put(p_220927_1_.type, p_220927_1_.value);
       });
    }
 
-   private static int func_220924_a(int p_220924_0_, int p_220924_1_) {
-      return Math.max(p_220924_0_, p_220924_1_);
+   private static int getMax(int value1, int value2) {
+      return Math.max(value1, value2);
    }
 
-   private int func_220925_a(GossipType p_220925_1_, int p_220925_2_, int p_220925_3_) {
+   private int func_220925_a(GossipType gossipTypeIn, int p_220925_2_, int p_220925_3_) {
       int i = p_220925_2_ + p_220925_3_;
-      return i > p_220925_1_.field_220933_i ? Math.max(p_220925_1_.field_220933_i, p_220925_2_) : i;
+      return i > gossipTypeIn.field_220933_i ? Math.max(gossipTypeIn.field_220933_i, p_220925_2_) : i;
    }
 
    static class GossipEntry {
@@ -162,13 +162,13 @@ public class GossipManager {
    }
 
    static class Gossips {
-      private final Object2IntMap<GossipType> field_220900_a = new Object2IntOpenHashMap<>();
+      private final Object2IntMap<GossipType> gossipTypeMap = new Object2IntOpenHashMap<>();
 
       private Gossips() {
       }
 
       public int func_220896_a(Predicate<GossipType> p_220896_1_) {
-         return this.field_220900_a.object2IntEntrySet().stream().filter((p_220898_1_) -> {
+         return this.gossipTypeMap.object2IntEntrySet().stream().filter((p_220898_1_) -> {
             return p_220896_1_.test(p_220898_1_.getKey());
          }).mapToInt((p_220894_0_) -> {
             return p_220894_0_.getIntValue() * (p_220894_0_.getKey()).field_220932_h;
@@ -176,13 +176,13 @@ public class GossipManager {
       }
 
       public Stream<GossipManager.GossipEntry> func_220895_a(UUID p_220895_1_) {
-         return this.field_220900_a.object2IntEntrySet().stream().map((p_220897_1_) -> {
+         return this.gossipTypeMap.object2IntEntrySet().stream().map((p_220897_1_) -> {
             return new GossipManager.GossipEntry(p_220895_1_, p_220897_1_.getKey(), p_220897_1_.getIntValue());
          });
       }
 
       public void func_223529_a() {
-         ObjectIterator<Entry<GossipType>> objectiterator = this.field_220900_a.object2IntEntrySet().iterator();
+         ObjectIterator<Entry<GossipType>> objectiterator = this.gossipTypeMap.object2IntEntrySet().iterator();
 
          while(objectiterator.hasNext()) {
             Entry<GossipType> entry = objectiterator.next();
@@ -196,24 +196,24 @@ public class GossipManager {
 
       }
 
-      public boolean func_223530_b() {
-         return this.field_220900_a.isEmpty();
+      public boolean isGossipTypeMapEmpty() {
+         return this.gossipTypeMap.isEmpty();
       }
 
-      public void func_223531_a(GossipType p_223531_1_) {
-         int i = this.field_220900_a.getInt(p_223531_1_);
+      public void putGossipType(GossipType p_223531_1_) {
+         int i = this.gossipTypeMap.getInt(p_223531_1_);
          if (i > p_223531_1_.field_220933_i) {
-            this.field_220900_a.put(p_223531_1_, p_223531_1_.field_220933_i);
+            this.gossipTypeMap.put(p_223531_1_, p_223531_1_.field_220933_i);
          }
 
          if (i < 2) {
-            this.func_223528_b(p_223531_1_);
+            this.removeGossipType(p_223531_1_);
          }
 
       }
 
-      public void func_223528_b(GossipType p_223528_1_) {
-         this.field_220900_a.removeInt(p_223528_1_);
+      public void removeGossipType(GossipType p_223528_1_) {
+         this.gossipTypeMap.removeInt(p_223528_1_);
       }
    }
 }

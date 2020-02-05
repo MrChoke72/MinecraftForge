@@ -116,7 +116,7 @@ public class ArrowEntity extends AbstractArrowEntity {
          double d2 = (double)(i >> 0 & 255) / 255.0D;
 
          for(int j = 0; j < particleCount; ++j) {
-            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.func_226282_d_(0.5D), this.func_226279_cv_(), this.func_226287_g_(0.5D), d0, d1, d2);
+            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), d0, d1, d2);
          }
 
       }
@@ -211,7 +211,7 @@ public class ArrowEntity extends AbstractArrowEntity {
             double d2 = (double)(i >> 0 & 255) / 255.0D;
 
             for(int j = 0; j < 20; ++j) {
-               this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.func_226282_d_(0.5D), this.func_226279_cv_(), this.func_226287_g_(0.5D), d0, d1, d2);
+               this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), d0, d1, d2);
             }
          }
       } else {

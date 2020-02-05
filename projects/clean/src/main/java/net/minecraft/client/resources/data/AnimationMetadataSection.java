@@ -11,9 +11,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class AnimationMetadataSection {
    public static final AnimationMetadataSectionSerializer SERIALIZER = new AnimationMetadataSectionSerializer();
-   public static final AnimationMetadataSection field_229300_b_ = new AnimationMetadataSection(Lists.newArrayList(), -1, -1, 1, false) {
-      public Pair<Integer, Integer> func_225641_a_(int p_225641_1_, int p_225641_2_) {
-         return Pair.of(p_225641_1_, p_225641_2_);
+   public static final AnimationMetadataSection EMPTY = new AnimationMetadataSection(Lists.newArrayList(), -1, -1, 1, false) {
+      public Pair<Integer, Integer> getSpriteSize(int widthIn, int heightIn) {
+         return Pair.of(widthIn, heightIn);
       }
    };
    private final List<AnimationFrame> animationFrames;
@@ -30,38 +30,38 @@ public class AnimationMetadataSection {
       this.interpolate = interpolateIn;
    }
 
-   private static boolean func_229303_b_(int p_229303_0_, int p_229303_1_) {
-      return p_229303_0_ / p_229303_1_ * p_229303_1_ == p_229303_0_;
+   private static boolean isMultipleOf(int valMul, int val) {
+      return valMul / val * val == valMul;
    }
 
-   public Pair<Integer, Integer> func_225641_a_(int p_225641_1_, int p_225641_2_) {
-      Pair<Integer, Integer> pair = this.func_229304_c_(p_225641_1_, p_225641_2_);
+   public Pair<Integer, Integer> getSpriteSize(int widthIn, int heightIn) {
+      Pair<Integer, Integer> pair = this.getFrameSize(widthIn, heightIn);
       int i = pair.getFirst();
       int j = pair.getSecond();
-      if (func_229303_b_(p_225641_1_, i) && func_229303_b_(p_225641_2_, j)) {
+      if (isMultipleOf(widthIn, i) && isMultipleOf(heightIn, j)) {
          return pair;
       } else {
-         throw new IllegalArgumentException(String.format("Image size %s,%s is not multiply of frame size %s,%s", p_225641_1_, p_225641_2_, i, j));
+         throw new IllegalArgumentException(String.format("Image size %s,%s is not multiply of frame size %s,%s", widthIn, heightIn, i, j));
       }
    }
 
-   private Pair<Integer, Integer> func_229304_c_(int p_229304_1_, int p_229304_2_) {
+   private Pair<Integer, Integer> getFrameSize(int defWidthIn, int defHeightIn) {
       if (this.frameWidth != -1) {
-         return this.frameHeight != -1 ? Pair.of(this.frameWidth, this.frameHeight) : Pair.of(this.frameWidth, p_229304_2_);
+         return this.frameHeight != -1 ? Pair.of(this.frameWidth, this.frameHeight) : Pair.of(this.frameWidth, defHeightIn);
       } else if (this.frameHeight != -1) {
-         return Pair.of(p_229304_1_, this.frameHeight);
+         return Pair.of(defWidthIn, this.frameHeight);
       } else {
-         int i = Math.min(p_229304_1_, p_229304_2_);
+         int i = Math.min(defWidthIn, defHeightIn);
          return Pair.of(i, i);
       }
    }
 
-   public int func_229301_a_(int p_229301_1_) {
-      return this.frameHeight == -1 ? p_229301_1_ : this.frameHeight;
+   public int getFrameHeight(int defHeightIn) {
+      return this.frameHeight == -1 ? defHeightIn : this.frameHeight;
    }
 
-   public int func_229302_b_(int p_229302_1_) {
-      return this.frameWidth == -1 ? p_229302_1_ : this.frameWidth;
+   public int getFrameWidth(int defWidthIn) {
+      return this.frameWidth == -1 ? defWidthIn : this.frameWidth;
    }
 
    public int getFrameCount() {

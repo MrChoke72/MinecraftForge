@@ -15,14 +15,14 @@ public abstract class EntityModel<T extends Entity> extends Model {
    public boolean isChild = true;
 
    protected EntityModel() {
-      this(RenderType::func_228640_c_);
+      this(RenderType::entityCutoutNoCull);
    }
 
    protected EntityModel(Function<ResourceLocation, RenderType> p_i225945_1_) {
       super(p_i225945_1_);
    }
 
-   public abstract void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_);
+   public abstract void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch);
 
    public void setLivingAnimations(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
    }

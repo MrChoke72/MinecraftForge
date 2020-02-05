@@ -24,7 +24,7 @@ public class RightClickBlockWithItemTrigger extends AbstractCriterionTrigger<Rig
 
    public RightClickBlockWithItemTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
       BlockPredicate blockpredicate = BlockPredicate.func_226237_a_(json.get("block"));
-      StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.func_227186_a_(json.get("state"));
+      StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.deserializeProperties(json.get("state"));
       ItemPredicate itempredicate = ItemPredicate.deserialize(json.get("item"));
       return new RightClickBlockWithItemTrigger.Instance(this.field_226692_a_, blockpredicate, statepropertiespredicate, itempredicate);
    }
@@ -49,13 +49,13 @@ public class RightClickBlockWithItemTrigger extends AbstractCriterionTrigger<Rig
       }
 
       public static RightClickBlockWithItemTrigger.Instance func_226699_a_(BlockPredicate.Builder p_226699_0_, ItemPredicate.Builder p_226699_1_) {
-         return new RightClickBlockWithItemTrigger.Instance(CriteriaTriggers.field_229863_J_.field_226692_a_, p_226699_0_.func_226245_b_(), StatePropertiesPredicate.field_227178_a_, p_226699_1_.build());
+         return new RightClickBlockWithItemTrigger.Instance(CriteriaTriggers.field_229863_J_.field_226692_a_, p_226699_0_.func_226245_b_(), StatePropertiesPredicate.EMPTY, p_226699_1_.build());
       }
 
       public boolean func_226700_a_(BlockState p_226700_1_, ServerWorld p_226700_2_, BlockPos p_226700_3_, ItemStack p_226700_4_) {
          if (!this.field_226696_a_.func_226238_a_(p_226700_2_, p_226700_3_)) {
             return false;
-         } else if (!this.field_226697_b_.func_227181_a_(p_226700_1_)) {
+         } else if (!this.field_226697_b_.matches(p_226700_1_)) {
             return false;
          } else {
             return this.field_226698_c_.test(p_226700_4_);
@@ -65,7 +65,7 @@ public class RightClickBlockWithItemTrigger extends AbstractCriterionTrigger<Rig
       public JsonElement serialize() {
          JsonObject jsonobject = new JsonObject();
          jsonobject.add("block", this.field_226696_a_.func_226236_a_());
-         jsonobject.add("state", this.field_226697_b_.func_227180_a_());
+         jsonobject.add("state", this.field_226697_b_.toJsonElement());
          jsonobject.add("item", this.field_226698_c_.serialize());
          return jsonobject;
       }

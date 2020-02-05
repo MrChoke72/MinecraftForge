@@ -21,9 +21,9 @@ public class SlideDownBlockTrigger extends AbstractCriterionTrigger<SlideDownBlo
 
    public SlideDownBlockTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
       Block block = func_227150_a_(json);
-      StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.func_227186_a_(json.get("state"));
+      StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.deserializeProperties(json.get("state"));
       if (block != null) {
-         statepropertiespredicate.func_227183_a_(block.getStateContainer(), (p_227148_1_) -> {
+         statepropertiespredicate.forEachNotPresent(block.getStateContainer(), (p_227148_1_) -> {
             throw new JsonSyntaxException("Block " + block + " has no property " + p_227148_1_);
          });
       }
@@ -60,7 +60,7 @@ public class SlideDownBlockTrigger extends AbstractCriterionTrigger<SlideDownBlo
       }
 
       public static SlideDownBlockTrigger.Instance func_227156_a_(Block p_227156_0_) {
-         return new SlideDownBlockTrigger.Instance(p_227156_0_, StatePropertiesPredicate.field_227178_a_);
+         return new SlideDownBlockTrigger.Instance(p_227156_0_, StatePropertiesPredicate.EMPTY);
       }
 
       public JsonElement serialize() {
@@ -69,7 +69,7 @@ public class SlideDownBlockTrigger extends AbstractCriterionTrigger<SlideDownBlo
             jsonobject.addProperty("block", Registry.BLOCK.getKey(this.field_227154_a_).toString());
          }
 
-         jsonobject.add("state", this.field_227155_b_.func_227180_a_());
+         jsonobject.add("state", this.field_227155_b_.toJsonElement());
          return jsonobject;
       }
 
@@ -77,7 +77,7 @@ public class SlideDownBlockTrigger extends AbstractCriterionTrigger<SlideDownBlo
          if (this.field_227154_a_ != null && p_227157_1_.getBlock() != this.field_227154_a_) {
             return false;
          } else {
-            return this.field_227155_b_.func_227181_a_(p_227157_1_);
+            return this.field_227155_b_.matches(p_227157_1_);
          }
       }
    }

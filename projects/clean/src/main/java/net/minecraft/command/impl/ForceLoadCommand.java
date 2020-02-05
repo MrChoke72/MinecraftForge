@@ -17,36 +17,36 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 
 public class ForceLoadCommand {
-   private static final Dynamic2CommandExceptionType field_212726_a = new Dynamic2CommandExceptionType((p_212724_0_, p_212724_1_) -> {
+   private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType((p_212724_0_, p_212724_1_) -> {
       return new TranslationTextComponent("commands.forceload.toobig", p_212724_0_, p_212724_1_);
    });
-   private static final Dynamic2CommandExceptionType field_212727_b = new Dynamic2CommandExceptionType((p_212717_0_, p_212717_1_) -> {
+   private static final Dynamic2CommandExceptionType QUERY_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType((p_212717_0_, p_212717_1_) -> {
       return new TranslationTextComponent("commands.forceload.query.failure", p_212717_0_, p_212717_1_);
    });
-   private static final SimpleCommandExceptionType field_212728_c = new SimpleCommandExceptionType(new TranslationTextComponent("commands.forceload.added.failure"));
-   private static final SimpleCommandExceptionType field_212729_d = new SimpleCommandExceptionType(new TranslationTextComponent("commands.forceload.removed.failure"));
+   private static final SimpleCommandExceptionType FAILED_ADD_EXCEPTION = new SimpleCommandExceptionType(new TranslationTextComponent("commands.forceload.added.failure"));
+   private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslationTextComponent("commands.forceload.removed.failure"));
 
    public static void register(CommandDispatcher<CommandSource> dispatcher) {
       dispatcher.register(Commands.literal("forceload").requires((p_212716_0_) -> {
          return p_212716_0_.hasPermissionLevel(2);
       }).then(Commands.literal("add").then(Commands.argument("from", ColumnPosArgument.columnPos()).executes((p_212711_0_) -> {
-         return func_212719_a(p_212711_0_.getSource(), ColumnPosArgument.func_218101_a(p_212711_0_, "from"), ColumnPosArgument.func_218101_a(p_212711_0_, "from"), true);
+         return doAddOrRemove(p_212711_0_.getSource(), ColumnPosArgument.fromBlockPos(p_212711_0_, "from"), ColumnPosArgument.fromBlockPos(p_212711_0_, "from"), true);
       }).then(Commands.argument("to", ColumnPosArgument.columnPos()).executes((p_212714_0_) -> {
-         return func_212719_a(p_212714_0_.getSource(), ColumnPosArgument.func_218101_a(p_212714_0_, "from"), ColumnPosArgument.func_218101_a(p_212714_0_, "to"), true);
+         return doAddOrRemove(p_212714_0_.getSource(), ColumnPosArgument.fromBlockPos(p_212714_0_, "from"), ColumnPosArgument.fromBlockPos(p_212714_0_, "to"), true);
       })))).then(Commands.literal("remove").then(Commands.argument("from", ColumnPosArgument.columnPos()).executes((p_218850_0_) -> {
-         return func_212719_a(p_218850_0_.getSource(), ColumnPosArgument.func_218101_a(p_218850_0_, "from"), ColumnPosArgument.func_218101_a(p_218850_0_, "from"), false);
+         return doAddOrRemove(p_218850_0_.getSource(), ColumnPosArgument.fromBlockPos(p_218850_0_, "from"), ColumnPosArgument.fromBlockPos(p_218850_0_, "from"), false);
       }).then(Commands.argument("to", ColumnPosArgument.columnPos()).executes((p_212718_0_) -> {
-         return func_212719_a(p_212718_0_.getSource(), ColumnPosArgument.func_218101_a(p_212718_0_, "from"), ColumnPosArgument.func_218101_a(p_212718_0_, "to"), false);
+         return doAddOrRemove(p_212718_0_.getSource(), ColumnPosArgument.fromBlockPos(p_212718_0_, "from"), ColumnPosArgument.fromBlockPos(p_212718_0_, "to"), false);
       }))).then(Commands.literal("all").executes((p_212715_0_) -> {
-         return func_212722_b(p_212715_0_.getSource());
+         return removeAll(p_212715_0_.getSource());
       }))).then(Commands.literal("query").executes((p_212710_0_) -> {
-         return func_212721_a(p_212710_0_.getSource());
+         return doList(p_212710_0_.getSource());
       }).then(Commands.argument("pos", ColumnPosArgument.columnPos()).executes((p_212723_0_) -> {
-         return func_212713_a(p_212723_0_.getSource(), ColumnPosArgument.func_218101_a(p_212723_0_, "pos"));
+         return doQuery(p_212723_0_.getSource(), ColumnPosArgument.fromBlockPos(p_212723_0_, "pos"));
       }))));
    }
 
-   private static int func_212713_a(CommandSource p_212713_0_, ColumnPos p_212713_1_) throws CommandSyntaxException {
+   private static int doQuery(CommandSource p_212713_0_, ColumnPos p_212713_1_) throws CommandSyntaxException {
       ChunkPos chunkpos = new ChunkPos(p_212713_1_.x >> 4, p_212713_1_.z >> 4);
       DimensionType dimensiontype = p_212713_0_.getWorld().getDimension().getType();
       boolean flag = p_212713_0_.getServer().getWorld(dimensiontype).getForcedChunks().contains(chunkpos.asLong());
@@ -54,11 +54,11 @@ public class ForceLoadCommand {
          p_212713_0_.sendFeedback(new TranslationTextComponent("commands.forceload.query.success", chunkpos, dimensiontype), false);
          return 1;
       } else {
-         throw field_212727_b.create(chunkpos, dimensiontype);
+         throw QUERY_FAILURE_EXCEPTION.create(chunkpos, dimensiontype);
       }
    }
 
-   private static int func_212721_a(CommandSource p_212721_0_) {
+   private static int doList(CommandSource p_212721_0_) {
       DimensionType dimensiontype = p_212721_0_.getWorld().getDimension().getType();
       LongSet longset = p_212721_0_.getServer().getWorld(dimensiontype).getForcedChunks();
       int i = longset.size();
@@ -76,7 +76,7 @@ public class ForceLoadCommand {
       return i;
    }
 
-   private static int func_212722_b(CommandSource p_212722_0_) {
+   private static int removeAll(CommandSource p_212722_0_) {
       DimensionType dimensiontype = p_212722_0_.getWorld().getDimension().getType();
       ServerWorld serverworld = p_212722_0_.getServer().getWorld(dimensiontype);
       LongSet longset = serverworld.getForcedChunks();
@@ -87,7 +87,7 @@ public class ForceLoadCommand {
       return 0;
    }
 
-   private static int func_212719_a(CommandSource p_212719_0_, ColumnPos p_212719_1_, ColumnPos p_212719_2_, boolean p_212719_3_) throws CommandSyntaxException {
+   private static int doAddOrRemove(CommandSource p_212719_0_, ColumnPos p_212719_1_, ColumnPos p_212719_2_, boolean p_212719_3_) throws CommandSyntaxException {
       int i = Math.min(p_212719_1_.x, p_212719_2_.x);
       int j = Math.min(p_212719_1_.z, p_212719_2_.z);
       int k = Math.max(p_212719_1_.x, p_212719_2_.x);
@@ -99,7 +99,7 @@ public class ForceLoadCommand {
          int l1 = l >> 4;
          long i2 = ((long)(k1 - i1) + 1L) * ((long)(l1 - j1) + 1L);
          if (i2 > 256L) {
-            throw field_212726_a.create(256, i2);
+            throw TOO_BIG_EXCEPTION.create(256, i2);
          } else {
             DimensionType dimensiontype = p_212719_0_.getWorld().getDimension().getType();
             ServerWorld serverworld = p_212719_0_.getServer().getWorld(dimensiontype);
@@ -119,7 +119,7 @@ public class ForceLoadCommand {
             }
 
             if (j2 == 0) {
-               throw (p_212719_3_ ? field_212728_c : field_212729_d).create();
+               throw (p_212719_3_ ? FAILED_ADD_EXCEPTION : REMOVE_FAILED_EXCEPTION).create();
             } else {
                if (j2 == 1) {
                   p_212719_0_.sendFeedback(new TranslationTextComponent("commands.forceload." + (p_212719_3_ ? "added" : "removed") + ".single", chunkpos, dimensiontype), true);

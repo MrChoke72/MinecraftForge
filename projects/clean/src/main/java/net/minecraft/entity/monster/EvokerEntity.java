@@ -38,8 +38,8 @@ import net.minecraft.world.World;
 public class EvokerEntity extends SpellcastingIllagerEntity {
    private SheepEntity wololoTarget;
 
-   public EvokerEntity(EntityType<? extends EvokerEntity> p_i50207_1_, World p_i50207_2_) {
-      super(p_i50207_1_, p_i50207_2_);
+   public EvokerEntity(EntityType<? extends EvokerEntity> type, World worldIn) {
+      super(type, worldIn);
       this.experienceValue = 10;
    }
 
@@ -180,7 +180,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
          while(true) {
             BlockPos blockpos1 = blockpos.down();
             BlockState blockstate = EvokerEntity.this.world.getBlockState(blockpos1);
-            if (blockstate.func_224755_d(EvokerEntity.this.world, blockpos1, Direction.UP)) {
+            if (blockstate.isSolidSide(EvokerEntity.this.world, blockpos1, Direction.UP)) {
                if (!EvokerEntity.this.world.isAirBlock(blockpos)) {
                   BlockState blockstate1 = EvokerEntity.this.world.getBlockState(blockpos);
                   VoxelShape voxelshape = blockstate1.getCollisionShape(EvokerEntity.this.world, blockpos);

@@ -30,7 +30,7 @@ public class IceAndSnowFeature extends Feature<NoFeatureConfig> {
             int i1 = worldIn.getHeight(Heightmap.Type.MOTION_BLOCKING, k, l);
             blockpos$mutable.setPos(k, i1, l);
             blockpos$mutable1.setPos(blockpos$mutable).move(Direction.DOWN, 1);
-            Biome biome = worldIn.func_226691_t_(blockpos$mutable);
+            Biome biome = worldIn.getBiome(blockpos$mutable);
             if (biome.doesWaterFreeze(worldIn, blockpos$mutable1, false)) {
                worldIn.setBlockState(blockpos$mutable1, Blocks.ICE.getDefaultState(), 2);
             }

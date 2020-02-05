@@ -32,7 +32,7 @@ public class SlabBlock extends Block implements IWaterLoggable {
       this.setDefaultState(this.getDefaultState().with(TYPE, SlabType.BOTTOM).with(WATERLOGGED, Boolean.valueOf(false)));
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return state.get(TYPE) != SlabType.DOUBLE;
    }
 

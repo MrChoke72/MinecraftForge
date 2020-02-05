@@ -30,14 +30,14 @@ public class PathfindingDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.pathMaxDistance.put(eid, distance);
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       if (!this.pathMap.isEmpty()) {
          long i = Util.milliTime();
 
          for(Integer integer : this.pathMap.keySet()) {
             Path path = this.pathMap.get(integer);
             float f = this.pathMaxDistance.get(integer);
-            func_229032_a_(path, f, true, true, p_225619_3_, p_225619_5_, p_225619_7_);
+            func_229032_a_(path, f, true, true, camX, camY, camZ);
          }
 
          for(Integer integer1 : this.creationMap.keySet().toArray(new Integer[0])) {
@@ -67,14 +67,14 @@ public class PathfindingDebugRenderer implements DebugRenderer.IDebugRenderer {
       func_229031_a_(p_229034_0_, p_229034_4_, p_229034_6_, p_229034_8_);
       BlockPos blockpos = p_229034_0_.getTargetPos();
       if (func_229033_a_(blockpos, p_229034_4_, p_229034_6_, p_229034_8_) <= 80.0F) {
-         DebugRenderer.func_217730_a((new AxisAlignedBB((double)((float)blockpos.getX() + 0.25F), (double)((float)blockpos.getY() + 0.25F), (double)blockpos.getZ() + 0.25D, (double)((float)blockpos.getX() + 0.75F), (double)((float)blockpos.getY() + 0.75F), (double)((float)blockpos.getZ() + 0.75F))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), 0.0F, 1.0F, 0.0F, 0.5F);
+         DebugRenderer.renderBox((new AxisAlignedBB((double)((float)blockpos.getX() + 0.25F), (double)((float)blockpos.getY() + 0.25F), (double)blockpos.getZ() + 0.25D, (double)((float)blockpos.getX() + 0.75F), (double)((float)blockpos.getY() + 0.75F), (double)((float)blockpos.getZ() + 0.75F))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), 0.0F, 1.0F, 0.0F, 0.5F);
 
          for(int i = 0; i < p_229034_0_.getCurrentPathLength(); ++i) {
             PathPoint pathpoint = p_229034_0_.getPathPointFromIndex(i);
             if (func_229033_a_(pathpoint.func_224759_a(), p_229034_4_, p_229034_6_, p_229034_8_) <= 80.0F) {
                float f = i == p_229034_0_.getCurrentPathIndex() ? 1.0F : 0.0F;
                float f1 = i == p_229034_0_.getCurrentPathIndex() ? 0.0F : 1.0F;
-               DebugRenderer.func_217730_a((new AxisAlignedBB((double)((float)pathpoint.x + 0.5F - p_229034_1_), (double)((float)pathpoint.y + 0.01F * (float)i), (double)((float)pathpoint.z + 0.5F - p_229034_1_), (double)((float)pathpoint.x + 0.5F + p_229034_1_), (double)((float)pathpoint.y + 0.25F + 0.01F * (float)i), (double)((float)pathpoint.z + 0.5F + p_229034_1_))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), f, 0.0F, f1, 0.5F);
+               DebugRenderer.renderBox((new AxisAlignedBB((double)((float)pathpoint.x + 0.5F - p_229034_1_), (double)((float)pathpoint.y + 0.01F * (float)i), (double)((float)pathpoint.z + 0.5F - p_229034_1_), (double)((float)pathpoint.x + 0.5F + p_229034_1_), (double)((float)pathpoint.y + 0.25F + 0.01F * (float)i), (double)((float)pathpoint.z + 0.5F + p_229034_1_))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), f, 0.0F, f1, 0.5F);
             }
          }
       }
@@ -82,13 +82,13 @@ public class PathfindingDebugRenderer implements DebugRenderer.IDebugRenderer {
       if (p_229034_2_) {
          for(PathPoint pathpoint2 : p_229034_0_.getClosedSet()) {
             if (func_229033_a_(pathpoint2.func_224759_a(), p_229034_4_, p_229034_6_, p_229034_8_) <= 80.0F) {
-               DebugRenderer.func_217730_a((new AxisAlignedBB((double)((float)pathpoint2.x + 0.5F - p_229034_1_ / 2.0F), (double)((float)pathpoint2.y + 0.01F), (double)((float)pathpoint2.z + 0.5F - p_229034_1_ / 2.0F), (double)((float)pathpoint2.x + 0.5F + p_229034_1_ / 2.0F), (double)pathpoint2.y + 0.1D, (double)((float)pathpoint2.z + 0.5F + p_229034_1_ / 2.0F))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), 1.0F, 0.8F, 0.8F, 0.5F);
+               DebugRenderer.renderBox((new AxisAlignedBB((double)((float)pathpoint2.x + 0.5F - p_229034_1_ / 2.0F), (double)((float)pathpoint2.y + 0.01F), (double)((float)pathpoint2.z + 0.5F - p_229034_1_ / 2.0F), (double)((float)pathpoint2.x + 0.5F + p_229034_1_ / 2.0F), (double)pathpoint2.y + 0.1D, (double)((float)pathpoint2.z + 0.5F + p_229034_1_ / 2.0F))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), 1.0F, 0.8F, 0.8F, 0.5F);
             }
          }
 
          for(PathPoint pathpoint3 : p_229034_0_.getOpenSet()) {
             if (func_229033_a_(pathpoint3.func_224759_a(), p_229034_4_, p_229034_6_, p_229034_8_) <= 80.0F) {
-               DebugRenderer.func_217730_a((new AxisAlignedBB((double)((float)pathpoint3.x + 0.5F - p_229034_1_ / 2.0F), (double)((float)pathpoint3.y + 0.01F), (double)((float)pathpoint3.z + 0.5F - p_229034_1_ / 2.0F), (double)((float)pathpoint3.x + 0.5F + p_229034_1_ / 2.0F), (double)pathpoint3.y + 0.1D, (double)((float)pathpoint3.z + 0.5F + p_229034_1_ / 2.0F))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), 0.8F, 1.0F, 1.0F, 0.5F);
+               DebugRenderer.renderBox((new AxisAlignedBB((double)((float)pathpoint3.x + 0.5F - p_229034_1_ / 2.0F), (double)((float)pathpoint3.y + 0.01F), (double)((float)pathpoint3.z + 0.5F - p_229034_1_ / 2.0F), (double)((float)pathpoint3.x + 0.5F + p_229034_1_ / 2.0F), (double)pathpoint3.y + 0.1D, (double)((float)pathpoint3.z + 0.5F + p_229034_1_ / 2.0F))).offset(-p_229034_4_, -p_229034_6_, -p_229034_8_), 0.8F, 1.0F, 1.0F, 0.5F);
             }
          }
       }
@@ -97,8 +97,8 @@ public class PathfindingDebugRenderer implements DebugRenderer.IDebugRenderer {
          for(int j = 0; j < p_229034_0_.getCurrentPathLength(); ++j) {
             PathPoint pathpoint1 = p_229034_0_.getPathPointFromIndex(j);
             if (func_229033_a_(pathpoint1.func_224759_a(), p_229034_4_, p_229034_6_, p_229034_8_) <= 80.0F) {
-               DebugRenderer.func_217732_a(String.format("%s", pathpoint1.nodeType), (double)pathpoint1.x + 0.5D, (double)pathpoint1.y + 0.75D, (double)pathpoint1.z + 0.5D, -1);
-               DebugRenderer.func_217732_a(String.format(Locale.ROOT, "%.2f", pathpoint1.costMalus), (double)pathpoint1.x + 0.5D, (double)pathpoint1.y + 0.25D, (double)pathpoint1.z + 0.5D, -1);
+               DebugRenderer.renderText(String.format("%s", pathpoint1.nodeType), (double)pathpoint1.x + 0.5D, (double)pathpoint1.y + 0.75D, (double)pathpoint1.z + 0.5D, -1);
+               DebugRenderer.renderText(String.format(Locale.ROOT, "%.2f", pathpoint1.costMalus), (double)pathpoint1.x + 0.5D, (double)pathpoint1.y + 0.25D, (double)pathpoint1.z + 0.5D, -1);
             }
          }
       }
@@ -118,7 +118,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.IDebugRenderer {
             int k = j >> 16 & 255;
             int l = j >> 8 & 255;
             int i1 = j & 255;
-            bufferbuilder.func_225582_a_((double)pathpoint.x - p_229031_1_ + 0.5D, (double)pathpoint.y - p_229031_3_ + 0.5D, (double)pathpoint.z - p_229031_5_ + 0.5D).func_225586_a_(k, l, i1, 255).endVertex();
+            bufferbuilder.pos((double)pathpoint.x - p_229031_1_ + 0.5D, (double)pathpoint.y - p_229031_3_ + 0.5D, (double)pathpoint.z - p_229031_5_ + 0.5D).color(k, l, i1, 255).endVertex();
          }
       }
 

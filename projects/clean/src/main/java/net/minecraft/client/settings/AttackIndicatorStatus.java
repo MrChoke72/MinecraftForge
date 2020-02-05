@@ -12,23 +12,23 @@ public enum AttackIndicatorStatus {
    CROSSHAIR(1, "options.attack.crosshair"),
    HOTBAR(2, "options.attack.hotbar");
 
-   private static final AttackIndicatorStatus[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(AttackIndicatorStatus::func_216751_a)).toArray((p_216750_0_) -> {
+   private static final AttackIndicatorStatus[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(AttackIndicatorStatus::getId)).toArray((p_216750_0_) -> {
       return new AttackIndicatorStatus[p_216750_0_];
    });
    private final int id;
-   private final String field_216754_f;
+   private final String resourceKey;
 
-   private AttackIndicatorStatus(int id, String p_i51168_4_) {
+   private AttackIndicatorStatus(int id, String keyIn) {
       this.id = id;
-      this.field_216754_f = p_i51168_4_;
+      this.resourceKey = keyIn;
    }
 
-   public int func_216751_a() {
+   public int getId() {
       return this.id;
    }
 
-   public String func_216748_b() {
-      return this.field_216754_f;
+   public String getResourceKey() {
+      return this.resourceKey;
    }
 
    public static AttackIndicatorStatus byId(int id) {

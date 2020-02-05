@@ -57,11 +57,11 @@ public class StrafePlayerPhase extends Phase {
                if (this.fireballCharge >= 5 && f >= 0.0F && f < 10.0F) {
                   double d14 = 1.0D;
                   Vec3d vec3d2 = this.dragon.getLook(1.0F);
-                  double d6 = this.dragon.field_70986_h.getPosX() - vec3d2.x * 1.0D;
-                  double d7 = this.dragon.field_70986_h.func_226283_e_(0.5D) + 0.5D;
-                  double d8 = this.dragon.field_70986_h.getPosZ() - vec3d2.z * 1.0D;
+                  double d6 = this.dragon.dragonPartHead.getPosX() - vec3d2.x * 1.0D;
+                  double d7 = this.dragon.dragonPartHead.getPosYHeight(0.5D) + 0.5D;
+                  double d8 = this.dragon.dragonPartHead.getPosZ() - vec3d2.z * 1.0D;
                   double d9 = this.attackTarget.getPosX() - d6;
-                  double d10 = this.attackTarget.func_226283_e_(0.5D) - d7;
+                  double d10 = this.attackTarget.getPosYHeight(0.5D) - d7;
                   double d11 = this.attackTarget.getPosZ() - d8;
                   this.dragon.world.playEvent((PlayerEntity)null, 1017, new BlockPos(this.dragon), 0);
                   DragonFireballEntity dragonfireballentity = new DragonFireballEntity(this.dragon.world, this.dragon, d9, d10, d11);

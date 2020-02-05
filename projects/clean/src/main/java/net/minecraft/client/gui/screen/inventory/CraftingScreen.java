@@ -20,19 +20,19 @@ public class CraftingScreen extends ContainerScreen<WorkbenchContainer> implemen
    private final RecipeBookGui recipeBookGui = new RecipeBookGui();
    private boolean widthTooNarrow;
 
-   public CraftingScreen(WorkbenchContainer p_i51094_1_, PlayerInventory p_i51094_2_, ITextComponent p_i51094_3_) {
-      super(p_i51094_1_, p_i51094_2_, p_i51094_3_);
+   public CraftingScreen(WorkbenchContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+      super(screenContainer, inv, titleIn);
    }
 
    protected void init() {
       super.init();
       this.widthTooNarrow = this.width < 379;
-      this.recipeBookGui.func_201520_a(this.width, this.height, this.minecraft, this.widthTooNarrow, this.container);
+      this.recipeBookGui.init(this.width, this.height, this.minecraft, this.widthTooNarrow, this.container);
       this.guiLeft = this.recipeBookGui.updateScreenPosition(this.widthTooNarrow, this.width, this.xSize);
       this.children.add(this.recipeBookGui);
-      this.func_212928_a(this.recipeBookGui);
+      this.setFocusedDefault(this.recipeBookGui);
       this.addButton(new ImageButton(this.guiLeft + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, (p_214076_1_) -> {
-         this.recipeBookGui.func_201518_a(this.widthTooNarrow);
+         this.recipeBookGui.initSearchBar(this.widthTooNarrow);
          this.recipeBookGui.toggleVisibility();
          this.guiLeft = this.recipeBookGui.updateScreenPosition(this.widthTooNarrow, this.width, this.xSize);
          ((ImageButton)p_214076_1_).setPosition(this.guiLeft + 5, this.height / 2 - 49);
@@ -73,8 +73,8 @@ public class CraftingScreen extends ContainerScreen<WorkbenchContainer> implemen
       this.blit(i, j, 0, 0, this.xSize, this.ySize);
    }
 
-   protected boolean isPointInRegion(int p_195359_1_, int p_195359_2_, int p_195359_3_, int p_195359_4_, double p_195359_5_, double p_195359_7_) {
-      return (!this.widthTooNarrow || !this.recipeBookGui.isVisible()) && super.isPointInRegion(p_195359_1_, p_195359_2_, p_195359_3_, p_195359_4_, p_195359_5_, p_195359_7_);
+   protected boolean isPointInRegion(int x, int y, int width, int height, double mouseX, double mouseY) {
+      return (!this.widthTooNarrow || !this.recipeBookGui.isVisible()) && super.isPointInRegion(x, y, width, height, mouseX, mouseY);
    }
 
    public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
@@ -85,9 +85,9 @@ public class CraftingScreen extends ContainerScreen<WorkbenchContainer> implemen
       }
    }
 
-   protected boolean hasClickedOutside(double p_195361_1_, double p_195361_3_, int p_195361_5_, int p_195361_6_, int p_195361_7_) {
-      boolean flag = p_195361_1_ < (double)p_195361_5_ || p_195361_3_ < (double)p_195361_6_ || p_195361_1_ >= (double)(p_195361_5_ + this.xSize) || p_195361_3_ >= (double)(p_195361_6_ + this.ySize);
-      return this.recipeBookGui.func_195604_a(p_195361_1_, p_195361_3_, this.guiLeft, this.guiTop, this.xSize, this.ySize, p_195361_7_) && flag;
+   protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
+      boolean flag = mouseX < (double)guiLeftIn || mouseY < (double)guiTopIn || mouseX >= (double)(guiLeftIn + this.xSize) || mouseY >= (double)(guiTopIn + this.ySize);
+      return this.recipeBookGui.func_195604_a(mouseX, mouseY, this.guiLeft, this.guiTop, this.xSize, this.ySize, mouseButton) && flag;
    }
 
    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
@@ -104,7 +104,7 @@ public class CraftingScreen extends ContainerScreen<WorkbenchContainer> implemen
       super.removed();
    }
 
-   public RecipeBookGui func_194310_f() {
+   public RecipeBookGui getRecipeGui() {
       return this.recipeBookGui;
    }
 }

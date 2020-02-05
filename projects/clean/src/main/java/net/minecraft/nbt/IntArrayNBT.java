@@ -10,7 +10,7 @@ import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class IntArrayNBT extends CollectionNBT<IntNBT> {
-   public static final INBTType<IntArrayNBT> field_229690_a_ = new INBTType<IntArrayNBT>() {
+   public static final INBTType<IntArrayNBT> TYPE = new INBTType<IntArrayNBT>() {
       public IntArrayNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(192L);
          int i = p_225649_1_.readInt();
@@ -66,8 +66,8 @@ public class IntArrayNBT extends CollectionNBT<IntNBT> {
       return 11;
    }
 
-   public INBTType<IntArrayNBT> func_225647_b_() {
-      return field_229690_a_;
+   public INBTType<IntArrayNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {
@@ -126,13 +126,13 @@ public class IntArrayNBT extends CollectionNBT<IntNBT> {
    }
 
    public IntNBT get(int p_get_1_) {
-      return IntNBT.func_229692_a_(this.intArray[p_get_1_]);
+      return IntNBT.valueOf(this.intArray[p_get_1_]);
    }
 
    public IntNBT set(int p_set_1_, IntNBT p_set_2_) {
       int i = this.intArray[p_set_1_];
       this.intArray[p_set_1_] = p_set_2_.getInt();
-      return IntNBT.func_229692_a_(i);
+      return IntNBT.valueOf(i);
    }
 
    public void add(int p_add_1_, IntNBT p_add_2_) {
@@ -160,7 +160,7 @@ public class IntArrayNBT extends CollectionNBT<IntNBT> {
    public IntNBT remove(int p_remove_1_) {
       int i = this.intArray[p_remove_1_];
       this.intArray = ArrayUtils.remove(this.intArray, p_remove_1_);
-      return IntNBT.func_229692_a_(i);
+      return IntNBT.valueOf(i);
    }
 
    public void clear() {

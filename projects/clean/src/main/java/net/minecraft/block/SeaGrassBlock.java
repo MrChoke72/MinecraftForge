@@ -29,7 +29,7 @@ public class SeaGrassBlock extends BushBlock implements IGrowable, ILiquidContai
    }
 
    protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
-      return state.func_224755_d(worldIn, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
+      return state.isSolidSide(worldIn, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
    }
 
    @Nullable
@@ -59,7 +59,7 @@ public class SeaGrassBlock extends BushBlock implements IGrowable, ILiquidContai
       return Fluids.WATER.getStillFluidState(false);
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       BlockState blockstate = Blocks.TALL_SEAGRASS.getDefaultState();
       BlockState blockstate1 = blockstate.with(TallSeaGrassBlock.field_208065_c, DoubleBlockHalf.UPPER);
       BlockPos blockpos = p_225535_3_.up();

@@ -31,10 +31,10 @@ public class ServerRecipePlacer<C extends IInventory> implements IRecipePlacer<I
    public void place(ServerPlayerEntity player, @Nullable IRecipe<C> recipe, boolean placeAll) {
       if (recipe != null && player.getRecipeBook().isUnlocked(recipe)) {
          this.playerInventory = player.inventory;
-         if (this.func_194328_c() || player.isCreative()) {
+         if (this.placeIntoInventory() || player.isCreative()) {
             this.recipeItemHelper.clear();
-            player.inventory.func_201571_a(this.recipeItemHelper);
-            this.recipeBookContainer.func_201771_a(this.recipeItemHelper);
+            player.inventory.accountStacks(this.recipeItemHelper);
+            this.recipeBookContainer.fillStackedContents(this.recipeItemHelper);
             if (this.recipeItemHelper.canCraft(recipe, (IntList)null)) {
                this.tryPlaceRecipe(recipe, placeAll);
             } else {
@@ -76,9 +76,9 @@ public class ServerRecipePlacer<C extends IInventory> implements IRecipePlacer<I
       }
    }
 
-   protected void tryPlaceRecipe(IRecipe<C> p_201508_1_, boolean placeAll) {
-      boolean flag = this.recipeBookContainer.matches(p_201508_1_);
-      int i = this.recipeItemHelper.getBiggestCraftableStack(p_201508_1_, (IntList)null);
+   protected void tryPlaceRecipe(IRecipe<C> recipe, boolean placeAll) {
+      boolean flag = this.recipeBookContainer.matches(recipe);
+      int i = this.recipeItemHelper.getBiggestCraftableStack(recipe, (IntList)null);
       if (flag) {
          for(int j = 0; j < this.recipeBookContainer.getHeight() * this.recipeBookContainer.getWidth() + 1; ++j) {
             if (j != this.recipeBookContainer.getOutputSlot()) {
@@ -92,7 +92,7 @@ public class ServerRecipePlacer<C extends IInventory> implements IRecipePlacer<I
 
       int j1 = this.getMaxAmount(placeAll, i, flag);
       IntList intlist = new IntArrayList();
-      if (this.recipeItemHelper.canCraft(p_201508_1_, intlist, j1)) {
+      if (this.recipeItemHelper.canCraft(recipe, intlist, j1)) {
          int k = j1;
 
          for(int l : intlist) {
@@ -102,9 +102,9 @@ public class ServerRecipePlacer<C extends IInventory> implements IRecipePlacer<I
             }
          }
 
-         if (this.recipeItemHelper.canCraft(p_201508_1_, intlist, k)) {
+         if (this.recipeItemHelper.canCraft(recipe, intlist, k)) {
             this.clear();
-            this.placeRecipe(this.recipeBookContainer.getWidth(), this.recipeBookContainer.getHeight(), this.recipeBookContainer.getOutputSlot(), p_201508_1_, intlist.iterator(), k);
+            this.placeRecipe(this.recipeBookContainer.getWidth(), this.recipeBookContainer.getHeight(), this.recipeBookContainer.getOutputSlot(), recipe, intlist.iterator(), k);
          }
       }
 
@@ -167,7 +167,7 @@ public class ServerRecipePlacer<C extends IInventory> implements IRecipePlacer<I
       }
    }
 
-   private boolean func_194328_c() {
+   private boolean placeIntoInventory() {
       List<ItemStack> list = Lists.newArrayList();
       int i = this.getEmptyPlayerSlots();
 

@@ -52,7 +52,7 @@ public class ChunkLoader implements AutoCloseable {
    }
 
    @Nullable
-   public CompoundNBT func_227078_e_(ChunkPos p_227078_1_) throws IOException {
+   public CompoundNBT readChunk(ChunkPos p_227078_1_) throws IOException {
       return this.field_227077_a_.func_227090_a_(p_227078_1_);
    }
 

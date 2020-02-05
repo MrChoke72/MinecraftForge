@@ -16,10 +16,10 @@ public class MerchantInventory implements IInventory {
    @Nullable
    private MerchantOffer field_214026_c;
    private int currentRecipeIndex;
-   private int field_214027_e;
+   private int exp;
 
-   public MerchantInventory(IMerchant p_i50071_1_) {
-      this.merchant = p_i50071_1_;
+   public MerchantInventory(IMerchant merchantIn) {
+      this.merchant = merchantIn;
    }
 
    public int getSizeInventory() {
@@ -96,23 +96,23 @@ public class MerchantInventory implements IInventory {
 
       if (itemstack.isEmpty()) {
          this.setInventorySlotContents(2, ItemStack.EMPTY);
-         this.field_214027_e = 0;
+         this.exp = 0;
       } else {
          MerchantOffers merchantoffers = this.merchant.getOffers();
          if (!merchantoffers.isEmpty()) {
             MerchantOffer merchantoffer = merchantoffers.func_222197_a(itemstack, itemstack1, this.currentRecipeIndex);
-            if (merchantoffer == null || merchantoffer.func_222217_o()) {
+            if (merchantoffer == null || merchantoffer.hasNoUsesLeft()) {
                this.field_214026_c = merchantoffer;
                merchantoffer = merchantoffers.func_222197_a(itemstack1, itemstack, this.currentRecipeIndex);
             }
 
-            if (merchantoffer != null && !merchantoffer.func_222217_o()) {
+            if (merchantoffer != null && !merchantoffer.hasNoUsesLeft()) {
                this.field_214026_c = merchantoffer;
-               this.setInventorySlotContents(2, merchantoffer.getSellingStock());
-               this.field_214027_e = merchantoffer.func_222210_n();
+               this.setInventorySlotContents(2, merchantoffer.getCopyOfSellingStack());
+               this.exp = merchantoffer.getGivenExp();
             } else {
                this.setInventorySlotContents(2, ItemStack.EMPTY);
-               this.field_214027_e = 0;
+               this.exp = 0;
             }
          }
 
@@ -135,7 +135,7 @@ public class MerchantInventory implements IInventory {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_214024_h() {
-      return this.field_214027_e;
+   public int getClientSideExp() {
+      return this.exp;
    }
 }

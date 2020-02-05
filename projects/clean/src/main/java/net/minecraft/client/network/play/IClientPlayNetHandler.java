@@ -135,7 +135,7 @@ public interface IClientPlayNetHandler extends INetHandler {
 
    void handleWindowItems(SWindowItemsPacket packetIn);
 
-   void func_217271_a(SOpenHorseWindowPacket p_217271_1_);
+   void handleOpenHorseWindow(SOpenHorseWindowPacket p_217271_1_);
 
    void handleWindowProperty(SWindowPropertyPacket packetIn);
 
@@ -261,15 +261,15 @@ public interface IClientPlayNetHandler extends INetHandler {
 
    void handleUpdateLight(SUpdateLightPacket packetIn);
 
-   void func_217268_a(SOpenBookWindowPacket p_217268_1_);
+   void handleOpenBookPacket(SOpenBookWindowPacket packetIn);
 
-   void func_217272_a(SOpenWindowPacket p_217272_1_);
+   void handleOpenWindowPacket(SOpenWindowPacket packetIn);
 
-   void func_217273_a(SMerchantOffersPacket p_217273_1_);
+   void handleMerchantOffers(SMerchantOffersPacket packetIn);
 
-   void func_217270_a(SUpdateViewDistancePacket p_217270_1_);
+   void handleUpdateViewDistancePacket(SUpdateViewDistancePacket packetIn);
 
-   void func_217267_a(SUpdateChunkPositionPacket p_217267_1_);
+   void handleChunkPositionPacket(SUpdateChunkPositionPacket packetIn);
 
    void func_225312_a(SPlayerDiggingPacket p_225312_1_);
 }

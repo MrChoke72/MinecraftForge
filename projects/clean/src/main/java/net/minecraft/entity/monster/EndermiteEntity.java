@@ -29,8 +29,8 @@ public class EndermiteEntity extends MonsterEntity {
    private int lifetime;
    private boolean playerSpawned;
 
-   public EndermiteEntity(EntityType<? extends EndermiteEntity> p_i50209_1_, World p_i50209_2_) {
-      super(p_i50209_1_, p_i50209_2_);
+   public EndermiteEntity(EntityType<? extends EndermiteEntity> type, World worldIn) {
+      super(type, worldIn);
       this.experienceValue = 3;
    }
 
@@ -55,7 +55,7 @@ public class EndermiteEntity extends MonsterEntity {
       this.getAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0D);
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -113,7 +113,7 @@ public class EndermiteEntity extends MonsterEntity {
       super.livingTick();
       if (this.world.isRemote) {
          for(int i = 0; i < 2; ++i) {
-            this.world.addParticle(ParticleTypes.PORTAL, this.func_226282_d_(0.5D), this.func_226279_cv_(), this.func_226287_g_(0.5D), (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
+            this.world.addParticle(ParticleTypes.PORTAL, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
          }
       } else {
          if (!this.isNoDespawnRequired()) {
@@ -127,8 +127,8 @@ public class EndermiteEntity extends MonsterEntity {
 
    }
 
-   public static boolean func_223328_b(EntityType<EndermiteEntity> p_223328_0_, IWorld p_223328_1_, SpawnReason p_223328_2_, BlockPos p_223328_3_, Random p_223328_4_) {
-      if (func_223324_d(p_223328_0_, p_223328_1_, p_223328_2_, p_223328_3_, p_223328_4_)) {
+   public static boolean func_223328_b(EntityType<EndermiteEntity> p_223328_0_, IWorld p_223328_1_, SpawnReason reason, BlockPos p_223328_3_, Random p_223328_4_) {
+      if (func_223324_d(p_223328_0_, p_223328_1_, reason, p_223328_3_, p_223328_4_)) {
          PlayerEntity playerentity = p_223328_1_.getClosestPlayer((double)p_223328_3_.getX() + 0.5D, (double)p_223328_3_.getY() + 0.5D, (double)p_223328_3_.getZ() + 0.5D, 5.0D, true);
          return playerentity == null;
       } else {

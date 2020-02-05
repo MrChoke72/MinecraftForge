@@ -15,7 +15,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class ListNBT extends CollectionNBT<INBT> {
-   public static final INBTType<ListNBT> field_229694_a_ = new INBTType<ListNBT>() {
+   public static final INBTType<ListNBT> TYPE = new INBTType<ListNBT>() {
       public ListNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(296L);
          if (p_225649_2_ > 512) {
@@ -80,8 +80,8 @@ public class ListNBT extends CollectionNBT<INBT> {
       return 9;
    }
 
-   public INBTType<ListNBT> func_225647_b_() {
-      return field_229694_a_;
+   public INBTType<ListNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {

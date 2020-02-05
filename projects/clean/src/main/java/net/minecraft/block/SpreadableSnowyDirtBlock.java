@@ -29,17 +29,17 @@ public abstract class SpreadableSnowyDirtBlock extends SnowyDirtBlock {
       return func_220257_b(p_220256_0_, p_220256_1_, p_220256_2_) && !p_220256_1_.getFluidState(blockpos).isTagged(FluidTags.WATER);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!func_220257_b(p_225534_1_, p_225534_2_, p_225534_3_)) {
-         p_225534_2_.setBlockState(p_225534_3_, Blocks.DIRT.getDefaultState());
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!func_220257_b(state, worldIn, pos)) {
+         worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
       } else {
-         if (p_225534_2_.getLight(p_225534_3_.up()) >= 9) {
+         if (worldIn.getLight(pos.up()) >= 9) {
             BlockState blockstate = this.getDefaultState();
 
             for(int i = 0; i < 4; ++i) {
-               BlockPos blockpos = p_225534_3_.add(p_225534_4_.nextInt(3) - 1, p_225534_4_.nextInt(5) - 3, p_225534_4_.nextInt(3) - 1);
-               if (p_225534_2_.getBlockState(blockpos).getBlock() == Blocks.DIRT && func_220256_c(blockstate, p_225534_2_, blockpos)) {
-                  p_225534_2_.setBlockState(blockpos, blockstate.with(SNOWY, Boolean.valueOf(p_225534_2_.getBlockState(blockpos.up()).getBlock() == Blocks.SNOW)));
+               BlockPos blockpos = pos.add(rand.nextInt(3) - 1, rand.nextInt(5) - 3, rand.nextInt(3) - 1);
+               if (worldIn.getBlockState(blockpos).getBlock() == Blocks.DIRT && func_220256_c(blockstate, worldIn, blockpos)) {
+                  worldIn.setBlockState(blockpos, blockstate.with(SNOWY, Boolean.valueOf(worldIn.getBlockState(blockpos.up()).getBlock() == Blocks.SNOW)));
                }
             }
          }

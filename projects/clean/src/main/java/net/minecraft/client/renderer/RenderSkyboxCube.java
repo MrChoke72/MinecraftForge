@@ -27,7 +27,7 @@ public class RenderSkyboxCube {
       RenderSystem.matrixMode(5889);
       RenderSystem.pushMatrix();
       RenderSystem.loadIdentity();
-      RenderSystem.multMatrix(Matrix4f.perspective(85.0D, (float)mc.func_228018_at_().getFramebufferWidth() / (float)mc.func_228018_at_().getFramebufferHeight(), 0.05F, 10.0F));
+      RenderSystem.multMatrix(Matrix4f.perspective(85.0D, (float)mc.getMainWindow().getFramebufferWidth() / (float)mc.getMainWindow().getFramebufferHeight(), 0.05F, 10.0F));
       RenderSystem.matrixMode(5888);
       RenderSystem.pushMatrix();
       RenderSystem.loadIdentity();
@@ -54,45 +54,45 @@ public class RenderSkyboxCube {
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             int l = Math.round(255.0F * alpha) / (j + 1);
             if (k == 0) {
-               bufferbuilder.func_225582_a_(-1.0D, -1.0D, 1.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(-1.0D, 1.0D, 1.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, 1.0D, 1.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, -1.0D, 1.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, -1.0D, 1.0D).tex(0.0F, 0.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, 1.0D, 1.0D).tex(0.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, 1.0D, 1.0D).tex(1.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, -1.0D, 1.0D).tex(1.0F, 0.0F).color(255, 255, 255, l).endVertex();
             }
 
             if (k == 1) {
-               bufferbuilder.func_225582_a_(1.0D, -1.0D, 1.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, 1.0D, 1.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, 1.0D, -1.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, -1.0D, -1.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, -1.0D, 1.0D).tex(0.0F, 0.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, 1.0D, 1.0D).tex(0.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, 1.0D, -1.0D).tex(1.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, -1.0D, -1.0D).tex(1.0F, 0.0F).color(255, 255, 255, l).endVertex();
             }
 
             if (k == 2) {
-               bufferbuilder.func_225582_a_(1.0D, -1.0D, -1.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, 1.0D, -1.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(-1.0D, 1.0D, -1.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(-1.0D, -1.0D, -1.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, -1.0D, -1.0D).tex(0.0F, 0.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, 1.0D, -1.0D).tex(0.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, 1.0D, -1.0D).tex(1.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, -1.0D, -1.0D).tex(1.0F, 0.0F).color(255, 255, 255, l).endVertex();
             }
 
             if (k == 3) {
-               bufferbuilder.func_225582_a_(-1.0D, -1.0D, -1.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(-1.0D, 1.0D, -1.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(-1.0D, 1.0D, 1.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(-1.0D, -1.0D, 1.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, -1.0D, -1.0D).tex(0.0F, 0.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, 1.0D, -1.0D).tex(0.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, 1.0D, 1.0D).tex(1.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, -1.0D, 1.0D).tex(1.0F, 0.0F).color(255, 255, 255, l).endVertex();
             }
 
             if (k == 4) {
-               bufferbuilder.func_225582_a_(-1.0D, -1.0D, -1.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(-1.0D, -1.0D, 1.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, -1.0D, 1.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, -1.0D, -1.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, -1.0D, -1.0D).tex(0.0F, 0.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, -1.0D, 1.0D).tex(0.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, -1.0D, 1.0D).tex(1.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, -1.0D, -1.0D).tex(1.0F, 0.0F).color(255, 255, 255, l).endVertex();
             }
 
             if (k == 5) {
-               bufferbuilder.func_225582_a_(-1.0D, 1.0D, 1.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(-1.0D, 1.0D, -1.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, 1.0D, -1.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(255, 255, 255, l).endVertex();
-               bufferbuilder.func_225582_a_(1.0D, 1.0D, 1.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, 1.0D, 1.0D).tex(0.0F, 0.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(-1.0D, 1.0D, -1.0D).tex(0.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, 1.0D, -1.0D).tex(1.0F, 1.0F).color(255, 255, 255, l).endVertex();
+               bufferbuilder.pos(1.0D, 1.0D, 1.0D).tex(1.0F, 0.0F).color(255, 255, 255, l).endVertex();
             }
 
             tessellator.draw();

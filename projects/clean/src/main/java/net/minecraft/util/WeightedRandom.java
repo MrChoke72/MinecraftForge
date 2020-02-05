@@ -18,7 +18,7 @@ public class WeightedRandom {
 
    public static <T extends WeightedRandom.Item> T getRandomItem(Random random, List<T> collection, int totalWeight) {
       if (totalWeight <= 0) {
-         throw Util.func_229757_c_((new IllegalArgumentException()));
+         throw Util.spinlockIfDevMode((new IllegalArgumentException()));
       } else {
          int i = random.nextInt(totalWeight);
          return getRandomItem(collection, i);

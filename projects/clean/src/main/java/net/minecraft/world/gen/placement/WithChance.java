@@ -11,7 +11,7 @@ public class WithChance extends SimplePlacement<ChanceConfig> {
       super(p_i51393_1_);
    }
 
-   public Stream<BlockPos> getPositions(Random p_212852_1_, ChanceConfig p_212852_2_, BlockPos p_212852_3_) {
-      return p_212852_1_.nextFloat() < 1.0F / (float)p_212852_2_.chance ? Stream.of(p_212852_3_) : Stream.empty();
+   public Stream<BlockPos> getPositions(Random random, ChanceConfig p_212852_2_, BlockPos pos) {
+      return random.nextFloat() < 1.0F / (float)p_212852_2_.chance ? Stream.of(pos) : Stream.empty();
    }
 }

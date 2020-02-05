@@ -12,7 +12,7 @@ public abstract class AbstractGlassBlock extends BreakableBlock {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public float func_220080_a(BlockState state, IBlockReader worldIn, BlockPos pos) {
+   public float getAmbientOcclusionLightValue(BlockState state, IBlockReader worldIn, BlockPos pos) {
       return 1.0F;
    }
 
@@ -20,7 +20,7 @@ public abstract class AbstractGlassBlock extends BreakableBlock {
       return true;
    }
 
-   public boolean func_229869_c_(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
+   public boolean causesSuffocation(BlockState state, IBlockReader worldIn, BlockPos pos) {
       return false;
    }
 

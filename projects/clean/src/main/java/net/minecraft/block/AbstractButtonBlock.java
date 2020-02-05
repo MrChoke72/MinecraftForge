@@ -45,10 +45,10 @@ public abstract class AbstractButtonBlock extends HorizontalFaceBlock {
    protected static final VoxelShape AABB_EAST_ON = Block.makeCuboidShape(0.0D, 6.0D, 5.0D, 1.0D, 10.0D, 11.0D);
    private final boolean wooden;
 
-   protected AbstractButtonBlock(boolean p_i48436_1_, Block.Properties properties) {
+   protected AbstractButtonBlock(boolean isWooden, Block.Properties properties) {
       super(properties);
       this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, AttachFace.WALL));
-      this.wooden = p_i48436_1_;
+      this.wooden = isWooden;
    }
 
    public int tickRate(IWorldReader worldIn) {
@@ -87,12 +87,12 @@ public abstract class AbstractButtonBlock extends HorizontalFaceBlock {
       }
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_1_.get(POWERED)) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (state.get(POWERED)) {
          return ActionResultType.CONSUME;
       } else {
-         this.func_226910_d_(p_225533_1_, p_225533_2_, p_225533_3_);
-         this.playSound(p_225533_4_, p_225533_2_, p_225533_3_, true);
+         this.func_226910_d_(state, worldIn, pos);
+         this.playSound(player, worldIn, pos, true);
          return ActionResultType.SUCCESS;
       }
    }
@@ -103,8 +103,8 @@ public abstract class AbstractButtonBlock extends HorizontalFaceBlock {
       p_226910_2_.getPendingBlockTicks().scheduleTick(p_226910_3_, this, this.tickRate(p_226910_2_));
    }
 
-   protected void playSound(@Nullable PlayerEntity p_196367_1_, IWorld p_196367_2_, BlockPos p_196367_3_, boolean p_196367_4_) {
-      p_196367_2_.playSound(p_196367_4_ ? p_196367_1_ : null, p_196367_3_, this.getSoundEvent(p_196367_4_), SoundCategory.BLOCKS, 0.3F, p_196367_4_ ? 0.6F : 0.5F);
+   protected void playSound(@Nullable PlayerEntity playerIn, IWorld worldIn, BlockPos pos, boolean p_196367_4_) {
+      worldIn.playSound(p_196367_4_ ? playerIn : null, pos, this.getSoundEvent(p_196367_4_), SoundCategory.BLOCKS, 0.3F, p_196367_4_ ? 0.6F : 0.5F);
    }
 
    protected abstract SoundEvent getSoundEvent(boolean p_196369_1_);
@@ -131,14 +131,14 @@ public abstract class AbstractButtonBlock extends HorizontalFaceBlock {
       return true;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_1_.get(POWERED)) {
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (state.get(POWERED)) {
          if (this.wooden) {
-            this.checkPressed(p_225534_1_, p_225534_2_, p_225534_3_);
+            this.checkPressed(state, worldIn, pos);
          } else {
-            p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(POWERED, Boolean.valueOf(false)), 3);
-            this.updateNeighbors(p_225534_1_, p_225534_2_, p_225534_3_);
-            this.playSound((PlayerEntity)null, p_225534_2_, p_225534_3_, false);
+            worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 3);
+            this.updateNeighbors(state, worldIn, pos);
+            this.playSound((PlayerEntity)null, worldIn, pos, false);
          }
 
       }
@@ -166,9 +166,9 @@ public abstract class AbstractButtonBlock extends HorizontalFaceBlock {
 
    }
 
-   private void updateNeighbors(BlockState p_196368_1_, World p_196368_2_, BlockPos p_196368_3_) {
-      p_196368_2_.notifyNeighborsOfStateChange(p_196368_3_, this);
-      p_196368_2_.notifyNeighborsOfStateChange(p_196368_3_.offset(getFacing(p_196368_1_).getOpposite()), this);
+   private void updateNeighbors(BlockState state, World worldIn, BlockPos pos) {
+      worldIn.notifyNeighborsOfStateChange(pos, this);
+      worldIn.notifyNeighborsOfStateChange(pos.offset(getFacing(state).getOpposite()), this);
    }
 
    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {

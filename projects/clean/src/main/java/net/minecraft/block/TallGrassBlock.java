@@ -27,7 +27,7 @@ public class TallGrassBlock extends BushBlock implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       DoublePlantBlock doubleplantblock = (DoublePlantBlock)(this == Blocks.FERN ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
       if (doubleplantblock.getDefaultState().isValidPosition(p_225535_1_, p_225535_3_) && p_225535_1_.isAirBlock(p_225535_3_.up())) {
          doubleplantblock.placeAt(p_225535_1_, p_225535_3_, 2);

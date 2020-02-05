@@ -65,7 +65,7 @@ public abstract class HangingEntity extends Entity {
          Direction direction = this.facingDirection.rotateYCCW();
          d0 = d0 + d4 * (double)direction.getXOffset();
          d2 = d2 + d4 * (double)direction.getZOffset();
-         this.func_226288_n_(d0, d1, d2);
+         this.setRawPosition(d0, d1, d2);
          double d6 = (double)this.getWidthPixels();
          double d7 = (double)this.getHeightPixels();
          double d8 = (double)this.getWidthPixels();
@@ -128,7 +128,12 @@ public abstract class HangingEntity extends Entity {
    }
 
    public boolean hitByEntity(Entity entityIn) {
-      return entityIn instanceof PlayerEntity ? this.attackEntityFrom(DamageSource.causePlayerDamage((PlayerEntity)entityIn), 0.0F) : false;
+      if (entityIn instanceof PlayerEntity) {
+         PlayerEntity playerentity = (PlayerEntity)entityIn;
+         return !this.world.isBlockModifiable(playerentity, this.hangingPosition) ? true : this.attackEntityFrom(DamageSource.causePlayerDamage(playerentity), 0.0F);
+      } else {
+         return false;
+      }
    }
 
    public Direction getHorizontalFacing() {

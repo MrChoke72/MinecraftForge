@@ -9,16 +9,16 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
    private final ResourceLocation defaultValueKey;
    private T defaultValue;
 
-   public DefaultedRegistry(String p_i50797_1_) {
-      this.defaultValueKey = new ResourceLocation(p_i50797_1_);
+   public DefaultedRegistry(String defaultName) {
+      this.defaultValueKey = new ResourceLocation(defaultName);
    }
 
-   public <V extends T> V register(int p_218382_1_, ResourceLocation p_218382_2_, V p_218382_3_) {
-      if (this.defaultValueKey.equals(p_218382_2_)) {
-         this.defaultValue = (T)p_218382_3_;
+   public <V extends T> V register(int id, ResourceLocation name, V instance) {
+      if (this.defaultValueKey.equals(name)) {
+         this.defaultValue = (T)instance;
       }
 
-      return super.register(p_218382_1_, p_218382_2_, p_218382_3_);
+      return super.register(id, name, instance);
    }
 
    public int getId(@Nullable T value) {

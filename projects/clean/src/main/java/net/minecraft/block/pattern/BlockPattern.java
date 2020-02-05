@@ -159,7 +159,7 @@ public class BlockPattern {
          return MoreObjects.toStringHelper(this).add("up", this.up).add("forwards", this.forwards).add("frontTopLeft", this.frontTopLeft).toString();
       }
 
-      public BlockPattern.PortalInfo func_222504_a(Direction p_222504_1_, BlockPos p_222504_2_, double p_222504_3_, Vec3d p_222504_5_, double p_222504_6_) {
+      public BlockPattern.PortalInfo getPortalInfo(Direction p_222504_1_, BlockPos p_222504_2_, double p_222504_3_, Vec3d p_222504_5_, double p_222504_6_) {
          Direction direction = this.getForwards();
          Direction direction1 = direction.rotateY();
          double d1 = (double)(this.getFrontTopLeft().getY() + 1) - p_222504_3_ * (double)this.getHeight();
@@ -201,14 +201,14 @@ public class BlockPattern {
    }
 
    public static class PortalInfo {
-      public final Vec3d field_222505_a;
-      public final Vec3d field_222506_b;
-      public final int field_222507_c;
+      public final Vec3d pos;
+      public final Vec3d motion;
+      public final int rotation;
 
       public PortalInfo(Vec3d p_i50457_1_, Vec3d p_i50457_2_, int p_i50457_3_) {
-         this.field_222505_a = p_i50457_1_;
-         this.field_222506_b = p_i50457_2_;
-         this.field_222507_c = p_i50457_3_;
+         this.pos = p_i50457_1_;
+         this.motion = p_i50457_2_;
+         this.rotation = p_i50457_3_;
       }
    }
 }

@@ -23,7 +23,7 @@ public class HorizontalFaceBlock extends HorizontalBlock {
 
    public static boolean func_220185_b(IWorldReader p_220185_0_, BlockPos p_220185_1_, Direction p_220185_2_) {
       BlockPos blockpos = p_220185_1_.offset(p_220185_2_);
-      return p_220185_0_.getBlockState(blockpos).func_224755_d(p_220185_0_, blockpos, p_220185_2_.getOpposite());
+      return p_220185_0_.getBlockState(blockpos).isSolidSide(p_220185_0_, blockpos, p_220185_2_.getOpposite());
    }
 
    @Nullable

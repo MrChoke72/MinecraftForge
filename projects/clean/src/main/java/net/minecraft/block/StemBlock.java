@@ -38,22 +38,22 @@ public class StemBlock extends BushBlock implements IGrowable {
       return state.getBlock() == Blocks.FARMLAND;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      super.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
-      if (p_225534_2_.func_226659_b_(p_225534_3_, 0) >= 9) {
-         float f = CropsBlock.getGrowthChance(this, p_225534_2_, p_225534_3_);
-         if (p_225534_4_.nextInt((int)(25.0F / f) + 1) == 0) {
-            int i = p_225534_1_.get(AGE);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      super.tick(state, worldIn, pos, rand);
+      if (worldIn.getLightSubtracted(pos, 0) >= 9) {
+         float f = CropsBlock.getGrowthChance(this, worldIn, pos);
+         if (rand.nextInt((int)(25.0F / f) + 1) == 0) {
+            int i = state.get(AGE);
             if (i < 7) {
-               p_225534_1_ = p_225534_1_.with(AGE, Integer.valueOf(i + 1));
-               p_225534_2_.setBlockState(p_225534_3_, p_225534_1_, 2);
+               state = state.with(AGE, Integer.valueOf(i + 1));
+               worldIn.setBlockState(pos, state, 2);
             } else {
-               Direction direction = Direction.Plane.HORIZONTAL.random(p_225534_4_);
-               BlockPos blockpos = p_225534_3_.offset(direction);
-               Block block = p_225534_2_.getBlockState(blockpos.down()).getBlock();
-               if (p_225534_2_.getBlockState(blockpos).isAir() && (block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
-                  p_225534_2_.setBlockState(blockpos, this.crop.getDefaultState());
-                  p_225534_2_.setBlockState(p_225534_3_, this.crop.getAttachedStem().getDefaultState().with(HorizontalBlock.HORIZONTAL_FACING, direction));
+               Direction direction = Direction.Plane.HORIZONTAL.random(rand);
+               BlockPos blockpos = pos.offset(direction);
+               Block block = worldIn.getBlockState(blockpos.down()).getBlock();
+               if (worldIn.getBlockState(blockpos).isAir() && (block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
+                  worldIn.setBlockState(blockpos, this.crop.getDefaultState());
+                  worldIn.setBlockState(pos, this.crop.getAttachedStem().getDefaultState().with(HorizontalBlock.HORIZONTAL_FACING, direction));
                }
             }
          }
@@ -84,12 +84,12 @@ public class StemBlock extends BushBlock implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       int i = Math.min(7, p_225535_4_.get(AGE) + MathHelper.nextInt(p_225535_1_.rand, 2, 5));
       BlockState blockstate = p_225535_4_.with(AGE, Integer.valueOf(i));
       p_225535_1_.setBlockState(p_225535_3_, blockstate, 2);
       if (i == 7) {
-         blockstate.func_227033_a_(p_225535_1_, p_225535_3_, p_225535_1_.rand);
+         blockstate.tick(p_225535_1_, p_225535_3_, p_225535_1_.rand);
       }
 
    }

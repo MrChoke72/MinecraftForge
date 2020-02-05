@@ -18,8 +18,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class RenderTypeLookup {
-   private static final Map<Block, RenderType> field_228386_a_ = Util.make(Maps.newHashMap(), (p_228395_0_) -> {
-      RenderType rendertype = RenderType.func_228641_d_();
+   private static final Map<Block, RenderType> TYPES_BY_BLOCK = Util.make(Maps.newHashMap(), (p_228395_0_) -> {
+      RenderType rendertype = RenderType.cutoutMipped();
       p_228395_0_.put(Blocks.GRASS_BLOCK, rendertype);
       p_228395_0_.put(Blocks.IRON_BARS, rendertype);
       p_228395_0_.put(Blocks.GLASS_PANE, rendertype);
@@ -31,7 +31,7 @@ public class RenderTypeLookup {
       p_228395_0_.put(Blocks.ACACIA_LEAVES, rendertype);
       p_228395_0_.put(Blocks.BIRCH_LEAVES, rendertype);
       p_228395_0_.put(Blocks.DARK_OAK_LEAVES, rendertype);
-      RenderType rendertype1 = RenderType.func_228643_e_();
+      RenderType rendertype1 = RenderType.cutout();
       p_228395_0_.put(Blocks.OAK_SAPLING, rendertype1);
       p_228395_0_.put(Blocks.SPRUCE_SAPLING, rendertype1);
       p_228395_0_.put(Blocks.BIRCH_SAPLING, rendertype1);
@@ -197,7 +197,7 @@ public class RenderTypeLookup {
       p_228395_0_.put(Blocks.LANTERN, rendertype1);
       p_228395_0_.put(Blocks.CAMPFIRE, rendertype1);
       p_228395_0_.put(Blocks.SWEET_BERRY_BUSH, rendertype1);
-      RenderType rendertype2 = RenderType.func_228645_f_();
+      RenderType rendertype2 = RenderType.translucent();
       p_228395_0_.put(Blocks.ICE, rendertype2);
       p_228395_0_.put(Blocks.NETHER_PORTAL, rendertype2);
       p_228395_0_.put(Blocks.WHITE_STAINED_GLASS, rendertype2);
@@ -243,44 +243,44 @@ public class RenderTypeLookup {
       //AH ADD END ****
 
    });
-   private static final Map<Fluid, RenderType> field_228387_b_ = Util.make(Maps.newHashMap(), (p_228392_0_) -> {
-      RenderType rendertype = RenderType.func_228645_f_();
+   private static final Map<Fluid, RenderType> TYPES_BY_FLUID = Util.make(Maps.newHashMap(), (p_228392_0_) -> {
+      RenderType rendertype = RenderType.translucent();
       p_228392_0_.put(Fluids.FLOWING_WATER, rendertype);
       p_228392_0_.put(Fluids.WATER, rendertype);
    });
-   private static boolean field_228388_c_;
+   private static boolean fancyGraphics;
 
-   public static RenderType func_228390_a_(BlockState p_228390_0_) {
-      Block block = p_228390_0_.getBlock();
+   public static RenderType getChunkRenderType(BlockState blockStateIn) {
+      Block block = blockStateIn.getBlock();
       if (block instanceof LeavesBlock) {
-         return field_228388_c_ ? RenderType.func_228641_d_() : RenderType.func_228639_c_();
+         return fancyGraphics ? RenderType.cutoutMipped() : RenderType.solid();
       } else {
-         RenderType rendertype = field_228386_a_.get(block);
-         return rendertype != null ? rendertype : RenderType.func_228639_c_();
+         RenderType rendertype = TYPES_BY_BLOCK.get(block);
+         return rendertype != null ? rendertype : RenderType.solid();
       }
    }
 
-   public static RenderType func_228394_b_(BlockState p_228394_0_) {
-      RenderType rendertype = func_228390_a_(p_228394_0_);
-      return rendertype == RenderType.func_228645_f_() ? Atlases.func_228784_i_() : Atlases.func_228783_h_();
+   public static RenderType getRenderType(BlockState blockStateIn) {
+      RenderType rendertype = getChunkRenderType(blockStateIn);
+      return rendertype == RenderType.translucent() ? Atlases.getTranslucentBlockType() : Atlases.getCutoutBlockType();
    }
 
-   public static RenderType func_228389_a_(ItemStack p_228389_0_) {
-      Item item = p_228389_0_.getItem();
+   public static RenderType getRenderType(ItemStack itemStackIn) {
+      Item item = itemStackIn.getItem();
       if (item instanceof BlockItem) {
          Block block = ((BlockItem)item).getBlock();
-         return func_228394_b_(block.getDefaultState());
+         return getRenderType(block.getDefaultState());
       } else {
-         return Atlases.func_228784_i_();
+         return Atlases.getTranslucentBlockType();
       }
    }
 
-   public static RenderType func_228391_a_(IFluidState p_228391_0_) {
-      RenderType rendertype = field_228387_b_.get(p_228391_0_.getFluid());
-      return rendertype != null ? rendertype : RenderType.func_228639_c_();
+   public static RenderType getRenderType(IFluidState fluidStateIn) {
+      RenderType rendertype = TYPES_BY_FLUID.get(fluidStateIn.getFluid());
+      return rendertype != null ? rendertype : RenderType.solid();
    }
 
-   public static void func_228393_a_(boolean p_228393_0_) {
-      field_228388_c_ = p_228393_0_;
+   public static void setFancyGraphics(boolean fancyIn) {
+      fancyGraphics = fancyIn;
    }
 }

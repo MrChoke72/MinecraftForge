@@ -20,10 +20,10 @@ public class GhastRenderer extends MobRenderer<GhastEntity, GhastModel<GhastEnti
       return entity.isAttacking() ? GHAST_SHOOTING_TEXTURES : GHAST_TEXTURES;
    }
 
-   protected void func_225620_a_(GhastEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
+   protected void preRenderCallback(GhastEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
       float f = 1.0F;
       float f1 = 4.5F;
       float f2 = 4.5F;
-      p_225620_2_.func_227862_a_(4.5F, 4.5F, 4.5F);
+      matrixStackIn.scale(4.5F, 4.5F, 4.5F);
    }
 }

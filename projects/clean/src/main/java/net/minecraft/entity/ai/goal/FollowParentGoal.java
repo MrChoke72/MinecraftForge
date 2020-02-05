@@ -4,27 +4,27 @@ import java.util.List;
 import net.minecraft.entity.passive.AnimalEntity;
 
 public class FollowParentGoal extends Goal {
-   private final AnimalEntity field_75348_a;
-   private AnimalEntity field_75346_b;
+   private final AnimalEntity childAnimal;
+   private AnimalEntity parentAnimal;
    private final double moveSpeed;
    private int delayCounter;
 
    public FollowParentGoal(AnimalEntity animal, double speed) {
-      this.field_75348_a = animal;
+      this.childAnimal = animal;
       this.moveSpeed = speed;
    }
 
    public boolean shouldExecute() {
-      if (this.field_75348_a.getGrowingAge() >= 0) {
+      if (this.childAnimal.getGrowingAge() >= 0) {
          return false;
       } else {
-         List<AnimalEntity> list = this.field_75348_a.world.getEntitiesWithinAABB(this.field_75348_a.getClass(), this.field_75348_a.getBoundingBox().grow(8.0D, 4.0D, 8.0D));
+         List<AnimalEntity> list = this.childAnimal.world.getEntitiesWithinAABB(this.childAnimal.getClass(), this.childAnimal.getBoundingBox().grow(8.0D, 4.0D, 8.0D));
          AnimalEntity animalentity = null;
          double d0 = Double.MAX_VALUE;
 
          for(AnimalEntity animalentity1 : list) {
             if (animalentity1.getGrowingAge() >= 0) {
-               double d1 = this.field_75348_a.getDistanceSq(animalentity1);
+               double d1 = this.childAnimal.getDistanceSq(animalentity1);
                if (!(d1 > d0)) {
                   d0 = d1;
                   animalentity = animalentity1;
@@ -37,19 +37,19 @@ public class FollowParentGoal extends Goal {
          } else if (d0 < 9.0D) {
             return false;
          } else {
-            this.field_75346_b = animalentity;
+            this.parentAnimal = animalentity;
             return true;
          }
       }
    }
 
    public boolean shouldContinueExecuting() {
-      if (this.field_75348_a.getGrowingAge() >= 0) {
+      if (this.childAnimal.getGrowingAge() >= 0) {
          return false;
-      } else if (!this.field_75346_b.isAlive()) {
+      } else if (!this.parentAnimal.isAlive()) {
          return false;
       } else {
-         double d0 = this.field_75348_a.getDistanceSq(this.field_75346_b);
+         double d0 = this.childAnimal.getDistanceSq(this.parentAnimal);
          return !(d0 < 9.0D) && !(d0 > 256.0D);
       }
    }
@@ -59,13 +59,13 @@ public class FollowParentGoal extends Goal {
    }
 
    public void resetTask() {
-      this.field_75346_b = null;
+      this.parentAnimal = null;
    }
 
    public void tick() {
       if (--this.delayCounter <= 0) {
          this.delayCounter = 10;
-         this.field_75348_a.getNavigator().tryMoveToEntityLiving(this.field_75346_b, this.moveSpeed);
+         this.childAnimal.getNavigator().tryMoveToEntityLiving(this.parentAnimal, this.moveSpeed);
       }
    }
 }

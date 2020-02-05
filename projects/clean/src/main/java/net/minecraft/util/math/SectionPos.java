@@ -144,11 +144,11 @@ public class SectionPos extends Vec3i {
       return BlockPos.getAllInBox(this.getWorldStartX(), this.getWorldStartY(), this.getWorldStartZ(), this.getWorldEndX(), this.getWorldEndY(), this.getWorldEndZ());
    }
 
-   public static Stream<SectionPos> getAllInBox(SectionPos center, int secRadius) {
+   public static Stream<SectionPos> getAllInBox(SectionPos center, int radius) {
       int i = center.getSectionX();
       int j = center.getSectionY();
       int k = center.getSectionZ();
-      return getAllInBox(i - secRadius, j - secRadius, k - secRadius, i + secRadius, j + secRadius, k + secRadius);
+      return getAllInBox(i - radius, j - radius, k - radius, i + radius, j + radius, k + radius);
    }
 
    public static Stream<SectionPos> func_229421_b_(ChunkPos p_229421_0_, int p_229421_1_) {

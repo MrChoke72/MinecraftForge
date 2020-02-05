@@ -9,7 +9,7 @@ import net.minecraft.world.IWorldReader;
 
 public abstract class StructureProcessor {
    @Nullable
-   public abstract Template.BlockInfo process(IWorldReader p_215194_1_, BlockPos p_215194_2_, Template.BlockInfo p_215194_3_, Template.BlockInfo p_215194_4_, PlacementSettings p_215194_5_);
+   public abstract Template.BlockInfo process(IWorldReader worldReaderIn, BlockPos pos, Template.BlockInfo p_215194_3_, Template.BlockInfo blockInfo, PlacementSettings placementSettingsIn);
 
    protected abstract IStructureProcessorType getType();
 

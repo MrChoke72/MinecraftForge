@@ -14,8 +14,8 @@ public abstract class IllagerRenderer<T extends AbstractIllagerEntity> extends M
       this.addLayer(new HeadLayer<>(this));
    }
 
-   protected void func_225620_a_(T p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
+   protected void preRenderCallback(T entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
       float f = 0.9375F;
-      p_225620_2_.func_227862_a_(0.9375F, 0.9375F, 0.9375F);
+      matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
    }
 }

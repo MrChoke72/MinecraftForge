@@ -21,7 +21,7 @@ public final class GlobalPos implements IDynamicSerializable {
    }
 
    public static GlobalPos deserialize(Dynamic<?> p_218176_0_) {
-      return p_218176_0_.get("dimension").map(DimensionType::func_218271_a).flatMap((p_218181_1_) -> {
+      return p_218176_0_.get("dimension").map(DimensionType::deserialize).flatMap((p_218181_1_) -> {
          return p_218176_0_.get("pos").map(BlockPos::deserialize).map((p_218182_1_) -> {
             return new GlobalPos(p_218181_1_, p_218182_1_);
          });

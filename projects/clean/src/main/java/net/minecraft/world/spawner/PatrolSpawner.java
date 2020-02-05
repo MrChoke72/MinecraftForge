@@ -9,6 +9,7 @@ import net.minecraft.entity.monster.PatrollerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Heightmap;
@@ -19,6 +20,8 @@ public class PatrolSpawner {
 
    public int tick(ServerWorld worldIn, boolean spawnHostileMobs, boolean spawnPeacefulMobs) {
       if (!spawnHostileMobs) {
+         return 0;
+      } else if (!worldIn.getGameRules().getBoolean(GameRules.field_230127_D_)) {
          return 0;
       } else {
          Random random = worldIn.rand;
@@ -48,7 +51,7 @@ public class PatrolSpawner {
                         if (!worldIn.isAreaLoaded(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)) {
                            return 0;
                         } else {
-                           Biome biome = worldIn.func_226691_t_(blockpos$mutable);
+                           Biome biome = worldIn.getBiome(blockpos$mutable);
                            Biome.Category biome$category = biome.getCategory();
                            if (biome$category == Biome.Category.MUSHROOM) {
                               return 0;
@@ -67,8 +70,8 @@ public class PatrolSpawner {
                                     this.func_222695_a(worldIn, blockpos$mutable, random, false);
                                  }
 
-                                 blockpos$mutable.func_223471_o(blockpos$mutable.getX() + random.nextInt(5) - random.nextInt(5));
-                                 blockpos$mutable.func_223472_q(blockpos$mutable.getZ() + random.nextInt(5) - random.nextInt(5));
+                                 blockpos$mutable.setX(blockpos$mutable.getX() + random.nextInt(5) - random.nextInt(5));
+                                 blockpos$mutable.setZ(blockpos$mutable.getZ() + random.nextInt(5) - random.nextInt(5));
                               }
 
                               return i1;

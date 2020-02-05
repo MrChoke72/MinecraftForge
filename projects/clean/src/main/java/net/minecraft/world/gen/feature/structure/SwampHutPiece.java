@@ -40,7 +40,7 @@ public class SwampHutPiece extends ScatteredStructurePiece {
    }
 
    public boolean func_225577_a_(IWorld p_225577_1_, ChunkGenerator<?> p_225577_2_, Random p_225577_3_, MutableBoundingBox p_225577_4_, ChunkPos p_225577_5_) {
-      if (!this.func_202580_a(p_225577_1_, p_225577_4_, 0)) {
+      if (!this.isInsideBounds(p_225577_1_, p_225577_4_, 0)) {
          return false;
       } else {
          this.fillWithBlocks(p_225577_1_, p_225577_4_, 1, 1, 1, 5, 1, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);

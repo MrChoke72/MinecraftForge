@@ -37,7 +37,7 @@ public class WeightedBlockStateProvider extends BlockStateProvider {
 
    public <T> T serialize(DynamicOps<T> p_218175_1_) {
       Builder<T, T> builder = ImmutableMap.builder();
-      builder.put(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.field_229387_t_.getKey(this.field_227393_a_).toString())).put(p_218175_1_.createString("entries"), this.field_227406_b_.func_226310_a_(p_218175_1_, (p_227408_1_) -> {
+      builder.put(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getKey(this.field_227393_a_).toString())).put(p_218175_1_.createString("entries"), this.field_227406_b_.func_226310_a_(p_218175_1_, (p_227408_1_) -> {
          return BlockState.serialize(p_218175_1_, p_227408_1_);
       }));
       return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(builder.build()))).getValue();

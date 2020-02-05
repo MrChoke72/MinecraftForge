@@ -64,7 +64,7 @@ public class RandomWalkingGoal extends Goal {
 
    @Nullable
    protected Vec3d getPosition() {
-      return RandomPositionGenerator.findRandomPos(this.creature, 10, 7);
+      return RandomPositionGenerator.findRandomTarget(this.creature, 10, 7);
    }
 
    public boolean shouldContinueExecuting() {

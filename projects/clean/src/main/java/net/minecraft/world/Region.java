@@ -67,7 +67,7 @@ public class Region implements IBlockReader, ICollisionReader {
       return this.world.getWorldBorder();
    }
 
-   public IBlockReader func_225522_c_(int p_225522_1_, int p_225522_2_) {
+   public IBlockReader getBlockReader(int p_225522_1_, int p_225522_2_) {
       return this.func_226702_a_(p_225522_1_, p_225522_2_);
    }
 

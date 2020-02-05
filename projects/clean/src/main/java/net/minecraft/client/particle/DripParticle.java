@@ -48,7 +48,7 @@ public class DripParticle extends SpriteTexturedParticle {
             this.motionZ *= (double)0.98F;
             BlockPos blockpos = new BlockPos(this.posX, this.posY, this.posZ);
             IFluidState ifluidstate = this.world.getFluidState(blockpos);
-            if (ifluidstate.getFluid() == this.fluid && this.posY < (double)((float)blockpos.getY() + ifluidstate.func_215679_a(this.world, blockpos))) {
+            if (ifluidstate.getFluid() == this.fluid && this.posY < (double)((float)blockpos.getY() + ifluidstate.getActualHeight(this.world, blockpos))) {
                this.setExpired();
             }
 
@@ -101,7 +101,7 @@ public class DripParticle extends SpriteTexturedParticle {
       }
 
       public Particle makeParticle(BasicParticleType typeIn, World worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-         DripParticle.Dripping dripparticle$dripping = new DripParticle.Dripping(worldIn, x, y, z, Fluids.EMPTY, ParticleTypes.field_229428_ah_);
+         DripParticle.Dripping dripparticle$dripping = new DripParticle.Dripping(worldIn, x, y, z, Fluids.EMPTY, ParticleTypes.FALLING_HONEY);
          dripparticle$dripping.particleGravity *= 0.01F;
          dripparticle$dripping.maxAge = 100;
          dripparticle$dripping.setColor(0.622F, 0.508F, 0.082F);
@@ -164,7 +164,7 @@ public class DripParticle extends SpriteTexturedParticle {
       }
 
       public Particle makeParticle(BasicParticleType typeIn, World worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-         DripParticle dripparticle = new DripParticle.FallingHoneyParticle(worldIn, x, y, z, Fluids.EMPTY, ParticleTypes.field_229429_ai_);
+         DripParticle dripparticle = new DripParticle.FallingHoneyParticle(worldIn, x, y, z, Fluids.EMPTY, ParticleTypes.LANDING_HONEY);
          dripparticle.particleGravity = 0.01F;
          dripparticle.setColor(0.582F, 0.448F, 0.082F);
          dripparticle.selectSpriteRandomly(this.field_228336_a_);

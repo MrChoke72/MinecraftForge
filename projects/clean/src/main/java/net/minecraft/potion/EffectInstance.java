@@ -1,6 +1,7 @@
 package net.minecraft.potion;
 
 import com.google.common.collect.ComparisonChain;
+import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,6 +20,8 @@ public class EffectInstance implements Comparable<EffectInstance> {
    private boolean isPotionDurationMax;
    private boolean showParticles;
    private boolean showIcon;
+   @Nullable
+   private EffectInstance field_230115_j_;
 
    public EffectInstance(Effect potionIn) {
       this(potionIn, 0, 0);
@@ -36,22 +39,31 @@ public class EffectInstance implements Comparable<EffectInstance> {
       this(potionIn, durationIn, amplifierIn, ambientIn, showParticlesIn, showParticlesIn);
    }
 
-   public EffectInstance(Effect p_i48980_1_, int p_i48980_2_, int p_i48980_3_, boolean p_i48980_4_, boolean p_i48980_5_, boolean p_i48980_6_) {
-      this.potion = p_i48980_1_;
-      this.duration = p_i48980_2_;
-      this.amplifier = p_i48980_3_;
-      this.ambient = p_i48980_4_;
-      this.showParticles = p_i48980_5_;
-      this.showIcon = p_i48980_6_;
+   public EffectInstance(Effect potionIn, int durationIn, int amplifierIn, boolean ambientIn, boolean p_i48980_5_, boolean p_i48980_6_) {
+      this(potionIn, durationIn, amplifierIn, ambientIn, p_i48980_5_, p_i48980_6_, (EffectInstance)null);
+   }
+
+   public EffectInstance(Effect p_i230050_1_, int p_i230050_2_, int p_i230050_3_, boolean p_i230050_4_, boolean p_i230050_5_, boolean p_i230050_6_, @Nullable EffectInstance p_i230050_7_) {
+      this.potion = p_i230050_1_;
+      this.duration = p_i230050_2_;
+      this.amplifier = p_i230050_3_;
+      this.ambient = p_i230050_4_;
+      this.showParticles = p_i230050_5_;
+      this.showIcon = p_i230050_6_;
+      this.field_230115_j_ = p_i230050_7_;
    }
 
    public EffectInstance(EffectInstance other) {
       this.potion = other.potion;
-      this.duration = other.duration;
-      this.amplifier = other.amplifier;
-      this.ambient = other.ambient;
-      this.showParticles = other.showParticles;
-      this.showIcon = other.showIcon;
+      this.func_230117_a_(other);
+   }
+
+   void func_230117_a_(EffectInstance p_230117_1_) {
+      this.duration = p_230117_1_.duration;
+      this.amplifier = p_230117_1_.amplifier;
+      this.ambient = p_230117_1_.ambient;
+      this.showParticles = p_230117_1_.showParticles;
+      this.showIcon = p_230117_1_.showIcon;
    }
 
    public boolean combine(EffectInstance other) {
@@ -61,12 +73,24 @@ public class EffectInstance implements Comparable<EffectInstance> {
 
       boolean flag = false;
       if (other.amplifier > this.amplifier) {
+         if (other.duration < this.duration) {
+            EffectInstance effectinstance = this.field_230115_j_;
+            this.field_230115_j_ = new EffectInstance(this);
+            this.field_230115_j_.field_230115_j_ = effectinstance;
+         }
+
          this.amplifier = other.amplifier;
          this.duration = other.duration;
          flag = true;
-      } else if (other.amplifier == this.amplifier && this.duration < other.duration) {
-         this.duration = other.duration;
-         flag = true;
+      } else if (other.duration > this.duration) {
+         if (other.amplifier == this.amplifier) {
+            this.duration = other.duration;
+            flag = true;
+         } else if (this.field_230115_j_ == null) {
+            this.field_230115_j_ = new EffectInstance(other);
+         } else {
+            this.field_230115_j_.combine(other);
+         }
       }
 
       if (!other.ambient && this.ambient || flag) {
@@ -111,19 +135,28 @@ public class EffectInstance implements Comparable<EffectInstance> {
       return this.showIcon;
    }
 
-   public boolean tick(LivingEntity entityIn) {
+   public boolean tick(LivingEntity entityIn, Runnable p_76455_2_) {
       if (this.duration > 0) {
          if (this.potion.isReady(this.duration, this.amplifier)) {
             this.performEffect(entityIn);
          }
 
          this.deincrementDuration();
+         if (this.duration == 0 && this.field_230115_j_ != null) {
+            this.func_230117_a_(this.field_230115_j_);
+            this.field_230115_j_ = this.field_230115_j_.field_230115_j_;
+            p_76455_2_.run();
+         }
       }
 
       return this.duration > 0;
    }
 
    private int deincrementDuration() {
+      if (this.field_230115_j_ != null) {
+         this.field_230115_j_.deincrementDuration();
+      }
+
       return --this.duration;
    }
 
@@ -183,35 +216,50 @@ public class EffectInstance implements Comparable<EffectInstance> {
 
    public CompoundNBT write(CompoundNBT nbt) {
       nbt.putByte("Id", (byte)Effect.getId(this.getPotion()));
-      nbt.putByte("Amplifier", (byte)this.getAmplifier());
-      nbt.putInt("Duration", this.getDuration());
-      nbt.putBoolean("Ambient", this.isAmbient());
-      nbt.putBoolean("ShowParticles", this.doesShowParticles());
-      nbt.putBoolean("ShowIcon", this.isShowIcon());
+      this.func_230119_c_(nbt);
       return nbt;
+   }
+
+   private void func_230119_c_(CompoundNBT p_230119_1_) {
+      p_230119_1_.putByte("Amplifier", (byte)this.getAmplifier());
+      p_230119_1_.putInt("Duration", this.getDuration());
+      p_230119_1_.putBoolean("Ambient", this.isAmbient());
+      p_230119_1_.putBoolean("ShowParticles", this.doesShowParticles());
+      p_230119_1_.putBoolean("ShowIcon", this.isShowIcon());
+      if (this.field_230115_j_ != null) {
+         CompoundNBT compoundnbt = new CompoundNBT();
+         this.field_230115_j_.write(compoundnbt);
+         p_230119_1_.put("HiddenEffect", compoundnbt);
+      }
+
    }
 
    public static EffectInstance read(CompoundNBT nbt) {
       int i = nbt.getByte("Id");
       Effect effect = Effect.get(i);
-      if (effect == null) {
-         return null;
-      } else {
-         int j = nbt.getByte("Amplifier");
-         int k = nbt.getInt("Duration");
-         boolean flag = nbt.getBoolean("Ambient");
-         boolean flag1 = true;
-         if (nbt.contains("ShowParticles", 1)) {
-            flag1 = nbt.getBoolean("ShowParticles");
-         }
+      return effect == null ? null : func_230116_a_(effect, nbt);
+   }
 
-         boolean flag2 = flag1;
-         if (nbt.contains("ShowIcon", 1)) {
-            flag2 = nbt.getBoolean("ShowIcon");
-         }
-
-         return new EffectInstance(effect, k, j < 0 ? 0 : j, flag, flag1, flag2);
+   private static EffectInstance func_230116_a_(Effect p_230116_0_, CompoundNBT p_230116_1_) {
+      int i = p_230116_1_.getByte("Amplifier");
+      int j = p_230116_1_.getInt("Duration");
+      boolean flag = p_230116_1_.getBoolean("Ambient");
+      boolean flag1 = true;
+      if (p_230116_1_.contains("ShowParticles", 1)) {
+         flag1 = p_230116_1_.getBoolean("ShowParticles");
       }
+
+      boolean flag2 = flag1;
+      if (p_230116_1_.contains("ShowIcon", 1)) {
+         flag2 = p_230116_1_.getBoolean("ShowIcon");
+      }
+
+      EffectInstance effectinstance = null;
+      if (p_230116_1_.contains("HiddenEffect", 10)) {
+         effectinstance = func_230116_a_(p_230116_0_, p_230116_1_.getCompound("HiddenEffect"));
+      }
+
+      return new EffectInstance(p_230116_0_, j, i < 0 ? 0 : i, flag, flag1, flag2, effectinstance);
    }
 
    @OnlyIn(Dist.CLIENT)

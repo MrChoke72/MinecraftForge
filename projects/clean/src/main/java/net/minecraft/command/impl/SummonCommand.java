@@ -32,8 +32,8 @@ public class SummonCommand {
          return summonEntity(p_198738_0_.getSource(), EntitySummonArgument.getEntityId(p_198738_0_, "entity"), p_198738_0_.getSource().getPos(), new CompoundNBT(), true);
       }).then(Commands.argument("pos", Vec3Argument.vec3()).executes((p_198735_0_) -> {
          return summonEntity(p_198735_0_.getSource(), EntitySummonArgument.getEntityId(p_198735_0_, "entity"), Vec3Argument.getVec3(p_198735_0_, "pos"), new CompoundNBT(), true);
-      }).then(Commands.argument("nbt", NBTCompoundTagArgument.func_218043_a()).executes((p_198739_0_) -> {
-         return summonEntity(p_198739_0_.getSource(), EntitySummonArgument.getEntityId(p_198739_0_, "entity"), Vec3Argument.getVec3(p_198739_0_, "pos"), NBTCompoundTagArgument.func_218042_a(p_198739_0_, "nbt"), false);
+      }).then(Commands.argument("nbt", NBTCompoundTagArgument.nbt()).executes((p_198739_0_) -> {
+         return summonEntity(p_198739_0_.getSource(), EntitySummonArgument.getEntityId(p_198739_0_, "entity"), Vec3Argument.getVec3(p_198739_0_, "pos"), NBTCompoundTagArgument.getNbt(p_198739_0_, "nbt"), false);
       })))));
    }
 

@@ -5,7 +5,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public interface IGuiEventListener {
-   default void mouseMoved(double p_212927_1_, double p_212927_3_) {
+   default void mouseMoved(double xPos, double p_212927_3_) {
    }
 
    default boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
@@ -28,7 +28,7 @@ public interface IGuiEventListener {
       return false;
    }
 
-   default boolean keyReleased(int p_223281_1_, int p_223281_2_, int p_223281_3_) {
+   default boolean keyReleased(int keyCode, int scanCode, int modifiers) {
       return false;
    }
 

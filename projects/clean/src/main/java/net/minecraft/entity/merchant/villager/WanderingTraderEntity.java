@@ -47,8 +47,8 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
    private BlockPos wanderTarget;
    private int despawnDelay;
 
-   public WanderingTraderEntity(EntityType<? extends WanderingTraderEntity> p_i50178_1_, World p_i50178_2_) {
-      super(p_i50178_1_, p_i50178_2_);
+   public WanderingTraderEntity(EntityType<? extends WanderingTraderEntity> p_i50178_1_, World worldIn) {
+      super(p_i50178_1_, worldIn);
       this.forceSpawn = true;
    }
 
@@ -91,7 +91,7 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
       if (flag) {
          itemstack.interactWithEntity(player, this, hand);
          return true;
-      } else if (itemstack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.func_213716_dX() && !this.isChild()) {
+      } else if (itemstack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isChild()) {
          if (hand == Hand.MAIN_HAND) {
             player.addStat(Stats.TALKED_TO_VILLAGER);
          }
@@ -101,7 +101,7 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
          } else {
             if (!this.world.isRemote) {
                this.setCustomer(player);
-               this.func_213707_a(player, this.getDisplayName(), 1);
+               this.openMerchantContainer(player, this.getDisplayName(), 1);
             }
 
             return true;
@@ -153,8 +153,8 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
       return false;
    }
 
-   protected void func_213713_b(MerchantOffer p_213713_1_) {
-      if (p_213713_1_.func_222221_q()) {
+   protected void onVillagerTrade(MerchantOffer offer) {
+      if (offer.getDoesRewardExp()) {
          int i = 3 + this.rand.nextInt(4);
          this.world.addEntity(new ExperienceOrbEntity(this.world, this.getPosX(), this.getPosY() + 0.5D, this.getPosZ(), i));
       }
@@ -162,7 +162,7 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
    }
 
    protected SoundEvent getAmbientSound() {
-      return this.func_213716_dX() ? SoundEvents.ENTITY_WANDERING_TRADER_TRADE : SoundEvents.ENTITY_WANDERING_TRADER_AMBIENT;
+      return this.hasCustomer() ? SoundEvents.ENTITY_WANDERING_TRADER_TRADE : SoundEvents.ENTITY_WANDERING_TRADER_AMBIENT;
    }
 
    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
@@ -173,89 +173,89 @@ public class WanderingTraderEntity extends AbstractVillagerEntity {
       return SoundEvents.ENTITY_WANDERING_TRADER_DEATH;
    }
 
-   protected SoundEvent getDrinkSound(ItemStack p_213351_1_) {
-      Item item = p_213351_1_.getItem();
+   protected SoundEvent getDrinkSound(ItemStack stack) {
+      Item item = stack.getItem();
       return item == Items.MILK_BUCKET ? SoundEvents.ENTITY_WANDERING_TRADER_DRINK_MILK : SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION;
    }
 
-   protected SoundEvent func_213721_r(boolean p_213721_1_) {
-      return p_213721_1_ ? SoundEvents.ENTITY_WANDERING_TRADER_YES : SoundEvents.ENTITY_WANDERING_TRADER_NO;
+   protected SoundEvent getVillagerYesNoSound(boolean getYesSound) {
+      return getYesSound ? SoundEvents.ENTITY_WANDERING_TRADER_YES : SoundEvents.ENTITY_WANDERING_TRADER_NO;
    }
 
-   public SoundEvent func_213714_ea() {
+   public SoundEvent getYesSound() {
       return SoundEvents.ENTITY_WANDERING_TRADER_YES;
    }
 
-   public void func_213728_s(int p_213728_1_) {
-      this.despawnDelay = p_213728_1_;
+   public void setDespawnDelay(int delay) {
+      this.despawnDelay = delay;
    }
 
-   public int func_213735_eg() {
+   public int getDespawnDelay() {
       return this.despawnDelay;
    }
 
    public void livingTick() {
       super.livingTick();
       if (!this.world.isRemote) {
-         this.func_222821_eh();
+         this.handleDespawn();
       }
 
    }
 
-   private void func_222821_eh() {
-      if (this.despawnDelay > 0 && !this.func_213716_dX() && --this.despawnDelay == 0) {
+   private void handleDespawn() {
+      if (this.despawnDelay > 0 && !this.hasCustomer() && --this.despawnDelay == 0) {
          this.remove();
       }
 
    }
 
-   public void func_213726_g(@Nullable BlockPos p_213726_1_) {
-      this.wanderTarget = p_213726_1_;
+   public void setWanderTarget(@Nullable BlockPos pos) {
+      this.wanderTarget = pos;
    }
 
    @Nullable
-   private BlockPos func_213727_eh() {
+   private BlockPos getWanderTarget() {
       return this.wanderTarget;
    }
 
    class MoveToGoal extends Goal {
-      final WanderingTraderEntity field_220847_a;
-      final double field_220848_b;
-      final double field_220849_c;
+      final WanderingTraderEntity traderEntity;
+      final double maxDistance;
+      final double speed;
 
-      MoveToGoal(WanderingTraderEntity p_i50459_2_, double p_i50459_3_, double p_i50459_5_) {
-         this.field_220847_a = p_i50459_2_;
-         this.field_220848_b = p_i50459_3_;
-         this.field_220849_c = p_i50459_5_;
+      MoveToGoal(WanderingTraderEntity traderEntityIn, double distanceIn, double speedIn) {
+         this.traderEntity = traderEntityIn;
+         this.maxDistance = distanceIn;
+         this.speed = speedIn;
          this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE));
       }
 
       public void resetTask() {
-         this.field_220847_a.func_213726_g((BlockPos)null);
+         this.traderEntity.setWanderTarget((BlockPos)null);
          WanderingTraderEntity.this.navigator.clearPath();
       }
 
       public boolean shouldExecute() {
-         BlockPos blockpos = this.field_220847_a.func_213727_eh();
-         return blockpos != null && this.func_220846_a(blockpos, this.field_220848_b);
+         BlockPos blockpos = this.traderEntity.getWanderTarget();
+         return blockpos != null && this.isWithinDistance(blockpos, this.maxDistance);
       }
 
       public void tick() {
-         BlockPos blockpos = this.field_220847_a.func_213727_eh();
+         BlockPos blockpos = this.traderEntity.getWanderTarget();
          if (blockpos != null && WanderingTraderEntity.this.navigator.noPath()) {
-            if (this.func_220846_a(blockpos, 10.0D)) {
-               Vec3d vec3d = (new Vec3d((double)blockpos.getX() - this.field_220847_a.getPosX(), (double)blockpos.getY() - this.field_220847_a.getPosY(), (double)blockpos.getZ() - this.field_220847_a.getPosZ())).normalize();
-               Vec3d vec3d1 = vec3d.scale(10.0D).add(this.field_220847_a.getPosX(), this.field_220847_a.getPosY(), this.field_220847_a.getPosZ());
-               WanderingTraderEntity.this.navigator.tryMoveToXYZ(vec3d1.x, vec3d1.y, vec3d1.z, this.field_220849_c);
+            if (this.isWithinDistance(blockpos, 10.0D)) {
+               Vec3d vec3d = (new Vec3d((double)blockpos.getX() - this.traderEntity.getPosX(), (double)blockpos.getY() - this.traderEntity.getPosY(), (double)blockpos.getZ() - this.traderEntity.getPosZ())).normalize();
+               Vec3d vec3d1 = vec3d.scale(10.0D).add(this.traderEntity.getPosX(), this.traderEntity.getPosY(), this.traderEntity.getPosZ());
+               WanderingTraderEntity.this.navigator.tryMoveToXYZ(vec3d1.x, vec3d1.y, vec3d1.z, this.speed);
             } else {
-               WanderingTraderEntity.this.navigator.tryMoveToXYZ((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), this.field_220849_c);
+               WanderingTraderEntity.this.navigator.tryMoveToXYZ((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), this.speed);
             }
          }
 
       }
 
-      private boolean func_220846_a(BlockPos p_220846_1_, double p_220846_2_) {
-         return !p_220846_1_.withinDistance(this.field_220847_a.getPositionVec(), p_220846_2_);
+      private boolean isWithinDistance(BlockPos pos, double distance) {
+         return !pos.withinDistance(this.traderEntity.getPositionVec(), distance);
       }
    }
 }

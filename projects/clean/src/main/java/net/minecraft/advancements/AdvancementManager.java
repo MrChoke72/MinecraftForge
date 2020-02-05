@@ -26,7 +26,7 @@ public class AdvancementManager extends JsonReloadListener {
       JsonObject jsonobject = JSONUtils.getJsonObject(p_210124_0_, "advancement");
       return Advancement.Builder.deserialize(jsonobject, p_210124_2_);
    }).registerTypeAdapter(AdvancementRewards.class, new AdvancementRewards.Deserializer()).registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeHierarchyAdapter(Style.class, new Style.Serializer()).registerTypeAdapterFactory(new EnumTypeAdapterFactory()).create();
-   private AdvancementList field_223388_c = new AdvancementList();
+   private AdvancementList advancementList = new AdvancementList();
 
    public AdvancementManager() {
       super(GSON, "advancements");
@@ -52,15 +52,15 @@ public class AdvancementManager extends JsonReloadListener {
          }
       }
 
-      this.field_223388_c = advancementlist;
+      this.advancementList = advancementlist;
    }
 
    @Nullable
    public Advancement getAdvancement(ResourceLocation id) {
-      return this.field_223388_c.getAdvancement(id);
+      return this.advancementList.getAdvancement(id);
    }
 
    public Collection<Advancement> getAllAdvancements() {
-      return this.field_223388_c.getAll();
+      return this.advancementList.getAll();
    }
 }

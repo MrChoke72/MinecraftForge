@@ -7,10 +7,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class ShortNBT extends NumberNBT {
-   public static final INBTType<ShortNBT> field_229700_a_ = new INBTType<ShortNBT>() {
+   public static final INBTType<ShortNBT> TYPE = new INBTType<ShortNBT>() {
       public ShortNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(80L);
-         return ShortNBT.func_229701_a_(p_225649_1_.readShort());
+         return ShortNBT.valueOf(p_225649_1_.readShort());
       }
 
       public String func_225648_a_() {
@@ -31,8 +31,8 @@ public class ShortNBT extends NumberNBT {
       this.data = data;
    }
 
-   public static ShortNBT func_229701_a_(short p_229701_0_) {
-      return p_229701_0_ >= -128 && p_229701_0_ <= 1024 ? ShortNBT.Cache.field_229702_a_[p_229701_0_ + 128] : new ShortNBT(p_229701_0_);
+   public static ShortNBT valueOf(short p_229701_0_) {
+      return p_229701_0_ >= -128 && p_229701_0_ <= 1024 ? ShortNBT.Cache.CACHE[p_229701_0_ + 128] : new ShortNBT(p_229701_0_);
    }
 
    public void write(DataOutput output) throws IOException {
@@ -43,8 +43,8 @@ public class ShortNBT extends NumberNBT {
       return 2;
    }
 
-   public INBTType<ShortNBT> func_225647_b_() {
-      return field_229700_a_;
+   public INBTType<ShortNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {
@@ -101,11 +101,11 @@ public class ShortNBT extends NumberNBT {
    }
 
    static class Cache {
-      static final ShortNBT[] field_229702_a_ = new ShortNBT[1153];
+      static final ShortNBT[] CACHE = new ShortNBT[1153];
 
       static {
-         for(int i = 0; i < field_229702_a_.length; ++i) {
-            field_229702_a_[i] = new ShortNBT((short)(-128 + i));
+         for(int i = 0; i < CACHE.length; ++i) {
+            CACHE[i] = new ShortNBT((short)(-128 + i));
          }
 
       }

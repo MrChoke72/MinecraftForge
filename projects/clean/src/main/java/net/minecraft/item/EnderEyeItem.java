@@ -71,7 +71,7 @@ public class EnderEyeItem extends Item {
          if (worldIn instanceof ServerWorld) {
             BlockPos blockpos = ((ServerWorld)worldIn).getChunkProvider().getChunkGenerator().findNearestStructure(worldIn, "Stronghold", new BlockPos(playerIn), 100, false);
             if (blockpos != null) {
-               EyeOfEnderEntity eyeofenderentity = new EyeOfEnderEntity(worldIn, playerIn.getPosX(), playerIn.func_226283_e_(0.5D), playerIn.getPosZ());
+               EyeOfEnderEntity eyeofenderentity = new EyeOfEnderEntity(worldIn, playerIn.getPosX(), playerIn.getPosYHeight(0.5D), playerIn.getPosZ());
                eyeofenderentity.func_213863_b(itemstack);
                eyeofenderentity.moveTowards(blockpos);
                worldIn.addEntity(eyeofenderentity);

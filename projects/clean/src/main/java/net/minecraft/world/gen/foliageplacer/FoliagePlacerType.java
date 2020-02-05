@@ -12,7 +12,7 @@ public class FoliagePlacerType<P extends FoliagePlacer> {
    private final Function<Dynamic<?>, P> field_227390_e_;
 
    private static <P extends FoliagePlacer> FoliagePlacerType<P> func_227392_a_(String p_227392_0_, Function<Dynamic<?>, P> p_227392_1_) {
-      return Registry.register(Registry.field_229389_v_, p_227392_0_, new FoliagePlacerType<>(p_227392_1_));
+      return Registry.register(Registry.FOLIAGE_PLACER_TYPE, p_227392_0_, new FoliagePlacerType<>(p_227392_1_));
    }
 
    private FoliagePlacerType(Function<Dynamic<?>, P> p_i225849_1_) {

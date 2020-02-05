@@ -23,8 +23,8 @@ public class TNTEntity extends Entity {
    private LivingEntity tntPlacedBy;
    private int fuse = 80;
 
-   public TNTEntity(EntityType<? extends TNTEntity> p_i50216_1_, World p_i50216_2_) {
-      super(p_i50216_1_, p_i50216_2_);
+   public TNTEntity(EntityType<? extends TNTEntity> type, World worldIn) {
+      super(type, worldIn);
       this.preventEntitySpawning = true;
    }
 
@@ -44,7 +44,7 @@ public class TNTEntity extends Entity {
       this.dataManager.register(FUSE, 80);
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -80,7 +80,7 @@ public class TNTEntity extends Entity {
 
    protected void explode() {
       float f = 4.0F;
-      this.world.createExplosion(this, this.getPosX(), this.func_226283_e_(0.0625D), this.getPosZ(), 4.0F, Explosion.Mode.BREAK);
+      this.world.createExplosion(this, this.getPosX(), this.getPosYHeight(0.0625D), this.getPosZ(), 4.0F, Explosion.Mode.BREAK);
    }
 
    protected void writeAdditional(CompoundNBT compound) {
@@ -96,7 +96,7 @@ public class TNTEntity extends Entity {
       return this.tntPlacedBy;
    }
 
-   protected float getEyeHeight(Pose p_213316_1_, EntitySize p_213316_2_) {
+   protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
       return 0.0F;
    }
 

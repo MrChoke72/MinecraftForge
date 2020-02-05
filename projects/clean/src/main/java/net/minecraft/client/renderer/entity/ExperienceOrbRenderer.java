@@ -17,7 +17,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class ExperienceOrbRenderer extends EntityRenderer<ExperienceOrbEntity> {
    private static final ResourceLocation EXPERIENCE_ORB_TEXTURES = new ResourceLocation("textures/entity/experience_orb.png");
-   private static final RenderType field_229101_e_ = RenderType.func_228644_e_(EXPERIENCE_ORB_TEXTURES);
+   private static final RenderType RENDER_TYPE = RenderType.entityTranslucent(EXPERIENCE_ORB_TEXTURES);
 
    public ExperienceOrbRenderer(EntityRendererManager renderManagerIn) {
       super(renderManagerIn);
@@ -25,13 +25,13 @@ public class ExperienceOrbRenderer extends EntityRenderer<ExperienceOrbEntity> {
       this.shadowOpaque = 0.75F;
    }
 
-   protected int func_225624_a_(ExperienceOrbEntity p_225624_1_, float p_225624_2_) {
-      return MathHelper.clamp(super.func_225624_a_(p_225624_1_, p_225624_2_) + 7, 0, 15);
+   protected int getBlockLight(ExperienceOrbEntity entityIn, float partialTicks) {
+      return MathHelper.clamp(super.getBlockLight(entityIn, partialTicks) + 7, 0, 15);
    }
 
-   public void func_225623_a_(ExperienceOrbEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      p_225623_4_.func_227860_a_();
-      int i = p_225623_1_.getTextureByXP();
+   public void render(ExperienceOrbEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      matrixStackIn.push();
+      int i = entityIn.getTextureByXP();
       float f = (float)(i % 4 * 16 + 0) / 64.0F;
       float f1 = (float)(i % 4 * 16 + 16) / 64.0F;
       float f2 = (float)(i / 4 * 16 + 0) / 64.0F;
@@ -40,29 +40,29 @@ public class ExperienceOrbRenderer extends EntityRenderer<ExperienceOrbEntity> {
       float f5 = 0.5F;
       float f6 = 0.25F;
       float f7 = 255.0F;
-      float f8 = ((float)p_225623_1_.xpColor + p_225623_3_) / 2.0F;
+      float f8 = ((float)entityIn.xpColor + partialTicks) / 2.0F;
       int j = (int)((MathHelper.sin(f8 + 0.0F) + 1.0F) * 0.5F * 255.0F);
       int k = 255;
       int l = (int)((MathHelper.sin(f8 + 4.1887903F) + 1.0F) * 0.1F * 255.0F);
-      p_225623_4_.func_227861_a_(0.0D, (double)0.1F, 0.0D);
-      p_225623_4_.func_227863_a_(this.renderManager.func_229098_b_());
-      p_225623_4_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(180.0F));
+      matrixStackIn.translate(0.0D, (double)0.1F, 0.0D);
+      matrixStackIn.rotate(this.renderManager.getCameraOrientation());
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180.0F));
       float f9 = 0.3F;
-      p_225623_4_.func_227862_a_(0.3F, 0.3F, 0.3F);
-      IVertexBuilder ivertexbuilder = p_225623_5_.getBuffer(field_229101_e_);
-      MatrixStack.Entry matrixstack$entry = p_225623_4_.func_227866_c_();
-      Matrix4f matrix4f = matrixstack$entry.func_227870_a_();
-      Matrix3f matrix3f = matrixstack$entry.func_227872_b_();
-      func_229102_a_(ivertexbuilder, matrix4f, matrix3f, -0.5F, -0.25F, j, 255, l, f, f3, p_225623_6_);
-      func_229102_a_(ivertexbuilder, matrix4f, matrix3f, 0.5F, -0.25F, j, 255, l, f1, f3, p_225623_6_);
-      func_229102_a_(ivertexbuilder, matrix4f, matrix3f, 0.5F, 0.75F, j, 255, l, f1, f2, p_225623_6_);
-      func_229102_a_(ivertexbuilder, matrix4f, matrix3f, -0.5F, 0.75F, j, 255, l, f, f2, p_225623_6_);
-      p_225623_4_.func_227865_b_();
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      matrixStackIn.scale(0.3F, 0.3F, 0.3F);
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RENDER_TYPE);
+      MatrixStack.Entry matrixstack$entry = matrixStackIn.getLast();
+      Matrix4f matrix4f = matrixstack$entry.getPositionMatrix();
+      Matrix3f matrix3f = matrixstack$entry.getNormalMatrix();
+      vertex(ivertexbuilder, matrix4f, matrix3f, -0.5F, -0.25F, j, 255, l, f, f3, packedLightIn);
+      vertex(ivertexbuilder, matrix4f, matrix3f, 0.5F, -0.25F, j, 255, l, f1, f3, packedLightIn);
+      vertex(ivertexbuilder, matrix4f, matrix3f, 0.5F, 0.75F, j, 255, l, f1, f2, packedLightIn);
+      vertex(ivertexbuilder, matrix4f, matrix3f, -0.5F, 0.75F, j, 255, l, f, f2, packedLightIn);
+      matrixStackIn.pop();
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
-   private static void func_229102_a_(IVertexBuilder p_229102_0_, Matrix4f p_229102_1_, Matrix3f p_229102_2_, float p_229102_3_, float p_229102_4_, int p_229102_5_, int p_229102_6_, int p_229102_7_, float p_229102_8_, float p_229102_9_, int p_229102_10_) {
-      p_229102_0_.func_227888_a_(p_229102_1_, p_229102_3_, p_229102_4_, 0.0F).func_225586_a_(p_229102_5_, p_229102_6_, p_229102_7_, 128).func_225583_a_(p_229102_8_, p_229102_9_).func_227891_b_(OverlayTexture.field_229196_a_).func_227886_a_(p_229102_10_).func_227887_a_(p_229102_2_, 0.0F, 1.0F, 0.0F).endVertex();
+   private static void vertex(IVertexBuilder bufferIn, Matrix4f matrixIn, Matrix3f matrixNormalIn, float x, float y, int red, int green, int blue, float texU, float texV, int packedLight) {
+      bufferIn.pos(matrixIn, x, y, 0.0F).color(red, green, blue, 128).tex(texU, texV).overlay(OverlayTexture.DEFAULT_LIGHT).lightmap(packedLight).normal(matrixNormalIn, 0.0F, 1.0F, 0.0F).endVertex();
    }
 
    public ResourceLocation getEntityTexture(ExperienceOrbEntity entity) {

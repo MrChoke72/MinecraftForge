@@ -65,7 +65,7 @@ public class LlamaEntity extends AbstractChestedHorseEntity implements IRangedAt
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_213800_eB() {
+   public boolean isTraderLlama() {
       return false;
    }
 
@@ -185,7 +185,7 @@ public class LlamaEntity extends AbstractChestedHorseEntity implements IRangedAt
       }
 
       if (this.isChild() && i > 0) {
-         this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.func_226282_d_(1.0D), this.func_226279_cv_() + 0.5D, this.func_226287_g_(1.0D), 0.0D, 0.0D, 0.0D);
+         this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), 0.0D, 0.0D, 0.0D);
          if (!this.world.isRemote) {
             this.addGrowth(i);
          }
@@ -337,7 +337,7 @@ public class LlamaEntity extends AbstractChestedHorseEntity implements IRangedAt
    private void spit(LivingEntity target) {
       LlamaSpitEntity llamaspitentity = new LlamaSpitEntity(this.world, this);
       double d0 = target.getPosX() - this.getPosX();
-      double d1 = target.func_226283_e_(0.3333333333333333D) - llamaspitentity.getPosY();
+      double d1 = target.getPosYHeight(0.3333333333333333D) - llamaspitentity.getPosY();
       double d2 = target.getPosZ() - this.getPosZ();
       float f = MathHelper.sqrt(d0 * d0 + d2 * d2) * 0.2F;
       llamaspitentity.shoot(d0, d1 + (double)f, d2, 1.5F, 10.0F);
@@ -350,12 +350,12 @@ public class LlamaEntity extends AbstractChestedHorseEntity implements IRangedAt
       this.didSpit = didSpitIn;
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
-      int i = this.func_225508_e_(p_225503_1_, p_225503_2_);
+   public boolean onLivingFall(float distance, float damageMultiplier) {
+      int i = this.func_225508_e_(distance, damageMultiplier);
       if (i <= 0) {
          return false;
       } else {
-         if (p_225503_1_ >= 6.0F) {
+         if (distance >= 6.0F) {
             this.attackEntityFrom(DamageSource.FALL, (float)i);
             if (this.isBeingRidden()) {
                for(Entity entity : this.getRecursivePassengers()) {
@@ -364,7 +364,7 @@ public class LlamaEntity extends AbstractChestedHorseEntity implements IRangedAt
             }
          }
 
-         this.func_226295_cZ_();
+         this.playFallSound();
          return true;
       }
    }

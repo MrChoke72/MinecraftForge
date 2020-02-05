@@ -1,6 +1,8 @@
 package net.minecraft.client.renderer.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import javax.annotation.Nullable;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
 import net.minecraft.client.renderer.entity.layers.ElytraLayer;
@@ -30,22 +32,32 @@ public class ArmorStandRenderer extends LivingRenderer<ArmorStandEntity, ArmorSt
       return TEXTURE_ARMOR_STAND;
    }
 
-   protected void func_225621_a_(ArmorStandEntity p_225621_1_, MatrixStack p_225621_2_, float p_225621_3_, float p_225621_4_, float p_225621_5_) {
-      p_225621_2_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(180.0F - p_225621_4_));
-      float f = (float)(p_225621_1_.world.getGameTime() - p_225621_1_.punchCooldown) + p_225621_5_;
+   protected void applyRotations(ArmorStandEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180.0F - rotationYaw));
+      float f = (float)(entityLiving.world.getGameTime() - entityLiving.punchCooldown) + partialTicks;
       if (f < 5.0F) {
-         p_225621_2_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(MathHelper.sin(f / 1.5F * (float)Math.PI) * 3.0F));
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(MathHelper.sin(f / 1.5F * (float)Math.PI) * 3.0F));
       }
 
    }
 
    protected boolean canRenderName(ArmorStandEntity entity) {
-      double d0 = this.renderManager.func_229099_b_(entity);
+      double d0 = this.renderManager.squareDistanceTo(entity);
       float f = entity.isCrouching() ? 32.0F : 64.0F;
       return d0 >= (double)(f * f) ? false : entity.isCustomNameVisible();
    }
 
-   protected boolean func_225622_a_(ArmorStandEntity p_225622_1_, boolean p_225622_2_) {
-      return !p_225622_1_.isInvisible();
+   @Nullable
+   protected RenderType func_230042_a_(ArmorStandEntity p_230042_1_, boolean p_230042_2_, boolean p_230042_3_) {
+      if (!p_230042_1_.hasMarker()) {
+         return super.func_230042_a_(p_230042_1_, p_230042_2_, p_230042_3_);
+      } else {
+         ResourceLocation resourcelocation = this.getEntityTexture(p_230042_1_);
+         if (p_230042_3_) {
+            return RenderType.func_230168_b_(resourcelocation, false);
+         } else {
+            return p_230042_2_ ? RenderType.func_230167_a_(resourcelocation, false) : null;
+         }
+      }
    }
 }

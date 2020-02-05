@@ -12,22 +12,22 @@ public enum ParticleStatus {
    DECREASED(1, "options.particles.decreased"),
    MINIMAL(2, "options.particles.minimal");
 
-   private static final ParticleStatus[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(ParticleStatus::func_216832_b)).toArray((p_216834_0_) -> {
+   private static final ParticleStatus[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(ParticleStatus::getId)).toArray((p_216834_0_) -> {
       return new ParticleStatus[p_216834_0_];
    });
    private final int id;
-   private final String field_216837_f;
+   private final String resourceKey;
 
-   private ParticleStatus(int id, String p_i51156_4_) {
+   private ParticleStatus(int id, String resourceKeyIn) {
       this.id = id;
-      this.field_216837_f = p_i51156_4_;
+      this.resourceKey = resourceKeyIn;
    }
 
-   public String func_216831_a() {
-      return this.field_216837_f;
+   public String getResourceKey() {
+      return this.resourceKey;
    }
 
-   public int func_216832_b() {
+   public int getId() {
       return this.id;
    }
 

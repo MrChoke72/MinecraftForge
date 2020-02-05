@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class WolfRenderer extends MobRenderer<WolfEntity, WolfModel<WolfEntity>> {
    private static final ResourceLocation WOLF_TEXTURES = new ResourceLocation("textures/entity/wolf/wolf.png");
    private static final ResourceLocation TAMED_WOLF_TEXTURES = new ResourceLocation("textures/entity/wolf/wolf_tame.png");
-   private static final ResourceLocation ANRGY_WOLF_TEXTURES = new ResourceLocation("textures/entity/wolf/wolf_angry.png");
+   private static final ResourceLocation ANGRY_WOLF_TEXTURES = new ResourceLocation("textures/entity/wolf/wolf_angry.png");
 
    public WolfRenderer(EntityRendererManager renderManagerIn) {
       super(renderManagerIn, new WolfModel<>(), 0.5F);
@@ -24,14 +24,14 @@ public class WolfRenderer extends MobRenderer<WolfEntity, WolfModel<WolfEntity>>
       return livingBase.getTailRotation();
    }
 
-   public void func_225623_a_(WolfEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      if (p_225623_1_.isWolfWet()) {
-         float f = p_225623_1_.getBrightness() * p_225623_1_.getShadingWhileWet(p_225623_3_);
+   public void render(WolfEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      if (entityIn.isWolfWet()) {
+         float f = entityIn.getBrightness() * entityIn.getShadingWhileWet(partialTicks);
          this.entityModel.func_228253_a_(f, f, f);
       }
 
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
-      if (p_225623_1_.isWolfWet()) {
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+      if (entityIn.isWolfWet()) {
          this.entityModel.func_228253_a_(1.0F, 1.0F, 1.0F);
       }
 
@@ -41,7 +41,7 @@ public class WolfRenderer extends MobRenderer<WolfEntity, WolfModel<WolfEntity>>
       if (entity.isTamed()) {
          return TAMED_WOLF_TEXTURES;
       } else {
-         return entity.isAngry() ? ANRGY_WOLF_TEXTURES : WOLF_TEXTURES;
+         return entity.isAngry() ? ANGRY_WOLF_TEXTURES : WOLF_TEXTURES;
       }
    }
 }

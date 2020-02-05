@@ -25,30 +25,30 @@ public class ScreenShotHelper {
    private static final Logger LOGGER = LogManager.getLogger();
    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-   public static void saveScreenshot(File gameDirectory, int width, int height, Framebuffer buffer, Consumer<ITextComponent> p_148260_4_) {
-      saveScreenshot(gameDirectory, (String)null, width, height, buffer, p_148260_4_);
+   public static void saveScreenshot(File gameDirectory, int width, int height, Framebuffer buffer, Consumer<ITextComponent> messageConsumer) {
+      saveScreenshot(gameDirectory, (String)null, width, height, buffer, messageConsumer);
    }
 
-   public static void saveScreenshot(File gameDirectory, @Nullable String screenshotName, int width, int height, Framebuffer buffer, Consumer<ITextComponent> p_148259_5_) {
+   public static void saveScreenshot(File gameDirectory, @Nullable String screenshotName, int width, int height, Framebuffer buffer, Consumer<ITextComponent> messageConsumer) {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            func_228051_b_(gameDirectory, screenshotName, width, height, buffer, p_148259_5_);
+            saveScreenshotRaw(gameDirectory, screenshotName, width, height, buffer, messageConsumer);
          });
       } else {
-         func_228051_b_(gameDirectory, screenshotName, width, height, buffer, p_148259_5_);
+         saveScreenshotRaw(gameDirectory, screenshotName, width, height, buffer, messageConsumer);
       }
 
    }
 
-   private static void func_228051_b_(File p_228051_0_, @Nullable String p_228051_1_, int p_228051_2_, int p_228051_3_, Framebuffer p_228051_4_, Consumer<ITextComponent> p_228051_5_) {
-      NativeImage nativeimage = createScreenshot(p_228051_2_, p_228051_3_, p_228051_4_);
-      File file1 = new File(p_228051_0_, "screenshots");
+   private static void saveScreenshotRaw(File gameDirectory, @Nullable String screenshotName, int width, int height, Framebuffer buffer, Consumer<ITextComponent> messageConsumer) {
+      NativeImage nativeimage = createScreenshot(width, height, buffer);
+      File file1 = new File(gameDirectory, "screenshots");
       file1.mkdir();
       File file2;
-      if (p_228051_1_ == null) {
+      if (screenshotName == null) {
          file2 = getTimestampedPNGFileForDirectory(file1);
       } else {
-         file2 = new File(file1, p_228051_1_);
+         file2 = new File(file1, screenshotName);
       }
 
       SimpleResource.RESOURCE_IO_EXECUTOR.execute(() -> {
@@ -57,10 +57,10 @@ public class ScreenShotHelper {
             ITextComponent itextcomponent = (new StringTextComponent(file2.getName())).applyTextStyle(TextFormatting.UNDERLINE).applyTextStyle((p_228050_1_) -> {
                p_228050_1_.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath()));
             });
-            p_228051_5_.accept(new TranslationTextComponent("screenshot.success", itextcomponent));
+            messageConsumer.accept(new TranslationTextComponent("screenshot.success", itextcomponent));
          } catch (Exception exception) {
             LOGGER.warn("Couldn't save screenshot", (Throwable)exception);
-            p_228051_5_.accept(new TranslationTextComponent("screenshot.failure", exception.getMessage()));
+            messageConsumer.accept(new TranslationTextComponent("screenshot.failure", exception.getMessage()));
          } finally {
             nativeimage.close();
          }

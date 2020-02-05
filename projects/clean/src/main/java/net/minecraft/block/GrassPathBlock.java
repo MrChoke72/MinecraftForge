@@ -21,7 +21,7 @@ public class GrassPathBlock extends Block {
       super(builder);
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 
@@ -37,8 +37,8 @@ public class GrassPathBlock extends Block {
       return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      FarmlandBlock.turnToDirt(p_225534_1_, p_225534_2_, p_225534_3_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      FarmlandBlock.turnToDirt(state, worldIn, pos);
    }
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
@@ -55,7 +55,7 @@ public class GrassPathBlock extends Block {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_229870_f_(BlockState p_229870_1_, IBlockReader p_229870_2_, BlockPos p_229870_3_) {
+   public boolean isViewBlocking(BlockState p_229870_1_, IBlockReader p_229870_2_, BlockPos p_229870_3_) {
       return true;
    }
 }

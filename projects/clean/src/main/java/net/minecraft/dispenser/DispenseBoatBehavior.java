@@ -9,11 +9,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class DispenseBoatBehavior extends DefaultDispenseItemBehavior {
-   private final DefaultDispenseItemBehavior field_218402_b = new DefaultDispenseItemBehavior();
-   private final BoatEntity.Type field_218403_c;
+   private final DefaultDispenseItemBehavior dispenseItemBehaviour = new DefaultDispenseItemBehavior();
+   private final BoatEntity.Type type;
 
-   public DispenseBoatBehavior(BoatEntity.Type p_i50793_1_) {
-      this.field_218403_c = p_i50793_1_;
+   public DispenseBoatBehavior(BoatEntity.Type typeIn) {
+      this.type = typeIn;
    }
 
    public ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
@@ -28,14 +28,14 @@ public class DispenseBoatBehavior extends DefaultDispenseItemBehavior {
          d3 = 1.0D;
       } else {
          if (!world.getBlockState(blockpos).isAir() || !world.getFluidState(blockpos.down()).isTagged(FluidTags.WATER)) {
-            return this.field_218402_b.dispense(source, stack);
+            return this.dispenseItemBehaviour.dispense(source, stack);
          }
 
          d3 = 0.0D;
       }
 
       BoatEntity boatentity = new BoatEntity(world, d0, d1 + d3, d2);
-      boatentity.setBoatType(this.field_218403_c);
+      boatentity.setBoatType(this.type);
       boatentity.rotationYaw = direction.getHorizontalAngle();
       world.addEntity(boatentity);
       stack.shrink(1);

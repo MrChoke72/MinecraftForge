@@ -54,21 +54,21 @@ public class CampfireBlock extends ContainerBlock implements IWaterLoggable {
    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
    private static final VoxelShape field_226912_f_ = Block.makeCuboidShape(6.0D, 0.0D, 6.0D, 10.0D, 16.0D, 10.0D);
 
-   public CampfireBlock(Block.Properties p_i49989_1_) {
-      super(p_i49989_1_);
+   public CampfireBlock(Block.Properties propertiesIn) {
+      super(propertiesIn);
       this.setDefaultState(this.stateContainer.getBaseState().with(LIT, Boolean.valueOf(true)).with(SIGNAL_FIRE, Boolean.valueOf(false)).with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, Direction.NORTH));
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_1_.get(LIT)) {
-         TileEntity tileentity = p_225533_2_.getTileEntity(p_225533_3_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (state.get(LIT)) {
+         TileEntity tileentity = worldIn.getTileEntity(pos);
          if (tileentity instanceof CampfireTileEntity) {
             CampfireTileEntity campfiretileentity = (CampfireTileEntity)tileentity;
-            ItemStack itemstack = p_225533_4_.getHeldItem(p_225533_5_);
+            ItemStack itemstack = player.getHeldItem(handIn);
             Optional<CampfireCookingRecipe> optional = campfiretileentity.findMatchingRecipe(itemstack);
             if (optional.isPresent()) {
-               if (!p_225533_2_.isRemote && campfiretileentity.addItem(p_225533_4_.abilities.isCreativeMode ? itemstack.copy() : itemstack, optional.get().getCookTime())) {
-                  p_225533_4_.addStat(Stats.INTERACT_WITH_CAMPFIRE);
+               if (!worldIn.isRemote && campfiretileentity.addItem(player.abilities.isCreativeMode ? itemstack.copy() : itemstack, optional.get().getCookTime())) {
+                  player.addStat(Stats.INTERACT_WITH_CAMPFIRE);
                   return ActionResultType.SUCCESS;
                }
 
@@ -153,7 +153,7 @@ public class CampfireBlock extends ContainerBlock implements IWaterLoggable {
          if (flag) {
             if (worldIn.isRemote()) {
                for(int i = 0; i < 20; ++i) {
-                  func_220098_a(worldIn.getWorld(), pos, state.get(SIGNAL_FIRE), true);
+                  spawnSmokeParticles(worldIn.getWorld(), pos, state.get(SIGNAL_FIRE), true);
                }
             } else {
                worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -161,7 +161,7 @@ public class CampfireBlock extends ContainerBlock implements IWaterLoggable {
 
             TileEntity tileentity = worldIn.getTileEntity(pos);
             if (tileentity instanceof CampfireTileEntity) {
-               ((CampfireTileEntity)tileentity).func_213986_d();
+               ((CampfireTileEntity)tileentity).dropAllItems();
             }
          }
 
@@ -197,12 +197,12 @@ public class CampfireBlock extends ContainerBlock implements IWaterLoggable {
 
    }
 
-   public static void func_220098_a(World p_220098_0_, BlockPos pos, boolean p_220098_2_, boolean p_220098_3_) {
-      Random random = p_220098_0_.getRandom();
-      BasicParticleType basicparticletype = p_220098_2_ ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
-      p_220098_0_.func_217404_b(basicparticletype, true, (double)pos.getX() + 0.5D + random.nextDouble() / 3.0D * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + random.nextDouble() + random.nextDouble(), (double)pos.getZ() + 0.5D + random.nextDouble() / 3.0D * (double)(random.nextBoolean() ? 1 : -1), 0.0D, 0.07D, 0.0D);
-      if (p_220098_3_) {
-         p_220098_0_.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + 0.25D + random.nextDouble() / 2.0D * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + 0.4D, (double)pos.getZ() + 0.25D + random.nextDouble() / 2.0D * (double)(random.nextBoolean() ? 1 : -1), 0.0D, 0.005D, 0.0D);
+   public static void spawnSmokeParticles(World worldIn, BlockPos pos, boolean isSignalFire, boolean spawnExtraSmoke) {
+      Random random = worldIn.getRandom();
+      BasicParticleType basicparticletype = isSignalFire ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
+      worldIn.addOptionalParticle(basicparticletype, true, (double)pos.getX() + 0.5D + random.nextDouble() / 3.0D * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + random.nextDouble() + random.nextDouble(), (double)pos.getZ() + 0.5D + random.nextDouble() / 3.0D * (double)(random.nextBoolean() ? 1 : -1), 0.0D, 0.07D, 0.0D);
+      if (spawnExtraSmoke) {
+         worldIn.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + 0.25D + random.nextDouble() / 2.0D * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + 0.4D, (double)pos.getZ() + 0.25D + random.nextDouble() / 2.0D * (double)(random.nextBoolean() ? 1 : -1), 0.0D, 0.005D, 0.0D);
       }
 
    }

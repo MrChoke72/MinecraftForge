@@ -14,26 +14,26 @@ public abstract class ScatteredStructurePiece extends StructurePiece {
    protected final int depth;
    protected int hPos = -1;
 
-   protected ScatteredStructurePiece(IStructurePieceType p_i51344_1_, Random p_i51344_2_, int p_i51344_3_, int p_i51344_4_, int p_i51344_5_, int p_i51344_6_, int p_i51344_7_, int p_i51344_8_) {
-      super(p_i51344_1_, 0);
-      this.width = p_i51344_6_;
-      this.height = p_i51344_7_;
-      this.depth = p_i51344_8_;
-      this.setCoordBaseMode(Direction.Plane.HORIZONTAL.random(p_i51344_2_));
+   protected ScatteredStructurePiece(IStructurePieceType structurePieceTypeIn, Random rand, int xIn, int yIn, int zIn, int widthIn, int heightIn, int depthIn) {
+      super(structurePieceTypeIn, 0);
+      this.width = widthIn;
+      this.height = heightIn;
+      this.depth = depthIn;
+      this.setCoordBaseMode(Direction.Plane.HORIZONTAL.random(rand));
       if (this.getCoordBaseMode().getAxis() == Direction.Axis.Z) {
-         this.boundingBox = new MutableBoundingBox(p_i51344_3_, p_i51344_4_, p_i51344_5_, p_i51344_3_ + p_i51344_6_ - 1, p_i51344_4_ + p_i51344_7_ - 1, p_i51344_5_ + p_i51344_8_ - 1);
+         this.boundingBox = new MutableBoundingBox(xIn, yIn, zIn, xIn + widthIn - 1, yIn + heightIn - 1, zIn + depthIn - 1);
       } else {
-         this.boundingBox = new MutableBoundingBox(p_i51344_3_, p_i51344_4_, p_i51344_5_, p_i51344_3_ + p_i51344_8_ - 1, p_i51344_4_ + p_i51344_7_ - 1, p_i51344_5_ + p_i51344_6_ - 1);
+         this.boundingBox = new MutableBoundingBox(xIn, yIn, zIn, xIn + depthIn - 1, yIn + heightIn - 1, zIn + widthIn - 1);
       }
 
    }
 
-   protected ScatteredStructurePiece(IStructurePieceType p_i51345_1_, CompoundNBT p_i51345_2_) {
-      super(p_i51345_1_, p_i51345_2_);
-      this.width = p_i51345_2_.getInt("Width");
-      this.height = p_i51345_2_.getInt("Height");
-      this.depth = p_i51345_2_.getInt("Depth");
-      this.hPos = p_i51345_2_.getInt("HPos");
+   protected ScatteredStructurePiece(IStructurePieceType structurePieceTypeIn, CompoundNBT nbt) {
+      super(structurePieceTypeIn, nbt);
+      this.width = nbt.getInt("Width");
+      this.height = nbt.getInt("Height");
+      this.depth = nbt.getInt("Depth");
+      this.hPos = nbt.getInt("HPos");
    }
 
    protected void readAdditional(CompoundNBT tagCompound) {
@@ -43,7 +43,7 @@ public abstract class ScatteredStructurePiece extends StructurePiece {
       tagCompound.putInt("HPos", this.hPos);
    }
 
-   protected boolean func_202580_a(IWorld p_202580_1_, MutableBoundingBox p_202580_2_, int p_202580_3_) {
+   protected boolean isInsideBounds(IWorld worldIn, MutableBoundingBox boundsIn, int heightIn) {
       if (this.hPos >= 0) {
          return true;
       } else {
@@ -54,8 +54,8 @@ public abstract class ScatteredStructurePiece extends StructurePiece {
          for(int k = this.boundingBox.minZ; k <= this.boundingBox.maxZ; ++k) {
             for(int l = this.boundingBox.minX; l <= this.boundingBox.maxX; ++l) {
                blockpos$mutable.setPos(l, 64, k);
-               if (p_202580_2_.isVecInside(blockpos$mutable)) {
-                  i += p_202580_1_.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY();
+               if (boundsIn.isVecInside(blockpos$mutable)) {
+                  i += worldIn.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY();
                   ++j;
                }
             }
@@ -65,7 +65,7 @@ public abstract class ScatteredStructurePiece extends StructurePiece {
             return false;
          } else {
             this.hPos = i / j;
-            this.boundingBox.offset(0, this.hPos - this.boundingBox.minY + p_202580_3_, 0);
+            this.boundingBox.offset(0, this.hPos - this.boundingBox.minY + heightIn, 0);
             return true;
          }
       }

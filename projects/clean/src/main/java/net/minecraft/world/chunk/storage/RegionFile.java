@@ -30,7 +30,7 @@ public class RegionFile implements AutoCloseable {
    private final RegionFileVersion field_227125_e_;
    private final ByteBuffer field_227126_f_ = ByteBuffer.allocateDirect(8192);
    private final IntBuffer offsets;
-   private final IntBuffer field_227127_h_;
+   private final IntBuffer chunkTimestamps;
    private final RegionBitmap field_227128_i_ = new RegionBitmap();
 
    public RegionFile(File p_i225784_1_, File p_i225784_2_) throws IOException {
@@ -46,7 +46,7 @@ public class RegionFile implements AutoCloseable {
          this.offsets = this.field_227126_f_.asIntBuffer();
          this.offsets.limit(1024);
          this.field_227126_f_.position(4096);
-         this.field_227127_h_ = this.field_227126_f_.asIntBuffer();
+         this.chunkTimestamps = this.field_227126_f_.asIntBuffer();
          this.dataFile = FileChannel.open(p_i225785_1_, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
          this.field_227128_i_.func_227120_a_(0, 2);
          this.field_227126_f_.position(0);
@@ -246,7 +246,7 @@ public class RegionFile implements AutoCloseable {
 
       int l1 = (int)(Util.millisecondsSinceEpoch() / 1000L);
       this.offsets.put(i, this.func_227132_a_(k1, j1));
-      this.field_227127_h_.put(i, l1);
+      this.chunkTimestamps.put(i, l1);
       this.func_227140_b_();
       regionfile$icompletecallback.run();
       if (k != 0) {

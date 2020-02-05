@@ -13,20 +13,18 @@ public abstract class Task<E extends LivingEntity> {
    private final int durationMin;
    private final int durationMax;
 
-   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> reqMemoryState) {
-      this(reqMemoryState, 60);
+   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> requiredMemoryStateIn) {
+      this(requiredMemoryStateIn, 60);
    }
 
-   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> reqMemoryState, int duration) {
-      this(reqMemoryState, duration, duration);
+   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> requiredMemoryStateIn, int duration) {
+      this(requiredMemoryStateIn, duration, duration);
    }
 
-   //AH REFACTOR
-   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> memModuleMap, int durationMin, int durationMax) {
-   //public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> p_i51506_1_, int p_i51506_2_, int p_i51506_3_) {
-      this.durationMin = durationMin;
-      this.durationMax = durationMax;
-      this.requiredMemoryState = memModuleMap;
+   public Task(Map<MemoryModuleType<?>, MemoryModuleStatus> requiredMemoryStateIn, int durationMinIn, int durationMaxIn) {
+      this.durationMin = durationMinIn;
+      this.durationMax = durationMaxIn;
+      this.requiredMemoryState = requiredMemoryStateIn;
    }
 
    public Task.Status getStatus() {

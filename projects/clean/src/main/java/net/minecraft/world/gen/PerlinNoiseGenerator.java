@@ -58,14 +58,14 @@ public class PerlinNoiseGenerator implements INoiseGenerator {
       }
    }
 
-   public double func_215464_a(double p_215464_1_, double p_215464_3_, boolean p_215464_5_) {
+   public double noiseAt(double x, double y, boolean useNoiseOffsets) {
       double d0 = 0.0D;
       double d1 = this.field_227463_c_;
       double d2 = this.field_227462_b_;
 
       for(SimplexNoiseGenerator simplexnoisegenerator : this.noiseLevels) {
          if (simplexnoisegenerator != null) {
-            d0 += simplexnoisegenerator.getValue(p_215464_1_ * d1 + (p_215464_5_ ? simplexnoisegenerator.xo : 0.0D), p_215464_3_ * d1 + (p_215464_5_ ? simplexnoisegenerator.yo : 0.0D)) * d2;
+            d0 += simplexnoisegenerator.getValue(x * d1 + (useNoiseOffsets ? simplexnoisegenerator.xo : 0.0D), y * d1 + (useNoiseOffsets ? simplexnoisegenerator.yo : 0.0D)) * d2;
          }
 
          d1 /= 2.0D;
@@ -75,7 +75,7 @@ public class PerlinNoiseGenerator implements INoiseGenerator {
       return d0;
    }
 
-   public double func_215460_a(double p_215460_1_, double p_215460_3_, double p_215460_5_, double p_215460_7_) {
-      return this.func_215464_a(p_215460_1_, p_215460_3_, true) * 0.55D;
+   public double noiseAt(double x, double y, double z, double p_215460_7_) {
+      return this.noiseAt(x, y, true) * 0.55D;
    }
 }

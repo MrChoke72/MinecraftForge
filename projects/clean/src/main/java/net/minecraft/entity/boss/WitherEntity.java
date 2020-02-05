@@ -145,7 +145,7 @@ public class WitherEntity extends MonsterEntity implements IChargeableMob, IRang
 
             vec3d = new Vec3d(vec3d.x, d0, vec3d.z);
             Vec3d vec3d1 = new Vec3d(entity.getPosX() - this.getPosX(), 0.0D, entity.getPosZ() - this.getPosZ());
-            if (func_213296_b(vec3d1) > 9.0D) {
+            if (horizontalMag(vec3d1) > 9.0D) {
                Vec3d vec3d2 = vec3d1.normalize();
                vec3d = vec3d.add(vec3d2.x * 0.3D - vec3d.x * 0.6D, 0.0D, vec3d2.z * 0.3D - vec3d.z * 0.6D);
             }
@@ -153,7 +153,7 @@ public class WitherEntity extends MonsterEntity implements IChargeableMob, IRang
       }
 
       this.setMotion(vec3d);
-      if (func_213296_b(vec3d) > 0.05D) {
+      if (horizontalMag(vec3d) > 0.05D) {
          this.rotationYaw = (float)MathHelper.atan2(vec3d.z, vec3d.x) * (180F / (float)Math.PI) - 90.0F;
       }
 
@@ -176,7 +176,7 @@ public class WitherEntity extends MonsterEntity implements IChargeableMob, IRang
             double d1 = this.getHeadY(j + 1);
             double d3 = this.getHeadZ(j + 1);
             double d4 = entity1.getPosX() - d9;
-            double d5 = entity1.getPosYPlusEyeHeight() - d1;
+            double d5 = entity1.getPosYEye() - d1;
             double d6 = entity1.getPosZ() - d3;
             double d7 = (double)MathHelper.sqrt(d4 * d4 + d6 * d6);
             float f = (float)(MathHelper.atan2(d6, d4) * (double)(180F / (float)Math.PI)) - 90.0F;
@@ -213,7 +213,7 @@ public class WitherEntity extends MonsterEntity implements IChargeableMob, IRang
          int j1 = this.getInvulTime() - 1;
          if (j1 <= 0) {
             Explosion.Mode explosion$mode = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.Mode.DESTROY : Explosion.Mode.NONE;
-            this.world.createExplosion(this, this.getPosX(), this.getPosYPlusEyeHeight(), this.getPosZ(), 7.0F, false, explosion$mode);
+            this.world.createExplosion(this, this.getPosX(), this.getPosYEye(), this.getPosZ(), 7.0F, false, explosion$mode);
             this.world.playBroadcastSound(1023, new BlockPos(this), 0);
          }
 
@@ -398,7 +398,7 @@ public class WitherEntity extends MonsterEntity implements IChargeableMob, IRang
          witherskullentity.setSkullInvulnerable(true);
       }
 
-      witherskullentity.func_226288_n_(d0, d1, d2);
+      witherskullentity.setRawPosition(d0, d1, d2);
       this.world.addEntity(witherskullentity);
    }
 
@@ -450,18 +450,18 @@ public class WitherEntity extends MonsterEntity implements IChargeableMob, IRang
    }
 
    public void checkDespawn() {
-      if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.func_225511_J_()) {
+      if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.isDespawnPeaceful()) {
          this.remove();
       } else {
          this.idleTime = 0;
       }
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 
-   public boolean addPotionEffect(EffectInstance p_195064_1_) {
+   public boolean addPotionEffect(EffectInstance effectInstanceIn) {
       return false;
    }
 

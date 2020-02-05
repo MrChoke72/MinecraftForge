@@ -116,7 +116,7 @@ public class WrittenBookItem extends Item {
                   itextcomponent = new StringTextComponent(s);
                }
 
-               listnbt.set(i, (INBT)StringNBT.func_229705_a_(ITextComponent.Serializer.toJson(itextcomponent)));
+               listnbt.set(i, (INBT)StringNBT.valueOf(ITextComponent.Serializer.toJson(itextcomponent)));
             }
 
             compoundnbt.put("pages", listnbt);

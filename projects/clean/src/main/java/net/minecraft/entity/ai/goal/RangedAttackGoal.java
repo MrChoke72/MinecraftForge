@@ -7,9 +7,9 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class RangedAttackGoal extends Goal {
-   private final MobEntity field_75322_b;
+   private final MobEntity entityHost;
    private final IRangedAttackMob rangedAttackEntityHost;
-   private LivingEntity field_75323_c;
+   private LivingEntity attackTarget;
    private int rangedAttackTime = -1;
    private final double entityMoveSpeed;
    private int seeTime;
@@ -27,7 +27,7 @@ public class RangedAttackGoal extends Goal {
          throw new IllegalArgumentException("ArrowAttackGoal requires Mob implements RangedAttackMob");
       } else {
          this.rangedAttackEntityHost = attacker;
-         this.field_75322_b = (MobEntity)attacker;
+         this.entityHost = (MobEntity)attacker;
          this.entityMoveSpeed = movespeed;
          this.attackIntervalMin = p_i1650_4_;
          this.maxRangedAttackTime = maxAttackTime;
@@ -38,9 +38,9 @@ public class RangedAttackGoal extends Goal {
    }
 
    public boolean shouldExecute() {
-      LivingEntity livingentity = this.field_75322_b.getAttackTarget();
+      LivingEntity livingentity = this.entityHost.getAttackTarget();
       if (livingentity != null && livingentity.isAlive()) {
-         this.field_75323_c = livingentity;
+         this.attackTarget = livingentity;
          return true;
       } else {
          return false;
@@ -48,18 +48,18 @@ public class RangedAttackGoal extends Goal {
    }
 
    public boolean shouldContinueExecuting() {
-      return this.shouldExecute() || !this.field_75322_b.getNavigator().noPath();
+      return this.shouldExecute() || !this.entityHost.getNavigator().noPath();
    }
 
    public void resetTask() {
-      this.field_75323_c = null;
+      this.attackTarget = null;
       this.seeTime = 0;
       this.rangedAttackTime = -1;
    }
 
    public void tick() {
-      double d0 = this.field_75322_b.getDistanceSq(this.field_75323_c.getPosX(), this.field_75323_c.getPosY(), this.field_75323_c.getPosZ());
-      boolean flag = this.field_75322_b.getEntitySenses().canSee(this.field_75323_c);
+      double d0 = this.entityHost.getDistanceSq(this.attackTarget.getPosX(), this.attackTarget.getPosY(), this.attackTarget.getPosZ());
+      boolean flag = this.entityHost.getEntitySenses().canSee(this.attackTarget);
       if (flag) {
          ++this.seeTime;
       } else {
@@ -67,12 +67,12 @@ public class RangedAttackGoal extends Goal {
       }
 
       if (!(d0 > (double)this.maxAttackDistance) && this.seeTime >= 5) {
-         this.field_75322_b.getNavigator().clearPath();
+         this.entityHost.getNavigator().clearPath();
       } else {
-         this.field_75322_b.getNavigator().tryMoveToEntityLiving(this.field_75323_c, this.entityMoveSpeed);
+         this.entityHost.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
       }
 
-      this.field_75322_b.getLookController().setLookPositionWithEntity(this.field_75323_c, 30.0F, 30.0F);
+      this.entityHost.getLookController().setLookPositionWithEntity(this.attackTarget, 30.0F, 30.0F);
       if (--this.rangedAttackTime == 0) {
          if (!flag) {
             return;
@@ -80,7 +80,7 @@ public class RangedAttackGoal extends Goal {
 
          float f = MathHelper.sqrt(d0) / this.attackRadius;
          float lvt_5_1_ = MathHelper.clamp(f, 0.1F, 1.0F);
-         this.rangedAttackEntityHost.attackEntityWithRangedAttack(this.field_75323_c, lvt_5_1_);
+         this.rangedAttackEntityHost.attackEntityWithRangedAttack(this.attackTarget, lvt_5_1_);
          this.rangedAttackTime = MathHelper.floor(f * (float)(this.maxRangedAttackTime - this.attackIntervalMin) + (float)this.attackIntervalMin);
       } else if (this.rangedAttackTime < 0) {
          float f2 = MathHelper.sqrt(d0) / this.attackRadius;

@@ -14,8 +14,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ChestedHorseRenderer<T extends AbstractChestedHorseEntity> extends AbstractHorseRenderer<T, HorseArmorChestsModel<T>> {
    private static final Map<EntityType<?>, ResourceLocation> field_195635_a = Maps.newHashMap(ImmutableMap.of(EntityType.DONKEY, new ResourceLocation("textures/entity/horse/donkey.png"), EntityType.MULE, new ResourceLocation("textures/entity/horse/mule.png")));
 
-   public ChestedHorseRenderer(EntityRendererManager renderManagerIn, float p_i48144_2_) {
-      super(renderManagerIn, new HorseArmorChestsModel<>(0.0F), p_i48144_2_);
+   public ChestedHorseRenderer(EntityRendererManager renderManagerIn, float scaleIn) {
+      super(renderManagerIn, new HorseArmorChestsModel<>(0.0F), scaleIn);
    }
 
    public ResourceLocation getEntityTexture(T entity) {

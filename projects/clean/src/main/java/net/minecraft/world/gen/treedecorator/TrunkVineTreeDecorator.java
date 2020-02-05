@@ -56,6 +56,6 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
    }
 
    public <T> T serialize(DynamicOps<T> p_218175_1_) {
-      return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(ImmutableMap.of(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.field_229390_w_.getKey(this.field_227422_a_).toString()))))).getValue();
+      return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(ImmutableMap.of(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.TREE_DECORATOR_TYPE.getKey(this.field_227422_a_).toString()))))).getValue();
    }
 }

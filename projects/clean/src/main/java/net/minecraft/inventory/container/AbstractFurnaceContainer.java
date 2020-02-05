@@ -54,9 +54,9 @@ public abstract class AbstractFurnaceContainer extends RecipeBookContainer<IInve
       this.trackIntArray(p_i50104_6_);
    }
 
-   public void func_201771_a(RecipeItemHelper p_201771_1_) {
+   public void fillStackedContents(RecipeItemHelper itemHelperIn) {
       if (this.furnaceInventory instanceof IRecipeHelperPopulator) {
-         ((IRecipeHelperPopulator)this.furnaceInventory).fillStackedContents(p_201771_1_);
+         ((IRecipeHelperPopulator)this.furnaceInventory).fillStackedContents(itemHelperIn);
       }
 
    }

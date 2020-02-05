@@ -15,11 +15,11 @@ public class Activity {
    public static final Activity HIDE = register("hide");
    private final String id;
 
-   public Activity(String id) {
-      this.id = id;
+   public Activity(String key) {
+      this.id = key;
    }
 
-   public String getId() {
+   public String getKey() {
       return this.id;
    }
 
@@ -28,6 +28,6 @@ public class Activity {
    }
 
    public String toString() {
-      return this.getId();
+      return this.getKey();
    }
 }

@@ -9,9 +9,9 @@ public class TestLogger implements ITestLogger {
 
    public void func_225646_a_(TestTracker p_225646_1_) {
       if (p_225646_1_.func_229520_q_()) {
-         field_229575_a_.error(p_225646_1_.func_229510_c_() + " failed! " + Util.func_229758_d_(p_225646_1_.func_229519_n_()));
+         field_229575_a_.error(p_225646_1_.func_229510_c_() + " failed! " + Util.getMessage(p_225646_1_.func_229519_n_()));
       } else {
-         field_229575_a_.warn("(optional) " + p_225646_1_.func_229510_c_() + " failed. " + Util.func_229758_d_(p_225646_1_.func_229519_n_()));
+         field_229575_a_.warn("(optional) " + p_225646_1_.func_229510_c_() + " failed. " + Util.getMessage(p_225646_1_.func_229519_n_()));
       }
 
    }

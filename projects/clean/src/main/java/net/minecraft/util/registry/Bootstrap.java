@@ -74,7 +74,7 @@ public class Bootstrap {
       return set;
    }
 
-   public static void func_218821_c() {
+   public static void checkTranslations() {
       if (!alreadyRegistered) {
          throw new IllegalArgumentException("Not bootstrapped");
       } else {

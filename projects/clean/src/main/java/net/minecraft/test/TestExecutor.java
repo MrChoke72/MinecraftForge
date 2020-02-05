@@ -94,7 +94,7 @@ public class TestExecutor {
          this.field_229474_i_.move(j + 4, 0, 0);
          if (i++ % 8 == 0) {
             this.field_229474_i_.move(0, 0, this.field_229475_j_ + 5);
-            this.field_229474_i_.func_223471_o(this.field_229467_b_.getX());
+            this.field_229474_i_.setX(this.field_229467_b_.getX());
             this.field_229475_j_ = 0;
          }
       }

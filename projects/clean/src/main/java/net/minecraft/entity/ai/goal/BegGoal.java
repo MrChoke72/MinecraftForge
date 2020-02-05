@@ -51,7 +51,7 @@ public class BegGoal extends Goal {
    }
 
    public void tick() {
-      this.wolf.getLookController().setLookPosition(this.player.getPosX(), this.player.getPosYPlusEyeHeight(), this.player.getPosZ(), 10.0F, (float)this.wolf.getVerticalFaceSpeed());
+      this.wolf.getLookController().setLookPosition(this.player.getPosX(), this.player.getPosYEye(), this.player.getPosZ(), 10.0F, (float)this.wolf.getVerticalFaceSpeed());
       --this.timeoutCounter;
    }
 

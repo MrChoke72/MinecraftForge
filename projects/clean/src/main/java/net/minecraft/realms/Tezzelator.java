@@ -14,7 +14,7 @@ public class Tezzelator {
    }
 
    public Tezzelator vertex(double p_vertex_1_, double p_vertex_3_, double p_vertex_5_) {
-      t.getBuffer().func_225582_a_(p_vertex_1_, p_vertex_3_, p_vertex_5_);
+      t.getBuffer().pos(p_vertex_1_, p_vertex_3_, p_vertex_5_);
       return this;
    }
 
@@ -27,12 +27,12 @@ public class Tezzelator {
    }
 
    public Tezzelator color(int p_color_1_, int p_color_2_, int p_color_3_, int p_color_4_) {
-      t.getBuffer().func_225586_a_(p_color_1_, p_color_2_, p_color_3_, p_color_4_);
+      t.getBuffer().color(p_color_1_, p_color_2_, p_color_3_, p_color_4_);
       return this;
    }
 
    public Tezzelator tex(float p_tex_1_, float p_tex_2_) {
-      t.getBuffer().func_225583_a_(p_tex_1_, p_tex_2_);
+      t.getBuffer().tex(p_tex_1_, p_tex_2_);
       return this;
    }
 }

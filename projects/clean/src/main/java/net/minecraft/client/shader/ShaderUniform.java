@@ -41,7 +41,7 @@ public class ShaderUniform extends ShaderDefault implements AutoCloseable {
    }
 
    public static int func_227806_a_(int p_227806_0_, CharSequence p_227806_1_) {
-      return GlStateManager.func_227680_b_(p_227806_0_, p_227806_1_);
+      return GlStateManager.getUniformLocation(p_227806_0_, p_227806_1_);
    }
 
    public static void func_227805_a_(int p_227805_0_, int p_227805_1_) {
@@ -49,7 +49,7 @@ public class ShaderUniform extends ShaderDefault implements AutoCloseable {
    }
 
    public static int func_227807_b_(int p_227807_0_, CharSequence p_227807_1_) {
-      return GlStateManager.func_227695_c_(p_227807_0_, p_227807_1_);
+      return GlStateManager.getAttribLocation(p_227807_0_, p_227807_1_);
    }
 
    public void close() {

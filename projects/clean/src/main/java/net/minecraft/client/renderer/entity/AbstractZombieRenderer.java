@@ -21,11 +21,11 @@ public abstract class AbstractZombieRenderer<T extends ZombieEntity, M extends Z
       return field_217771_a;
    }
 
-   protected void func_225621_a_(T p_225621_1_, MatrixStack p_225621_2_, float p_225621_3_, float p_225621_4_, float p_225621_5_) {
-      if (p_225621_1_.isDrowning()) {
-         p_225621_4_ += (float)(Math.cos((double)p_225621_1_.ticksExisted * 3.25D) * Math.PI * 0.25D);
+   protected void applyRotations(T entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
+      if (entityLiving.isDrowning()) {
+         rotationYaw += (float)(Math.cos((double)entityLiving.ticksExisted * 3.25D) * Math.PI * 0.25D);
       }
 
-      super.func_225621_a_(p_225621_1_, p_225621_2_, p_225621_3_, p_225621_4_, p_225621_5_);
+      super.applyRotations(entityLiving, matrixStackIn, ageInTicks, rotationYaw, partialTicks);
    }
 }

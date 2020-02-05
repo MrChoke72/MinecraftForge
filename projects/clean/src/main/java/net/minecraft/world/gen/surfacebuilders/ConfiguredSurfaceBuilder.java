@@ -14,8 +14,8 @@ public class ConfiguredSurfaceBuilder<SC extends ISurfaceBuilderConfig> {
       this.config = config;
    }
 
-   public void buildSurface(Random random, IChunk p_215450_2_, Biome p_215450_3_, int x, int z, int p_215450_6_, double noise, BlockState p_215450_9_, BlockState p_215450_10_, int seaLevel, long seed) {
-      this.builder.buildSurface(random, p_215450_2_, p_215450_3_, x, z, p_215450_6_, noise, p_215450_9_, p_215450_10_, seaLevel, seed, this.config);
+   public void buildSurface(Random random, IChunk chunkIn, Biome biomeIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed) {
+      this.builder.buildSurface(random, chunkIn, biomeIn, x, z, startHeight, noise, defaultBlock, defaultFluid, seaLevel, seed, this.config);
    }
 
    public void setSeed(long seed) {

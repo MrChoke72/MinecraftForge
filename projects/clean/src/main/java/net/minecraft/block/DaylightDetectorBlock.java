@@ -33,7 +33,7 @@ public class DaylightDetectorBlock extends ContainerBlock {
       return SHAPE;
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 
@@ -43,7 +43,7 @@ public class DaylightDetectorBlock extends ContainerBlock {
 
    public static void updatePower(BlockState p_196319_0_, World p_196319_1_, BlockPos p_196319_2_) {
       if (p_196319_1_.dimension.hasSkyLight()) {
-         int i = p_196319_1_.getLightLevel(LightType.SKY, p_196319_2_) - p_196319_1_.getSkylightSubtracted();
+         int i = p_196319_1_.getLightFor(LightType.SKY, p_196319_2_) - p_196319_1_.getSkylightSubtracted();
          float f = p_196319_1_.getCelestialAngleRadians(1.0F);
          boolean flag = p_196319_0_.get(INVERTED);
          if (flag) {
@@ -62,18 +62,18 @@ public class DaylightDetectorBlock extends ContainerBlock {
       }
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_4_.isAllowEdit()) {
-         if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (player.isAllowEdit()) {
+         if (worldIn.isRemote) {
             return ActionResultType.SUCCESS;
          } else {
-            BlockState blockstate = p_225533_1_.cycle(INVERTED);
-            p_225533_2_.setBlockState(p_225533_3_, blockstate, 4);
-            updatePower(blockstate, p_225533_2_, p_225533_3_);
+            BlockState blockstate = state.cycle(INVERTED);
+            worldIn.setBlockState(pos, blockstate, 4);
+            updatePower(blockstate, worldIn, pos);
             return ActionResultType.SUCCESS;
          }
       } else {
-         return super.func_225533_a_(p_225533_1_, p_225533_2_, p_225533_3_, p_225533_4_, p_225533_5_, p_225533_6_);
+         return super.onBlockActivated(state, worldIn, pos, player, handIn, p_225533_6_);
       }
    }
 

@@ -133,8 +133,8 @@ public class IngameGui extends AbstractGui {
    }
 
    public void renderGameOverlay(float partialTicks) {
-      this.scaledWidth = this.mc.func_228018_at_().getScaledWidth();
-      this.scaledHeight = this.mc.func_228018_at_().getScaledHeight();
+      this.scaledWidth = this.mc.getMainWindow().getScaledWidth();
+      this.scaledHeight = this.mc.getMainWindow().getScaledHeight();
       FontRenderer fontrenderer = this.getFontRenderer();
       RenderSystem.enableBlend();
       if (Minecraft.isFancyGraphicsEnabled()) {
@@ -241,7 +241,7 @@ public class IngameGui extends AbstractGui {
                }
 
                int j = i1 << 24 & -16777216;
-               this.func_212909_a(fontrenderer, -4, fontrenderer.getStringWidth(this.overlayMessage));
+               this.renderTextBackground(fontrenderer, -4, fontrenderer.getStringWidth(this.overlayMessage));
                fontrenderer.drawString(this.overlayMessage, (float)(-fontrenderer.getStringWidth(this.overlayMessage) / 2), -4.0F, k1 | j);
                RenderSystem.disableBlend();
                RenderSystem.popMatrix();
@@ -273,14 +273,14 @@ public class IngameGui extends AbstractGui {
                RenderSystem.scalef(4.0F, 4.0F, 4.0F);
                int l1 = j1 << 24 & -16777216;
                int i2 = fontrenderer.getStringWidth(this.displayedTitle);
-               this.func_212909_a(fontrenderer, -10, i2);
+               this.renderTextBackground(fontrenderer, -10, i2);
                fontrenderer.drawStringWithShadow(this.displayedTitle, (float)(-i2 / 2), -10.0F, 16777215 | l1);
                RenderSystem.popMatrix();
                if (!this.displayedSubTitle.isEmpty()) {
                   RenderSystem.pushMatrix();
                   RenderSystem.scalef(2.0F, 2.0F, 2.0F);
                   int k = fontrenderer.getStringWidth(this.displayedSubTitle);
-                  this.func_212909_a(fontrenderer, 5, k);
+                  this.renderTextBackground(fontrenderer, 5, k);
                   fontrenderer.drawStringWithShadow(this.displayedSubTitle, (float)(-k / 2), 5.0F, 16777215 | l1);
                   RenderSystem.popMatrix();
                }
@@ -330,11 +330,11 @@ public class IngameGui extends AbstractGui {
       RenderSystem.enableAlphaTest();
    }
 
-   private void func_212909_a(FontRenderer p_212909_1_, int p_212909_2_, int p_212909_3_) {
-      int i = this.mc.gameSettings.func_216841_b(0.0F);
+   private void renderTextBackground(FontRenderer fontRendererIn, int yIn, int stringWidthIn) {
+      int i = this.mc.gameSettings.getTextBackgroundColor(0.0F);
       if (i != 0) {
-         int j = -p_212909_3_ / 2;
-         fill(j - 2, p_212909_2_ - 2, j + p_212909_3_ + 2, p_212909_2_ + 9 + 2, i);
+         int j = -stringWidthIn / 2;
+         fill(j - 2, yIn - 2, j + stringWidthIn + 2, yIn + 9 + 2, i);
       }
 
    }
@@ -342,7 +342,7 @@ public class IngameGui extends AbstractGui {
    protected void renderAttackIndicator() {
       GameSettings gamesettings = this.mc.gameSettings;
       if (gamesettings.thirdPersonView == 0) {
-         if (this.mc.playerController.getCurrentGameType() != GameType.SPECTATOR || this.func_212913_a(this.mc.objectMouseOver)) {
+         if (this.mc.playerController.getCurrentGameType() != GameType.SPECTATOR || this.isTargetNamedMenuProvider(this.mc.objectMouseOver)) {
             if (gamesettings.showDebugInfo && !gamesettings.hideGUI && !this.mc.player.hasReducedDebug() && !gamesettings.reducedDebugInfo) {
                RenderSystem.pushMatrix();
                RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getBlitOffset());
@@ -380,13 +380,13 @@ public class IngameGui extends AbstractGui {
       }
    }
 
-   private boolean func_212913_a(RayTraceResult p_212913_1_) {
-      if (p_212913_1_ == null) {
+   private boolean isTargetNamedMenuProvider(RayTraceResult rayTraceIn) {
+      if (rayTraceIn == null) {
          return false;
-      } else if (p_212913_1_.getType() == RayTraceResult.Type.ENTITY) {
-         return ((EntityRayTraceResult)p_212913_1_).getEntity() instanceof INamedContainerProvider;
-      } else if (p_212913_1_.getType() == RayTraceResult.Type.BLOCK) {
-         BlockPos blockpos = ((BlockRayTraceResult)p_212913_1_).getPos();
+      } else if (rayTraceIn.getType() == RayTraceResult.Type.ENTITY) {
+         return ((EntityRayTraceResult)rayTraceIn).getEntity() instanceof INamedContainerProvider;
+      } else if (rayTraceIn.getType() == RayTraceResult.Type.BLOCK) {
+         BlockPos blockpos = ((BlockRayTraceResult)rayTraceIn).getPos();
          World world = this.mc.world;
          return world.getBlockState(blockpos).getContainer(world, blockpos) != null;
       } else {
@@ -439,7 +439,7 @@ public class IngameGui extends AbstractGui {
                int k1 = l;
                float f1 = f;
                list.add(() -> {
-                  this.mc.getTextureManager().bindTexture(textureatlassprite.func_229241_m_().func_229223_g_());
+                  this.mc.getTextureManager().bindTexture(textureatlassprite.getAtlasTexture().getBasePath());
                   RenderSystem.color4f(1.0F, 1.0F, 1.0F, f1);
                   blit(j1 + 3, k1 + 3, this.getBlitOffset(), 18, 18, textureatlassprite);
                });
@@ -451,7 +451,7 @@ public class IngameGui extends AbstractGui {
    }
 
    protected void renderHotbar(float partialTicks) {
-      PlayerEntity playerentity = this.func_212304_m();
+      PlayerEntity playerentity = this.getRenderViewPlayer();
       if (playerentity != null) {
          RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
          this.mc.getTextureManager().bindTexture(WIDGETS_TEX_PATH);
@@ -583,7 +583,7 @@ public class IngameGui extends AbstractGui {
             RenderSystem.pushMatrix();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            fill(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(s) + 2, j + 9 + 2, this.mc.gameSettings.func_216839_a(0));
+            fill(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(s) + 2, j + 9 + 2, this.mc.gameSettings.getChatBackgroundColor(0));
             this.getFontRenderer().drawStringWithShadow(s, (float)i, (float)j, 16777215 + (k << 24));
             RenderSystem.disableBlend();
             RenderSystem.popMatrix();
@@ -634,8 +634,8 @@ public class IngameGui extends AbstractGui {
       int j2 = 3;
       int k2 = this.scaledWidth - j - 3;
       int k = 0;
-      int l = this.mc.gameSettings.func_216841_b(0.3F);
-      int i1 = this.mc.gameSettings.func_216841_b(0.4F);
+      int l = this.mc.gameSettings.getTextBackgroundColor(0.3F);
+      int i1 = this.mc.gameSettings.getTextBackgroundColor(0.4F);
 
       for(Score score1 : collection) {
          ++k;
@@ -656,12 +656,12 @@ public class IngameGui extends AbstractGui {
 
    }
 
-   private PlayerEntity func_212304_m() {
+   private PlayerEntity getRenderViewPlayer() {
       return !(this.mc.getRenderViewEntity() instanceof PlayerEntity) ? null : (PlayerEntity)this.mc.getRenderViewEntity();
    }
 
-   private LivingEntity func_212305_n() {
-      PlayerEntity playerentity = this.func_212304_m();
+   private LivingEntity getMountEntity() {
+      PlayerEntity playerentity = this.getRenderViewPlayer();
       if (playerentity != null) {
          Entity entity = playerentity.getRidingEntity();
          if (entity == null) {
@@ -676,7 +676,7 @@ public class IngameGui extends AbstractGui {
       return null;
    }
 
-   private int func_212306_a(LivingEntity p_212306_1_) {
+   private int getRenderMountHealth(LivingEntity p_212306_1_) {
       if (p_212306_1_ != null && p_212306_1_.isLiving()) {
          float f = p_212306_1_.getMaxHealth();
          int i = (int)(f + 0.5F) / 2;
@@ -690,12 +690,12 @@ public class IngameGui extends AbstractGui {
       }
    }
 
-   private int func_212302_c(int p_212302_1_) {
+   private int getVisibleMountHealthRows(int p_212302_1_) {
       return (int)Math.ceil((double)p_212302_1_ / 10.0D);
    }
 
    private void renderPlayerStats() {
-      PlayerEntity playerentity = this.func_212304_m();
+      PlayerEntity playerentity = this.getRenderViewPlayer();
       if (playerentity != null) {
          int i = MathHelper.ceil(playerentity.getHealth());
          boolean flag = this.healthUpdateCounter > (long)this.ticks && (this.healthUpdateCounter - (long)this.ticks) / 3L % 2L == 1L;
@@ -816,8 +816,8 @@ public class IngameGui extends AbstractGui {
             }
          }
 
-         LivingEntity livingentity = this.func_212305_n();
-         int j6 = this.func_212306_a(livingentity);
+         LivingEntity livingentity = this.getMountEntity();
+         int j6 = this.getRenderMountHealth(livingentity);
          if (j6 == 0) {
             this.mc.getProfiler().endStartSection("food");
 
@@ -852,7 +852,7 @@ public class IngameGui extends AbstractGui {
          int l6 = playerentity.getAir();
          int j7 = playerentity.getMaxAir();
          if (playerentity.areEyesInFluid(FluidTags.WATER) || l6 < j7) {
-            int l7 = this.func_212302_c(j6) - 1;
+            int l7 = this.getVisibleMountHealthRows(j6) - 1;
             l2 = l2 - l7 * 10;
             int j8 = MathHelper.ceil((double)(l6 - 2) * 10.0D / (double)j7);
             int l8 = MathHelper.ceil((double)l6 * 10.0D / (double)j7) - j8;
@@ -871,9 +871,9 @@ public class IngameGui extends AbstractGui {
    }
 
    private void renderVehicleHealth() {
-      LivingEntity livingentity = this.func_212305_n();
+      LivingEntity livingentity = this.getMountEntity();
       if (livingentity != null) {
-         int i = this.func_212306_a(livingentity);
+         int i = this.getRenderMountHealth(livingentity);
          if (i != 0) {
             int j = (int)Math.ceil((double)livingentity.getHealth());
             this.mc.getProfiler().endStartSection("mountHealth");
@@ -917,10 +917,10 @@ public class IngameGui extends AbstractGui {
       Tessellator tessellator = Tessellator.getInstance();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-      bufferbuilder.func_225582_a_(0.0D, (double)this.scaledHeight, -90.0D).func_225583_a_(0.0F, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_((double)this.scaledWidth, (double)this.scaledHeight, -90.0D).func_225583_a_(1.0F, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_((double)this.scaledWidth, 0.0D, -90.0D).func_225583_a_(1.0F, 0.0F).endVertex();
-      bufferbuilder.func_225582_a_(0.0D, 0.0D, -90.0D).func_225583_a_(0.0F, 0.0F).endVertex();
+      bufferbuilder.pos(0.0D, (double)this.scaledHeight, -90.0D).tex(0.0F, 1.0F).endVertex();
+      bufferbuilder.pos((double)this.scaledWidth, (double)this.scaledHeight, -90.0D).tex(1.0F, 1.0F).endVertex();
+      bufferbuilder.pos((double)this.scaledWidth, 0.0D, -90.0D).tex(1.0F, 0.0F).endVertex();
+      bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(0.0F, 0.0F).endVertex();
       tessellator.draw();
       RenderSystem.depthMask(true);
       RenderSystem.enableDepthTest();
@@ -928,16 +928,16 @@ public class IngameGui extends AbstractGui {
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
    }
 
-   private void updateVignetteBrightness(Entity p_212307_1_) {
-      if (p_212307_1_ != null) {
-         float f = MathHelper.clamp(1.0F - p_212307_1_.getBrightness(), 0.0F, 1.0F);
+   private void updateVignetteBrightness(Entity entityIn) {
+      if (entityIn != null) {
+         float f = MathHelper.clamp(1.0F - entityIn.getBrightness(), 0.0F, 1.0F);
          this.prevVignetteBrightness = (float)((double)this.prevVignetteBrightness + (double)(f - this.prevVignetteBrightness) * 0.01D);
       }
    }
 
-   protected void renderVignette(Entity p_212303_1_) {
+   protected void renderVignette(Entity entityIn) {
       WorldBorder worldborder = this.mc.world.getWorldBorder();
-      float f = (float)worldborder.getClosestDistance(p_212303_1_);
+      float f = (float)worldborder.getClosestDistance(entityIn);
       double d0 = Math.min(worldborder.getResizeSpeed() * (double)worldborder.getWarningTime() * 1000.0D, Math.abs(worldborder.getTargetSize() - worldborder.getDiameter()));
       double d1 = Math.max((double)worldborder.getWarningDistance(), d0);
       if ((double)f < d1) {
@@ -959,10 +959,10 @@ public class IngameGui extends AbstractGui {
       Tessellator tessellator = Tessellator.getInstance();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-      bufferbuilder.func_225582_a_(0.0D, (double)this.scaledHeight, -90.0D).func_225583_a_(0.0F, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_((double)this.scaledWidth, (double)this.scaledHeight, -90.0D).func_225583_a_(1.0F, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_((double)this.scaledWidth, 0.0D, -90.0D).func_225583_a_(1.0F, 0.0F).endVertex();
-      bufferbuilder.func_225582_a_(0.0D, 0.0D, -90.0D).func_225583_a_(0.0F, 0.0F).endVertex();
+      bufferbuilder.pos(0.0D, (double)this.scaledHeight, -90.0D).tex(0.0F, 1.0F).endVertex();
+      bufferbuilder.pos((double)this.scaledWidth, (double)this.scaledHeight, -90.0D).tex(1.0F, 1.0F).endVertex();
+      bufferbuilder.pos((double)this.scaledWidth, 0.0D, -90.0D).tex(1.0F, 0.0F).endVertex();
+      bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(0.0F, 0.0F).endVertex();
       tessellator.draw();
       RenderSystem.depthMask(true);
       RenderSystem.enableDepthTest();
@@ -991,10 +991,10 @@ public class IngameGui extends AbstractGui {
       Tessellator tessellator = Tessellator.getInstance();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-      bufferbuilder.func_225582_a_(0.0D, (double)this.scaledHeight, -90.0D).func_225583_a_(f, f3).endVertex();
-      bufferbuilder.func_225582_a_((double)this.scaledWidth, (double)this.scaledHeight, -90.0D).func_225583_a_(f2, f3).endVertex();
-      bufferbuilder.func_225582_a_((double)this.scaledWidth, 0.0D, -90.0D).func_225583_a_(f2, f1).endVertex();
-      bufferbuilder.func_225582_a_(0.0D, 0.0D, -90.0D).func_225583_a_(f, f1).endVertex();
+      bufferbuilder.pos(0.0D, (double)this.scaledHeight, -90.0D).tex(f, f3).endVertex();
+      bufferbuilder.pos((double)this.scaledWidth, (double)this.scaledHeight, -90.0D).tex(f2, f3).endVertex();
+      bufferbuilder.pos((double)this.scaledWidth, 0.0D, -90.0D).tex(f2, f1).endVertex();
+      bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(f, f1).endVertex();
       tessellator.draw();
       RenderSystem.depthMask(true);
       RenderSystem.enableDepthTest();
@@ -1139,7 +1139,7 @@ public class IngameGui extends AbstractGui {
       return this.overlayBoss;
    }
 
-   public void func_212910_m() {
-      this.overlayDebug.func_212921_a();
+   public void reset() {
+      this.overlayDebug.resetChunk();
    }
 }

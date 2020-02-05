@@ -34,20 +34,20 @@ public class ConnectingScreen extends Screen {
    private long field_213000_g = -1L;
 
    public ConnectingScreen(Screen parent, Minecraft mcIn, ServerData serverDataIn) {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
       this.minecraft = mcIn;
       this.previousGuiScreen = parent;
       ServerAddress serveraddress = ServerAddress.fromString(serverDataIn.serverIP);
-      mcIn.func_213254_o();
+      mcIn.unloadWorld();
       mcIn.setServerData(serverDataIn);
       this.connect(serveraddress.getIP(), serveraddress.getPort());
    }
 
    public ConnectingScreen(Screen parent, Minecraft mcIn, String hostName, int port) {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
       this.minecraft = mcIn;
       this.previousGuiScreen = parent;
-      mcIn.func_213254_o();
+      mcIn.unloadWorld();
       this.connect(hostName, port);
    }
 
@@ -131,7 +131,7 @@ public class ConnectingScreen extends Screen {
       long i = Util.milliTime();
       if (i - this.field_213000_g > 2000L) {
          this.field_213000_g = i;
-         NarratorChatListener.INSTANCE.func_216864_a((new TranslationTextComponent("narrator.joining")).getString());
+         NarratorChatListener.INSTANCE.say((new TranslationTextComponent("narrator.joining")).getString());
       }
 
       this.drawCenteredString(this.font, this.field_209515_s.getFormattedText(), this.width / 2, this.height / 2 - 50, 16777215);

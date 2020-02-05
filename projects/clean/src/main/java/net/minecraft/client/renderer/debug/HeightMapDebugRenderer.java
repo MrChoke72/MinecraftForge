@@ -22,13 +22,13 @@ public class HeightMapDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.minecraft = minecraftIn;
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       IWorld iworld = this.minecraft.world;
       RenderSystem.pushMatrix();
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
       RenderSystem.disableTexture();
-      BlockPos blockpos = new BlockPos(p_225619_3_, 0.0D, p_225619_7_);
+      BlockPos blockpos = new BlockPos(camX, 0.0D, camZ);
       Tessellator tessellator = Tessellator.getInstance();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
@@ -36,9 +36,9 @@ public class HeightMapDebugRenderer implements DebugRenderer.IDebugRenderer {
       for(BlockPos blockpos1 : BlockPos.getAllInBoxMutable(blockpos.add(-40, 0, -40), blockpos.add(40, 0, 40))) {
          int i = iworld.getHeight(Heightmap.Type.WORLD_SURFACE_WG, blockpos1.getX(), blockpos1.getZ());
          if (iworld.getBlockState(blockpos1.add(0, i, 0).down()).isAir()) {
-            WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)((float)blockpos1.getX() + 0.25F) - p_225619_3_, (double)i - p_225619_5_, (double)((float)blockpos1.getZ() + 0.25F) - p_225619_7_, (double)((float)blockpos1.getX() + 0.75F) - p_225619_3_, (double)i + 0.09375D - p_225619_5_, (double)((float)blockpos1.getZ() + 0.75F) - p_225619_7_, 0.0F, 0.0F, 1.0F, 0.5F);
+            WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)((float)blockpos1.getX() + 0.25F) - camX, (double)i - camY, (double)((float)blockpos1.getZ() + 0.25F) - camZ, (double)((float)blockpos1.getX() + 0.75F) - camX, (double)i + 0.09375D - camY, (double)((float)blockpos1.getZ() + 0.75F) - camZ, 0.0F, 0.0F, 1.0F, 0.5F);
          } else {
-            WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)((float)blockpos1.getX() + 0.25F) - p_225619_3_, (double)i - p_225619_5_, (double)((float)blockpos1.getZ() + 0.25F) - p_225619_7_, (double)((float)blockpos1.getX() + 0.75F) - p_225619_3_, (double)i + 0.09375D - p_225619_5_, (double)((float)blockpos1.getZ() + 0.75F) - p_225619_7_, 0.0F, 1.0F, 0.0F, 0.5F);
+            WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)((float)blockpos1.getX() + 0.25F) - camX, (double)i - camY, (double)((float)blockpos1.getZ() + 0.25F) - camZ, (double)((float)blockpos1.getX() + 0.75F) - camX, (double)i + 0.09375D - camY, (double)((float)blockpos1.getZ() + 0.75F) - camZ, 0.0F, 1.0F, 0.0F, 0.5F);
          }
       }
 

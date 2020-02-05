@@ -19,7 +19,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
    _interface = IRendersAsItem.class
 )
 public abstract class AbstractFireballEntity extends DamagingProjectileEntity implements IRendersAsItem {
-   private static final DataParameter<ItemStack> field_213899_f = EntityDataManager.createKey(AbstractFireballEntity.class, DataSerializers.ITEMSTACK);
+   private static final DataParameter<ItemStack> STACK = EntityDataManager.createKey(AbstractFireballEntity.class, DataSerializers.ITEMSTACK);
 
    public AbstractFireballEntity(EntityType<? extends AbstractFireballEntity> p_i50166_1_, World p_i50166_2_) {
       super(p_i50166_1_, p_i50166_2_);
@@ -33,32 +33,32 @@ public abstract class AbstractFireballEntity extends DamagingProjectileEntity im
       super(p_i50168_1_, p_i50168_2_, p_i50168_3_, p_i50168_5_, p_i50168_7_, p_i50168_9_);
    }
 
-   public void func_213898_b(ItemStack p_213898_1_) {
+   public void setStack(ItemStack p_213898_1_) {
       if (p_213898_1_.getItem() != Items.FIRE_CHARGE || p_213898_1_.hasTag()) {
-         this.getDataManager().set(field_213899_f, Util.make(p_213898_1_.copy(), (p_213897_0_) -> {
+         this.getDataManager().set(STACK, Util.make(p_213898_1_.copy(), (p_213897_0_) -> {
             p_213897_0_.setCount(1);
          }));
       }
 
    }
 
-   protected ItemStack func_213896_l() {
-      return this.getDataManager().get(field_213899_f);
+   protected ItemStack getStack() {
+      return this.getDataManager().get(STACK);
    }
 
    @OnlyIn(Dist.CLIENT)
    public ItemStack getItem() {
-      ItemStack itemstack = this.func_213896_l();
+      ItemStack itemstack = this.getStack();
       return itemstack.isEmpty() ? new ItemStack(Items.FIRE_CHARGE) : itemstack;
    }
 
    protected void registerData() {
-      this.getDataManager().register(field_213899_f, ItemStack.EMPTY);
+      this.getDataManager().register(STACK, ItemStack.EMPTY);
    }
 
    public void writeAdditional(CompoundNBT compound) {
       super.writeAdditional(compound);
-      ItemStack itemstack = this.func_213896_l();
+      ItemStack itemstack = this.getStack();
       if (!itemstack.isEmpty()) {
          compound.put("Item", itemstack.write(new CompoundNBT()));
       }
@@ -68,6 +68,6 @@ public abstract class AbstractFireballEntity extends DamagingProjectileEntity im
    public void readAdditional(CompoundNBT compound) {
       super.readAdditional(compound);
       ItemStack itemstack = ItemStack.read(compound.getCompound("Item"));
-      this.func_213898_b(itemstack);
+      this.setStack(itemstack);
    }
 }

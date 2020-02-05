@@ -26,35 +26,35 @@ public class FoxModel<T extends FoxEntity> extends AgeableModel<T> {
       this.textureWidth = 48;
       this.textureHeight = 32;
       this.field_217115_a = new ModelRenderer(this, 1, 5);
-      this.field_217115_a.func_228300_a_(-3.0F, -2.0F, -5.0F, 8.0F, 6.0F, 6.0F);
+      this.field_217115_a.addBox(-3.0F, -2.0F, -5.0F, 8.0F, 6.0F, 6.0F);
       this.field_217115_a.setRotationPoint(-1.0F, 16.5F, -3.0F);
       this.field_217116_b = new ModelRenderer(this, 8, 1);
-      this.field_217116_b.func_228300_a_(-3.0F, -4.0F, -4.0F, 2.0F, 2.0F, 1.0F);
+      this.field_217116_b.addBox(-3.0F, -4.0F, -4.0F, 2.0F, 2.0F, 1.0F);
       this.field_217117_f = new ModelRenderer(this, 15, 1);
-      this.field_217117_f.func_228300_a_(3.0F, -4.0F, -4.0F, 2.0F, 2.0F, 1.0F);
+      this.field_217117_f.addBox(3.0F, -4.0F, -4.0F, 2.0F, 2.0F, 1.0F);
       this.field_217118_g = new ModelRenderer(this, 6, 18);
-      this.field_217118_g.func_228300_a_(-1.0F, 2.01F, -8.0F, 4.0F, 2.0F, 3.0F);
+      this.field_217118_g.addBox(-1.0F, 2.01F, -8.0F, 4.0F, 2.0F, 3.0F);
       this.field_217115_a.addChild(this.field_217116_b);
       this.field_217115_a.addChild(this.field_217117_f);
       this.field_217115_a.addChild(this.field_217118_g);
       this.field_217119_h = new ModelRenderer(this, 24, 15);
-      this.field_217119_h.func_228300_a_(-3.0F, 3.999F, -3.5F, 6.0F, 11.0F, 6.0F);
+      this.field_217119_h.addBox(-3.0F, 3.999F, -3.5F, 6.0F, 11.0F, 6.0F);
       this.field_217119_h.setRotationPoint(0.0F, 16.0F, -6.0F);
       float f = 0.001F;
       this.field_217120_i = new ModelRenderer(this, 13, 24);
-      this.field_217120_i.func_228301_a_(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
+      this.field_217120_i.addBox(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
       this.field_217120_i.setRotationPoint(-5.0F, 17.5F, 7.0F);
       this.field_217121_j = new ModelRenderer(this, 4, 24);
-      this.field_217121_j.func_228301_a_(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
+      this.field_217121_j.addBox(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
       this.field_217121_j.setRotationPoint(-1.0F, 17.5F, 7.0F);
       this.field_217122_k = new ModelRenderer(this, 13, 24);
-      this.field_217122_k.func_228301_a_(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
+      this.field_217122_k.addBox(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
       this.field_217122_k.setRotationPoint(-5.0F, 17.5F, 0.0F);
       this.field_217123_l = new ModelRenderer(this, 4, 24);
-      this.field_217123_l.func_228301_a_(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
+      this.field_217123_l.addBox(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
       this.field_217123_l.setRotationPoint(-1.0F, 17.5F, 0.0F);
       this.field_217124_m = new ModelRenderer(this, 30, 0);
-      this.field_217124_m.func_228300_a_(2.0F, 0.0F, -1.0F, 4.0F, 9.0F, 5.0F);
+      this.field_217124_m.addBox(2.0F, 0.0F, -1.0F, 4.0F, 9.0F, 5.0F);
       this.field_217124_m.setRotationPoint(-4.0F, 15.0F, -1.0F);
       this.field_217119_h.addChild(this.field_217124_m);
    }
@@ -122,28 +122,28 @@ public class FoxModel<T extends FoxEntity> extends AgeableModel<T> {
 
    }
 
-   protected Iterable<ModelRenderer> func_225602_a_() {
+   protected Iterable<ModelRenderer> getHeadParts() {
       return ImmutableList.of(this.field_217115_a);
    }
 
-   protected Iterable<ModelRenderer> func_225600_b_() {
+   protected Iterable<ModelRenderer> getBodyParts() {
       return ImmutableList.of(this.field_217119_h, this.field_217120_i, this.field_217121_j, this.field_217122_k, this.field_217123_l);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      if (!p_225597_1_.isSleeping() && !p_225597_1_.func_213472_dX() && !p_225597_1_.isCrouching()) {
-         this.field_217115_a.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
-         this.field_217115_a.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F);
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      if (!entityIn.isSleeping() && !entityIn.isStuck() && !entityIn.isCrouching()) {
+         this.field_217115_a.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+         this.field_217115_a.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
       }
 
-      if (p_225597_1_.isSleeping()) {
+      if (entityIn.isSleeping()) {
          this.field_217115_a.rotateAngleX = 0.0F;
          this.field_217115_a.rotateAngleY = -2.0943952F;
-         this.field_217115_a.rotateAngleZ = MathHelper.cos(p_225597_4_ * 0.027F) / 22.0F;
+         this.field_217115_a.rotateAngleZ = MathHelper.cos(ageInTicks * 0.027F) / 22.0F;
       }
 
-      if (p_225597_1_.isCrouching()) {
-         float f = MathHelper.cos(p_225597_4_) * 0.01F;
+      if (entityIn.isCrouching()) {
+         float f = MathHelper.cos(ageInTicks) * 0.01F;
          this.field_217119_h.rotateAngleY = f;
          this.field_217120_i.rotateAngleZ = f;
          this.field_217121_j.rotateAngleZ = f;
@@ -151,7 +151,7 @@ public class FoxModel<T extends FoxEntity> extends AgeableModel<T> {
          this.field_217123_l.rotateAngleZ = f / 2.0F;
       }
 
-      if (p_225597_1_.func_213472_dX()) {
+      if (entityIn.isStuck()) {
          float f1 = 0.1F;
          this.field_217125_n += 0.67F;
          this.field_217120_i.rotateAngleX = MathHelper.cos(this.field_217125_n * 0.4662F) * 0.1F;

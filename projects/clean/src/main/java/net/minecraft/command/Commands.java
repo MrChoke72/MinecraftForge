@@ -235,7 +235,7 @@ public class Commands {
                p_211704_1_.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, itextcomponent));
             }));
             if (SharedConstants.developmentMode) {
-               source.sendErrorMessage(new StringTextComponent(Util.func_229758_d_(exception)));
+               source.sendErrorMessage(new StringTextComponent(Util.getMessage(exception)));
                LOGGER.error("'" + command + "' threw an exception", (Throwable)exception);
             }
 
@@ -301,10 +301,10 @@ public class Commands {
       return RequiredArgumentBuilder.argument(name, type);
    }
 
-   public static Predicate<String> func_212590_a(Commands.IParser p_212590_0_) {
+   public static Predicate<String> func_212590_a(Commands.IParser parser) {
       return (p_212591_1_) -> {
          try {
-            p_212590_0_.parse(new StringReader(p_212591_1_));
+            parser.parse(new StringReader(p_212591_1_));
             return true;
          } catch (CommandSyntaxException var3) {
             return false;

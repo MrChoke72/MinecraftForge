@@ -34,10 +34,10 @@ public class ClientChunkProvider extends AbstractChunkProvider {
    private volatile ClientChunkProvider.ChunkArray array;
    private final ClientWorld world;
 
-   public ClientChunkProvider(ClientWorld p_i51057_1_, int viewDistance) {
-      this.world = p_i51057_1_;
-      this.empty = new EmptyChunk(p_i51057_1_, new ChunkPos(0, 0));
-      this.lightManager = new WorldLightManager(this, true, p_i51057_1_.getDimension().hasSkyLight());
+   public ClientChunkProvider(ClientWorld clientWorldIn, int viewDistance) {
+      this.world = clientWorldIn;
+      this.empty = new EmptyChunk(clientWorldIn, new ChunkPos(0, 0));
+      this.lightManager = new WorldLightManager(this, true, clientWorldIn.getDimension().hasSkyLight());
       this.array = new ClientChunkProvider.ChunkArray(adjustViewDistance(viewDistance));
    }
 
@@ -45,12 +45,12 @@ public class ClientChunkProvider extends AbstractChunkProvider {
       return this.lightManager;
    }
 
-   private static boolean isValid(@Nullable Chunk p_217249_0_, int p_217249_1_, int p_217249_2_) {
-      if (p_217249_0_ == null) {
+   private static boolean isValid(@Nullable Chunk chunkIn, int x, int z) {
+      if (chunkIn == null) {
          return false;
       } else {
-         ChunkPos chunkpos = p_217249_0_.getPos();
-         return chunkpos.x == p_217249_1_ && chunkpos.z == p_217249_2_;
+         ChunkPos chunkpos = chunkIn.getPos();
+         return chunkpos.x == x && chunkpos.z == z;
       }
    }
 
@@ -82,36 +82,36 @@ public class ClientChunkProvider extends AbstractChunkProvider {
    }
 
    @Nullable
-   public Chunk func_228313_a_(int p_228313_1_, int p_228313_2_, @Nullable BiomeContainer p_228313_3_, PacketBuffer p_228313_4_, CompoundNBT p_228313_5_, int p_228313_6_) {
-      if (!this.array.inView(p_228313_1_, p_228313_2_)) {
-         LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", p_228313_1_, p_228313_2_);
+   public Chunk loadChunk(int chunkX, int chunkZ, @Nullable BiomeContainer biomeContainerIn, PacketBuffer packetIn, CompoundNBT nbtTagIn, int sizeIn) {
+      if (!this.array.inView(chunkX, chunkZ)) {
+         LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", chunkX, chunkZ);
          return null;
       } else {
-         int i = this.array.getIndex(p_228313_1_, p_228313_2_);
+         int i = this.array.getIndex(chunkX, chunkZ);
          Chunk chunk = this.array.chunks.get(i);
-         if (!isValid(chunk, p_228313_1_, p_228313_2_)) {
-            if (p_228313_3_ == null) {
-               LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", p_228313_1_, p_228313_2_);
+         if (!isValid(chunk, chunkX, chunkZ)) {
+            if (biomeContainerIn == null) {
+               LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", chunkX, chunkZ);
                return null;
             }
 
-            chunk = new Chunk(this.world, new ChunkPos(p_228313_1_, p_228313_2_), p_228313_3_);
-            chunk.func_227073_a_(p_228313_3_, p_228313_4_, p_228313_5_, p_228313_6_);
+            chunk = new Chunk(this.world, new ChunkPos(chunkX, chunkZ), biomeContainerIn);
+            chunk.read(biomeContainerIn, packetIn, nbtTagIn, sizeIn);
             this.array.replace(i, chunk);
          } else {
-            chunk.func_227073_a_(p_228313_3_, p_228313_4_, p_228313_5_, p_228313_6_);
+            chunk.read(biomeContainerIn, packetIn, nbtTagIn, sizeIn);
          }
 
          ChunkSection[] achunksection = chunk.getSections();
          WorldLightManager worldlightmanager = this.getLightManager();
-         worldlightmanager.func_215571_a(new ChunkPos(p_228313_1_, p_228313_2_), true);
+         worldlightmanager.enableLightSources(new ChunkPos(chunkX, chunkZ), true);
 
          for(int j = 0; j < achunksection.length; ++j) {
             ChunkSection chunksection = achunksection[j];
-            worldlightmanager.updateSectionStatus(SectionPos.of(p_228313_1_, j, p_228313_2_), ChunkSection.isEmpty(chunksection));
+            worldlightmanager.updateSectionStatus(SectionPos.of(chunkX, j, chunkZ), ChunkSection.isEmpty(chunksection));
          }
 
-         this.world.func_228323_e_(p_228313_1_, p_228313_2_);
+         this.world.onChunkLoaded(chunkX, chunkZ);
          return chunk;
       }
    }
@@ -119,14 +119,14 @@ public class ClientChunkProvider extends AbstractChunkProvider {
    public void tick(BooleanSupplier hasTimeLeft) {
    }
 
-   public void setCenter(int p_217251_1_, int p_217251_2_) {
-      this.array.centerX = p_217251_1_;
-      this.array.centerZ = p_217251_2_;
+   public void setCenter(int x, int z) {
+      this.array.centerX = x;
+      this.array.centerZ = z;
    }
 
-   public void setViewDistance(int p_217248_1_) {
+   public void setViewDistance(int viewDistance) {
       int i = this.array.viewDistance;
-      int j = adjustViewDistance(p_217248_1_);
+      int j = adjustViewDistance(viewDistance);
       if (i != j) {
          ClientChunkProvider.ChunkArray clientchunkprovider$chunkarray = new ClientChunkProvider.ChunkArray(j);
          clientchunkprovider$chunkarray.centerX = this.array.centerX;
@@ -152,10 +152,10 @@ public class ClientChunkProvider extends AbstractChunkProvider {
    }
 
    public String makeString() {
-      return "Client Chunk Cache: " + this.array.chunks.length() + ", " + this.func_217252_g();
+      return "Client Chunk Cache: " + this.array.chunks.length() + ", " + this.getLoadedChunksCount();
    }
 
-   public int func_217252_g() {
+   public int getLoadedChunksCount() {
       return this.array.loaded;
    }
 
@@ -184,9 +184,9 @@ public class ClientChunkProvider extends AbstractChunkProvider {
       private volatile int centerZ;
       private int loaded;
 
-      private ChunkArray(int p_i50568_2_) {
-         this.viewDistance = p_i50568_2_;
-         this.sideLength = p_i50568_2_ * 2 + 1;
+      private ChunkArray(int viewDistanceIn) {
+         this.viewDistance = viewDistanceIn;
+         this.sideLength = viewDistanceIn * 2 + 1;
          this.chunks = new AtomicReferenceArray<>(this.sideLength * this.sideLength);
       }
 
@@ -194,35 +194,35 @@ public class ClientChunkProvider extends AbstractChunkProvider {
          return Math.floorMod(z, this.sideLength) * this.sideLength + Math.floorMod(x, this.sideLength);
       }
 
-      protected void replace(int p_217181_1_, @Nullable Chunk p_217181_2_) {
-         Chunk chunk = this.chunks.getAndSet(p_217181_1_, p_217181_2_);
+      protected void replace(int chunkIndex, @Nullable Chunk chunkIn) {
+         Chunk chunk = this.chunks.getAndSet(chunkIndex, chunkIn);
          if (chunk != null) {
             --this.loaded;
             ClientChunkProvider.this.world.onChunkUnloaded(chunk);
          }
 
-         if (p_217181_2_ != null) {
+         if (chunkIn != null) {
             ++this.loaded;
          }
 
       }
 
-      protected Chunk unload(int p_217190_1_, Chunk p_217190_2_, @Nullable Chunk p_217190_3_) {
-         if (this.chunks.compareAndSet(p_217190_1_, p_217190_2_, p_217190_3_) && p_217190_3_ == null) {
+      protected Chunk unload(int chunkIndex, Chunk chunkIn, @Nullable Chunk replaceWith) {
+         if (this.chunks.compareAndSet(chunkIndex, chunkIn, replaceWith) && replaceWith == null) {
             --this.loaded;
          }
 
-         ClientChunkProvider.this.world.onChunkUnloaded(p_217190_2_);
-         return p_217190_2_;
+         ClientChunkProvider.this.world.onChunkUnloaded(chunkIn);
+         return chunkIn;
       }
 
-      private boolean inView(int p_217183_1_, int p_217183_2_) {
-         return Math.abs(p_217183_1_ - this.centerX) <= this.viewDistance && Math.abs(p_217183_2_ - this.centerZ) <= this.viewDistance;
+      private boolean inView(int x, int z) {
+         return Math.abs(x - this.centerX) <= this.viewDistance && Math.abs(z - this.centerZ) <= this.viewDistance;
       }
 
       @Nullable
-      protected Chunk get(int p_217192_1_) {
-         return this.chunks.get(p_217192_1_);
+      protected Chunk get(int chunkIndex) {
+         return this.chunks.get(chunkIndex);
       }
    }
 }

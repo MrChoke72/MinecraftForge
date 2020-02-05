@@ -125,7 +125,7 @@ public class PlayerTabOverlayGui extends AbstractGui {
       }
 
       fill(width / 2 - l1 / 2 - 1, k1 - 1, width / 2 + l1 / 2 + 1, k1 + j4 * 9, Integer.MIN_VALUE);
-      int l4 = this.mc.gameSettings.func_216839_a(553648127);
+      int l4 = this.mc.gameSettings.getChatBackgroundColor(553648127);
 
       for(int i5 = 0; i5 < i4; ++i5) {
          int j5 = i5 / j4;

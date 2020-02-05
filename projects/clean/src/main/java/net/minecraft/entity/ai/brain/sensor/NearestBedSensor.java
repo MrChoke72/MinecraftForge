@@ -44,7 +44,7 @@ public class NearestBedSensor extends Sensor<MobEntity> {
       if (entity.isChild()) {
          this.maxPoiPosToCheck = 0;
          this.taskEndTime = world.getGameTime() + (long)world.getRandom().nextInt(20);
-         PointOfInterestManager pointofinterestmanager = world.getPoiMgr();
+         PointOfInterestManager pointofinterestmanager = world.getPointOfInterestManager();
          Predicate<BlockPos> predicate = (pos) -> {
             long i = pos.toLong();
             if (this.posByEndTimeMap.containsKey(i)) {

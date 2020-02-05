@@ -1,10 +1,11 @@
-package net.minecraft.entity.ai.brain.sensor;
+package com.mrchoke.entity.ai.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;

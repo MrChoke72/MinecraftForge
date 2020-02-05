@@ -7,5 +7,5 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public interface IRecipeShownListener {
    void recipesUpdated();
 
-   RecipeBookGui func_194310_f();
+   RecipeBookGui getRecipeGui();
 }

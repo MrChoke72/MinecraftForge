@@ -28,7 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @OnlyIn(Dist.CLIENT)
-public class TextureManager implements ITickable, IFutureReloadListener {
+public class TextureManager implements ITickable, AutoCloseable, IFutureReloadListener {
    private static final Logger LOGGER = LogManager.getLogger();
    public static final ResourceLocation RESOURCE_LOCATION_EMPTY = new ResourceLocation("");
    private final Map<ResourceLocation, Texture> mapTextureObjects = Maps.newHashMap();
@@ -43,59 +43,64 @@ public class TextureManager implements ITickable, IFutureReloadListener {
    public void bindTexture(ResourceLocation resource) {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            this.func_229269_d_(resource);
+            this.bindTextureRaw(resource);
          });
       } else {
-         this.func_229269_d_(resource);
+         this.bindTextureRaw(resource);
       }
 
    }
 
-   private void func_229269_d_(ResourceLocation p_229269_1_) {
-      Texture texture = this.mapTextureObjects.get(p_229269_1_);
+   private void bindTextureRaw(ResourceLocation resource) {
+      Texture texture = this.mapTextureObjects.get(resource);
       if (texture == null) {
-         texture = new SimpleTexture(p_229269_1_);
-         this.func_229263_a_(p_229269_1_, texture);
+         texture = new SimpleTexture(resource);
+         this.loadTexture(resource, texture);
       }
 
-      texture.func_229148_d_();
+      texture.bindTexture();
    }
 
-   public boolean func_229263_a_(ResourceLocation p_229263_1_, Texture p_229263_2_) {
-      boolean flag = true;
-
-      try {
-         p_229263_2_.loadTexture(this.resourceManager);
-      } catch (IOException ioexception) {
-         if (p_229263_1_ != RESOURCE_LOCATION_EMPTY) {
-            LOGGER.warn("Failed to load texture: {}", p_229263_1_, ioexception);
+   public void loadTexture(ResourceLocation textureLocation, Texture textureObj) {
+      textureObj = this.func_230183_b_(textureLocation, textureObj);
+      Texture texture = this.mapTextureObjects.put(textureLocation, textureObj);
+      if (texture != textureObj) {
+         if (texture != null && texture != MissingTextureSprite.getDynamicTexture()) {
+            texture.deleteGlTexture();
+            this.listTickables.remove(texture);
          }
 
-         p_229263_2_ = MissingTextureSprite.getDynamicTexture();
-         this.mapTextureObjects.put(p_229263_1_, p_229263_2_);
-         flag = false;
+         if (textureObj instanceof ITickable) {
+            this.listTickables.add((ITickable)textureObj);
+         }
+      }
+
+   }
+
+   private Texture func_230183_b_(ResourceLocation p_230183_1_, Texture p_230183_2_) {
+      try {
+         p_230183_2_.loadTexture(this.resourceManager);
+         return p_230183_2_;
+      } catch (IOException ioexception) {
+         if (p_230183_1_ != RESOURCE_LOCATION_EMPTY) {
+            LOGGER.warn("Failed to load texture: {}", p_230183_1_, ioexception);
+         }
+
+         return MissingTextureSprite.getDynamicTexture();
       } catch (Throwable throwable) {
          CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Registering texture");
          CrashReportCategory crashreportcategory = crashreport.makeCategory("Resource location being registered");
-         Texture texture = p_229263_2_;
-         crashreportcategory.addDetail("Resource location", p_229263_1_);
+         crashreportcategory.addDetail("Resource location", p_230183_1_);
          crashreportcategory.addDetail("Texture object class", () -> {
-            return texture.getClass().getName();
+            return p_230183_2_.getClass().getName();
          });
          throw new ReportedException(crashreport);
       }
-
-      this.mapTextureObjects.put(p_229263_1_, p_229263_2_);
-      if (flag && p_229263_2_ instanceof ITickable) {
-         this.listTickables.add((ITickable)p_229263_2_);
-      }
-
-      return flag;
    }
 
    @Nullable
-   public Texture func_229267_b_(ResourceLocation p_229267_1_) {
-      return this.mapTextureObjects.get(p_229267_1_);
+   public Texture getTexture(ResourceLocation textureLocation) {
+      return this.mapTextureObjects.get(textureLocation);
    }
 
    public ResourceLocation getDynamicTextureLocation(String name, DynamicTexture texture) {
@@ -108,7 +113,7 @@ public class TextureManager implements ITickable, IFutureReloadListener {
 
       this.mapTextureCounters.put(name, integer);
       ResourceLocation resourcelocation = new ResourceLocation(String.format("dynamic/%s_%d", name, integer));
-      this.func_229263_a_(resourcelocation, texture);
+      this.loadTexture(resourcelocation, texture);
       return resourcelocation;
    }
 
@@ -116,17 +121,17 @@ public class TextureManager implements ITickable, IFutureReloadListener {
       if (!this.mapTextureObjects.containsKey(textureLocation)) {
          PreloadedTexture preloadedtexture = new PreloadedTexture(this.resourceManager, textureLocation, executor);
          this.mapTextureObjects.put(textureLocation, preloadedtexture);
-         return preloadedtexture.func_215248_a().thenRunAsync(() -> {
-            this.func_229263_a_(textureLocation, preloadedtexture);
-         }, TextureManager::func_229262_a_);
+         return preloadedtexture.getCompletableFuture().thenRunAsync(() -> {
+            this.loadTexture(textureLocation, preloadedtexture);
+         }, TextureManager::execute);
       } else {
          return CompletableFuture.completedFuture((Void)null);
       }
    }
 
-   private static void func_229262_a_(Runnable p_229262_0_) {
+   private static void execute(Runnable runnableIn) {
       Minecraft.getInstance().execute(() -> {
-         RenderSystem.recordRenderCall(p_229262_0_::run);
+         RenderSystem.recordRenderCall(runnableIn::run);
       });
    }
 
@@ -138,11 +143,18 @@ public class TextureManager implements ITickable, IFutureReloadListener {
    }
 
    public void deleteTexture(ResourceLocation textureLocation) {
-      Texture texture = this.func_229267_b_(textureLocation);
+      Texture texture = this.getTexture(textureLocation);
       if (texture != null) {
-         TextureUtil.func_225679_a_(texture.getGlTextureId());
+         TextureUtil.releaseTextureId(texture.getGlTextureId());
       }
 
+   }
+
+   public void close() {
+      this.mapTextureObjects.values().forEach(Texture::deleteGlTexture);
+      this.mapTextureObjects.clear();
+      this.listTickables.clear();
+      this.mapTextureCounters.clear();
    }
 
    public CompletableFuture<Void> reload(IFutureReloadListener.IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
@@ -158,7 +170,7 @@ public class TextureManager implements ITickable, IFutureReloadListener {
             if (texture == MissingTextureSprite.getDynamicTexture() && !resourcelocation.equals(MissingTextureSprite.getLocation())) {
                iterator.remove();
             } else {
-               texture.func_215244_a(this, resourceManager, resourcelocation, gameExecutor);
+               texture.loadTexture(this, resourceManager, resourcelocation, gameExecutor);
             }
          }
 

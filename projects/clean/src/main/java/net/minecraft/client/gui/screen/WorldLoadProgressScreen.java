@@ -14,8 +14,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class WorldLoadProgressScreen extends Screen {
-   private final TrackingChunkStatusListener field_213040_a;
-   private long field_213041_b = -1L;
+   private final TrackingChunkStatusListener tracker;
+   private long lastNarratorUpdateTime = -1L;
    private static final Object2IntMap<ChunkStatus> COLORS = Util.make(new Object2IntOpenHashMap<>(), (p_213039_0_) -> {
       p_213039_0_.defaultReturnValue(0);
       p_213039_0_.put(ChunkStatus.EMPTY, 5526612);
@@ -34,8 +34,8 @@ public class WorldLoadProgressScreen extends Screen {
    });
 
    public WorldLoadProgressScreen(TrackingChunkStatusListener p_i51113_1_) {
-      super(NarratorChatListener.field_216868_a);
-      this.field_213040_a = p_i51113_1_;
+      super(NarratorChatListener.EMPTY);
+      this.tracker = p_i51113_1_;
    }
 
    public boolean shouldCloseOnEsc() {
@@ -43,30 +43,30 @@ public class WorldLoadProgressScreen extends Screen {
    }
 
    public void removed() {
-      NarratorChatListener.INSTANCE.func_216864_a(I18n.format("narrator.loading.done"));
+      NarratorChatListener.INSTANCE.say(I18n.format("narrator.loading.done"));
    }
 
    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
       this.renderBackground();
-      String s = MathHelper.clamp(this.field_213040_a.getPercentDone(), 0, 100) + "%";
+      String s = MathHelper.clamp(this.tracker.getPercentDone(), 0, 100) + "%";
       long i = Util.milliTime();
-      if (i - this.field_213041_b > 2000L) {
-         this.field_213041_b = i;
-         NarratorChatListener.INSTANCE.func_216864_a((new TranslationTextComponent("narrator.loading", s)).getString());
+      if (i - this.lastNarratorUpdateTime > 2000L) {
+         this.lastNarratorUpdateTime = i;
+         NarratorChatListener.INSTANCE.say((new TranslationTextComponent("narrator.loading", s)).getString());
       }
 
       int j = this.width / 2;
       int k = this.height / 2;
       int l = 30;
-      func_213038_a(this.field_213040_a, j, k + 30, 2, 0);
+      drawProgress(this.tracker, j, k + 30, 2, 0);
       this.drawCenteredString(this.font, s, j, k - 9 / 2 - 30, 16777215);
    }
 
-   public static void func_213038_a(TrackingChunkStatusListener p_213038_0_, int p_213038_1_, int p_213038_2_, int p_213038_3_, int p_213038_4_) {
+   public static void drawProgress(TrackingChunkStatusListener trackerParam, int p_213038_1_, int p_213038_2_, int p_213038_3_, int p_213038_4_) {
       int i = p_213038_3_ + p_213038_4_;
-      int j = p_213038_0_.getDiameter();
+      int j = trackerParam.getDiameter();
       int k = j * i - p_213038_4_;
-      int l = p_213038_0_.func_219523_d();
+      int l = trackerParam.func_219523_d();
       int i1 = l * i - p_213038_4_;
       int j1 = p_213038_1_ - i1 / 2;
       int k1 = p_213038_2_ - i1 / 2;
@@ -81,7 +81,7 @@ public class WorldLoadProgressScreen extends Screen {
 
       for(int j2 = 0; j2 < l; ++j2) {
          for(int k2 = 0; k2 < l; ++k2) {
-            ChunkStatus chunkstatus = p_213038_0_.func_219525_a(j2, k2);
+            ChunkStatus chunkstatus = trackerParam.getStatus(j2, k2);
             int l2 = j1 + j2 * i;
             int i3 = k1 + k2 * i;
             fill(l2, i3, l2 + p_213038_3_, i3 + p_213038_3_, COLORS.getInt(chunkstatus) | -16777216);

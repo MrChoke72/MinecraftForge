@@ -54,8 +54,8 @@ public class LootingEnchantBonus extends LootFunction {
       return stack;
    }
 
-   public static LootingEnchantBonus.Builder createLootBuilder(RandomValueRange randRange) {
-      return new LootingEnchantBonus.Builder(randRange);
+   public static LootingEnchantBonus.Builder builder(RandomValueRange range) {
+      return new LootingEnchantBonus.Builder(range);
    }
 
    public static class Builder extends LootFunction.Builder<LootingEnchantBonus.Builder> {

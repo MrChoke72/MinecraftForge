@@ -103,7 +103,7 @@ public class ParrotEntity extends ShoulderRidingEntity implements IFlyingAnimal 
 
       //AH ADD ****
       soundMap.put(EntityType.ZOMBIE_NASTY, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_NASTY);
-      soundMap.put(EntityType.ZOMBIE_NASTY, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_MEAN);
+      soundMap.put(EntityType.ZOMBIE_MEAN, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_MEAN);
       //AH END
 
    });
@@ -273,12 +273,12 @@ public class ParrotEntity extends ShoulderRidingEntity implements IFlyingAnimal 
       return false;
    }
 
-   public static boolean func_223317_c(EntityType<ParrotEntity> p_223317_0_, IWorld p_223317_1_, SpawnReason p_223317_2_, BlockPos p_223317_3_, Random p_223317_4_) {
+   public static boolean func_223317_c(EntityType<ParrotEntity> p_223317_0_, IWorld p_223317_1_, SpawnReason reason, BlockPos p_223317_3_, Random p_223317_4_) {
       Block block = p_223317_1_.getBlockState(p_223317_3_.down()).getBlock();
-      return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR) && p_223317_1_.func_226659_b_(p_223317_3_, 0) > 8;
+      return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR) && p_223317_1_.getLightSubtracted(p_223317_3_, 0) > 8;
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 

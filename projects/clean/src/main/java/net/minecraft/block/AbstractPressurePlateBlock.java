@@ -41,13 +41,13 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
       BlockPos blockpos = pos.down();
-      return func_220064_c(worldIn, blockpos) || func_220055_a(worldIn, blockpos, Direction.UP);
+      return hasSolidSideOnTop(worldIn, blockpos) || hasEnoughSolidSide(worldIn, blockpos, Direction.UP);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      int i = this.getRedstoneStrength(p_225534_1_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      int i = this.getRedstoneStrength(state);
       if (i > 0) {
-         this.updateState(p_225534_2_, p_225534_3_, p_225534_1_, i);
+         this.updateState(worldIn, pos, state, i);
       }
 
    }
@@ -70,7 +70,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
          BlockState blockstate = this.setRedstoneStrength(state, i);
          worldIn.setBlockState(pos, blockstate, 2);
          this.updateNeighbors(worldIn, pos);
-         worldIn.func_225319_b(pos, state, blockstate);
+         worldIn.markBlockRangeForRenderUpdate(pos, state, blockstate);
       }
 
       if (!flag1 && flag) {

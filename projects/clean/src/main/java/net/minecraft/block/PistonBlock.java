@@ -46,8 +46,8 @@ public class PistonBlock extends DirectionalBlock {
       this.isSticky = sticky;
    }
 
-   public boolean func_229869_c_(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
-      return !p_229869_1_.get(EXTENDED);
+   public boolean causesSuffocation(BlockState state, IBlockReader worldIn, BlockPos pos) {
+      return !state.get(EXTENDED);
    }
 
    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
@@ -348,7 +348,7 @@ public class PistonBlock extends DirectionalBlock {
       builder.add(FACING, EXTENDED);
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return state.get(EXTENDED);
    }
 

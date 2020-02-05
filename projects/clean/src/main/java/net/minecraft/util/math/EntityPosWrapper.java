@@ -9,8 +9,8 @@ import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
 public class EntityPosWrapper implements IPosWrapper {
    private final Entity entity;
 
-   public EntityPosWrapper(Entity p_i51558_1_) {
-      this.entity = p_i51558_1_;
+   public EntityPosWrapper(Entity parentScreenIn) {
+      this.entity = parentScreenIn;
    }
 
    public BlockPos getBlockPos() {
@@ -18,7 +18,7 @@ public class EntityPosWrapper implements IPosWrapper {
    }
 
    public Vec3d getPos() {
-      return new Vec3d(this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ());
+      return new Vec3d(this.entity.getPosX(), this.entity.getPosYEye(), this.entity.getPosZ());
    }
 
    public boolean isVisibleTo(LivingEntity entity) {

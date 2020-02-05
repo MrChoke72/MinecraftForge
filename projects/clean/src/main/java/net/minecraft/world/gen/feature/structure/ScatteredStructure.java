@@ -11,8 +11,8 @@ import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 
 public abstract class ScatteredStructure<C extends IFeatureConfig> extends Structure<C> {
-   public ScatteredStructure(Function<Dynamic<?>, ? extends C> p_i51449_1_) {
-      super(p_i51449_1_);
+   public ScatteredStructure(Function<Dynamic<?>, ? extends C> configFactoryIn) {
+      super(configFactoryIn);
    }
 
    protected ChunkPos getStartPositionForPosition(ChunkGenerator<?> chunkGenerator, Random random, int x, int z, int spacingOffsetsX, int spacingOffsetsZ) {

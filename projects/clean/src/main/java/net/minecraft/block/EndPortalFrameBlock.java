@@ -34,7 +34,7 @@ public class EndPortalFrameBlock extends Block {
       this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.NORTH).with(EYE, Boolean.valueOf(false)));
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 

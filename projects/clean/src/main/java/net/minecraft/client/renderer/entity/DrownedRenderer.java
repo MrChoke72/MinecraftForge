@@ -15,8 +15,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class DrownedRenderer extends AbstractZombieRenderer<DrownedEntity, DrownedModel<DrownedEntity>> {
    private static final ResourceLocation DROWNED_LOCATION = new ResourceLocation("textures/entity/zombie/drowned.png");
 
-   public DrownedRenderer(EntityRendererManager p_i48906_1_) {
-      super(p_i48906_1_, new DrownedModel<>(0.0F, 0.0F, 64, 64), new DrownedModel<>(0.5F, true), new DrownedModel<>(1.0F, true));
+   public DrownedRenderer(EntityRendererManager renderManagerIn) {
+      super(renderManagerIn, new DrownedModel<>(0.0F, 0.0F, 64, 64), new DrownedModel<>(0.5F, true), new DrownedModel<>(1.0F, true));
       this.addLayer(new DrownedOuterLayer<>(this));
    }
 
@@ -24,11 +24,11 @@ public class DrownedRenderer extends AbstractZombieRenderer<DrownedEntity, Drown
       return DROWNED_LOCATION;
    }
 
-   protected void func_225621_a_(DrownedEntity p_225621_1_, MatrixStack p_225621_2_, float p_225621_3_, float p_225621_4_, float p_225621_5_) {
-      super.func_225621_a_(p_225621_1_, p_225621_2_, p_225621_3_, p_225621_4_, p_225621_5_);
-      float f = p_225621_1_.getSwimAnimation(p_225621_5_);
+   protected void applyRotations(DrownedEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
+      super.applyRotations(entityLiving, matrixStackIn, ageInTicks, rotationYaw, partialTicks);
+      float f = entityLiving.getSwimAnimation(partialTicks);
       if (f > 0.0F) {
-         p_225621_2_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(MathHelper.lerp(f, p_225621_1_.rotationPitch, -10.0F - p_225621_1_.rotationPitch)));
+         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(MathHelper.lerp(f, entityLiving.rotationPitch, -10.0F - entityLiving.rotationPitch)));
       }
 
    }

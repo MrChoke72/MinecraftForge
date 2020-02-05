@@ -26,31 +26,31 @@ public class BeeStingerLayer<T extends LivingEntity, M extends PlayerModel<T>> e
    }
 
    protected int func_225631_a_(T p_225631_1_) {
-      return p_225631_1_.func_226297_df_();
+      return p_225631_1_.getBeeStingCount();
    }
 
    protected void func_225632_a_(MatrixStack p_225632_1_, IRenderTypeBuffer p_225632_2_, int p_225632_3_, Entity p_225632_4_, float p_225632_5_, float p_225632_6_, float p_225632_7_, float p_225632_8_) {
       float f = MathHelper.sqrt(p_225632_5_ * p_225632_5_ + p_225632_7_ * p_225632_7_);
       float f1 = (float)(Math.atan2((double)p_225632_5_, (double)p_225632_7_) * (double)(180F / (float)Math.PI));
       float f2 = (float)(Math.atan2((double)p_225632_6_, (double)f) * (double)(180F / (float)Math.PI));
-      p_225632_1_.func_227861_a_(0.0D, 0.0D, 0.0D);
-      p_225632_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f1 - 90.0F));
-      p_225632_1_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(f2));
+      p_225632_1_.translate(0.0D, 0.0D, 0.0D);
+      p_225632_1_.rotate(Vector3f.YP.rotationDegrees(f1 - 90.0F));
+      p_225632_1_.rotate(Vector3f.ZP.rotationDegrees(f2));
       float f3 = 0.0F;
       float f4 = 0.125F;
       float f5 = 0.0F;
       float f6 = 0.0625F;
       float f7 = 0.03125F;
-      p_225632_1_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(45.0F));
-      p_225632_1_.func_227862_a_(0.03125F, 0.03125F, 0.03125F);
-      p_225632_1_.func_227861_a_(2.5D, 0.0D, 0.0D);
-      IVertexBuilder ivertexbuilder = p_225632_2_.getBuffer(RenderType.func_228640_c_(field_229131_a_));
+      p_225632_1_.rotate(Vector3f.XP.rotationDegrees(45.0F));
+      p_225632_1_.scale(0.03125F, 0.03125F, 0.03125F);
+      p_225632_1_.translate(2.5D, 0.0D, 0.0D);
+      IVertexBuilder ivertexbuilder = p_225632_2_.getBuffer(RenderType.entityCutoutNoCull(field_229131_a_));
 
       for(int i = 0; i < 4; ++i) {
-         p_225632_1_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(90.0F));
-         MatrixStack.Entry matrixstack$entry = p_225632_1_.func_227866_c_();
-         Matrix4f matrix4f = matrixstack$entry.func_227870_a_();
-         Matrix3f matrix3f = matrixstack$entry.func_227872_b_();
+         p_225632_1_.rotate(Vector3f.XP.rotationDegrees(90.0F));
+         MatrixStack.Entry matrixstack$entry = p_225632_1_.getLast();
+         Matrix4f matrix4f = matrixstack$entry.getPositionMatrix();
+         Matrix3f matrix3f = matrixstack$entry.getNormalMatrix();
          func_229132_a_(ivertexbuilder, matrix4f, matrix3f, -4.5F, -1, 0.0F, 0.0F, p_225632_3_);
          func_229132_a_(ivertexbuilder, matrix4f, matrix3f, 4.5F, -1, 0.125F, 0.0F, p_225632_3_);
          func_229132_a_(ivertexbuilder, matrix4f, matrix3f, 4.5F, 1, 0.125F, 0.0625F, p_225632_3_);
@@ -60,6 +60,6 @@ public class BeeStingerLayer<T extends LivingEntity, M extends PlayerModel<T>> e
    }
 
    private static void func_229132_a_(IVertexBuilder p_229132_0_, Matrix4f p_229132_1_, Matrix3f p_229132_2_, float p_229132_3_, int p_229132_4_, float p_229132_5_, float p_229132_6_, int p_229132_7_) {
-      p_229132_0_.func_227888_a_(p_229132_1_, p_229132_3_, (float)p_229132_4_, 0.0F).func_225586_a_(255, 255, 255, 255).func_225583_a_(p_229132_5_, p_229132_6_).func_227891_b_(OverlayTexture.field_229196_a_).func_227886_a_(p_229132_7_).func_227887_a_(p_229132_2_, 0.0F, 1.0F, 0.0F).endVertex();
+      p_229132_0_.pos(p_229132_1_, p_229132_3_, (float)p_229132_4_, 0.0F).color(255, 255, 255, 255).tex(p_229132_5_, p_229132_6_).overlay(OverlayTexture.DEFAULT_LIGHT).lightmap(p_229132_7_).normal(p_229132_2_, 0.0F, 1.0F, 0.0F).endVertex();
    }
 }

@@ -25,35 +25,35 @@ public class ShulkerBoxTileEntityRenderer extends TileEntityRenderer<ShulkerBoxT
       this.model = p_i226013_1_;
    }
 
-   public void func_225616_a_(ShulkerBoxTileEntity p_225616_1_, float p_225616_2_, MatrixStack p_225616_3_, IRenderTypeBuffer p_225616_4_, int p_225616_5_, int p_225616_6_) {
+   public void render(ShulkerBoxTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
       Direction direction = Direction.UP;
-      if (p_225616_1_.hasWorld()) {
-         BlockState blockstate = p_225616_1_.getWorld().getBlockState(p_225616_1_.getPos());
+      if (tileEntityIn.hasWorld()) {
+         BlockState blockstate = tileEntityIn.getWorld().getBlockState(tileEntityIn.getPos());
          if (blockstate.getBlock() instanceof ShulkerBoxBlock) {
             direction = blockstate.get(ShulkerBoxBlock.FACING);
          }
       }
 
-      DyeColor dyecolor = p_225616_1_.getColor();
+      DyeColor dyecolor = tileEntityIn.getColor();
       Material material;
       if (dyecolor == null) {
-         material = Atlases.field_228748_g_;
+         material = Atlases.DEFAULT_SHULKER_TEXTURE;
       } else {
-         material = Atlases.field_228749_h_.get(dyecolor.getId());
+         material = Atlases.SHULKER_TEXTURES.get(dyecolor.getId());
       }
 
-      p_225616_3_.func_227860_a_();
-      p_225616_3_.func_227861_a_(0.5D, 0.5D, 0.5D);
+      matrixStackIn.push();
+      matrixStackIn.translate(0.5D, 0.5D, 0.5D);
       float f = 0.9995F;
-      p_225616_3_.func_227862_a_(0.9995F, 0.9995F, 0.9995F);
-      p_225616_3_.func_227863_a_(direction.func_229384_a_());
-      p_225616_3_.func_227862_a_(1.0F, -1.0F, -1.0F);
-      p_225616_3_.func_227861_a_(0.0D, -1.0D, 0.0D);
-      IVertexBuilder ivertexbuilder = material.func_229311_a_(p_225616_4_, RenderType::func_228640_c_);
-      this.model.getBase().func_228308_a_(p_225616_3_, ivertexbuilder, p_225616_5_, p_225616_6_);
-      p_225616_3_.func_227861_a_(0.0D, (double)(-p_225616_1_.getProgress(p_225616_2_) * 0.5F), 0.0D);
-      p_225616_3_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(270.0F * p_225616_1_.getProgress(p_225616_2_)));
-      this.model.getLid().func_228308_a_(p_225616_3_, ivertexbuilder, p_225616_5_, p_225616_6_);
-      p_225616_3_.func_227865_b_();
+      matrixStackIn.scale(0.9995F, 0.9995F, 0.9995F);
+      matrixStackIn.rotate(direction.getRotation());
+      matrixStackIn.scale(1.0F, -1.0F, -1.0F);
+      matrixStackIn.translate(0.0D, -1.0D, 0.0D);
+      IVertexBuilder ivertexbuilder = material.getBuffer(bufferIn, RenderType::entityCutoutNoCull);
+      this.model.getBase().render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+      matrixStackIn.translate(0.0D, (double)(-tileEntityIn.getProgress(partialTicks) * 0.5F), 0.0D);
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(270.0F * tileEntityIn.getProgress(partialTicks)));
+      this.model.getLid().render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+      matrixStackIn.pop();
    }
 }

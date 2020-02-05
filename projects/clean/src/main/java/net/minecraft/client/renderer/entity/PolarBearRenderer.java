@@ -19,8 +19,8 @@ public class PolarBearRenderer extends MobRenderer<PolarBearEntity, PolarBearMod
       return POLAR_BEAR_TEXTURE;
    }
 
-   protected void func_225620_a_(PolarBearEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
-      p_225620_2_.func_227862_a_(1.2F, 1.2F, 1.2F);
-      super.func_225620_a_(p_225620_1_, p_225620_2_, p_225620_3_);
+   protected void preRenderCallback(PolarBearEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+      matrixStackIn.scale(1.2F, 1.2F, 1.2F);
+      super.preRenderCallback(entitylivingbaseIn, matrixStackIn, partialTickTime);
    }
 }

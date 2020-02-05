@@ -116,21 +116,21 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
    private int autoJumpTime;
    private boolean wasFallFlying;
    private int counterInWater;
-   private boolean field_228352_cx_ = true;
+   private boolean showDeathScreen = true;
 
-   public ClientPlayerEntity(Minecraft p_i50990_1_, ClientWorld p_i50990_2_, ClientPlayNetHandler p_i50990_3_, StatisticsManager p_i50990_4_, ClientRecipeBook p_i50990_5_) {
-      super(p_i50990_2_, p_i50990_3_.getGameProfile());
+   public ClientPlayerEntity(Minecraft minecraftIn, ClientWorld clientWorldIn, ClientPlayNetHandler p_i50990_3_, StatisticsManager p_i50990_4_, ClientRecipeBook p_i50990_5_) {
+      super(clientWorldIn, p_i50990_3_.getGameProfile());
       this.connection = p_i50990_3_;
       this.stats = p_i50990_4_;
       this.recipeBook = p_i50990_5_;
-      this.mc = p_i50990_1_;
+      this.mc = minecraftIn;
       this.dimension = DimensionType.OVERWORLD;
-      this.ambientSoundHandlers.add(new UnderwaterAmbientSoundHandler(this, p_i50990_1_.getSoundHandler()));
+      this.ambientSoundHandlers.add(new UnderwaterAmbientSoundHandler(this, minecraftIn.getSoundHandler()));
       this.ambientSoundHandlers.add(new BubbleColumnAmbientSoundHandler(this));
    }
 
-   public boolean func_225510_bt_() {
-      return super.func_225510_bt_() || this.mc.player.isSpectator() && this.mc.gameSettings.keyBindSpectatorOutlines.isKeyDown();
+   public boolean isGlowing() {
+      return super.isGlowing() || this.mc.player.isSpectator() && this.mc.gameSettings.keyBindSpectatorOutlines.isKeyDown();
    }
 
    public boolean attackEntityFrom(DamageSource source, float amount) {
@@ -200,7 +200,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
          this.serverSprintState = flag;
       }
 
-      boolean flag3 = this.getSneaking();
+      boolean flag3 = this.isShiftKeyDown();
       if (flag3 != this.field_228351_cj_) {
          CEntityActionPacket.Action centityactionpacket$action1 = flag3 ? CEntityActionPacket.Action.PRESS_SHIFT_KEY : CEntityActionPacket.Action.RELEASE_SHIFT_KEY;
          this.connection.sendPacket(new CEntityActionPacket(this, centityactionpacket$action1));
@@ -449,19 +449,19 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
    }
 
-   public void func_228355_a_(boolean p_228355_1_) {
-      this.field_228352_cx_ = p_228355_1_;
+   public void setShowDeathScreen(boolean p_228355_1_) {
+      this.showDeathScreen = p_228355_1_;
    }
 
-   public boolean func_228353_F_() {
-      return this.field_228352_cx_;
+   public boolean isShowDeathScreen() {
+      return this.showDeathScreen;
    }
 
    public void playSound(SoundEvent soundIn, float volume, float pitch) {
       this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), soundIn, this.getSoundCategory(), volume, pitch, false);
    }
 
-   public void func_213823_a(SoundEvent p_213823_1_, SoundCategory p_213823_2_, float p_213823_3_, float p_213823_4_) {
+   public void playSound(SoundEvent p_213823_1_, SoundCategory p_213823_2_, float p_213823_3_, float p_213823_4_) {
       this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), p_213823_1_, p_213823_2_, p_213823_3_, p_213823_4_, false);
    }
 
@@ -534,7 +534,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
       this.mc.displayGuiScreen(new EditStructureScreen(structure));
    }
 
-   public void func_213826_a(JigsawTileEntity p_213826_1_) {
+   public void openJigsaw(JigsawTileEntity p_213826_1_) {
       this.mc.displayGuiScreen(new JigsawScreen(p_213826_1_));
    }
 
@@ -554,20 +554,20 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
       this.mc.particles.addParticleEmitter(entityHit, ParticleTypes.ENCHANTED_HIT);
    }
 
-   public boolean getSneaking() {
+   public boolean isShiftKeyDown() {
       return this.movementInput != null && this.movementInput.field_228350_h_;
    }
 
    public boolean isCrouching() {
       if (!this.abilities.isFlying && !this.isSwimming() && this.isPoseClear(Pose.CROUCHING)) {
-         return this.getSneaking() || !this.isSleeping() && !this.isPoseClear(Pose.STANDING);
+         return this.isShiftKeyDown() || !this.isSleeping() && !this.isPoseClear(Pose.STANDING);
       } else {
          return false;
       }
    }
 
    public boolean func_228354_I_() {
-      return this.isCrouching() || this.func_213300_bk();
+      return this.isCrouching() || this.isVisuallySwimming();
    }
 
    public void updateEntityActionState() {
@@ -665,7 +665,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
          }
       }
 
-      if (this.movementInput.jump && !flag7 && !flag && !this.abilities.isFlying && !this.isPassenger()) {
+      if (this.movementInput.jump && !flag7 && !flag && !this.abilities.isFlying && !this.isPassenger() && !this.isOnLadder()) {
          ItemStack itemstack = this.getItemStackFromSlot(EquipmentSlotType.CHEST);
          if (itemstack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemstack) && this.func_226566_ei_()) {
             this.connection.sendPacket(new CEntityActionPacket(this, CEntityActionPacket.Action.START_FALL_FLYING));
@@ -831,7 +831,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
             }
          }
 
-         float f12 = MathHelper.func_226165_i_(f1);
+         float f12 = MathHelper.fastInvSqrt(f1);
          Vec3d vec3d12 = vec3d2.scale((double)f12);
          Vec3d vec3d13 = this.getForward();
          float f13 = (float)(vec3d13.x * vec3d12.x + vec3d13.z * vec3d12.z);
@@ -910,7 +910,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
    }
 
    private boolean func_228356_eG_() {
-      return this.isAutoJumpEnabled() && this.autoJumpTime <= 0 && this.onGround && !this.func_226565_dV_() && !this.isPassenger() && this.func_228357_eH_() && (double)this.func_226269_ah_() >= 1.0D;
+      return this.isAutoJumpEnabled() && this.autoJumpTime <= 0 && this.onGround && !this.func_226565_dV_() && !this.isPassenger() && this.func_228357_eH_() && (double)this.getJumpFactor() >= 1.0D;
    }
 
    private boolean func_228357_eH_() {

@@ -24,13 +24,13 @@ public class ForestFlowerBlockStateProvider extends BlockStateProvider {
    }
 
    public BlockState func_225574_a_(Random p_225574_1_, BlockPos p_225574_2_) {
-      double d0 = MathHelper.clamp((1.0D + Biome.INFO_NOISE.func_215464_a((double)p_225574_2_.getX() / 48.0D, (double)p_225574_2_.getZ() / 48.0D, false)) / 2.0D, 0.0D, 0.9999D);
+      double d0 = MathHelper.clamp((1.0D + Biome.INFO_NOISE.noiseAt((double)p_225574_2_.getX() / 48.0D, (double)p_225574_2_.getZ() / 48.0D, false)) / 2.0D, 0.0D, 0.9999D);
       return field_227401_b_[(int)(d0 * (double)field_227401_b_.length)];
    }
 
    public <T> T serialize(DynamicOps<T> p_218175_1_) {
       Builder<T, T> builder = ImmutableMap.builder();
-      builder.put(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.field_229387_t_.getKey(this.field_227393_a_).toString()));
+      builder.put(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getKey(this.field_227393_a_).toString()));
       return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(builder.build()))).getValue();
    }
 }

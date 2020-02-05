@@ -12,7 +12,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public final class SwampHillsBiome extends Biome {
    protected SwampHillsBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.SWAMP, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.RAIN).category(Biome.Category.SWAMP).depth(-0.1F).scale(0.3F).temperature(0.8F).downfall(0.9F).waterColor(6388580).waterFogColor(2302743).parent("swamp"));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -22,7 +22,7 @@ public final class SwampHillsBiome extends Biome {
       DefaultBiomeFeatures.addSwampClayDisks(this);
       DefaultBiomeFeatures.addSwampVegetation(this);
       DefaultBiomeFeatures.addMushrooms(this);
-      DefaultBiomeFeatures.func_222329_ae(this);
+      DefaultBiomeFeatures.addExtraReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);
       DefaultBiomeFeatures.addFossils(this);
       DefaultBiomeFeatures.addFreezeTopLayer(this);
@@ -48,13 +48,13 @@ public final class SwampHillsBiome extends Biome {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225528_a_(double p_225528_1_, double p_225528_3_) {
-      double d0 = INFO_NOISE.func_215464_a(p_225528_1_ * 0.0225D, p_225528_3_ * 0.0225D, false);
+   public int getGrassColor(double p_225528_1_, double p_225528_3_) {
+      double d0 = INFO_NOISE.noiseAt(p_225528_1_ * 0.0225D, p_225528_3_ * 0.0225D, false);
       return d0 < -0.1D ? 5011004 : 6975545;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225527_a_() {
+   public int getFoliageColor() {
       return 6975545;
    }
 }

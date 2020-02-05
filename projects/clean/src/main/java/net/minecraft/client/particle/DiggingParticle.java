@@ -58,7 +58,7 @@ public class DiggingParticle extends SpriteTexturedParticle {
    }
 
    protected void multiplyColor(@Nullable BlockPos p_187154_1_) {
-      int i = Minecraft.getInstance().getBlockColors().func_228054_a_(this.sourceState, this.world, p_187154_1_, 0);
+      int i = Minecraft.getInstance().getBlockColors().getColor(this.sourceState, this.world, p_187154_1_, 0);
       this.particleRed *= (float)(i >> 16 & 255) / 255.0F;
       this.particleGreen *= (float)(i >> 8 & 255) / 255.0F;
       this.particleBlue *= (float)(i & 255) / 255.0F;
@@ -84,7 +84,7 @@ public class DiggingParticle extends SpriteTexturedParticle {
       int i = super.getBrightnessForRender(partialTick);
       int j = 0;
       if (this.world.isBlockLoaded(this.sourcePos)) {
-         j = WorldRenderer.func_228421_a_(this.world, this.sourcePos);
+         j = WorldRenderer.getCombinedLight(this.world, this.sourcePos);
       }
 
       return i == 0 ? j : i;

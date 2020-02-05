@@ -22,7 +22,7 @@ public class ChangePageButton extends Button {
 
    public void renderButton(int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-      Minecraft.getInstance().getTextureManager().bindTexture(ReadBookScreen.field_214167_b);
+      Minecraft.getInstance().getTextureManager().bindTexture(ReadBookScreen.BOOK_TEXTURES);
       int i = 0;
       int j = 192;
       if (this.isHovered()) {

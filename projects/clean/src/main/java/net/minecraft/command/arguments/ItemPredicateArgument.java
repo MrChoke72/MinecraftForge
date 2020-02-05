@@ -66,7 +66,7 @@ public class ItemPredicateArgument implements ArgumentType<ItemPredicateArgument
          ;
       }
 
-      return itemparser.func_197329_a(p_listSuggestions_2_);
+      return itemparser.fillSuggestions(p_listSuggestions_2_);
    }
 
    public Collection<String> getExamples() {

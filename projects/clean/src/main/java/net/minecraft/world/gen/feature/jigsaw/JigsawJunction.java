@@ -32,14 +32,14 @@ public class JigsawJunction {
       return this.sourceZ;
    }
 
-   public <T> Dynamic<T> serialize(DynamicOps<T> p_214897_1_) {
+   public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
       Builder<T, T> builder = ImmutableMap.builder();
-      builder.put(p_214897_1_.createString("source_x"), p_214897_1_.createInt(this.sourceX)).put(p_214897_1_.createString("source_ground_y"), p_214897_1_.createInt(this.sourceGroundY)).put(p_214897_1_.createString("source_z"), p_214897_1_.createInt(this.sourceZ)).put(p_214897_1_.createString("delta_y"), p_214897_1_.createInt(this.deltaY)).put(p_214897_1_.createString("dest_proj"), p_214897_1_.createString(this.destProjection.func_214936_a()));
-      return new Dynamic<>(p_214897_1_, p_214897_1_.createMap(builder.build()));
+      builder.put(ops.createString("source_x"), ops.createInt(this.sourceX)).put(ops.createString("source_ground_y"), ops.createInt(this.sourceGroundY)).put(ops.createString("source_z"), ops.createInt(this.sourceZ)).put(ops.createString("delta_y"), ops.createInt(this.deltaY)).put(ops.createString("dest_proj"), ops.createString(this.destProjection.getName()));
+      return new Dynamic<>(ops, ops.createMap(builder.build()));
    }
 
    public static <T> JigsawJunction deserialize(Dynamic<T> p_214894_0_) {
-      return new JigsawJunction(p_214894_0_.get("source_x").asInt(0), p_214894_0_.get("source_ground_y").asInt(0), p_214894_0_.get("source_z").asInt(0), p_214894_0_.get("delta_y").asInt(0), JigsawPattern.PlacementBehaviour.func_214938_a(p_214894_0_.get("dest_proj").asString("")));
+      return new JigsawJunction(p_214894_0_.get("source_x").asInt(0), p_214894_0_.get("source_ground_y").asInt(0), p_214894_0_.get("source_z").asInt(0), p_214894_0_.get("delta_y").asInt(0), JigsawPattern.PlacementBehaviour.getBehaviour(p_214894_0_.get("dest_proj").asString("")));
    }
 
    public boolean equals(Object p_equals_1_) {

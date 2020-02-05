@@ -14,19 +14,19 @@ public class ShaderLinkHelper {
 
    public static void func_227804_a_(int p_227804_0_) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-      GlStateManager.func_227723_g_(p_227804_0_);
+      GlStateManager.useProgram(p_227804_0_);
    }
 
    public static void deleteShader(IShaderManager p_148077_0_) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
       p_148077_0_.getFragmentShaderLoader().detachShader();
       p_148077_0_.getVertexShaderLoader().detachShader();
-      GlStateManager.func_227726_h_(p_148077_0_.getProgram());
+      GlStateManager.deleteProgram(p_148077_0_.getProgram());
    }
 
    public static int createProgram() throws IOException {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-      int i = GlStateManager.func_227743_n_();
+      int i = GlStateManager.createProgram();
       if (i <= 0) {
          throw new IOException("Could not create shader program (returned program ID " + i + ")");
       } else {
@@ -38,11 +38,11 @@ public class ShaderLinkHelper {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
       p_148075_0_.getFragmentShaderLoader().attachShader(p_148075_0_);
       p_148075_0_.getVertexShaderLoader().attachShader(p_148075_0_);
-      GlStateManager.func_227729_i_(p_148075_0_.getProgram());
-      int i = GlStateManager.func_227691_c_(p_148075_0_.getProgram(), 35714);
+      GlStateManager.linkProgram(p_148075_0_.getProgram());
+      int i = GlStateManager.getProgram(p_148075_0_.getProgram(), 35714);
       if (i == 0) {
          LOGGER.warn("Error encountered when linking program containing VS {} and FS {}. Log output:", p_148075_0_.getVertexShaderLoader().getShaderFilename(), p_148075_0_.getFragmentShaderLoader().getShaderFilename());
-         LOGGER.warn(GlStateManager.func_227736_k_(p_148075_0_.getProgram(), 32768));
+         LOGGER.warn(GlStateManager.getProgramInfoLog(p_148075_0_.getProgram(), 32768));
       }
 
    }

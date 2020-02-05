@@ -14,12 +14,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class Stitcher {
-   private static final Comparator<Stitcher.Holder> field_217797_a = Comparator.<Stitcher.Holder, Integer>comparing((p_217793_0_) -> {
+   private static final Comparator<Stitcher.Holder> COMPARATOR_HOLDER = Comparator.<Stitcher.Holder, Integer>comparing((p_217793_0_) -> {
       return -p_217793_0_.height;
    }).thenComparing((p_217795_0_) -> {
       return -p_217795_0_.width;
    }).thenComparing((p_217794_0_) -> {
-      return p_217794_0_.field_229213_a_.func_229248_a_();
+      return p_217794_0_.spriteInfo.getSpriteLocation();
    });
    private final int mipmapLevelStitcher;
    private final Set<Stitcher.Holder> setStitchHolders = Sets.newHashSetWithExpectedSize(256);
@@ -29,10 +29,10 @@ public class Stitcher {
    private final int maxWidth;
    private final int maxHeight;
 
-   public Stitcher(int p_i50910_1_, int p_i50910_2_, int p_i50910_3_) {
-      this.mipmapLevelStitcher = p_i50910_3_;
-      this.maxWidth = p_i50910_1_;
-      this.maxHeight = p_i50910_2_;
+   public Stitcher(int mipmapLevelIn, int maxWidthIn, int maxHeightIn) {
+      this.mipmapLevelStitcher = maxHeightIn;
+      this.maxWidth = mipmapLevelIn;
+      this.maxHeight = maxWidthIn;
    }
 
    public int getCurrentWidth() {
@@ -43,19 +43,19 @@ public class Stitcher {
       return this.currentHeight;
    }
 
-   public void func_229211_a_(TextureAtlasSprite.Info p_229211_1_) {
-      Stitcher.Holder stitcher$holder = new Stitcher.Holder(p_229211_1_, this.mipmapLevelStitcher);
+   public void addSprite(TextureAtlasSprite.Info spriteInfoIn) {
+      Stitcher.Holder stitcher$holder = new Stitcher.Holder(spriteInfoIn, this.mipmapLevelStitcher);
       this.setStitchHolders.add(stitcher$holder);
    }
 
    public void doStitch() {
       List<Stitcher.Holder> list = Lists.newArrayList(this.setStitchHolders);
-      list.sort(field_217797_a);
+      list.sort(COMPARATOR_HOLDER);
 
       for(Stitcher.Holder stitcher$holder : list) {
          if (!this.allocateSlot(stitcher$holder)) {
-            throw new StitcherException(stitcher$holder.field_229213_a_, list.stream().map((p_229212_0_) -> {
-               return p_229212_0_.field_229213_a_;
+            throw new StitcherException(stitcher$holder.spriteInfo, list.stream().map((p_229212_0_) -> {
+               return p_229212_0_.spriteInfo;
             }).collect(ImmutableList.toImmutableList()));
          }
       }
@@ -64,12 +64,12 @@ public class Stitcher {
       this.currentHeight = MathHelper.smallestEncompassingPowerOfTwo(this.currentHeight);
    }
 
-   public void func_229209_a_(Stitcher.ISpriteLoader p_229209_1_) {
+   public void getStichSlots(Stitcher.ISpriteLoader spriteLoaderIn) {
       for(Stitcher.Slot stitcher$slot : this.stitchSlots) {
-         stitcher$slot.func_217792_a((p_229210_2_) -> {
+         stitcher$slot.getAllStitchSlots((p_229210_2_) -> {
             Stitcher.Holder stitcher$holder = p_229210_2_.getStitchHolder();
-            TextureAtlasSprite.Info textureatlassprite$info = stitcher$holder.field_229213_a_;
-            p_229209_1_.load(textureatlassprite$info, this.currentWidth, this.currentHeight, p_229210_2_.getOriginX(), p_229210_2_.getOriginY());
+            TextureAtlasSprite.Info textureatlassprite$info = stitcher$holder.spriteInfo;
+            spriteLoaderIn.load(textureatlassprite$info, this.currentWidth, this.currentHeight, p_229210_2_.getOriginX(), p_229210_2_.getOriginY());
          });
       }
 
@@ -129,14 +129,14 @@ public class Stitcher {
 
    @OnlyIn(Dist.CLIENT)
    static class Holder {
-      public final TextureAtlasSprite.Info field_229213_a_;
+      public final TextureAtlasSprite.Info spriteInfo;
       public final int width;
       public final int height;
 
-      public Holder(TextureAtlasSprite.Info p_i226045_1_, int p_i226045_2_) {
-         this.field_229213_a_ = p_i226045_1_;
-         this.width = Stitcher.getMipmapDimension(p_i226045_1_.func_229250_b_(), p_i226045_2_);
-         this.height = Stitcher.getMipmapDimension(p_i226045_1_.func_229252_c_(), p_i226045_2_);
+      public Holder(TextureAtlasSprite.Info spriteInfoIn, int mipmapLevelIn) {
+         this.spriteInfo = spriteInfoIn;
+         this.width = Stitcher.getMipmapDimension(spriteInfoIn.getSpriteWidth(), mipmapLevelIn);
+         this.height = Stitcher.getMipmapDimension(spriteInfoIn.getSpriteHeight(), mipmapLevelIn);
       }
 
       public String toString() {
@@ -224,12 +224,12 @@ public class Stitcher {
          }
       }
 
-      public void func_217792_a(Consumer<Stitcher.Slot> p_217792_1_) {
+      public void getAllStitchSlots(Consumer<Stitcher.Slot> slots) {
          if (this.holder != null) {
-            p_217792_1_.accept(this);
+            slots.accept(this);
          } else if (this.subSlots != null) {
             for(Stitcher.Slot stitcher$slot : this.subSlots) {
-               stitcher$slot.func_217792_a(p_217792_1_);
+               stitcher$slot.getAllStitchSlots(slots);
             }
          }
 

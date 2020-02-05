@@ -37,12 +37,12 @@ public interface IFluidState extends IStateHolder<IFluidState> {
       return this.getFluid().isEmpty();
    }
 
-   default float func_215679_a(IBlockReader p_215679_1_, BlockPos p_215679_2_) {
-      return this.getFluid().func_215662_a(this, p_215679_1_, p_215679_2_);
+   default float getActualHeight(IBlockReader p_215679_1_, BlockPos p_215679_2_) {
+      return this.getFluid().getActualHeight(this, p_215679_1_, p_215679_2_);
    }
 
-   default float func_223408_f() {
-      return this.getFluid().func_223407_a(this);
+   default float getHeight() {
+      return this.getFluid().getHeight(this);
    }
 
    default int getLevel() {
@@ -82,7 +82,7 @@ public interface IFluidState extends IStateHolder<IFluidState> {
    }
 
    default Vec3d getFlow(IBlockReader p_215673_1_, BlockPos p_215673_2_) {
-      return this.getFluid().func_215663_a(p_215673_1_, p_215673_2_, this);
+      return this.getFluid().getFlow(p_215673_1_, p_215673_2_, this);
    }
 
    default BlockState getBlockState() {
@@ -103,8 +103,8 @@ public interface IFluidState extends IStateHolder<IFluidState> {
       return this.getFluid().getExplosionResistance();
    }
 
-   default boolean func_215677_a(IBlockReader p_215677_1_, BlockPos p_215677_2_, Fluid p_215677_3_, Direction p_215677_4_) {
-      return this.getFluid().func_215665_a(this, p_215677_1_, p_215677_2_, p_215677_3_, p_215677_4_);
+   default boolean canDisplace(IBlockReader p_215677_1_, BlockPos p_215677_2_, Fluid p_215677_3_, Direction p_215677_4_) {
+      return this.getFluid().canDisplace(this, p_215677_1_, p_215677_2_, p_215677_3_, p_215677_4_);
    }
 
    static <T> Dynamic<T> serialize(DynamicOps<T> p_215680_0_, IFluidState p_215680_1_) {
@@ -114,7 +114,7 @@ public interface IFluidState extends IStateHolder<IFluidState> {
          t = p_215680_0_.createMap(ImmutableMap.of(p_215680_0_.createString("Name"), p_215680_0_.createString(Registry.FLUID.getKey(p_215680_1_.getFluid()).toString())));
       } else {
          t = p_215680_0_.createMap(ImmutableMap.of(p_215680_0_.createString("Name"), p_215680_0_.createString(Registry.FLUID.getKey(p_215680_1_.getFluid()).toString()), p_215680_0_.createString("Properties"), p_215680_0_.createMap(immutablemap.entrySet().stream().map((p_215675_1_) -> {
-            return Pair.of(p_215680_0_.createString(p_215675_1_.getKey().getName()), p_215680_0_.createString(IStateHolder.func_215670_b(p_215675_1_.getKey(), p_215675_1_.getValue())));
+            return Pair.of(p_215680_0_.createString(p_215675_1_.getKey().getName()), p_215680_0_.createString(IStateHolder.writePropertyValueToString(p_215675_1_.getKey(), p_215675_1_.getValue())));
          }).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)))));
       }
 
@@ -135,7 +135,7 @@ public interface IFluidState extends IStateHolder<IFluidState> {
          String s = entry.getKey();
          IProperty<?> iproperty = statecontainer.getProperty(s);
          if (iproperty != null) {
-            ifluidstate = IStateHolder.func_215671_a(ifluidstate, iproperty, s, p_215681_0_.toString(), entry.getValue());
+            ifluidstate = IStateHolder.withString(ifluidstate, iproperty, s, p_215681_0_.toString(), entry.getValue());
          }
       }
 

@@ -48,10 +48,10 @@ public class ClassInheritanceMultiMap<T> extends AbstractCollection<T> {
    }
 
    public boolean contains(Object p_contains_1_) {
-      return this.func_219790_a(p_contains_1_.getClass()).contains(p_contains_1_);
+      return this.getByClass(p_contains_1_.getClass()).contains(p_contains_1_);
    }
 
-   public <S> Collection<S> func_219790_a(Class<S> p_219790_1_) {
+   public <S> Collection<S> getByClass(Class<S> p_219790_1_) {
       if (!this.baseClass.isAssignableFrom(p_219790_1_)) {
          throw new IllegalArgumentException("Don't know how to search for " + p_219790_1_);
       } else {

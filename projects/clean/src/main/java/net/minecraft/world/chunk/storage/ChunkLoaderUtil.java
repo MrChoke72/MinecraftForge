@@ -18,7 +18,7 @@ public class ChunkLoaderUtil {
       chunkloaderutil$anvilconverterdata.blockLight = new NibbleArrayReader(nbt.getByteArray("BlockLight"), 7);
       chunkloaderutil$anvilconverterdata.heightmap = nbt.getByteArray("HeightMap");
       chunkloaderutil$anvilconverterdata.terrainPopulated = nbt.getBoolean("TerrainPopulated");
-      chunkloaderutil$anvilconverterdata.field_76702_h = nbt.getList("Entities", 10);
+      chunkloaderutil$anvilconverterdata.entities = nbt.getList("Entities", 10);
       chunkloaderutil$anvilconverterdata.tileEntities = nbt.getList("TileEntities", 10);
       chunkloaderutil$anvilconverterdata.tileTicks = nbt.getList("TileTicks", 10);
 
@@ -91,8 +91,8 @@ public class ChunkLoaderUtil {
       }
 
       compound.put("Sections", listnbt);
-      compound.putIntArray("Biomes", (new BiomeContainer(new ChunkPos(converterData.x, converterData.z), provider)).func_227055_a_());
-      compound.put("Entities", converterData.field_76702_h);
+      compound.putIntArray("Biomes", (new BiomeContainer(new ChunkPos(converterData.x, converterData.z), provider)).getIdArray());
+      compound.put("Entities", converterData.entities);
       compound.put("TileEntities", converterData.tileEntities);
       if (converterData.tileTicks != null) {
          compound.put("TileTicks", converterData.tileTicks);
@@ -109,7 +109,7 @@ public class ChunkLoaderUtil {
       public NibbleArrayReader skyLight;
       public NibbleArrayReader data;
       public byte[] blocks;
-      public ListNBT field_76702_h;
+      public ListNBT entities;
       public ListNBT tileEntities;
       public ListNBT tileTicks;
       public final int x;

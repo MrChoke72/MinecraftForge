@@ -42,16 +42,16 @@ public class EndSpikeFeatureConfig implements IFeatureConfig {
       return new EndSpikeFeatureConfig(p_214673_0_.get("crystalInvulnerable").asBoolean(false), list, blockpos);
    }
 
-   public boolean func_214669_a() {
+   public boolean isCrystalInvulnerable() {
       return this.crystalInvulnerable;
    }
 
-   public List<EndSpikeFeature.EndSpike> func_214671_b() {
+   public List<EndSpikeFeature.EndSpike> getSpikes() {
       return this.spikes;
    }
 
    @Nullable
-   public BlockPos func_214668_c() {
+   public BlockPos getCrystalBeamTarget() {
       return this.crystalBeamTarget;
    }
 }

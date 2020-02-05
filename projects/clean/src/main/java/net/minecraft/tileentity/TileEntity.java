@@ -36,7 +36,7 @@ public abstract class TileEntity {
       return this.world;
    }
 
-   public void func_226984_a_(World p_226984_1_, BlockPos p_226984_2_) {
+   public void setWorldAndPos(World p_226984_1_, BlockPos p_226984_2_) {
       this.world = p_226984_1_;
       this.pos = p_226984_2_.toImmutable();
    }

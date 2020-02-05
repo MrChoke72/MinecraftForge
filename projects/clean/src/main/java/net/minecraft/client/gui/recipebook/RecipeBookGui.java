@@ -53,28 +53,28 @@ public class RecipeBookGui extends AbstractGui implements IRenderable, IGuiEvent
    private int timesInventoryChanged;
    private boolean field_199738_u;
 
-   public void func_201520_a(int p_201520_1_, int p_201520_2_, Minecraft p_201520_3_, boolean p_201520_4_, RecipeBookContainer<?> p_201520_5_) {
-      this.mc = p_201520_3_;
-      this.width = p_201520_1_;
-      this.height = p_201520_2_;
-      this.field_201522_g = p_201520_5_;
-      p_201520_3_.player.openContainer = p_201520_5_;
-      this.recipeBook = p_201520_3_.player.getRecipeBook();
-      this.timesInventoryChanged = p_201520_3_.player.inventory.getTimesChanged();
+   public void init(int widthIn, int heightIn, Minecraft minecraftIn, boolean widthTooNarrowIn, RecipeBookContainer<?> containerIn) {
+      this.mc = minecraftIn;
+      this.width = widthIn;
+      this.height = heightIn;
+      this.field_201522_g = containerIn;
+      minecraftIn.player.openContainer = containerIn;
+      this.recipeBook = minecraftIn.player.getRecipeBook();
+      this.timesInventoryChanged = minecraftIn.player.inventory.getTimesChanged();
       if (this.isVisible()) {
-         this.func_201518_a(p_201520_4_);
+         this.initSearchBar(widthTooNarrowIn);
       }
 
-      p_201520_3_.keyboardListener.enableRepeatEvents(true);
+      minecraftIn.keyboardListener.enableRepeatEvents(true);
    }
 
-   public void func_201518_a(boolean p_201518_1_) {
-      this.xOffset = p_201518_1_ ? 0 : 86;
+   public void initSearchBar(boolean widthTooNarrowIn) {
+      this.xOffset = widthTooNarrowIn ? 0 : 86;
       int i = (this.width - 147) / 2 - this.xOffset;
       int j = (this.height - 166) / 2;
       this.stackedContents.clear();
-      this.mc.player.inventory.func_201571_a(this.stackedContents);
-      this.field_201522_g.func_201771_a(this.stackedContents);
+      this.mc.player.inventory.accountStacks(this.stackedContents);
+      this.field_201522_g.fillStackedContents(this.stackedContents);
       String s = this.searchBar != null ? this.searchBar.getText() : "";
       this.searchBar = new TextFieldWidget(this.mc.fontRenderer, i + 25, j + 14, 80, 9 + 5, I18n.format("itemGroup.search"));
       this.searchBar.setMaxStringLength(50);
@@ -173,7 +173,7 @@ public class RecipeBookGui extends AbstractGui implements IRenderable, IGuiEvent
       });
       String s = this.searchBar.getText();
       if (!s.isEmpty()) {
-         ObjectSet<RecipeList> objectset = new ObjectLinkedOpenHashSet<>(this.mc.func_213253_a(SearchTreeManager.RECIPES).search(s.toLowerCase(Locale.ROOT)));
+         ObjectSet<RecipeList> objectset = new ObjectLinkedOpenHashSet<>(this.mc.getSearchTree(SearchTreeManager.RECIPES).search(s.toLowerCase(Locale.ROOT)));
          list1.removeIf((p_193947_1_) -> {
             return !objectset.contains(p_193947_1_);
          });
@@ -221,8 +221,8 @@ public class RecipeBookGui extends AbstractGui implements IRenderable, IGuiEvent
 
    private void updateStackedContents() {
       this.stackedContents.clear();
-      this.mc.player.inventory.func_201571_a(this.stackedContents);
-      this.field_201522_g.func_201771_a(this.stackedContents);
+      this.mc.player.inventory.accountStacks(this.stackedContents);
+      this.field_201522_g.fillStackedContents(this.stackedContents);
       this.updateCollections(false);
    }
 
@@ -298,7 +298,7 @@ public class RecipeBookGui extends AbstractGui implements IRenderable, IGuiEvent
                }
 
                this.ghostRecipe.clear();
-               this.mc.playerController.func_203413_a(this.mc.player.openContainer.windowId, irecipe, Screen.hasShiftDown());
+               this.mc.playerController.sendPlaceRecipePacket(this.mc.player.openContainer.windowId, irecipe, Screen.hasShiftDown());
                if (!this.isOffsetNextToMainGUI()) {
                   this.setVisible(false);
                }
@@ -340,12 +340,12 @@ public class RecipeBookGui extends AbstractGui implements IRenderable, IGuiEvent
       return flag;
    }
 
-   public boolean func_195604_a(double p_195604_1_, double p_195604_3_, int p_195604_5_, int p_195604_6_, int p_195604_7_, int p_195604_8_, int p_195604_9_) {
+   public boolean func_195604_a(double mouseX, double mouseY, int guiLeft, int guiTop, int xSize, int ySize, int mouseButton) {
       if (!this.isVisible()) {
          return true;
       } else {
-         boolean flag = p_195604_1_ < (double)p_195604_5_ || p_195604_3_ < (double)p_195604_6_ || p_195604_1_ >= (double)(p_195604_5_ + p_195604_7_) || p_195604_3_ >= (double)(p_195604_6_ + p_195604_8_);
-         boolean flag1 = (double)(p_195604_5_ - 147) < p_195604_1_ && p_195604_1_ < (double)p_195604_5_ && (double)p_195604_6_ < p_195604_3_ && p_195604_3_ < (double)(p_195604_6_ + p_195604_8_);
+         boolean flag = mouseX < (double)guiLeft || mouseY < (double)guiTop || mouseX >= (double)(guiLeft + xSize) || mouseY >= (double)(guiTop + ySize);
+         boolean flag1 = (double)(guiLeft - 147) < mouseX && mouseX < (double)guiLeft && (double)guiTop < mouseY && mouseY < (double)(guiTop + ySize);
          return flag && !flag1 && !this.currentTab.isHovered();
       }
    }
@@ -373,9 +373,9 @@ public class RecipeBookGui extends AbstractGui implements IRenderable, IGuiEvent
       }
    }
 
-   public boolean keyReleased(int p_223281_1_, int p_223281_2_, int p_223281_3_) {
+   public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
       this.field_199738_u = false;
-      return IGuiEventListener.super.keyReleased(p_223281_1_, p_223281_2_, p_223281_3_);
+      return IGuiEventListener.super.keyReleased(keyCode, scanCode, modifiers);
    }
 
    public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {

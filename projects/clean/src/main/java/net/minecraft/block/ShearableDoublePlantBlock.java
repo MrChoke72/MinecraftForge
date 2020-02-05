@@ -5,7 +5,7 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.properties.DoubleBlockHalf;
 
 public class ShearableDoublePlantBlock extends DoublePlantBlock {
-   public static final EnumProperty<DoubleBlockHalf> field_208063_b = DoublePlantBlock.HALF;
+   public static final EnumProperty<DoubleBlockHalf> PLANT_HALF = DoublePlantBlock.HALF;
 
    public ShearableDoublePlantBlock(Block.Properties p_i49975_1_) {
       super(p_i49975_1_);

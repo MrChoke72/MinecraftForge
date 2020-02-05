@@ -47,8 +47,8 @@ public abstract class FoliagePlacer implements IDynamicSerializable {
    }
 
    protected void func_227385_a_(IWorldGenerationReader p_227385_1_, Random p_227385_2_, BlockPos p_227385_3_, TreeFeatureConfig p_227385_4_, Set<BlockPos> p_227385_5_) {
-      if (AbstractTreeFeature.isAirOrLeaves(p_227385_1_, p_227385_3_) || AbstractTreeFeature.func_214576_j(p_227385_1_, p_227385_3_) || AbstractTreeFeature.isWater(p_227385_1_, p_227385_3_)) {
-         p_227385_1_.setBlockState(p_227385_3_, p_227385_4_.field_227369_n_.func_225574_a_(p_227385_2_, p_227385_3_), 19);
+      if (AbstractTreeFeature.isAirOrLeaves(p_227385_1_, p_227385_3_) || AbstractTreeFeature.isTallPlants(p_227385_1_, p_227385_3_) || AbstractTreeFeature.isWater(p_227385_1_, p_227385_3_)) {
+         p_227385_1_.setBlockState(p_227385_3_, p_227385_4_.leavesProvider.func_225574_a_(p_227385_2_, p_227385_3_), 19);
          p_227385_5_.add(p_227385_3_.toImmutable());
       }
 
@@ -56,7 +56,7 @@ public abstract class FoliagePlacer implements IDynamicSerializable {
 
    public <T> T serialize(DynamicOps<T> p_218175_1_) {
       Builder<T, T> builder = ImmutableMap.builder();
-      builder.put(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.field_229389_v_.getKey(this.field_227383_c_).toString())).put(p_218175_1_.createString("radius"), p_218175_1_.createInt(this.field_227381_a_)).put(p_218175_1_.createString("radius_random"), p_218175_1_.createInt(this.field_227382_b_));
+      builder.put(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.FOLIAGE_PLACER_TYPE.getKey(this.field_227383_c_).toString())).put(p_218175_1_.createString("radius"), p_218175_1_.createInt(this.field_227381_a_)).put(p_218175_1_.createString("radius_random"), p_218175_1_.createInt(this.field_227382_b_));
       return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(builder.build()))).getValue();
    }
 }

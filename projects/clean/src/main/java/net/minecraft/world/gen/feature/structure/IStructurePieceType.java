@@ -64,7 +64,7 @@ public interface IStructurePieceType {
 
    StructurePiece load(TemplateManager p_load_1_, CompoundNBT p_load_2_);
 
-   static IStructurePieceType register(IStructurePieceType p_214750_0_, String key) {
-      return Registry.register(Registry.STRUCTURE_PIECE, key.toLowerCase(Locale.ROOT), p_214750_0_);
+   static IStructurePieceType register(IStructurePieceType type, String key) {
+      return Registry.register(Registry.STRUCTURE_PIECE, key.toLowerCase(Locale.ROOT), type);
    }
 }

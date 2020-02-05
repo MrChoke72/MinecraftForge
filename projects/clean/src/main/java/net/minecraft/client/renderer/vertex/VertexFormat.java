@@ -15,11 +15,11 @@ public class VertexFormat {
    private final IntList offsets = new IntArrayList();
    private final int vertexSize;
 
-   public VertexFormat(ImmutableList<VertexFormatElement> p_i225911_1_) {
-      this.elements = p_i225911_1_;
+   public VertexFormat(ImmutableList<VertexFormatElement> elementsIn) {
+      this.elements = elementsIn;
       int i = 0;
 
-      for(VertexFormatElement vertexformatelement : p_i225911_1_) {
+      for(VertexFormatElement vertexformatelement : elementsIn) {
          this.offsets.add(i);
          i += vertexformatelement.getSize();
       }
@@ -39,7 +39,7 @@ public class VertexFormat {
       return this.vertexSize;
    }
 
-   public ImmutableList<VertexFormatElement> func_227894_c_() {
+   public ImmutableList<VertexFormatElement> getElements() {
       return this.elements;
    }
 
@@ -58,28 +58,28 @@ public class VertexFormat {
       return this.elements.hashCode();
    }
 
-   public void func_227892_a_(long p_227892_1_) {
+   public void setupBufferState(long pointerIn) {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            this.func_227892_a_(p_227892_1_);
+            this.setupBufferState(pointerIn);
          });
       } else {
          int i = this.getSize();
-         List<VertexFormatElement> list = this.func_227894_c_();
+         List<VertexFormatElement> list = this.getElements();
 
          for(int j = 0; j < list.size(); ++j) {
-            list.get(j).func_227897_a_(p_227892_1_ + (long)this.offsets.getInt(j), i);
+            list.get(j).setupBufferState(pointerIn + (long)this.offsets.getInt(j), i);
          }
 
       }
    }
 
-   public void func_227895_d_() {
+   public void clearBufferState() {
       if (!RenderSystem.isOnRenderThread()) {
-         RenderSystem.recordRenderCall(this::func_227895_d_);
+         RenderSystem.recordRenderCall(this::clearBufferState);
       } else {
-         for(VertexFormatElement vertexformatelement : this.func_227894_c_()) {
-            vertexformatelement.func_227898_g_();
+         for(VertexFormatElement vertexformatelement : this.getElements()) {
+            vertexformatelement.clearBufferState();
          }
 
       }

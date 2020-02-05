@@ -33,10 +33,7 @@ import org.apache.logging.log4j.Logger;
 public class RegionSectionCache<R extends IDynamicSerializable> implements AutoCloseable {
    private static final Logger field_219120_a = LogManager.getLogger();
    private final IOWorker field_227173_b_;
-
-   //AH INFO:  //R is PointOfInterestData.  Key is sectionPos packed
    private final Long2ObjectMap<Optional<R>> data = new Long2ObjectOpenHashMap<>();
-
    private final LongLinkedOpenHashSet dirtySections = new LongLinkedOpenHashSet();
    private final BiFunction<Runnable, Dynamic<?>, R> field_219123_e;
    private final Function<Runnable, R> field_219124_f;
@@ -60,23 +57,23 @@ public class RegionSectionCache<R extends IDynamicSerializable> implements AutoC
    }
 
    @Nullable
-   protected Optional<R> getPoiDataOptByPos(long posPacked) {
-      return this.data.get(posPacked);
+   protected Optional<R> getPoiDataOptByPos(long p_219106_1_) {
+      return this.data.get(p_219106_1_);
    }
 
-   protected Optional<R> checkPoiDataOptByPos(long secPosPacked) {
-      SectionPos sectionpos = SectionPos.from(secPosPacked);
+   protected Optional<R> checkPoiDataOptByPos(long p_219113_1_) {
+      SectionPos sectionpos = SectionPos.from(p_219113_1_);
       if (this.isYOutOfBounds(sectionpos)) {
          return Optional.empty();
       } else {
-         Optional<R> optional = this.getPoiDataOptByPos(secPosPacked);
+         Optional<R> optional = this.getPoiDataOptByPos(p_219113_1_);
          if (optional != null) {
             return optional;
          } else {
             this.func_219107_b(sectionpos.asChunkPos());
-            optional = this.getPoiDataOptByPos(secPosPacked);
+            optional = this.getPoiDataOptByPos(p_219113_1_);
             if (optional == null) {
-               throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException());
+               throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException());
             } else {
                return optional;
             }
@@ -88,23 +85,21 @@ public class RegionSectionCache<R extends IDynamicSerializable> implements AutoC
       return World.isYOutOfBounds(SectionPos.toWorld(p_219114_1_.getSectionY()));
    }
 
-   protected R getCachedPoiData(long secPosPacked) {
-      Optional<R> optional = this.checkPoiDataOptByPos(secPosPacked);
+   protected R getCachedPoiData(long p_219110_1_) {
+      Optional<R> optional = this.checkPoiDataOptByPos(p_219110_1_);
       if (optional.isPresent()) {
          return (R)(optional.get());
       } else {
          R r = this.field_219124_f.apply(() -> {
-            this.markDirty(secPosPacked);
+            this.markDirty(p_219110_1_);
          });
-         this.data.put(secPosPacked, Optional.of(r));
+         this.data.put(p_219110_1_, Optional.of(r));
          return r;
       }
    }
 
-   //AH REFACTOR
-   private void func_219107_b(ChunkPos chunkPos) {
-   //private void func_219107_b(ChunkPos p_219107_1_) {
-      this.func_219119_a(chunkPos, NBTDynamicOps.INSTANCE, this.func_223138_c(chunkPos));
+   private void func_219107_b(ChunkPos p_219107_1_) {
+      this.func_219119_a(p_219107_1_, NBTDynamicOps.INSTANCE, this.func_223138_c(p_219107_1_));
    }
 
    @Nullable
@@ -117,12 +112,10 @@ public class RegionSectionCache<R extends IDynamicSerializable> implements AutoC
       }
    }
 
-   //AH REFACTOR
-   private <T> void func_219119_a(ChunkPos chunkPos, DynamicOps<T> p_219119_2_, @Nullable T p_219119_3_) {
-   //private <T> void func_219119_a(ChunkPos p_219119_1_, DynamicOps<T> p_219119_2_, @Nullable T p_219119_3_) {
+   private <T> void func_219119_a(ChunkPos p_219119_1_, DynamicOps<T> p_219119_2_, @Nullable T p_219119_3_) {
       if (p_219119_3_ == null) {
          for(int i = 0; i < 16; ++i) {
-            this.data.put(SectionPos.from(chunkPos, i).asLong(), Optional.empty());
+            this.data.put(SectionPos.from(p_219119_1_, i).asLong(), Optional.empty());
          }
       } else {
          Dynamic<T> dynamic1 = new Dynamic<>(p_219119_2_, p_219119_3_);
@@ -133,7 +126,7 @@ public class RegionSectionCache<R extends IDynamicSerializable> implements AutoC
          OptionalDynamic<T> optionaldynamic = dynamic.get("Sections");
 
          for(int l = 0; l < 16; ++l) {
-            long i1 = SectionPos.from(chunkPos, l).asLong();
+            long i1 = SectionPos.from(p_219119_1_, l).asLong();
             Optional<R> optional = optionaldynamic.get(Integer.toString(l)).get().map((p_219105_3_) -> {
                return (R)(this.field_219123_e.apply(() -> {
                   this.markDirty(i1);

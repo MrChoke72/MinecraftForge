@@ -17,10 +17,10 @@ public class MobSpawnerTileEntityRenderer extends TileEntityRenderer<MobSpawnerT
       super(p_i226016_1_);
    }
 
-   public void func_225616_a_(MobSpawnerTileEntity p_225616_1_, float p_225616_2_, MatrixStack p_225616_3_, IRenderTypeBuffer p_225616_4_, int p_225616_5_, int p_225616_6_) {
-      p_225616_3_.func_227860_a_();
-      p_225616_3_.func_227861_a_(0.5D, 0.0D, 0.5D);
-      AbstractSpawner abstractspawner = p_225616_1_.getSpawnerBaseLogic();
+   public void render(MobSpawnerTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+      matrixStackIn.push();
+      matrixStackIn.translate(0.5D, 0.0D, 0.5D);
+      AbstractSpawner abstractspawner = tileEntityIn.getSpawnerBaseLogic();
       Entity entity = abstractspawner.getCachedEntity();
       if (entity != null) {
          float f = 0.53125F;
@@ -29,14 +29,14 @@ public class MobSpawnerTileEntityRenderer extends TileEntityRenderer<MobSpawnerT
             f /= f1;
          }
 
-         p_225616_3_.func_227861_a_(0.0D, (double)0.4F, 0.0D);
-         p_225616_3_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_((float)MathHelper.lerp((double)p_225616_2_, abstractspawner.getPrevMobRotation(), abstractspawner.getMobRotation()) * 10.0F));
-         p_225616_3_.func_227861_a_(0.0D, (double)-0.2F, 0.0D);
-         p_225616_3_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(-30.0F));
-         p_225616_3_.func_227862_a_(f, f, f);
-         Minecraft.getInstance().getRenderManager().func_229084_a_(entity, 0.0D, 0.0D, 0.0D, 0.0F, p_225616_2_, p_225616_3_, p_225616_4_, p_225616_5_);
+         matrixStackIn.translate(0.0D, (double)0.4F, 0.0D);
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees((float)MathHelper.lerp((double)partialTicks, abstractspawner.getPrevMobRotation(), abstractspawner.getMobRotation()) * 10.0F));
+         matrixStackIn.translate(0.0D, (double)-0.2F, 0.0D);
+         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-30.0F));
+         matrixStackIn.scale(f, f, f);
+         Minecraft.getInstance().getRenderManager().renderEntityStatic(entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, matrixStackIn, bufferIn, combinedLightIn);
       }
 
-      p_225616_3_.func_227865_b_();
+      matrixStackIn.pop();
    }
 }

@@ -42,7 +42,7 @@ public class LeashKnotEntity extends HangingEntity {
    }
 
    protected void updateBoundingBox() {
-      this.func_226288_n_((double)this.hangingPosition.getX() + 0.5D, (double)this.hangingPosition.getY() + 0.5D, (double)this.hangingPosition.getZ() + 0.5D);
+      this.setRawPosition((double)this.hangingPosition.getX() + 0.5D, (double)this.hangingPosition.getY() + 0.5D, (double)this.hangingPosition.getZ() + 0.5D);
    }
 
    public void updateFacingWithBoundingBox(Direction facingDirectionIn) {
@@ -56,7 +56,7 @@ public class LeashKnotEntity extends HangingEntity {
       return 9;
    }
 
-   protected float getEyeHeight(Pose p_213316_1_, EntitySize p_213316_2_) {
+   protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
       return -0.0625F;
    }
 

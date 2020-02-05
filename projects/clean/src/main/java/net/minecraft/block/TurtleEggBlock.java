@@ -71,23 +71,23 @@ public class TurtleEggBlock extends Block {
 
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (this.canGrow(p_225534_2_) && this.hasProperHabitat(p_225534_2_, p_225534_3_)) {
-         int i = p_225534_1_.get(HATCH);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (this.canGrow(worldIn) && this.hasProperHabitat(worldIn, pos)) {
+         int i = state.get(HATCH);
          if (i < 2) {
-            p_225534_2_.playSound((PlayerEntity)null, p_225534_3_, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + p_225534_4_.nextFloat() * 0.2F);
-            p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(HATCH, Integer.valueOf(i + 1)), 2);
+            worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + rand.nextFloat() * 0.2F);
+            worldIn.setBlockState(pos, state.with(HATCH, Integer.valueOf(i + 1)), 2);
          } else {
-            p_225534_2_.playSound((PlayerEntity)null, p_225534_3_, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + p_225534_4_.nextFloat() * 0.2F);
-            p_225534_2_.removeBlock(p_225534_3_, false);
+            worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + rand.nextFloat() * 0.2F);
+            worldIn.removeBlock(pos, false);
 
-            for(int j = 0; j < p_225534_1_.get(EGGS); ++j) {
-               p_225534_2_.playEvent(2001, p_225534_3_, Block.getStateId(p_225534_1_));
-               TurtleEntity turtleentity = EntityType.TURTLE.create(p_225534_2_);
+            for(int j = 0; j < state.get(EGGS); ++j) {
+               worldIn.playEvent(2001, pos, Block.getStateId(state));
+               TurtleEntity turtleentity = EntityType.TURTLE.create(worldIn);
                turtleentity.setGrowingAge(-24000);
-               turtleentity.setHome(p_225534_3_);
-               turtleentity.setLocationAndAngles((double)p_225534_3_.getX() + 0.3D + (double)j * 0.2D, (double)p_225534_3_.getY(), (double)p_225534_3_.getZ() + 0.3D, 0.0F, 0.0F);
-               p_225534_2_.addEntity(turtleentity);
+               turtleentity.setHome(pos);
+               turtleentity.setLocationAndAngles((double)pos.getX() + 0.3D + (double)j * 0.2D, (double)pos.getY(), (double)pos.getZ() + 0.3D, 0.0F, 0.0F);
+               worldIn.addEntity(turtleentity);
             }
          }
       }

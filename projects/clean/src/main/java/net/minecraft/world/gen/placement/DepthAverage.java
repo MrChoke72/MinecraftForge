@@ -12,14 +12,14 @@ public class DepthAverage extends SimplePlacement<DepthAverageConfig> {
       super(p_i51385_1_);
    }
 
-   public Stream<BlockPos> getPositions(Random p_212852_1_, DepthAverageConfig p_212852_2_, BlockPos p_212852_3_) {
+   public Stream<BlockPos> getPositions(Random random, DepthAverageConfig p_212852_2_, BlockPos pos) {
       int i = p_212852_2_.count;
       int j = p_212852_2_.baseline;
       int k = p_212852_2_.spread;
       return IntStream.range(0, i).mapToObj((p_227439_4_) -> {
-         int l = p_212852_1_.nextInt(16) + p_212852_3_.getX();
-         int i1 = p_212852_1_.nextInt(16) + p_212852_3_.getZ();
-         int j1 = p_212852_1_.nextInt(k) + p_212852_1_.nextInt(k) - k + j;
+         int l = random.nextInt(16) + pos.getX();
+         int i1 = random.nextInt(16) + pos.getZ();
+         int j1 = random.nextInt(k) + random.nextInt(k) - k + j;
          return new BlockPos(l, j1, i1);
       });
    }

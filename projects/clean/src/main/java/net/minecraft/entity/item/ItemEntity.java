@@ -56,7 +56,7 @@ public class ItemEntity extends Entity {
       this.setItem(stack);
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -92,7 +92,7 @@ public class ItemEntity extends Entity {
             }
          }
 
-         if (!this.onGround || func_213296_b(this.getMotion()) > (double)1.0E-5F || (this.ticksExisted + this.getEntityId()) % 4 == 0) {
+         if (!this.onGround || horizontalMag(this.getMotion()) > (double)1.0E-5F || (this.ticksExisted + this.getEntityId()) % 4 == 0) {
             this.move(MoverType.SELF, this.getMotion());
             float f = 0.98F;
             if (this.onGround) {

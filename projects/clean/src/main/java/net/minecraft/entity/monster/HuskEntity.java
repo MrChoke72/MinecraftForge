@@ -17,12 +17,12 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class HuskEntity extends ZombieEntity {
-   public HuskEntity(EntityType<? extends HuskEntity> p_i50204_1_, World p_i50204_2_) {
-      super(p_i50204_1_, p_i50204_2_);
+   public HuskEntity(EntityType<? extends HuskEntity> type, World worldIn) {
+      super(type, worldIn);
    }
 
-   public static boolean func_223334_b(EntityType<HuskEntity> p_223334_0_, IWorld p_223334_1_, SpawnReason p_223334_2_, BlockPos p_223334_3_, Random p_223334_4_) {
-      return spawnPred(p_223334_0_, p_223334_1_, p_223334_2_, p_223334_3_, p_223334_4_) && (p_223334_2_ == SpawnReason.SPAWNER || p_223334_1_.isMaxLightLevel(p_223334_3_));
+   public static boolean func_223334_b(EntityType<HuskEntity> p_223334_0_, IWorld p_223334_1_, SpawnReason reason, BlockPos p_223334_3_, Random p_223334_4_) {
+      return spawnPred(p_223334_0_, p_223334_1_, reason, p_223334_3_, p_223334_4_) && (reason == SpawnReason.SPAWNER || p_223334_1_.canSeeSky(p_223334_3_));
    }
 
    protected boolean shouldBurnInDay() {

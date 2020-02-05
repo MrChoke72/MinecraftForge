@@ -37,7 +37,7 @@ public class ServerTickList<T> implements ITickList<T> {
    private final TreeSet<NextTickListEntry<T>> pendingTickListEntriesTreeSet = Sets.newTreeSet(NextTickListEntry.func_223192_a());
    private final ServerWorld world;
    private final Queue<NextTickListEntry<T>> pendingTickListEntriesThisTick = Queues.newArrayDeque();
-   private final List<NextTickListEntry<T>> field_223189_h = Lists.newArrayList();
+   private final List<NextTickListEntry<T>> entriesRunThisTick = Lists.newArrayList();
    private final Consumer<NextTickListEntry<T>> tickFunction;
 
    public ServerTickList(ServerWorld worldIn, Predicate<T> filter, Function<T, ResourceLocation> serializerIn, Function<ResourceLocation, T> deserializerIn, Consumer<NextTickListEntry<T>> tickFunctionIn) {
@@ -81,7 +81,7 @@ public class ServerTickList<T> implements ITickList<T> {
          while((nextticklistentry1 = this.pendingTickListEntriesThisTick.poll()) != null) {
             if (serverchunkprovider.canTick(nextticklistentry1.position)) {
                try {
-                  this.field_223189_h.add(nextticklistentry1);
+                  this.entriesRunThisTick.add(nextticklistentry1);
                   this.tickFunction.accept(nextticklistentry1);
                } catch (Throwable throwable) {
                   CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception while ticking");
@@ -95,7 +95,7 @@ public class ServerTickList<T> implements ITickList<T> {
          }
 
          this.world.getProfiler().endSection();
-         this.field_223189_h.clear();
+         this.entriesRunThisTick.clear();
          this.pendingTickListEntriesThisTick.clear();
       }
    }
@@ -104,53 +104,53 @@ public class ServerTickList<T> implements ITickList<T> {
       return this.pendingTickListEntriesThisTick.contains(new NextTickListEntry(pos, obj));
    }
 
-   public void func_219497_a(Stream<NextTickListEntry<T>> p_219497_1_) {
-      p_219497_1_.forEach(this::func_219504_a);
+   public void addAll(Stream<NextTickListEntry<T>> p_219497_1_) {
+      p_219497_1_.forEach(this::addEntry);
    }
 
-   public List<NextTickListEntry<T>> func_223188_a(ChunkPos p_223188_1_, boolean p_223188_2_, boolean p_223188_3_) {
-      int i = (p_223188_1_.x << 4) - 2;
+   public List<NextTickListEntry<T>> getPending(ChunkPos pos, boolean remove, boolean skipCompleted) {
+      int i = (pos.x << 4) - 2;
       int j = i + 16 + 2;
-      int k = (p_223188_1_.z << 4) - 2;
+      int k = (pos.z << 4) - 2;
       int l = k + 16 + 2;
-      return this.getPending(new MutableBoundingBox(i, 0, k, j, 256, l), p_223188_2_, p_223188_3_);
+      return this.getPending(new MutableBoundingBox(i, 0, k, j, 256, l), remove, skipCompleted);
    }
 
-   public List<NextTickListEntry<T>> getPending(MutableBoundingBox p_205366_1_, boolean remove, boolean p_205366_3_) {
-      List<NextTickListEntry<T>> list = this.func_223187_a((List<NextTickListEntry<T>>)null, this.pendingTickListEntriesTreeSet, p_205366_1_, remove);
+   public List<NextTickListEntry<T>> getPending(MutableBoundingBox p_205366_1_, boolean remove, boolean skipCompleted) {
+      List<NextTickListEntry<T>> list = this.getEntries((List<NextTickListEntry<T>>)null, this.pendingTickListEntriesTreeSet, p_205366_1_, remove);
       if (remove && list != null) {
          this.pendingTickListEntriesHashSet.removeAll(list);
       }
 
-      list = this.func_223187_a(list, this.pendingTickListEntriesThisTick, p_205366_1_, remove);
-      if (!p_205366_3_) {
-         list = this.func_223187_a(list, this.field_223189_h, p_205366_1_, remove);
+      list = this.getEntries(list, this.pendingTickListEntriesThisTick, p_205366_1_, remove);
+      if (!skipCompleted) {
+         list = this.getEntries(list, this.entriesRunThisTick, p_205366_1_, remove);
       }
 
       return list == null ? Collections.emptyList() : list;
    }
 
    @Nullable
-   private List<NextTickListEntry<T>> func_223187_a(@Nullable List<NextTickListEntry<T>> p_223187_1_, Collection<NextTickListEntry<T>> p_223187_2_, MutableBoundingBox p_223187_3_, boolean p_223187_4_) {
-      Iterator<NextTickListEntry<T>> iterator = p_223187_2_.iterator();
+   private List<NextTickListEntry<T>> getEntries(@Nullable List<NextTickListEntry<T>> result, Collection<NextTickListEntry<T>> entries, MutableBoundingBox bb, boolean remove) {
+      Iterator<NextTickListEntry<T>> iterator = entries.iterator();
 
       while(iterator.hasNext()) {
          NextTickListEntry<T> nextticklistentry = iterator.next();
          BlockPos blockpos = nextticklistentry.position;
-         if (blockpos.getX() >= p_223187_3_.minX && blockpos.getX() < p_223187_3_.maxX && blockpos.getZ() >= p_223187_3_.minZ && blockpos.getZ() < p_223187_3_.maxZ) {
-            if (p_223187_4_) {
+         if (blockpos.getX() >= bb.minX && blockpos.getX() < bb.maxX && blockpos.getZ() >= bb.minZ && blockpos.getZ() < bb.maxZ) {
+            if (remove) {
                iterator.remove();
             }
 
-            if (p_223187_1_ == null) {
-               p_223187_1_ = Lists.newArrayList();
+            if (result == null) {
+               result = Lists.newArrayList();
             }
 
-            p_223187_1_.add(nextticklistentry);
+            result.add(nextticklistentry);
          }
       }
 
-      return p_223187_1_;
+      return result;
    }
 
    public void copyTicks(MutableBoundingBox area, BlockPos offset) {
@@ -158,14 +158,14 @@ public class ServerTickList<T> implements ITickList<T> {
          if (area.isVecInside(nextticklistentry.position)) {
             BlockPos blockpos = nextticklistentry.position.add(offset);
             T t = nextticklistentry.getTarget();
-            this.func_219504_a(new NextTickListEntry<>(blockpos, t, nextticklistentry.scheduledTime, nextticklistentry.priority));
+            this.addEntry(new NextTickListEntry<>(blockpos, t, nextticklistentry.scheduledTime, nextticklistentry.priority));
          }
       }
 
    }
 
    public ListNBT func_219503_a(ChunkPos p_219503_1_) {
-      List<NextTickListEntry<T>> list = this.func_223188_a(p_219503_1_, false, true);
+      List<NextTickListEntry<T>> list = this.getPending(p_219503_1_, false, true);
       return func_219502_a(this.serializer, list, this.world.getGameTime());
    }
 
@@ -192,12 +192,12 @@ public class ServerTickList<T> implements ITickList<T> {
 
    public void scheduleTick(BlockPos pos, T itemIn, int scheduledTime, TickPriority priority) {
       if (!this.filter.test(itemIn)) {
-         this.func_219504_a(new NextTickListEntry<>(pos, itemIn, (long)scheduledTime + this.world.getGameTime(), priority));
+         this.addEntry(new NextTickListEntry<>(pos, itemIn, (long)scheduledTime + this.world.getGameTime(), priority));
       }
 
    }
 
-   private void func_219504_a(NextTickListEntry<T> p_219504_1_) {
+   private void addEntry(NextTickListEntry<T> p_219504_1_) {
       if (!this.pendingTickListEntriesHashSet.contains(p_219504_1_)) {
          this.pendingTickListEntriesHashSet.add(p_219504_1_);
          this.pendingTickListEntriesTreeSet.add(p_219504_1_);

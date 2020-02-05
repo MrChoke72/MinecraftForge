@@ -89,7 +89,7 @@ public final class EntityPredicates {
             return false;
          } else {
             LivingEntity livingentity = (LivingEntity)p_test_1_;
-            return livingentity.func_213365_e(this.armor);
+            return livingentity.canPickUpItem(this.armor);
          }
       }
    }

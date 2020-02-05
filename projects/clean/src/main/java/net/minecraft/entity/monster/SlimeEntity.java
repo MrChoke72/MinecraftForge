@@ -77,7 +77,7 @@ public class SlimeEntity extends MobEntity implements IMob {
 
    protected void setSlimeSize(int size, boolean resetHealth) {
       this.dataManager.set(SLIME_SIZE, size);
-      this.func_226264_Z_();
+      this.recenterBoundingBox();
       this.recalculateSize();
       this.getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue((double)(size * size));
       this.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));
@@ -118,7 +118,7 @@ public class SlimeEntity extends MobEntity implements IMob {
       return ParticleTypes.ITEM_SLIME;
    }
 
-   protected boolean func_225511_J_() {
+   protected boolean isDespawnPeaceful() {
       return this.getSlimeSize() > 0;
    }
 
@@ -266,15 +266,15 @@ public class SlimeEntity extends MobEntity implements IMob {
          return false;
       } else {
          if (p_223366_1_.getDifficulty() != Difficulty.PEACEFUL) {
-            Biome biome = p_223366_1_.func_226691_t_(p_223366_3_);
+            Biome biome = p_223366_1_.getBiome(p_223366_3_);
             if (biome == Biomes.SWAMP && p_223366_3_.getY() > 50 && p_223366_3_.getY() < 70 && randomIn.nextFloat() < 0.5F && randomIn.nextFloat() < p_223366_1_.getCurrentMoonPhaseFactor() && p_223366_1_.getLight(p_223366_3_) <= randomIn.nextInt(8)) {
-               return canEntitySpawn(p_223366_0_, p_223366_1_, reason, p_223366_3_, randomIn);
+               return canSpawnOn(p_223366_0_, p_223366_1_, reason, p_223366_3_, randomIn);
             }
 
             ChunkPos chunkpos = new ChunkPos(p_223366_3_);
             boolean flag = SharedSeedRandom.seedSlimeChunk(chunkpos.x, chunkpos.z, p_223366_1_.getSeed(), 987234911L).nextInt(10) == 0;
             if (randomIn.nextInt(10) == 0 && flag && p_223366_3_.getY() < 40) {
-               return canEntitySpawn(p_223366_0_, p_223366_1_, reason, p_223366_3_, randomIn);
+               return canSpawnOn(p_223366_0_, p_223366_1_, reason, p_223366_3_, randomIn);
             }
          }
 

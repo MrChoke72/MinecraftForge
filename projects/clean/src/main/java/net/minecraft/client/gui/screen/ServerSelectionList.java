@@ -57,7 +57,7 @@ public class ServerSelectionList extends ExtendedList<ServerSelectionList.Entry>
    public void setSelected(ServerSelectionList.Entry p_setSelected_1_) {
       super.setSelected(p_setSelected_1_);
       if (this.getSelected() instanceof ServerSelectionList.NormalEntry) {
-         NarratorChatListener.INSTANCE.func_216864_a((new TranslationTextComponent("narrator.select", ((ServerSelectionList.NormalEntry)this.getSelected()).server.serverName)).getString());
+         NarratorChatListener.INSTANCE.say((new TranslationTextComponent("narrator.select", ((ServerSelectionList.NormalEntry)this.getSelected()).server.serverName)).getString());
       }
 
    }
@@ -196,7 +196,7 @@ public class ServerSelectionList extends ExtendedList<ServerSelectionList.Entry>
          this.server = p_i50669_3_;
          this.mc = Minecraft.getInstance();
          this.serverIcon = new ResourceLocation("servers/" + Hashing.sha1().hashUnencodedChars(p_i50669_3_.serverIP) + "/icon");
-         this.icon = (DynamicTexture)this.mc.getTextureManager().func_229267_b_(this.serverIcon);
+         this.icon = (DynamicTexture)this.mc.getTextureManager().getTexture(this.serverIcon);
       }
 
       public void render(int p_render_1_, int p_render_2_, int p_render_3_, int p_render_4_, int p_render_5_, int p_render_6_, int p_render_7_, boolean p_render_8_, float p_render_9_) {
@@ -349,7 +349,7 @@ public class ServerSelectionList extends ExtendedList<ServerSelectionList.Entry>
             this.icon = null;
          } else {
             try {
-               NativeImage nativeimage = NativeImage.func_216511_b(s);
+               NativeImage nativeimage = NativeImage.readBase64(s);
                Validate.validState(nativeimage.getWidth() == 64, "Must be 64 pixels wide");
                Validate.validState(nativeimage.getHeight() == 64, "Must be 64 pixels high");
                if (this.icon == null) {
@@ -359,7 +359,7 @@ public class ServerSelectionList extends ExtendedList<ServerSelectionList.Entry>
                   this.icon.updateDynamicTexture();
                }
 
-               this.mc.getTextureManager().func_229263_a_(this.serverIcon, this.icon);
+               this.mc.getTextureManager().loadTexture(this.serverIcon, this.icon);
             } catch (Throwable throwable) {
                ServerSelectionList.LOGGER.error("Invalid icon for server {} ({})", this.server.serverName, this.server.serverIP, throwable);
                this.server.setBase64EncodedIconData((String)null);

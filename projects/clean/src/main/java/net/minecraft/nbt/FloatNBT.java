@@ -8,11 +8,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class FloatNBT extends NumberNBT {
-   public static final FloatNBT field_229687_a_ = new FloatNBT(0.0F);
-   public static final INBTType<FloatNBT> field_229688_b_ = new INBTType<FloatNBT>() {
+   public static final FloatNBT ZERO = new FloatNBT(0.0F);
+   public static final INBTType<FloatNBT> TYPE = new INBTType<FloatNBT>() {
       public FloatNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(96L);
-         return FloatNBT.func_229689_a_(p_225649_1_.readFloat());
+         return FloatNBT.valueOf(p_225649_1_.readFloat());
       }
 
       public String func_225648_a_() {
@@ -33,8 +33,8 @@ public class FloatNBT extends NumberNBT {
       this.data = data;
    }
 
-   public static FloatNBT func_229689_a_(float p_229689_0_) {
-      return p_229689_0_ == 0.0F ? field_229687_a_ : new FloatNBT(p_229689_0_);
+   public static FloatNBT valueOf(float p_229689_0_) {
+      return p_229689_0_ == 0.0F ? ZERO : new FloatNBT(p_229689_0_);
    }
 
    public void write(DataOutput output) throws IOException {
@@ -45,8 +45,8 @@ public class FloatNBT extends NumberNBT {
       return 5;
    }
 
-   public INBTType<FloatNBT> func_225647_b_() {
-      return field_229688_b_;
+   public INBTType<FloatNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {

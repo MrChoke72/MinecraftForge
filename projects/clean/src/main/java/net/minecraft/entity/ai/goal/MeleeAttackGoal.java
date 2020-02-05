@@ -42,7 +42,7 @@ public class MeleeAttackGoal extends Goal {
          } else if (!livingentity.isAlive()) {
             return false;
          } else {
-            this.path = this.attacker.getNavigator().getPathToEntityLiving(livingentity, 0);
+            this.path = this.attacker.getNavigator().getPathToEntity(livingentity, 0);
             if (this.path != null) {
 
                //AH CHANGE DEBUG OFF

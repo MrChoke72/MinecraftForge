@@ -30,11 +30,11 @@ import org.apache.logging.log4j.Logger;
 public abstract class Structure<C extends IFeatureConfig> extends Feature<C> {
    private static final Logger LOGGER = LogManager.getLogger();
 
-   public Structure(Function<Dynamic<?>, ? extends C> p_i51427_1_) {
-      super(p_i51427_1_);
+   public Structure(Function<Dynamic<?>, ? extends C> configFactoryIn) {
+      super(configFactoryIn);
    }
 
-   public ConfiguredFeature<C, ? extends Structure<C>> func_225566_b_(C p_225566_1_) {
+   public ConfiguredFeature<C, ? extends Structure<C>> withConfiguration(C p_225566_1_) {
       return new ConfiguredFeature<>(this, p_225566_1_);
    }
 

@@ -25,17 +25,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ServerWorldLightManager extends WorldLightManager implements AutoCloseable {
-   private static final Logger field_215604_a = LogManager.getLogger();
+   private static final Logger LOGGER = LogManager.getLogger();
    private final DelegatedTaskExecutor<Runnable> field_215605_b;
    private final ObjectList<Pair<ServerWorldLightManager.Phase, Runnable>> field_215606_c = new ObjectArrayList<>();
-   private final ChunkManager field_215607_d;
+   private final ChunkManager chunkManager;
    private final ITaskExecutor<ChunkTaskPriorityQueueSorter.FunctionEntry<Runnable>> field_215608_e;
    private volatile int field_215609_f = 5;
    private final AtomicBoolean field_215610_g = new AtomicBoolean();
 
-   public ServerWorldLightManager(IChunkLightProvider p_i50701_1_, ChunkManager p_i50701_2_, boolean p_i50701_3_, DelegatedTaskExecutor<Runnable> p_i50701_4_, ITaskExecutor<ChunkTaskPriorityQueueSorter.FunctionEntry<Runnable>> p_i50701_5_) {
-      super(p_i50701_1_, true, p_i50701_3_);
-      this.field_215607_d = p_i50701_2_;
+   public ServerWorldLightManager(IChunkLightProvider provider, ChunkManager chunkManagerIn, boolean hasSkyLight, DelegatedTaskExecutor<Runnable> p_i50701_4_, ITaskExecutor<ChunkTaskPriorityQueueSorter.FunctionEntry<Runnable>> p_i50701_5_) {
+      super(provider, true, hasSkyLight);
+      this.chunkManager = chunkManagerIn;
       this.field_215608_e = p_i50701_5_;
       this.field_215605_b = p_i50701_4_;
    }
@@ -44,16 +44,16 @@ public class ServerWorldLightManager extends WorldLightManager implements AutoCl
    }
 
    public int tick(int toUpdateCount, boolean updateSkyLight, boolean updateBlockLight) {
-      throw (UnsupportedOperationException)Util.func_229757_c_(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+      throw (UnsupportedOperationException)Util.spinlockIfDevMode(new UnsupportedOperationException("Ran authomatically on a different thread!"));
    }
 
-   public void func_215573_a(BlockPos p_215573_1_, int p_215573_2_) {
-      throw (UnsupportedOperationException)Util.func_229757_c_(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+   public void onBlockEmissionIncrease(BlockPos blockPosIn, int p_215573_2_) {
+      throw (UnsupportedOperationException)Util.spinlockIfDevMode(new UnsupportedOperationException("Ran authomatically on a different thread!"));
    }
 
-   public void checkBlock(BlockPos p_215568_1_) {
-      BlockPos blockpos = p_215568_1_.toImmutable();
-      this.func_215586_a(p_215568_1_.getX() >> 4, p_215568_1_.getZ() >> 4, ServerWorldLightManager.Phase.POST_UPDATE, Util.namedRunnable(() -> {
+   public void checkBlock(BlockPos blockPosIn) {
+      BlockPos blockpos = blockPosIn.toImmutable();
+      this.func_215586_a(blockPosIn.getX() >> 4, blockPosIn.getZ() >> 4, ServerWorldLightManager.Phase.POST_UPDATE, Util.namedRunnable(() -> {
          super.checkBlock(blockpos);
       }, () -> {
          return "checkBlock " + blockpos;
@@ -65,7 +65,7 @@ public class ServerWorldLightManager extends WorldLightManager implements AutoCl
          return 0;
       }, ServerWorldLightManager.Phase.PRE_UPDATE, Util.namedRunnable(() -> {
          super.retainData(p_215581_1_, false);
-         super.func_215571_a(p_215581_1_, false);
+         super.enableLightSources(p_215581_1_, false);
 
          for(int i = -1; i < 17; ++i) {
             super.setData(LightType.BLOCK, SectionPos.from(p_215581_1_, i), (NibbleArray)null);
@@ -91,9 +91,9 @@ public class ServerWorldLightManager extends WorldLightManager implements AutoCl
       }));
    }
 
-   public void func_215571_a(ChunkPos p_215571_1_, boolean p_215571_2_) {
+   public void enableLightSources(ChunkPos p_215571_1_, boolean p_215571_2_) {
       this.func_215586_a(p_215571_1_.x, p_215571_1_.z, ServerWorldLightManager.Phase.PRE_UPDATE, Util.namedRunnable(() -> {
-         super.func_215571_a(p_215571_1_, p_215571_2_);
+         super.enableLightSources(p_215571_1_, p_215571_2_);
       }, () -> {
          return "enableLight " + p_215571_1_ + " " + p_215571_2_;
       }));
@@ -109,8 +109,8 @@ public class ServerWorldLightManager extends WorldLightManager implements AutoCl
       }));
    }
 
-   private void func_215586_a(int p_215586_1_, int p_215586_2_, ServerWorldLightManager.Phase p_215586_3_, Runnable p_215586_4_) {
-      this.func_215600_a(p_215586_1_, p_215586_2_, this.field_215607_d.func_219191_c(ChunkPos.asLong(p_215586_1_, p_215586_2_)), p_215586_3_, p_215586_4_);
+   private void func_215586_a(int chunkX, int chunkZ, ServerWorldLightManager.Phase p_215586_3_, Runnable p_215586_4_) {
+      this.func_215600_a(chunkX, chunkZ, this.chunkManager.func_219191_c(ChunkPos.asLong(chunkX, chunkZ)), p_215586_3_, p_215586_4_);
    }
 
    private void func_215600_a(int chunkX, int chunkZ, IntSupplier p_215600_3_, ServerWorldLightManager.Phase p_215600_4_, Runnable p_215600_5_) {
@@ -146,14 +146,14 @@ public class ServerWorldLightManager extends WorldLightManager implements AutoCl
             }
          }
 
-         super.func_215571_a(chunkpos, true);
+         super.enableLightSources(chunkpos, true);
          if (!p_215593_2_) {
-            p_215593_1_.func_217304_m().forEach((p_215579_2_) -> {
-               super.func_215573_a(p_215579_2_, p_215593_1_.getLightValue(p_215579_2_));
+            p_215593_1_.getLightSources().forEach((p_215579_2_) -> {
+               super.onBlockEmissionIncrease(p_215579_2_, p_215593_1_.getLightValue(p_215579_2_));
             });
          }
 
-         this.field_215607_d.func_219209_c(chunkpos);
+         this.chunkManager.func_219209_c(chunkpos);
       }, () -> {
          return "lightChunk " + chunkpos + " " + p_215593_2_;
       }));
@@ -167,7 +167,7 @@ public class ServerWorldLightManager extends WorldLightManager implements AutoCl
    }
 
    public void func_215588_z_() {
-      if ((!this.field_215606_c.isEmpty() || super.func_215570_a()) && this.field_215610_g.compareAndSet(false, true)) {
+      if ((!this.field_215606_c.isEmpty() || super.hasLightWork()) && this.field_215610_g.compareAndSet(false, true)) {
          this.field_215605_b.enqueue(() -> {
             this.func_215603_b();
             this.field_215610_g.set(false);

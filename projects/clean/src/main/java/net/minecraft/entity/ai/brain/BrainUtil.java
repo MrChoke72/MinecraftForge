@@ -15,38 +15,38 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.server.ServerWorld;
 
 public class BrainUtil {
-   public static void func_220618_a(LivingEntity p_220618_0_, LivingEntity p_220618_1_) {
-      lookAtEachOther(p_220618_0_, p_220618_1_);
-      approachEachOther(p_220618_0_, p_220618_1_);
+   public static void lookApproachEachOther(LivingEntity firstEntity, LivingEntity secondEntity) {
+      lookAtEachOther(firstEntity, secondEntity);
+      approachEachOther(firstEntity, secondEntity);
    }
 
-   public static boolean canSee(Brain<?> brain, LivingEntity entity) {
-      return brain.getMemory(MemoryModuleType.VISIBLE_MOBS).filter((p_220614_1_) -> {
-         return p_220614_1_.contains(entity);
+   public static boolean canSee(Brain<?> brainIn, LivingEntity target) {
+      return brainIn.getMemory(MemoryModuleType.VISIBLE_MOBS).filter((p_220614_1_) -> {
+         return p_220614_1_.contains(target);
       }).isPresent();
    }
 
-   public static boolean isCorrectVisibleType(Brain<?> p_220623_0_, MemoryModuleType<? extends LivingEntity> p_220623_1_, EntityType<?> p_220623_2_) {
-      return p_220623_0_.getMemory(p_220623_1_).filter((p_220622_1_) -> {
-         return p_220622_1_.getType() == p_220623_2_;
+   public static boolean isCorrectVisibleType(Brain<?> brains, MemoryModuleType<? extends LivingEntity> memorymodule, EntityType<?> entityTypeIn) {
+      return brains.getMemory(memorymodule).filter((p_220622_1_) -> {
+         return p_220622_1_.getType() == entityTypeIn;
       }).filter(LivingEntity::isAlive).filter((p_220615_1_) -> {
-         return canSee(p_220623_0_, p_220615_1_);
+         return canSee(brains, p_220615_1_);
       }).isPresent();
    }
 
-   public static void lookAtEachOther(LivingEntity ent1, LivingEntity ent2) {
-      lookAt(ent1, ent2);
-      lookAt(ent2, ent1);
+   public static void lookAtEachOther(LivingEntity firstEntity, LivingEntity secondEntity) {
+      lookAt(firstEntity, secondEntity);
+      lookAt(secondEntity, firstEntity);
    }
 
-   public static void lookAt(LivingEntity owner, LivingEntity lookTgt) {
-      owner.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(lookTgt));
+   public static void lookAt(LivingEntity entityIn, LivingEntity targetIn) {
+      entityIn.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(targetIn));
    }
 
-   public static void approachEachOther(LivingEntity ent1, LivingEntity ent2) {
+   public static void approachEachOther(LivingEntity firstEntity, LivingEntity secondEntity) {
       int i = 2;
-      approach(ent1, ent2, 2);
-      approach(ent2, ent1, 2);
+      approach(firstEntity, secondEntity, 2);
+      approach(secondEntity, firstEntity, 2);
    }
 
    public static void approach(LivingEntity living, LivingEntity target, int targetDistance) {
@@ -58,7 +58,7 @@ public class BrainUtil {
    }
 
    public static void throwItemAt(LivingEntity from, ItemStack stack, LivingEntity to) {
-      double d0 = from.getPosYPlusEyeHeight() - (double)0.3F;
+      double d0 = from.getPosYEye() - (double)0.3F;
       ItemEntity itementity = new ItemEntity(from.world, from.getPosX(), d0, from.getPosZ(), stack);
       BlockPos blockpos = new BlockPos(to);
       BlockPos blockpos1 = new BlockPos(from);
@@ -70,12 +70,10 @@ public class BrainUtil {
       from.world.addEntity(itementity);
    }
 
-   //AH REFACTOR
-   public static SectionPos getSecPosLowerInRadius(ServerWorld world, SectionPos secPosIn, int secRadius) {
-   //public static SectionPos func_220617_a(ServerWorld p_220617_0_, SectionPos p_220617_1_, int p_220617_2_) {
-      int i = world.getPoiSecPosLevel(secPosIn);
-      return SectionPos.getAllInBox(secPosIn, secRadius).filter((secPos) -> {
-         return world.getPoiSecPosLevel(secPos) < i;
-      }).min(Comparator.comparingInt(world::getPoiSecPosLevel)).orElse(secPosIn);
+   public static SectionPos getSecPosLowerInRadius(ServerWorld serverWorldIn, SectionPos sectionPosIn, int radius) {
+      int i = serverWorldIn.getPoiSecPosLevel(sectionPosIn);
+      return SectionPos.getAllInBox(sectionPosIn, radius).filter((p_220620_2_) -> {
+         return serverWorldIn.getPoiSecPosLevel(p_220620_2_) < i;
+      }).min(Comparator.comparingInt(serverWorldIn::getPoiSecPosLevel)).orElse(sectionPosIn);
    }
 }

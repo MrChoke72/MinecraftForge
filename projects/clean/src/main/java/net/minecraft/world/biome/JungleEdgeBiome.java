@@ -11,8 +11,8 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public final class JungleEdgeBiome extends Biome {
    public JungleEdgeBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.RAIN).category(Biome.Category.JUNGLE).depth(0.1F).scale(0.2F).temperature(0.95F).downfall(0.8F).waterColor(4159204).waterFogColor(329011).parent((String)null));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.STRONGHOLD.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.STRONGHOLD.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -20,7 +20,7 @@ public final class JungleEdgeBiome extends Biome {
       DefaultBiomeFeatures.addStoneVariants(this);
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
-      DefaultBiomeFeatures.func_222290_D(this);
+      DefaultBiomeFeatures.addOakAndJungleTrees(this);
       DefaultBiomeFeatures.addExtraDefaultFlowers(this);
       DefaultBiomeFeatures.addJungleGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);

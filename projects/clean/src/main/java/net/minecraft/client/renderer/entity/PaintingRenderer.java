@@ -27,27 +27,27 @@ public class PaintingRenderer extends EntityRenderer<PaintingEntity> {
       super(renderManagerIn);
    }
 
-   public void func_225623_a_(PaintingEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      p_225623_4_.func_227860_a_();
-      p_225623_4_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(180.0F - p_225623_2_));
-      PaintingType paintingtype = p_225623_1_.art;
+   public void render(PaintingEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      matrixStackIn.push();
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180.0F - entityYaw));
+      PaintingType paintingtype = entityIn.art;
       float f = 0.0625F;
-      p_225623_4_.func_227862_a_(0.0625F, 0.0625F, 0.0625F);
-      IVertexBuilder ivertexbuilder = p_225623_5_.getBuffer(RenderType.func_228634_a_(this.getEntityTexture(p_225623_1_)));
+      matrixStackIn.scale(0.0625F, 0.0625F, 0.0625F);
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.entitySolid(this.getEntityTexture(entityIn)));
       PaintingSpriteUploader paintingspriteuploader = Minecraft.getInstance().getPaintingSpriteUploader();
-      this.func_229122_a_(p_225623_4_, ivertexbuilder, p_225623_1_, paintingtype.getWidth(), paintingtype.getHeight(), paintingspriteuploader.getSpriteForPainting(paintingtype), paintingspriteuploader.func_215286_b());
-      p_225623_4_.func_227865_b_();
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      this.func_229122_a_(matrixStackIn, ivertexbuilder, entityIn, paintingtype.getWidth(), paintingtype.getHeight(), paintingspriteuploader.getSpriteForPainting(paintingtype), paintingspriteuploader.getBackSprite());
+      matrixStackIn.pop();
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
    public ResourceLocation getEntityTexture(PaintingEntity entity) {
-      return Minecraft.getInstance().getPaintingSpriteUploader().func_215286_b().func_229241_m_().func_229223_g_();
+      return Minecraft.getInstance().getPaintingSpriteUploader().getBackSprite().getAtlasTexture().getBasePath();
    }
 
    private void func_229122_a_(MatrixStack p_229122_1_, IVertexBuilder p_229122_2_, PaintingEntity p_229122_3_, int p_229122_4_, int p_229122_5_, TextureAtlasSprite p_229122_6_, TextureAtlasSprite p_229122_7_) {
-      MatrixStack.Entry matrixstack$entry = p_229122_1_.func_227866_c_();
-      Matrix4f matrix4f = matrixstack$entry.func_227870_a_();
-      Matrix3f matrix3f = matrixstack$entry.func_227872_b_();
+      MatrixStack.Entry matrixstack$entry = p_229122_1_.getLast();
+      Matrix4f matrix4f = matrixstack$entry.getPositionMatrix();
+      Matrix3f matrix3f = matrixstack$entry.getNormalMatrix();
       float f = (float)(-p_229122_4_) / 2.0F;
       float f1 = (float)(-p_229122_5_) / 2.0F;
       float f2 = 0.5F;
@@ -94,7 +94,7 @@ public class PaintingRenderer extends EntityRenderer<PaintingEntity> {
                k1 = MathHelper.floor(p_229122_3_.getPosZ() + (double)((f15 + f16) / 2.0F / 16.0F));
             }
 
-            int l1 = WorldRenderer.func_228421_a_(p_229122_3_.world, new BlockPos(i1, j1, k1));
+            int l1 = WorldRenderer.getCombinedLight(p_229122_3_.world, new BlockPos(i1, j1, k1));
             float f19 = p_229122_6_.getInterpolatedU(d0 * (double)(i - k));
             float f20 = p_229122_6_.getInterpolatedU(d0 * (double)(i - (k + 1)));
             float f21 = p_229122_6_.getInterpolatedV(d1 * (double)(j - l));
@@ -129,6 +129,6 @@ public class PaintingRenderer extends EntityRenderer<PaintingEntity> {
    }
 
    private void func_229121_a_(Matrix4f p_229121_1_, Matrix3f p_229121_2_, IVertexBuilder p_229121_3_, float p_229121_4_, float p_229121_5_, float p_229121_6_, float p_229121_7_, float p_229121_8_, int p_229121_9_, int p_229121_10_, int p_229121_11_, int p_229121_12_) {
-      p_229121_3_.func_227888_a_(p_229121_1_, p_229121_4_, p_229121_5_, p_229121_8_).func_225586_a_(255, 255, 255, 255).func_225583_a_(p_229121_6_, p_229121_7_).func_227891_b_(OverlayTexture.field_229196_a_).func_227886_a_(p_229121_12_).func_227887_a_(p_229121_2_, (float)p_229121_9_, (float)p_229121_10_, (float)p_229121_11_).endVertex();
+      p_229121_3_.pos(p_229121_1_, p_229121_4_, p_229121_5_, p_229121_8_).color(255, 255, 255, 255).tex(p_229121_6_, p_229121_7_).overlay(OverlayTexture.DEFAULT_LIGHT).lightmap(p_229121_12_).normal(p_229121_2_, (float)p_229121_9_, (float)p_229121_10_, (float)p_229121_11_).endVertex();
    }
 }

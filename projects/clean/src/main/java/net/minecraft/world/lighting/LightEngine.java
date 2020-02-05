@@ -91,7 +91,7 @@ public abstract class LightEngine<M extends LightDataMap<M>, S extends SectionLi
          } else {
             this.scratchPos.setPos(p_227468_1_);
             BlockState blockstate = iblockreader.getBlockState(this.scratchPos);
-            boolean flag = blockstate.isSolid() && blockstate.func_215691_g();
+            boolean flag = blockstate.isSolid() && blockstate.isTransparent();
             if (p_227468_3_ != null) {
                p_227468_3_.setValue(blockstate.getOpacity(this.chunkProvider.getWorld(), this.scratchPos));
             }
@@ -102,12 +102,12 @@ public abstract class LightEngine<M extends LightDataMap<M>, S extends SectionLi
    }
 
    protected VoxelShape getVoxelShape(BlockState blockStateIn, long worldPos, Direction directionIn) {
-      return blockStateIn.isSolid() ? blockStateIn.func_215702_a(this.chunkProvider.getWorld(), this.scratchPos.setPos(worldPos), directionIn) : VoxelShapes.empty();
+      return blockStateIn.isSolid() ? blockStateIn.getFaceOcclusionShape(this.chunkProvider.getWorld(), this.scratchPos.setPos(worldPos), directionIn) : VoxelShapes.empty();
    }
 
    public static int func_215613_a(IBlockReader p_215613_0_, BlockState p_215613_1_, BlockPos p_215613_2_, BlockState p_215613_3_, BlockPos p_215613_4_, Direction p_215613_5_, int p_215613_6_) {
-      boolean flag = p_215613_1_.isSolid() && p_215613_1_.func_215691_g();
-      boolean flag1 = p_215613_3_.isSolid() && p_215613_3_.func_215691_g();
+      boolean flag = p_215613_1_.isSolid() && p_215613_1_.isTransparent();
+      boolean flag1 = p_215613_3_.isSolid() && p_215613_3_.isTransparent();
       if (!flag && !flag1) {
          return p_215613_6_;
       } else {

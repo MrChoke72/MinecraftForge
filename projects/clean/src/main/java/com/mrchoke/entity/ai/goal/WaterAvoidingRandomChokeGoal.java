@@ -75,20 +75,20 @@ public class WaterAvoidingRandomChokeGoal extends WaterAvoidingRandomWalkingGoal
         if(player != null) {
             if (this.creature.isInWaterOrBubbleColumn()) {
                 Vec3d vec3d  = RandomPositionGenerator.getLandPosTargetTowardMaxAngle(chokeZombie, 15, 9, 0, new Vec3d(player.getPosition()), Math.PI / 3F);
-                return vec3d == null ? RandomPositionGenerator.findRandomTargetToward(this.creature, 15, 9, new Vec3d(player.getPosition())) : vec3d;
+                return vec3d == null ? RandomPositionGenerator.findRandomTargetBlockTowards(this.creature, 15, 9, new Vec3d(player.getPosition())) : vec3d;
             } else {
                 return this.creature.getRNG().nextFloat() >=
                         this.probability ? RandomPositionGenerator.getLandPosTargetTowardMaxAngle(chokeZombie, 20, 13, 0, new Vec3d(player.getPosition()), Math.PI / 3F)
-                            : RandomPositionGenerator.findRandomTargetToward(this.creature, 20, 13, new Vec3d(player.getPosition()));
+                            : RandomPositionGenerator.findRandomTargetBlockTowards(this.creature, 20, 13, new Vec3d(player.getPosition()));
             }
         }
         else {
             if (this.creature.isInWaterOrBubbleColumn()) {
-                Vec3d vec3d = RandomPositionGenerator.findLandPos(this.creature, 15, 9);
-                return vec3d == null ? RandomPositionGenerator.findRandomPos(this.creature, 15, 9) : vec3d;
+                Vec3d vec3d = RandomPositionGenerator.getLandPos(this.creature, 15, 9);
+                return vec3d == null ? RandomPositionGenerator.findRandomTarget(this.creature, 15, 9) : vec3d;
             } else {
-                return this.creature.getRNG().nextFloat() >= this.probability ? RandomPositionGenerator.findLandPos(this.creature, 20, 13)
-                        : RandomPositionGenerator.findRandomPos(this.creature, 20, 13);   //was 10, 7
+                return this.creature.getRNG().nextFloat() >= this.probability ? RandomPositionGenerator.getLandPos(this.creature, 20, 13)
+                        : RandomPositionGenerator.findRandomTarget(this.creature, 20, 13);   //was 10, 7
             }
         }
     }

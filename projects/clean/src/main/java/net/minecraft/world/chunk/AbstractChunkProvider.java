@@ -13,8 +13,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public abstract class AbstractChunkProvider implements IChunkLightProvider, AutoCloseable {
    @Nullable
-   public Chunk getChunk(int p_217205_1_, int p_217205_2_, boolean p_217205_3_) {
-      return (Chunk)this.getChunk(p_217205_1_, p_217205_2_, ChunkStatus.FULL, p_217205_3_);
+   public Chunk getChunk(int chunkX, int chunkZ, boolean load) {
+      return (Chunk)this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, load);
    }
 
    @Nullable

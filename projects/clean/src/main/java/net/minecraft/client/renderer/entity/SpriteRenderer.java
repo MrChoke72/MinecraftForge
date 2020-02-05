@@ -25,22 +25,22 @@ public class SpriteRenderer<T extends Entity & IRendersAsItem> extends EntityRen
       this.field_229126_f_ = p_i226035_4_;
    }
 
-   public SpriteRenderer(EntityRendererManager p_i50957_1_, net.minecraft.client.renderer.ItemRenderer p_i50957_2_) {
-      this(p_i50957_1_, p_i50957_2_, 1.0F, false);
+   public SpriteRenderer(EntityRendererManager renderManagerIn, net.minecraft.client.renderer.ItemRenderer itemRendererIn) {
+      this(renderManagerIn, itemRendererIn, 1.0F, false);
    }
 
-   protected int func_225624_a_(T p_225624_1_, float p_225624_2_) {
-      return this.field_229126_f_ ? 15 : super.func_225624_a_(p_225624_1_, p_225624_2_);
+   protected int getBlockLight(T entityIn, float partialTicks) {
+      return this.field_229126_f_ ? 15 : super.getBlockLight(entityIn, partialTicks);
    }
 
-   public void func_225623_a_(T p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      p_225623_4_.func_227860_a_();
-      p_225623_4_.func_227862_a_(this.scale, this.scale, this.scale);
-      p_225623_4_.func_227863_a_(this.renderManager.func_229098_b_());
-      p_225623_4_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(180.0F));
-      this.itemRenderer.func_229110_a_(((IRendersAsItem)p_225623_1_).getItem(), ItemCameraTransforms.TransformType.GROUND, p_225623_6_, OverlayTexture.field_229196_a_, p_225623_4_, p_225623_5_);
-      p_225623_4_.func_227865_b_();
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+   public void render(T entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      matrixStackIn.push();
+      matrixStackIn.scale(this.scale, this.scale, this.scale);
+      matrixStackIn.rotate(this.renderManager.getCameraOrientation());
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180.0F));
+      this.itemRenderer.renderItem(((IRendersAsItem)entityIn).getItem(), ItemCameraTransforms.TransformType.GROUND, packedLightIn, OverlayTexture.DEFAULT_LIGHT, matrixStackIn, bufferIn);
+      matrixStackIn.pop();
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
    public ResourceLocation getEntityTexture(Entity entity) {

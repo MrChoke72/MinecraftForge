@@ -24,7 +24,7 @@ public class ExperienceBottleEntity extends ProjectileItemEntity {
       super(EntityType.EXPERIENCE_BOTTLE, x, y, z, worldIn);
    }
 
-   protected Item func_213885_i() {
+   protected Item getDefaultItem() {
       return Items.EXPERIENCE_BOTTLE;
    }
 

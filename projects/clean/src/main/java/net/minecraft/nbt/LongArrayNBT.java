@@ -11,7 +11,7 @@ import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class LongArrayNBT extends CollectionNBT<LongNBT> {
-   public static final INBTType<LongArrayNBT> field_229696_a_ = new INBTType<LongArrayNBT>() {
+   public static final INBTType<LongArrayNBT> TYPE = new INBTType<LongArrayNBT>() {
       public LongArrayNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(192L);
          int i = p_225649_1_.readInt();
@@ -71,8 +71,8 @@ public class LongArrayNBT extends CollectionNBT<LongNBT> {
       return 12;
    }
 
-   public INBTType<LongArrayNBT> func_225647_b_() {
-      return field_229696_a_;
+   public INBTType<LongArrayNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {
@@ -132,13 +132,13 @@ public class LongArrayNBT extends CollectionNBT<LongNBT> {
    }
 
    public LongNBT get(int p_get_1_) {
-      return LongNBT.func_229698_a_(this.data[p_get_1_]);
+      return LongNBT.valueOf(this.data[p_get_1_]);
    }
 
    public LongNBT set(int p_set_1_, LongNBT p_set_2_) {
       long i = this.data[p_set_1_];
       this.data[p_set_1_] = p_set_2_.getLong();
-      return LongNBT.func_229698_a_(i);
+      return LongNBT.valueOf(i);
    }
 
    public void add(int p_add_1_, LongNBT p_add_2_) {
@@ -166,7 +166,7 @@ public class LongArrayNBT extends CollectionNBT<LongNBT> {
    public LongNBT remove(int p_remove_1_) {
       long i = this.data[p_remove_1_];
       this.data = ArrayUtils.remove(this.data, p_remove_1_);
-      return LongNBT.func_229698_a_(i);
+      return LongNBT.valueOf(i);
    }
 
    public void clear() {

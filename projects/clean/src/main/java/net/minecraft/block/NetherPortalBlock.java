@@ -51,14 +51,14 @@ public class NetherPortalBlock extends Block {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_2_.dimension.isSurfaceWorld() && p_225534_2_.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && p_225534_4_.nextInt(2000) < p_225534_2_.getDifficulty().getId()) {
-         while(p_225534_2_.getBlockState(p_225534_3_).getBlock() == this) {
-            p_225534_3_ = p_225534_3_.down();
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (worldIn.dimension.isSurfaceWorld() && worldIn.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && rand.nextInt(2000) < worldIn.getDifficulty().getId()) {
+         while(worldIn.getBlockState(pos).getBlock() == this) {
+            pos = pos.down();
          }
 
-         if (p_225534_2_.getBlockState(p_225534_3_).canEntitySpawn(p_225534_2_, p_225534_3_, EntityType.ZOMBIE_PIGMAN)) {
-            Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(p_225534_2_, (CompoundNBT)null, (ITextComponent)null, (PlayerEntity)null, p_225534_3_.up(), SpawnReason.STRUCTURE, false, false);
+         if (worldIn.getBlockState(pos).canEntitySpawn(worldIn, pos, EntityType.ZOMBIE_PIGMAN)) {
+            Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(worldIn, (CompoundNBT)null, (ITextComponent)null, (PlayerEntity)null, pos.up(), SpawnReason.STRUCTURE, false, false);
             if (entity != null) {
                entity.timeUntilPortal = entity.getPortalCooldown();
             }
@@ -78,12 +78,12 @@ public class NetherPortalBlock extends Block {
    }
 
    @Nullable
-   public NetherPortalBlock.Size isPortal(IWorld p_201816_1_, BlockPos p_201816_2_) {
-      NetherPortalBlock.Size netherportalblock$size = new NetherPortalBlock.Size(p_201816_1_, p_201816_2_, Direction.Axis.X);
+   public NetherPortalBlock.Size isPortal(IWorld worldIn, BlockPos pos) {
+      NetherPortalBlock.Size netherportalblock$size = new NetherPortalBlock.Size(worldIn, pos, Direction.Axis.X);
       if (netherportalblock$size.isValid() && netherportalblock$size.portalBlockCount == 0) {
          return netherportalblock$size;
       } else {
-         NetherPortalBlock.Size netherportalblock$size1 = new NetherPortalBlock.Size(p_201816_1_, p_201816_2_, Direction.Axis.Z);
+         NetherPortalBlock.Size netherportalblock$size1 = new NetherPortalBlock.Size(worldIn, pos, Direction.Axis.Z);
          return netherportalblock$size1.isValid() && netherportalblock$size1.portalBlockCount == 0 ? netherportalblock$size1 : null;
       }
    }
@@ -206,10 +206,10 @@ public class NetherPortalBlock extends Block {
       private int height;
       private int width;
 
-      public Size(IWorld p_i48740_1_, BlockPos p_i48740_2_, Direction.Axis p_i48740_3_) {
-         this.world = p_i48740_1_;
-         this.axis = p_i48740_3_;
-         if (p_i48740_3_ == Direction.Axis.X) {
+      public Size(IWorld worldIn, BlockPos pos, Direction.Axis axisIn) {
+         this.world = worldIn;
+         this.axis = axisIn;
+         if (axisIn == Direction.Axis.X) {
             this.leftDir = Direction.EAST;
             this.rightDir = Direction.WEST;
          } else {
@@ -217,13 +217,13 @@ public class NetherPortalBlock extends Block {
             this.rightDir = Direction.SOUTH;
          }
 
-         for(BlockPos blockpos = p_i48740_2_; p_i48740_2_.getY() > blockpos.getY() - 21 && p_i48740_2_.getY() > 0 && this.func_196900_a(p_i48740_1_.getBlockState(p_i48740_2_.down())); p_i48740_2_ = p_i48740_2_.down()) {
+         for(BlockPos blockpos = pos; pos.getY() > blockpos.getY() - 21 && pos.getY() > 0 && this.func_196900_a(worldIn.getBlockState(pos.down())); pos = pos.down()) {
             ;
          }
 
-         int i = this.getDistanceUntilEdge(p_i48740_2_, this.leftDir) - 1;
+         int i = this.getDistanceUntilEdge(pos, this.leftDir) - 1;
          if (i >= 0) {
-            this.bottomLeft = p_i48740_2_.offset(this.leftDir, i);
+            this.bottomLeft = pos.offset(this.leftDir, i);
             this.width = this.getDistanceUntilEdge(this.bottomLeft, this.rightDir);
             if (this.width < 2 || this.width > 21) {
                this.bottomLeft = null;
@@ -237,16 +237,16 @@ public class NetherPortalBlock extends Block {
 
       }
 
-      protected int getDistanceUntilEdge(BlockPos p_180120_1_, Direction p_180120_2_) {
+      protected int getDistanceUntilEdge(BlockPos pos, Direction directionIn) {
          int i;
          for(i = 0; i < 22; ++i) {
-            BlockPos blockpos = p_180120_1_.offset(p_180120_2_, i);
+            BlockPos blockpos = pos.offset(directionIn, i);
             if (!this.func_196900_a(this.world.getBlockState(blockpos)) || this.world.getBlockState(blockpos.down()).getBlock() != Blocks.OBSIDIAN) {
                break;
             }
          }
 
-         Block block = this.world.getBlockState(p_180120_1_.offset(p_180120_2_, i)).getBlock();
+         Block block = this.world.getBlockState(pos.offset(directionIn, i)).getBlock();
          return block == Blocks.OBSIDIAN ? i : 0;
       }
 
@@ -304,9 +304,9 @@ public class NetherPortalBlock extends Block {
          }
       }
 
-      protected boolean func_196900_a(BlockState p_196900_1_) {
-         Block block = p_196900_1_.getBlock();
-         return p_196900_1_.isAir() || block == Blocks.FIRE || block == Blocks.NETHER_PORTAL;
+      protected boolean func_196900_a(BlockState pos) {
+         Block block = pos.getBlock();
+         return pos.isAir() || block == Blocks.FIRE || block == Blocks.NETHER_PORTAL;
       }
 
       public boolean isValid() {

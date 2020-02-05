@@ -25,8 +25,8 @@ public class DragonEggBlock extends FallingBlock {
       return SHAPE;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      this.teleport(p_225533_1_, p_225533_2_, p_225533_3_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      this.teleport(state, worldIn, pos);
       return ActionResultType.SUCCESS;
    }
 

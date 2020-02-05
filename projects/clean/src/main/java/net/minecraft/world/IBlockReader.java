@@ -41,7 +41,7 @@ public interface IBlockReader {
          Vec3d vec3d = p_217297_1_.func_222253_b();
          Vec3d vec3d1 = p_217297_1_.func_222250_a();
          VoxelShape voxelshape = p_217297_1_.getBlockShape(blockstate, this, p_217297_2_);
-         BlockRayTraceResult blockraytraceresult = this.func_217296_a(vec3d, vec3d1, p_217297_2_, voxelshape, blockstate);
+         BlockRayTraceResult blockraytraceresult = this.rayTraceBlocks(vec3d, vec3d1, p_217297_2_, voxelshape, blockstate);
          VoxelShape voxelshape1 = p_217297_1_.getFluidShape(ifluidstate, this, p_217297_2_);
          BlockRayTraceResult blockraytraceresult1 = voxelshape1.rayTrace(vec3d, vec3d1, p_217297_2_);
          double d0 = blockraytraceresult == null ? Double.MAX_VALUE : p_217297_1_.func_222253_b().squareDistanceTo(blockraytraceresult.getHitVec());
@@ -54,7 +54,7 @@ public interface IBlockReader {
    }
 
    @Nullable
-   default BlockRayTraceResult func_217296_a(Vec3d p_217296_1_, Vec3d p_217296_2_, BlockPos p_217296_3_, VoxelShape p_217296_4_, BlockState p_217296_5_) {
+   default BlockRayTraceResult rayTraceBlocks(Vec3d p_217296_1_, Vec3d p_217296_2_, BlockPos p_217296_3_, VoxelShape p_217296_4_, BlockState p_217296_5_) {
       BlockRayTraceResult blockraytraceresult = p_217296_4_.rayTrace(p_217296_1_, p_217296_2_, p_217296_3_);
       if (blockraytraceresult != null) {
          BlockRayTraceResult blockraytraceresult1 = p_217296_5_.getRaytraceShape(this, p_217296_3_).rayTrace(p_217296_1_, p_217296_2_, p_217296_3_);

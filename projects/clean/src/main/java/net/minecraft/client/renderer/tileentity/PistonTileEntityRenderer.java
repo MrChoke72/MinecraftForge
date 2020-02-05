@@ -28,41 +28,41 @@ public class PistonTileEntityRenderer extends TileEntityRenderer<PistonTileEntit
       super(p_i226012_1_);
    }
 
-   public void func_225616_a_(PistonTileEntity p_225616_1_, float p_225616_2_, MatrixStack p_225616_3_, IRenderTypeBuffer p_225616_4_, int p_225616_5_, int p_225616_6_) {
-      World world = p_225616_1_.getWorld();
+   public void render(PistonTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+      World world = tileEntityIn.getWorld();
       if (world != null) {
-         BlockPos blockpos = p_225616_1_.getPos().offset(p_225616_1_.getMotionDirection().getOpposite());
-         BlockState blockstate = p_225616_1_.getPistonState();
-         if (!blockstate.isAir() && !(p_225616_1_.getProgress(p_225616_2_) >= 1.0F)) {
+         BlockPos blockpos = tileEntityIn.getPos().offset(tileEntityIn.getMotionDirection().getOpposite());
+         BlockState blockstate = tileEntityIn.getPistonState();
+         if (!blockstate.isAir() && !(tileEntityIn.getProgress(partialTicks) >= 1.0F)) {
             BlockModelRenderer.enableCache();
-            p_225616_3_.func_227860_a_();
-            p_225616_3_.func_227861_a_((double)p_225616_1_.getOffsetX(p_225616_2_), (double)p_225616_1_.getOffsetY(p_225616_2_), (double)p_225616_1_.getOffsetZ(p_225616_2_));
-            if (blockstate.getBlock() == Blocks.PISTON_HEAD && p_225616_1_.getProgress(p_225616_2_) <= 4.0F) {
+            matrixStackIn.push();
+            matrixStackIn.translate((double)tileEntityIn.getOffsetX(partialTicks), (double)tileEntityIn.getOffsetY(partialTicks), (double)tileEntityIn.getOffsetZ(partialTicks));
+            if (blockstate.getBlock() == Blocks.PISTON_HEAD && tileEntityIn.getProgress(partialTicks) <= 4.0F) {
                blockstate = blockstate.with(PistonHeadBlock.SHORT, Boolean.valueOf(true));
-               this.func_228876_a_(blockpos, blockstate, p_225616_3_, p_225616_4_, world, false, p_225616_6_);
-            } else if (p_225616_1_.shouldPistonHeadBeRendered() && !p_225616_1_.isExtending()) {
+               this.func_228876_a_(blockpos, blockstate, matrixStackIn, bufferIn, world, false, combinedOverlayIn);
+            } else if (tileEntityIn.shouldPistonHeadBeRendered() && !tileEntityIn.isExtending()) {
                PistonType pistontype = blockstate.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;
                BlockState blockstate1 = Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.TYPE, pistontype).with(PistonHeadBlock.FACING, blockstate.get(PistonBlock.FACING));
-               blockstate1 = blockstate1.with(PistonHeadBlock.SHORT, Boolean.valueOf(p_225616_1_.getProgress(p_225616_2_) >= 0.5F));
-               this.func_228876_a_(blockpos, blockstate1, p_225616_3_, p_225616_4_, world, false, p_225616_6_);
-               BlockPos blockpos1 = blockpos.offset(p_225616_1_.getMotionDirection());
-               p_225616_3_.func_227865_b_();
-               p_225616_3_.func_227860_a_();
+               blockstate1 = blockstate1.with(PistonHeadBlock.SHORT, Boolean.valueOf(tileEntityIn.getProgress(partialTicks) >= 0.5F));
+               this.func_228876_a_(blockpos, blockstate1, matrixStackIn, bufferIn, world, false, combinedOverlayIn);
+               BlockPos blockpos1 = blockpos.offset(tileEntityIn.getMotionDirection());
+               matrixStackIn.pop();
+               matrixStackIn.push();
                blockstate = blockstate.with(PistonBlock.EXTENDED, Boolean.valueOf(true));
-               this.func_228876_a_(blockpos1, blockstate, p_225616_3_, p_225616_4_, world, true, p_225616_6_);
+               this.func_228876_a_(blockpos1, blockstate, matrixStackIn, bufferIn, world, true, combinedOverlayIn);
             } else {
-               this.func_228876_a_(blockpos, blockstate, p_225616_3_, p_225616_4_, world, false, p_225616_6_);
+               this.func_228876_a_(blockpos, blockstate, matrixStackIn, bufferIn, world, false, combinedOverlayIn);
             }
 
-            p_225616_3_.func_227865_b_();
+            matrixStackIn.pop();
             BlockModelRenderer.disableCache();
          }
       }
    }
 
    private void func_228876_a_(BlockPos p_228876_1_, BlockState p_228876_2_, MatrixStack p_228876_3_, IRenderTypeBuffer p_228876_4_, World p_228876_5_, boolean p_228876_6_, int p_228876_7_) {
-      RenderType rendertype = RenderTypeLookup.func_228390_a_(p_228876_2_);
+      RenderType rendertype = RenderTypeLookup.getChunkRenderType(p_228876_2_);
       IVertexBuilder ivertexbuilder = p_228876_4_.getBuffer(rendertype);
-      this.blockRenderer.getBlockModelRenderer().func_228802_a_(p_228876_5_, this.blockRenderer.getModelForState(p_228876_2_), p_228876_2_, p_228876_1_, p_228876_3_, ivertexbuilder, p_228876_6_, new Random(), p_228876_2_.getPositionRandom(p_228876_1_), p_228876_7_);
+      this.blockRenderer.getBlockModelRenderer().renderModel(p_228876_5_, this.blockRenderer.getModelForState(p_228876_2_), p_228876_2_, p_228876_1_, p_228876_3_, ivertexbuilder, p_228876_6_, new Random(), p_228876_2_.getPositionRandom(p_228876_1_), p_228876_7_);
    }
 }

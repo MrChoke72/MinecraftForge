@@ -42,11 +42,11 @@ public class SearchTree<T> extends SearchTreeReloadable<T> {
       if (i < 0) {
          return this.byName.search(searchText);
       } else {
-         List<T> list = this.field_217875_a.search(searchText.substring(0, i).trim());
+         List<T> list = this.namespaceList.search(searchText.substring(0, i).trim());
          String s = searchText.substring(i + 1).trim();
-         List<T> list1 = this.field_217876_b.search(s);
+         List<T> list1 = this.pathList.search(s);
          List<T> list2 = this.byName.search(s);
-         return Lists.newArrayList(new SearchTreeReloadable.JoinedIterator<>(list.iterator(), new SearchTree.MergingIterator<>(list1.iterator(), list2.iterator(), this::func_217874_a), this::func_217874_a));
+         return Lists.newArrayList(new SearchTreeReloadable.JoinedIterator<>(list.iterator(), new SearchTree.MergingIterator<>(list1.iterator(), list2.iterator(), this::compare), this::compare));
       }
    }
 

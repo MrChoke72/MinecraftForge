@@ -193,9 +193,9 @@ public abstract class ContainerMinecartEntity extends AbstractMinecartEntity imp
          return null;
       } else {
          this.addLoot(p_createMenu_2_.player);
-         return this.func_213968_a(p_createMenu_1_, p_createMenu_2_);
+         return this.createContainer(p_createMenu_1_, p_createMenu_2_);
       }
    }
 
-   protected abstract Container func_213968_a(int p_213968_1_, PlayerInventory p_213968_2_);
+   protected abstract Container createContainer(int id, PlayerInventory playerInventoryIn);
 }

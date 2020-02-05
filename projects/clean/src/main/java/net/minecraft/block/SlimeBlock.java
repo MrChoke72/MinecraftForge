@@ -13,16 +13,16 @@ public class SlimeBlock extends BreakableBlock {
    }
 
    public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance) {
-      if (entityIn.func_226272_bl_()) {
+      if (entityIn.isSuppressingBounce()) {
          super.onFallenUpon(worldIn, pos, entityIn, fallDistance);
       } else {
-         entityIn.func_225503_b_(fallDistance, 0.0F);
+         entityIn.onLivingFall(fallDistance, 0.0F);
       }
 
    }
 
    public void onLanded(IBlockReader worldIn, Entity entityIn) {
-      if (entityIn.func_226272_bl_()) {
+      if (entityIn.isSuppressingBounce()) {
          super.onLanded(worldIn, entityIn);
       } else {
          this.func_226946_a_(entityIn);
@@ -41,7 +41,7 @@ public class SlimeBlock extends BreakableBlock {
 
    public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn) {
       double d0 = Math.abs(entityIn.getMotion().y);
-      if (d0 < 0.1D && !entityIn.func_226271_bk_()) {
+      if (d0 < 0.1D && !entityIn.isSteppingCarefully()) {
          double d1 = 0.4D + d0 * 0.2D;
          entityIn.setMotion(entityIn.getMotion().mul(d1, 1.0D, d1));
       }

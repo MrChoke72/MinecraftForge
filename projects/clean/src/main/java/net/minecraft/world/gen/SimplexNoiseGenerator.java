@@ -4,7 +4,7 @@ import java.util.Random;
 import net.minecraft.util.math.MathHelper;
 
 public class SimplexNoiseGenerator {
-   protected static final int[][] field_215468_a = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}};
+   protected static final int[][] GRADS = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}};
    private static final double SQRT_3 = Math.sqrt(3.0D);
    private static final double F2 = 0.5D * (SQRT_3 - 1.0D);
    private static final double G2 = (3.0D - SQRT_3) / 6.0D;
@@ -31,22 +31,22 @@ public class SimplexNoiseGenerator {
 
    }
 
-   private int func_215466_a(int p_215466_1_) {
-      return this.p[p_215466_1_ & 255];
+   private int getPermutValue(int permutIndex) {
+      return this.p[permutIndex & 255];
    }
 
-   protected static double func_215467_a(int[] p_215467_0_, double p_215467_1_, double p_215467_3_, double p_215467_5_) {
-      return (double)p_215467_0_[0] * p_215467_1_ + (double)p_215467_0_[1] * p_215467_3_ + (double)p_215467_0_[2] * p_215467_5_;
+   protected static double processGrad(int[] gradElement, double xFactor, double yFactor, double zFactor) {
+      return (double)gradElement[0] * xFactor + (double)gradElement[1] * yFactor + (double)gradElement[2] * zFactor;
    }
 
-   private double func_215465_a(int p_215465_1_, double p_215465_2_, double p_215465_4_, double p_215465_6_, double p_215465_8_) {
-      double d1 = p_215465_8_ - p_215465_2_ * p_215465_2_ - p_215465_4_ * p_215465_4_ - p_215465_6_ * p_215465_6_;
+   private double getContrib(int gradIndex, double x, double y, double z, double offset) {
+      double d1 = offset - x * x - y * y - z * z;
       double d0;
       if (d1 < 0.0D) {
          d0 = 0.0D;
       } else {
          d1 = d1 * d1;
-         d0 = d1 * d1 * func_215467_a(field_215468_a[p_215465_1_], p_215465_2_, p_215465_4_, p_215465_6_);
+         d0 = d1 * d1 * processGrad(GRADS[gradIndex], x, y, z);
       }
 
       return d0;
@@ -77,12 +77,12 @@ public class SimplexNoiseGenerator {
       double d9 = d5 - 1.0D + 2.0D * G2;
       int i1 = i & 255;
       int j1 = j & 255;
-      int k1 = this.func_215466_a(i1 + this.func_215466_a(j1)) % 12;
-      int l1 = this.func_215466_a(i1 + k + this.func_215466_a(j1 + l)) % 12;
-      int i2 = this.func_215466_a(i1 + 1 + this.func_215466_a(j1 + 1)) % 12;
-      double d10 = this.func_215465_a(k1, d4, d5, 0.0D, 0.5D);
-      double d11 = this.func_215465_a(l1, d6, d7, 0.0D, 0.5D);
-      double d12 = this.func_215465_a(i2, d8, d9, 0.0D, 0.5D);
+      int k1 = this.getPermutValue(i1 + this.getPermutValue(j1)) % 12;
+      int l1 = this.getPermutValue(i1 + k + this.getPermutValue(j1 + l)) % 12;
+      int i2 = this.getPermutValue(i1 + 1 + this.getPermutValue(j1 + 1)) % 12;
+      double d10 = this.getContrib(k1, d4, d5, 0.0D, 0.5D);
+      double d11 = this.getContrib(l1, d6, d7, 0.0D, 0.5D);
+      double d12 = this.getContrib(i2, d8, d9, 0.0D, 0.5D);
       return 70.0D * (d10 + d11 + d12);
    }
 
@@ -164,14 +164,14 @@ public class SimplexNoiseGenerator {
       int j2 = i & 255;
       int k2 = j & 255;
       int l2 = k & 255;
-      int i3 = this.func_215466_a(j2 + this.func_215466_a(k2 + this.func_215466_a(l2))) % 12;
-      int j3 = this.func_215466_a(j2 + l + this.func_215466_a(k2 + i1 + this.func_215466_a(l2 + j1))) % 12;
-      int k3 = this.func_215466_a(j2 + k1 + this.func_215466_a(k2 + l1 + this.func_215466_a(l2 + i2))) % 12;
-      int l3 = this.func_215466_a(j2 + 1 + this.func_215466_a(k2 + 1 + this.func_215466_a(l2 + 1))) % 12;
-      double d19 = this.func_215465_a(i3, d7, d8, d9, 0.6D);
-      double d20 = this.func_215465_a(j3, d10, d11, d12, 0.6D);
-      double d21 = this.func_215465_a(k3, d13, d14, d15, 0.6D);
-      double d22 = this.func_215465_a(l3, d16, d17, d18, 0.6D);
+      int i3 = this.getPermutValue(j2 + this.getPermutValue(k2 + this.getPermutValue(l2))) % 12;
+      int j3 = this.getPermutValue(j2 + l + this.getPermutValue(k2 + i1 + this.getPermutValue(l2 + j1))) % 12;
+      int k3 = this.getPermutValue(j2 + k1 + this.getPermutValue(k2 + l1 + this.getPermutValue(l2 + i2))) % 12;
+      int l3 = this.getPermutValue(j2 + 1 + this.getPermutValue(k2 + 1 + this.getPermutValue(l2 + 1))) % 12;
+      double d19 = this.getContrib(i3, d7, d8, d9, 0.6D);
+      double d20 = this.getContrib(j3, d10, d11, d12, 0.6D);
+      double d21 = this.getContrib(k3, d13, d14, d15, 0.6D);
+      double d22 = this.getContrib(l3, d16, d17, d18, 0.6D);
       return 32.0D * (d19 + d20 + d21 + d22);
    }
 }

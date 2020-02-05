@@ -40,7 +40,7 @@ public class HoneyBlock extends BreakableBlock {
          worldIn.setEntityState(entityIn, (byte)54);
       }
 
-      if (entityIn.func_225503_b_(fallDistance, 0.2F)) {
+      if (entityIn.onLivingFall(fallDistance, 0.2F)) {
          entityIn.playSound(this.soundType.getFallSound(), this.soundType.getVolume() * 0.5F, this.soundType.getPitch() * 0.75F);
       }
 

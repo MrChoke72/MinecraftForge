@@ -250,7 +250,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
       }
 
       protected void func_212945_a() {
-         Minecraft.getInstance().getTextureManager().bindTexture(this.field_212946_c.func_229241_m_().func_229223_g_());
+         Minecraft.getInstance().getTextureManager().bindTexture(this.field_212946_c.getAtlasTexture().getBasePath());
          blit(this.x + 2, this.y + 2, this.getBlitOffset(), 18, 18, this.field_212946_c);
       }
    }

@@ -139,7 +139,7 @@ public class CommandSuggestionHelper {
       boolean flag1 = this.field_228097_f_ || flag;
       int i = this.field_228095_d_.getCursorPosition();
       if (flag1) {
-         CommandDispatcher<ISuggestionProvider> commanddispatcher = this.field_228093_b_.player.connection.func_195515_i();
+         CommandDispatcher<ISuggestionProvider> commanddispatcher = this.field_228093_b_.player.connection.getCommandDispatcher();
          if (this.field_228106_o_ == null) {
             this.field_228106_o_ = commanddispatcher.parse(stringreader, this.field_228093_b_.player.connection.getSuggestionProvider());
          }
@@ -214,7 +214,7 @@ public class CommandSuggestionHelper {
    private void func_228120_a_(TextFormatting p_228120_1_) {
       CommandContextBuilder<ISuggestionProvider> commandcontextbuilder = this.field_228106_o_.getContext();
       SuggestionContext<ISuggestionProvider> suggestioncontext = commandcontextbuilder.findSuggestionContext(this.field_228095_d_.getCursorPosition());
-      Map<CommandNode<ISuggestionProvider>, String> map = this.field_228093_b_.player.connection.func_195515_i().getSmartUsage(suggestioncontext.parent, this.field_228093_b_.player.connection.getSuggestionProvider());
+      Map<CommandNode<ISuggestionProvider>, String> map = this.field_228093_b_.player.connection.getCommandDispatcher().getSmartUsage(suggestioncontext.parent, this.field_228093_b_.player.connection.getSuggestionProvider());
       List<String> list = Lists.newArrayList();
       int i = 0;
 
@@ -398,8 +398,8 @@ public class CommandSuggestionHelper {
       }
 
       public boolean func_228147_a_(double p_228147_1_) {
-         int i = (int)(CommandSuggestionHelper.this.field_228093_b_.mouseHelper.getMouseX() * (double)CommandSuggestionHelper.this.field_228093_b_.func_228018_at_().getScaledWidth() / (double)CommandSuggestionHelper.this.field_228093_b_.func_228018_at_().getWidth());
-         int j = (int)(CommandSuggestionHelper.this.field_228093_b_.mouseHelper.getMouseY() * (double)CommandSuggestionHelper.this.field_228093_b_.func_228018_at_().getScaledHeight() / (double)CommandSuggestionHelper.this.field_228093_b_.func_228018_at_().getHeight());
+         int i = (int)(CommandSuggestionHelper.this.field_228093_b_.mouseHelper.getMouseX() * (double)CommandSuggestionHelper.this.field_228093_b_.getMainWindow().getScaledWidth() / (double)CommandSuggestionHelper.this.field_228093_b_.getMainWindow().getWidth());
+         int j = (int)(CommandSuggestionHelper.this.field_228093_b_.mouseHelper.getMouseY() * (double)CommandSuggestionHelper.this.field_228093_b_.getMainWindow().getScaledHeight() / (double)CommandSuggestionHelper.this.field_228093_b_.getMainWindow().getHeight());
          if (this.field_228138_b_.contains(i, j)) {
             this.field_228141_e_ = MathHelper.clamp((int)((double)this.field_228141_e_ - p_228147_1_), 0, Math.max(this.field_228139_c_.getList().size() - CommandSuggestionHelper.this.field_228100_i_, 0));
             return true;
@@ -457,7 +457,7 @@ public class CommandSuggestionHelper {
          Suggestion suggestion = this.field_228139_c_.getList().get(this.field_228142_f_);
          CommandSuggestionHelper.this.field_228095_d_.setSuggestion(CommandSuggestionHelper.func_228127_b_(CommandSuggestionHelper.this.field_228095_d_.getText(), suggestion.apply(this.field_228140_d_)));
          if (NarratorChatListener.INSTANCE.isActive() && this.field_228145_i_ != this.field_228142_f_) {
-            NarratorChatListener.INSTANCE.func_216864_a(this.func_228155_c_());
+            NarratorChatListener.INSTANCE.say(this.func_228155_c_());
          }
 
       }
@@ -467,7 +467,7 @@ public class CommandSuggestionHelper {
          CommandSuggestionHelper.this.field_228110_s_ = true;
          CommandSuggestionHelper.this.field_228095_d_.setText(suggestion.apply(this.field_228140_d_));
          int i = suggestion.getRange().getStart() + suggestion.getText().length();
-         CommandSuggestionHelper.this.field_228095_d_.func_212422_f(i);
+         CommandSuggestionHelper.this.field_228095_d_.clampCursorPosition(i);
          CommandSuggestionHelper.this.field_228095_d_.setSelectionPos(i);
          this.func_228153_b_(this.field_228142_f_);
          CommandSuggestionHelper.this.field_228110_s_ = false;

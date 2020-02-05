@@ -18,7 +18,7 @@ public abstract class AbstractTropicalFishModel<E extends Entity> extends Segmen
       this.field_228256_f_ = p_228257_3_;
    }
 
-   public void func_225598_a_(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
-      super.func_225598_a_(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, this.field_228254_a_ * p_225598_5_, this.field_228255_b_ * p_225598_6_, this.field_228256_f_ * p_225598_7_, p_225598_8_);
+   public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+      super.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, this.field_228254_a_ * red, this.field_228255_b_ * green, this.field_228256_f_ * blue, alpha);
    }
 }

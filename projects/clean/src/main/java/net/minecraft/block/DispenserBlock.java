@@ -58,17 +58,17 @@ public class DispenserBlock extends ContainerBlock {
       return 4;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         TileEntity tileentity = p_225533_2_.getTileEntity(p_225533_3_);
+         TileEntity tileentity = worldIn.getTileEntity(pos);
          if (tileentity instanceof DispenserTileEntity) {
-            p_225533_4_.openContainer((DispenserTileEntity)tileentity);
+            player.openContainer((DispenserTileEntity)tileentity);
             if (tileentity instanceof DropperTileEntity) {
-               p_225533_4_.addStat(Stats.INSPECT_DROPPER);
+               player.addStat(Stats.INSPECT_DROPPER);
             } else {
-               p_225533_4_.addStat(Stats.INSPECT_DISPENSER);
+               player.addStat(Stats.INSPECT_DISPENSER);
             }
          }
 
@@ -108,8 +108,8 @@ public class DispenserBlock extends ContainerBlock {
 
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      this.dispense(p_225534_2_, p_225534_3_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      this.dispense(worldIn, pos);
    }
 
    public TileEntity createNewTileEntity(IBlockReader worldIn) {

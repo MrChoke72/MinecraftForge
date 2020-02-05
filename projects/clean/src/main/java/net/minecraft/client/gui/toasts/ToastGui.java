@@ -26,7 +26,7 @@ public class ToastGui extends AbstractGui {
       if (!this.mc.gameSettings.hideGUI) {
          for(int i = 0; i < this.visible.length; ++i) {
             ToastGui.ToastInstance<?> toastinstance = this.visible[i];
-            if (toastinstance != null && toastinstance.render(this.mc.func_228018_at_().getScaledWidth(), i)) {
+            if (toastinstance != null && toastinstance.render(this.mc.getMainWindow().getScaledWidth(), i)) {
                this.visible[i] = null;
             }
 

@@ -48,7 +48,7 @@ public class GLX {
 
    public static String getOpenGLVersionString() {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-      return GLFW.glfwGetCurrentContext() == 0L ? "NO CONTEXT" : GlStateManager.func_227610_C_(7937) + " GL version " + GlStateManager.func_227610_C_(7938) + ", " + GlStateManager.func_227610_C_(7936);
+      return GLFW.glfwGetCurrentContext() == 0L ? "NO CONTEXT" : GlStateManager.getString(7937) + " GL version " + GlStateManager.getString(7938) + ", " + GlStateManager.getString(7936);
    }
 
    public static int _getRefreshRate(MainWindow p__getRefreshRate_0_) {
@@ -108,7 +108,7 @@ public class GLX {
    public static void _setupNvFogDistance() {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
       if (GL.getCapabilities().GL_NV_fog_distance) {
-         GlStateManager.func_227742_m_(34138, 34139);
+         GlStateManager.fogi(34138, 34139);
       }
 
    }
@@ -116,7 +116,7 @@ public class GLX {
    public static void _init(int p__init_0_, boolean p__init_1_) {
       RenderSystem.assertThread(RenderSystem::isInInitPhase);
       GLCapabilities glcapabilities = GL.getCapabilities();
-      capsString = "Using framebuffer using " + GlStateManager.func_227666_a_(glcapabilities);
+      capsString = "Using framebuffer using " + GlStateManager.init(glcapabilities);
 
       try {
          Processor[] aprocessor = (new SystemInfo()).getHardware().getProcessors();
@@ -138,49 +138,49 @@ public class GLX {
 
    public static void _renderCrosshair(int p__renderCrosshair_0_, boolean p__renderCrosshair_1_, boolean p__renderCrosshair_2_, boolean p__renderCrosshair_3_) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-      GlStateManager.func_227621_I_();
-      GlStateManager.func_227667_a_(false);
+      GlStateManager.disableTexture();
+      GlStateManager.depthMask(false);
       Tessellator tessellator = RenderSystem.renderThreadTesselator();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       GL11.glLineWidth(4.0F);
       bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
       if (p__renderCrosshair_1_) {
-         bufferbuilder.func_225582_a_(0.0D, 0.0D, 0.0D).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)p__renderCrosshair_0_, 0.0D, 0.0D).func_225586_a_(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)p__renderCrosshair_0_, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
       }
 
       if (p__renderCrosshair_2_) {
-         bufferbuilder.func_225582_a_(0.0D, 0.0D, 0.0D).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_(0.0D, (double)p__renderCrosshair_0_, 0.0D).func_225586_a_(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos(0.0D, (double)p__renderCrosshair_0_, 0.0D).color(0, 0, 0, 255).endVertex();
       }
 
       if (p__renderCrosshair_3_) {
-         bufferbuilder.func_225582_a_(0.0D, 0.0D, 0.0D).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_(0.0D, 0.0D, (double)p__renderCrosshair_0_).func_225586_a_(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos(0.0D, 0.0D, (double)p__renderCrosshair_0_).color(0, 0, 0, 255).endVertex();
       }
 
       tessellator.draw();
       GL11.glLineWidth(2.0F);
       bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
       if (p__renderCrosshair_1_) {
-         bufferbuilder.func_225582_a_(0.0D, 0.0D, 0.0D).func_225586_a_(255, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)p__renderCrosshair_0_, 0.0D, 0.0D).func_225586_a_(255, 0, 0, 255).endVertex();
+         bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(255, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)p__renderCrosshair_0_, 0.0D, 0.0D).color(255, 0, 0, 255).endVertex();
       }
 
       if (p__renderCrosshair_2_) {
-         bufferbuilder.func_225582_a_(0.0D, 0.0D, 0.0D).func_225586_a_(0, 255, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_(0.0D, (double)p__renderCrosshair_0_, 0.0D).func_225586_a_(0, 255, 0, 255).endVertex();
+         bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 255, 0, 255).endVertex();
+         bufferbuilder.pos(0.0D, (double)p__renderCrosshair_0_, 0.0D).color(0, 255, 0, 255).endVertex();
       }
 
       if (p__renderCrosshair_3_) {
-         bufferbuilder.func_225582_a_(0.0D, 0.0D, 0.0D).func_225586_a_(127, 127, 255, 255).endVertex();
-         bufferbuilder.func_225582_a_(0.0D, 0.0D, (double)p__renderCrosshair_0_).func_225586_a_(127, 127, 255, 255).endVertex();
+         bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(127, 127, 255, 255).endVertex();
+         bufferbuilder.pos(0.0D, 0.0D, (double)p__renderCrosshair_0_).color(127, 127, 255, 255).endVertex();
       }
 
       tessellator.draw();
       GL11.glLineWidth(1.0F);
-      GlStateManager.func_227667_a_(true);
-      GlStateManager.func_227619_H_();
+      GlStateManager.depthMask(true);
+      GlStateManager.enableTexture();
    }
 
    public static String getErrorString(int p_getErrorString_0_) {

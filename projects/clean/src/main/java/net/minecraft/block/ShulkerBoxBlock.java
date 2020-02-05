@@ -46,7 +46,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ShulkerBoxBlock extends ContainerBlock {
    public static final EnumProperty<Direction> FACING = DirectionalBlock.FACING;
-   public static final ResourceLocation field_220169_b = new ResourceLocation("contents");
+   public static final ResourceLocation CONTENTS = new ResourceLocation("contents");
    @Nullable
    private final DyeColor color;
 
@@ -60,7 +60,7 @@ public class ShulkerBoxBlock extends ContainerBlock {
       return new ShulkerBoxTileEntity(this.color);
    }
 
-   public boolean func_229869_c_(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
+   public boolean causesSuffocation(BlockState state, IBlockReader worldIn, BlockPos pos) {
       return true;
    }
 
@@ -68,27 +68,27 @@ public class ShulkerBoxBlock extends ContainerBlock {
       return BlockRenderType.ENTITYBLOCK_ANIMATED;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
-      } else if (p_225533_4_.isSpectator()) {
+      } else if (player.isSpectator()) {
          return ActionResultType.SUCCESS;
       } else {
-         TileEntity tileentity = p_225533_2_.getTileEntity(p_225533_3_);
+         TileEntity tileentity = worldIn.getTileEntity(pos);
          if (tileentity instanceof ShulkerBoxTileEntity) {
-            Direction direction = p_225533_1_.get(FACING);
+            Direction direction = state.get(FACING);
             ShulkerBoxTileEntity shulkerboxtileentity = (ShulkerBoxTileEntity)tileentity;
             boolean flag;
             if (shulkerboxtileentity.getAnimationStatus() == ShulkerBoxTileEntity.AnimationStatus.CLOSED) {
                AxisAlignedBB axisalignedbb = VoxelShapes.fullCube().getBoundingBox().expand((double)(0.5F * (float)direction.getXOffset()), (double)(0.5F * (float)direction.getYOffset()), (double)(0.5F * (float)direction.getZOffset())).contract((double)direction.getXOffset(), (double)direction.getYOffset(), (double)direction.getZOffset());
-               flag = p_225533_2_.func_226664_a_(axisalignedbb.offset(p_225533_3_.offset(direction)));
+               flag = worldIn.func_226664_a_(axisalignedbb.offset(pos.offset(direction)));
             } else {
                flag = true;
             }
 
             if (flag) {
-               p_225533_4_.openContainer(shulkerboxtileentity);
-               p_225533_4_.addStat(Stats.OPEN_SHULKER_BOX);
+               player.openContainer(shulkerboxtileentity);
+               player.addStat(Stats.OPEN_SHULKER_BOX);
             }
 
             return ActionResultType.SUCCESS;
@@ -136,7 +136,7 @@ public class ShulkerBoxBlock extends ContainerBlock {
       TileEntity tileentity = builder.get(LootParameters.BLOCK_ENTITY);
       if (tileentity instanceof ShulkerBoxTileEntity) {
          ShulkerBoxTileEntity shulkerboxtileentity = (ShulkerBoxTileEntity)tileentity;
-         builder = builder.withDynamicDrop(field_220169_b, (p_220168_1_, p_220168_2_) -> {
+         builder = builder.withDynamicDrop(CONTENTS, (p_220168_1_, p_220168_2_) -> {
             for(int i = 0; i < shulkerboxtileentity.getSizeInventory(); ++i) {
                p_220168_2_.accept(shulkerboxtileentity.getStackInSlot(i));
             }

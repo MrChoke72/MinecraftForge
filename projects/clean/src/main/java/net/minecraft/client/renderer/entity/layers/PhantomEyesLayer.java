@@ -10,13 +10,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class PhantomEyesLayer<T extends Entity> extends AbstractEyesLayer<T, PhantomModel<T>> {
-   private static final RenderType field_229138_a_ = RenderType.func_228652_i_(new ResourceLocation("textures/entity/phantom_eyes.png"));
+   private static final RenderType field_229138_a_ = RenderType.eyes(new ResourceLocation("textures/entity/phantom_eyes.png"));
 
    public PhantomEyesLayer(IEntityRenderer<T, PhantomModel<T>> p_i50928_1_) {
       super(p_i50928_1_);
    }
 
-   public RenderType func_225636_a_() {
+   public RenderType getRenderType() {
       return field_229138_a_;
    }
 }

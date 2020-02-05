@@ -28,6 +28,6 @@ public interface IDataProvider {
          }
       }
 
-      cache.func_208316_a(pathIn, s1);
+      cache.recordHash(pathIn, s1);
    }
 }

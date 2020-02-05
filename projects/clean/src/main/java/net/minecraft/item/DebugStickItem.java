@@ -83,8 +83,8 @@ public class DebugStickItem extends Item {
       return state.with(propertyIn, (T)(getAdjacentValue(propertyIn.getAllowedValues(), state.get(propertyIn), backwards)));
    }
 
-   private static <T> T getAdjacentValue(Iterable<T> p_195959_0_, @Nullable T p_195959_1_, boolean p_195959_2_) {
-      return (T)(p_195959_2_ ? Util.getElementBefore(p_195959_0_, p_195959_1_) : Util.getElementAfter(p_195959_0_, p_195959_1_));
+   private static <T> T getAdjacentValue(Iterable<T> allowedValues, @Nullable T currentValue, boolean backwards) {
+      return (T)(backwards ? Util.getElementBefore(allowedValues, currentValue) : Util.getElementAfter(allowedValues, currentValue));
    }
 
    private static void sendMessage(PlayerEntity player, ITextComponent text) {

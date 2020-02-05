@@ -25,9 +25,9 @@ public class BreakBlockGoal extends MoveToBlockGoal {
    private final MobEntity entity;
    private int breakingTime;
 
-   public BreakBlockGoal(Block p_i48795_1_, CreatureEntity creature, double speed, int yMax) {
+   public BreakBlockGoal(Block blockIn, CreatureEntity creature, double speed, int yMax) {
       super(creature, speed, 24, yMax);
-      this.block = p_i48795_1_;
+      this.block = blockIn;
       this.entity = creature;
    }
 
@@ -60,10 +60,10 @@ public class BreakBlockGoal extends MoveToBlockGoal {
       this.breakingTime = 0;
    }
 
-   public void playBreakingSound(IWorld p_203114_1_, BlockPos p_203114_2_) {
+   public void playBreakingSound(IWorld worldIn, BlockPos pos) {
    }
 
-   public void playBrokenSound(World p_203116_1_, BlockPos p_203116_2_) {
+   public void playBrokenSound(World worldIn, BlockPos pos) {
    }
 
    public void tick() {
@@ -110,14 +110,14 @@ public class BreakBlockGoal extends MoveToBlockGoal {
    }
 
    @Nullable
-   private BlockPos findTarget(BlockPos p_203115_1_, IBlockReader p_203115_2_) {
-      if (p_203115_2_.getBlockState(p_203115_1_).getBlock() == this.block) {
-         return p_203115_1_;
+   private BlockPos findTarget(BlockPos pos, IBlockReader worldIn) {
+      if (worldIn.getBlockState(pos).getBlock() == this.block) {
+         return pos;
       } else {
-         BlockPos[] ablockpos = new BlockPos[]{p_203115_1_.down(), p_203115_1_.west(), p_203115_1_.east(), p_203115_1_.north(), p_203115_1_.south(), p_203115_1_.down().down()};
+         BlockPos[] ablockpos = new BlockPos[]{pos.down(), pos.west(), pos.east(), pos.north(), pos.south(), pos.down().down()};
 
          for(BlockPos blockpos : ablockpos) {
-            if (p_203115_2_.getBlockState(blockpos).getBlock() == this.block) {
+            if (worldIn.getBlockState(blockpos).getBlock() == this.block) {
                return blockpos;
             }
          }

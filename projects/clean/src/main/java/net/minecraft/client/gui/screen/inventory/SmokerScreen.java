@@ -10,9 +10,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SmokerScreen extends AbstractFurnaceScreen<SmokerContainer> {
-   private static final ResourceLocation field_214094_l = new ResourceLocation("textures/gui/container/smoker.png");
+   private static final ResourceLocation GUI_TEXTURE = new ResourceLocation("textures/gui/container/smoker.png");
 
-   public SmokerScreen(SmokerContainer p_i51077_1_, PlayerInventory p_i51077_2_, ITextComponent p_i51077_3_) {
-      super(p_i51077_1_, new SmokerRecipeGui(), p_i51077_2_, p_i51077_3_, field_214094_l);
+   public SmokerScreen(SmokerContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+      super(screenContainer, new SmokerRecipeGui(), inv, titleIn, GUI_TEXTURE);
    }
 }

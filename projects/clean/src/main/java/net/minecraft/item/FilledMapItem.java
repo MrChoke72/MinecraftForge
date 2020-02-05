@@ -46,13 +46,13 @@ public class FilledMapItem extends AbstractMapItem {
    }
 
    @Nullable
-   public static MapData func_219994_a(ItemStack p_219994_0_, World p_219994_1_) {
-      return p_219994_1_.func_217406_a(func_219993_a(getMapId(p_219994_0_)));
+   public static MapData getData(ItemStack stack, World worldIn) {
+      return worldIn.getMapData(getMapName(getMapId(stack)));
    }
 
    @Nullable
    public static MapData getMapData(ItemStack stack, World worldIn) {
-      MapData mapdata = func_219994_a(stack, worldIn);
+      MapData mapdata = getData(stack, worldIn);
       if (mapdata == null && !worldIn.isRemote) {
          mapdata = createMapData(stack, worldIn, worldIn.getWorldInfo().getSpawnX(), worldIn.getWorldInfo().getSpawnZ(), 3, false, false, worldIn.dimension.getType());
       }
@@ -65,17 +65,17 @@ public class FilledMapItem extends AbstractMapItem {
       return compoundnbt != null && compoundnbt.contains("map", 99) ? compoundnbt.getInt("map") : 0;
    }
 
-   private static MapData createMapData(ItemStack p_195951_0_, World p_195951_1_, int p_195951_2_, int p_195951_3_, int p_195951_4_, boolean p_195951_5_, boolean p_195951_6_, DimensionType p_195951_7_) {
-      int i = p_195951_1_.getNextMapId();
-      MapData mapdata = new MapData(func_219993_a(i));
-      mapdata.func_212440_a(p_195951_2_, p_195951_3_, p_195951_4_, p_195951_5_, p_195951_6_, p_195951_7_);
-      p_195951_1_.func_217399_a(mapdata);
-      p_195951_0_.getOrCreateTag().putInt("map", i);
+   private static MapData createMapData(ItemStack stack, World worldIn, int x, int z, int scale, boolean trackingPosition, boolean unlimitedTracking, DimensionType dimensionTypeIn) {
+      int i = worldIn.getNextMapId();
+      MapData mapdata = new MapData(getMapName(i));
+      mapdata.func_212440_a(x, z, scale, trackingPosition, unlimitedTracking, dimensionTypeIn);
+      worldIn.registerMapData(mapdata);
+      stack.getOrCreateTag().putInt("map", i);
       return mapdata;
    }
 
-   public static String func_219993_a(int p_219993_0_) {
-      return "map_" + p_219993_0_;
+   public static String getMapName(int mapId) {
+      return "map_" + mapId;
    }
 
    public void updateMapData(World worldIn, Entity viewer, MapData data) {
@@ -211,9 +211,9 @@ public class FilledMapItem extends AbstractMapItem {
       }
    }
 
-   private BlockState func_211698_a(World p_211698_1_, BlockState p_211698_2_, BlockPos p_211698_3_) {
-      IFluidState ifluidstate = p_211698_2_.getFluidState();
-      return !ifluidstate.isEmpty() && !p_211698_2_.func_224755_d(p_211698_1_, p_211698_3_, Direction.UP) ? ifluidstate.getBlockState() : p_211698_2_;
+   private BlockState func_211698_a(World worldIn, BlockState state, BlockPos pos) {
+      IFluidState ifluidstate = state.getFluidState();
+      return !ifluidstate.isEmpty() && !state.isSolidSide(worldIn, pos, Direction.UP) ? ifluidstate.getBlockState() : state;
    }
 
    private static boolean func_195954_a(Biome[] p_195954_0_, int p_195954_1_, int p_195954_2_, int p_195954_3_) {
@@ -231,7 +231,7 @@ public class FilledMapItem extends AbstractMapItem {
 
             for(int l = 0; l < 128 * i; ++l) {
                for(int i1 = 0; i1 < 128 * i; ++i1) {
-                  abiome[l * 128 * i + i1] = p_226642_0_.func_226691_t_(new BlockPos((j / i - 64) * i + i1, 0, (k / i - 64) * i + l));
+                  abiome[l * 128 * i + i1] = p_226642_0_.getBiome(new BlockPos((j / i - 64) * i + i1, 0, (k / i - 64) * i + l));
                }
             }
 
@@ -353,12 +353,12 @@ public class FilledMapItem extends AbstractMapItem {
    }
 
    @Nullable
-   public static ItemStack func_219992_b(World p_219992_0_, ItemStack p_219992_1_) {
-      MapData mapdata = getMapData(p_219992_1_, p_219992_0_);
+   public static ItemStack func_219992_b(World worldIn, ItemStack stack) {
+      MapData mapdata = getMapData(stack, worldIn);
       if (mapdata != null) {
-         ItemStack itemstack = p_219992_1_.copy();
-         MapData mapdata1 = createMapData(itemstack, p_219992_0_, 0, 0, mapdata.scale, mapdata.trackingPosition, mapdata.unlimitedTracking, mapdata.dimension);
-         mapdata1.func_215160_a(mapdata);
+         ItemStack itemstack = stack.copy();
+         MapData mapdata1 = createMapData(itemstack, worldIn, 0, 0, mapdata.scale, mapdata.trackingPosition, mapdata.unlimitedTracking, mapdata.dimension);
+         mapdata1.copyFrom(mapdata);
          return itemstack;
       } else {
          return null;
@@ -385,8 +385,8 @@ public class FilledMapItem extends AbstractMapItem {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static int getColor(ItemStack p_190907_0_) {
-      CompoundNBT compoundnbt = p_190907_0_.getChildTag("display");
+   public static int getColor(ItemStack stack) {
+      CompoundNBT compoundnbt = stack.getChildTag("display");
       if (compoundnbt != null && compoundnbt.contains("MapColor", 99)) {
          int i = compoundnbt.getInt("MapColor");
          return -16777216 | i & 16777215;

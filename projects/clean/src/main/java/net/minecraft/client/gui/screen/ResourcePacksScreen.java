@@ -40,23 +40,23 @@ public class ResourcePacksScreen extends SettingsScreen {
 
             Collections.reverse(list1);
             this.minecraft.getResourcePackList().setEnabledPacks(list1);
-            this.field_228183_b_.resourcePacks.clear();
-            this.field_228183_b_.incompatibleResourcePacks.clear();
+            this.gameSettings.resourcePacks.clear();
+            this.gameSettings.incompatibleResourcePacks.clear();
 
             for(ClientResourcePackInfo clientresourcepackinfo2 : list1) {
                if (!clientresourcepackinfo2.isOrderLocked()) {
-                  this.field_228183_b_.resourcePacks.add(clientresourcepackinfo2.getName());
-                  if (!clientresourcepackinfo2.getCompatibility().func_198968_a()) {
-                     this.field_228183_b_.incompatibleResourcePacks.add(clientresourcepackinfo2.getName());
+                  this.gameSettings.resourcePacks.add(clientresourcepackinfo2.getName());
+                  if (!clientresourcepackinfo2.getCompatibility().isCompatible()) {
+                     this.gameSettings.incompatibleResourcePacks.add(clientresourcepackinfo2.getName());
                   }
                }
             }
 
-            this.field_228183_b_.saveOptions();
-            this.minecraft.displayGuiScreen(this.field_228182_a_);
+            this.gameSettings.saveOptions();
+            this.minecraft.displayGuiScreen(this.parentScreen);
             this.minecraft.reloadResources();
          } else {
-            this.minecraft.displayGuiScreen(this.field_228182_a_);
+            this.minecraft.displayGuiScreen(this.parentScreen);
          }
 
       }));

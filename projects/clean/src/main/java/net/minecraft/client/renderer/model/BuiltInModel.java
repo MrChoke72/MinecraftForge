@@ -15,11 +15,13 @@ public class BuiltInModel implements IBakedModel {
    private final ItemCameraTransforms cameraTransforms;
    private final ItemOverrideList overrides;
    private final TextureAtlasSprite field_217829_c;
+   private final boolean field_230184_d_;
 
-   public BuiltInModel(ItemCameraTransforms p_i50902_1_, ItemOverrideList p_i50902_2_, TextureAtlasSprite p_i50902_3_) {
-      this.cameraTransforms = p_i50902_1_;
-      this.overrides = p_i50902_2_;
-      this.field_217829_c = p_i50902_3_;
+   public BuiltInModel(ItemCameraTransforms p_i230058_1_, ItemOverrideList p_i230058_2_, TextureAtlasSprite p_i230058_3_, boolean p_i230058_4_) {
+      this.cameraTransforms = p_i230058_1_;
+      this.overrides = p_i230058_2_;
+      this.field_217829_c = p_i230058_3_;
+      this.field_230184_d_ = p_i230058_4_;
    }
 
    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
@@ -32,6 +34,10 @@ public class BuiltInModel implements IBakedModel {
 
    public boolean isGui3d() {
       return true;
+   }
+
+   public boolean func_230044_c_() {
+      return this.field_230184_d_;
    }
 
    public boolean isBuiltInRenderer() {

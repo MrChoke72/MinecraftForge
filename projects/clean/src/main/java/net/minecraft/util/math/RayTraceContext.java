@@ -16,9 +16,9 @@ public class RayTraceContext {
    private final RayTraceContext.FluidMode fluidMode;
    private final ISelectionContext context;
 
-   public RayTraceContext(Vec3d p_i50009_1_, Vec3d p_i50009_2_, RayTraceContext.BlockMode blockModeIn, RayTraceContext.FluidMode fluidModeIn, Entity entityIn) {
-      this.startVec = p_i50009_1_;
-      this.endVec = p_i50009_2_;
+   public RayTraceContext(Vec3d startVecIn, Vec3d endVecIn, RayTraceContext.BlockMode blockModeIn, RayTraceContext.FluidMode fluidModeIn, Entity entityIn) {
+      this.startVec = startVecIn;
+      this.endVec = endVecIn;
       this.blockMode = blockModeIn;
       this.fluidMode = fluidModeIn;
       this.context = ISelectionContext.forEntity(entityIn);

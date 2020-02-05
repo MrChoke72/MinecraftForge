@@ -38,13 +38,13 @@ public class ChunkTaskPriorityQueueSorter implements AutoCloseable, ChunkHolder.
       this.sorter = new DelegatedTaskExecutor<>(new ITaskQueue.Priority(4), p_i50713_2_, "sorter");
    }
 
-   public static ChunkTaskPriorityQueueSorter.FunctionEntry<Runnable> func_219069_a(Runnable p_219069_0_, long p_219069_1_, IntSupplier p_219069_3_) {
+   public static ChunkTaskPriorityQueueSorter.FunctionEntry<Runnable> func_219069_a(Runnable p_219069_0_, long pos, IntSupplier p_219069_3_) {
       return new ChunkTaskPriorityQueueSorter.FunctionEntry<>((p_219072_1_) -> {
          return () -> {
             p_219069_0_.run();
             p_219072_1_.enqueue(Unit.INSTANCE);
          };
-      }, p_219069_1_, p_219069_3_);
+      }, pos, p_219069_3_);
    }
 
    public static ChunkTaskPriorityQueueSorter.FunctionEntry<Runnable> func_219081_a(ChunkHolder p_219081_0_, Runnable p_219081_1_) {
@@ -60,7 +60,7 @@ public class ChunkTaskPriorityQueueSorter implements AutoCloseable, ChunkHolder.
          return new ITaskQueue.RunnableWithPriority(0, () -> {
             this.getQueue(p_219087_1_);
             p_219086_3_.enqueue(ITaskExecutor.inline("chunk priority sorter around " + p_219087_1_.getName(), (p_219071_3_) -> {
-               this.func_219067_a(p_219087_1_, p_219071_3_.field_219428_a, p_219071_3_.field_219429_b, p_219071_3_.field_219430_c, p_219087_2_);
+               this.func_219067_a(p_219087_1_, p_219071_3_.task, p_219071_3_.chunkPos, p_219071_3_.field_219430_c, p_219087_2_);
             }));
          });
       }).join();
@@ -136,7 +136,7 @@ public class ChunkTaskPriorityQueueSorter implements AutoCloseable, ChunkHolder.
    private <T> ChunkTaskPriorityQueue<Function<ITaskExecutor<Unit>, T>> getQueue(ITaskExecutor<T> p_219068_1_) {
       ChunkTaskPriorityQueue<? extends Function<ITaskExecutor<Unit>, ?>> chunktaskpriorityqueue = this.queues.get(p_219068_1_);
       if (chunktaskpriorityqueue == null) {
-         throw Util.func_229757_c_((new IllegalArgumentException("No queue for: " + p_219068_1_)));
+         throw Util.spinlockIfDevMode((new IllegalArgumentException("No queue for: " + p_219068_1_)));
       } else {
          return (ChunkTaskPriorityQueue<Function<ITaskExecutor<Unit>, T>>) chunktaskpriorityqueue;
       }
@@ -156,13 +156,13 @@ public class ChunkTaskPriorityQueueSorter implements AutoCloseable, ChunkHolder.
    }
 
    public static final class FunctionEntry<T> {
-      private final Function<ITaskExecutor<Unit>, T> field_219428_a;
-      private final long field_219429_b;
+      private final Function<ITaskExecutor<Unit>, T> task;
+      private final long chunkPos;
       private final IntSupplier field_219430_c;
 
       private FunctionEntry(Function<ITaskExecutor<Unit>, T> p_i50028_1_, long p_i50028_2_, IntSupplier p_i50028_4_) {
-         this.field_219428_a = p_i50028_1_;
-         this.field_219429_b = p_i50028_2_;
+         this.task = p_i50028_1_;
+         this.chunkPos = p_i50028_2_;
          this.field_219430_c = p_i50028_4_;
       }
    }

@@ -23,7 +23,7 @@ public class BlockBlobFeature extends Feature<BlockBlobConfig> {
                }
 
                Block block = worldIn.getBlockState(pos.down()).getBlock();
-               if (!func_227250_b_(block) && !func_227249_a_(block)) {
+               if (!isDirt(block) && !isStone(block)) {
                   break label48;
                }
             }

@@ -22,7 +22,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
    private CommandSuggestionHelper field_228184_g_;
 
    public AbstractCommandBlockScreen() {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
    }
 
    public void tick() {
@@ -52,14 +52,14 @@ public abstract class AbstractCommandBlockScreen extends Screen {
          }
       };
       this.commandTextField.setMaxStringLength(32500);
-      this.commandTextField.func_212954_a(this::func_214185_b);
+      this.commandTextField.setResponder(this::func_214185_b);
       this.children.add(this.commandTextField);
       this.resultTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.func_195236_i(), 276, 20, I18n.format("advMode.previousOutput"));
       this.resultTextField.setMaxStringLength(32500);
       this.resultTextField.setEnabled(false);
       this.resultTextField.setText("-");
       this.children.add(this.resultTextField);
-      this.func_212928_a(this.commandTextField);
+      this.setFocusedDefault(this.commandTextField);
       this.commandTextField.setFocused2(true);
       this.field_228184_g_ = new CommandSuggestionHelper(this.minecraft, this, this.commandTextField, this.font, true, true, 0, 7, false, Integer.MIN_VALUE);
       this.field_228184_g_.func_228124_a_(true);
@@ -98,7 +98,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
       this.minecraft.keyboardListener.enableRepeatEvents(false);
    }
 
-   protected abstract void func_195235_a(CommandBlockLogic p_195235_1_);
+   protected abstract void func_195235_a(CommandBlockLogic commandBlockLogicIn);
 
    public void onClose() {
       this.getLogic().setTrackOutput(this.field_195238_s);

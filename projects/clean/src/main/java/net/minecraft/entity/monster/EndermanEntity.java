@@ -64,8 +64,8 @@ public class EndermanEntity extends MonsterEntity {
    private int field_226536_bz_ = Integer.MIN_VALUE;
    private int targetChangeTime;
 
-   public EndermanEntity(EntityType<? extends EndermanEntity> p_i50210_1_, World p_i50210_2_) {
-      super(p_i50210_1_, p_i50210_2_);
+   public EndermanEntity(EntityType<? extends EndermanEntity> type, World worldIn) {
+      super(type, worldIn);
       this.stepHeight = 1.0F;
       this.setPathPriority(PathNodeType.WATER, -1.0F);
    }
@@ -121,7 +121,7 @@ public class EndermanEntity extends MonsterEntity {
       if (this.ticksExisted >= this.field_226536_bz_ + 400) {
          this.field_226536_bz_ = this.ticksExisted;
          if (!this.isSilent()) {
-            this.world.playSound(this.getPosX(), this.getPosYPlusEyeHeight(), this.getPosZ(), SoundEvents.ENTITY_ENDERMAN_STARE, this.getSoundCategory(), 2.5F, 1.0F, false);
+            this.world.playSound(this.getPosX(), this.getPosYEye(), this.getPosZ(), SoundEvents.ENTITY_ENDERMAN_STARE, this.getSoundCategory(), 2.5F, 1.0F, false);
          }
       }
 
@@ -154,7 +154,7 @@ public class EndermanEntity extends MonsterEntity {
          }
       }
 
-      this.func_195406_b(blockstate);
+      this.setHeldBlockState(blockstate);
    }
 
    private boolean shouldAttackPlayer(PlayerEntity player) {
@@ -163,7 +163,7 @@ public class EndermanEntity extends MonsterEntity {
          return false;
       } else {
          Vec3d vec3d = player.getLook(1.0F).normalize();
-         Vec3d vec3d1 = new Vec3d(this.getPosX() - player.getPosX(), this.getPosYPlusEyeHeight() - player.getPosYPlusEyeHeight(), this.getPosZ() - player.getPosZ());
+         Vec3d vec3d1 = new Vec3d(this.getPosX() - player.getPosX(), this.getPosYEye() - player.getPosYEye(), this.getPosZ() - player.getPosZ());
          double d0 = vec3d1.length();
          vec3d1 = vec3d1.normalize();
          double d1 = vec3d.dotProduct(vec3d1);
@@ -178,7 +178,7 @@ public class EndermanEntity extends MonsterEntity {
    public void livingTick() {
       if (this.world.isRemote) {
          for(int i = 0; i < 2; ++i) {
-            this.world.addParticle(ParticleTypes.PORTAL, this.func_226282_d_(0.5D), this.func_226279_cv_() - 0.25D, this.func_226287_g_(0.5D), (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
+            this.world.addParticle(ParticleTypes.PORTAL, this.getPosXRandom(0.5D), this.getPosYRandom() - 0.25D, this.getPosZRandom(0.5D), (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
          }
       }
 
@@ -193,7 +193,7 @@ public class EndermanEntity extends MonsterEntity {
 
       if (this.world.isDaytime() && this.ticksExisted >= this.targetChangeTime + 600) {
          float f = this.getBrightness();
-         if (f > 0.5F && this.world.isMaxLightLevel(new BlockPos(this)) && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
+         if (f > 0.5F && this.world.canSeeSky(new BlockPos(this)) && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
             this.setAttackTarget((LivingEntity)null);
             this.teleportRandomly();
          }
@@ -214,7 +214,7 @@ public class EndermanEntity extends MonsterEntity {
    }
 
    private boolean teleportToEntity(Entity p_70816_1_) {
-      Vec3d vec3d = new Vec3d(this.getPosX() - p_70816_1_.getPosX(), this.func_226283_e_(0.5D) - p_70816_1_.getPosYPlusEyeHeight(), this.getPosZ() - p_70816_1_.getPosZ());
+      Vec3d vec3d = new Vec3d(this.getPosX() - p_70816_1_.getPosX(), this.getPosYHeight(0.5D) - p_70816_1_.getPosYEye(), this.getPosZ() - p_70816_1_.getPosZ());
       vec3d = vec3d.normalize();
       double d0 = 16.0D;
       double d1 = this.getPosX() + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.x * 16.0D;
@@ -267,8 +267,8 @@ public class EndermanEntity extends MonsterEntity {
 
    }
 
-   public void func_195406_b(@Nullable BlockState p_195406_1_) {
-      this.dataManager.set(CARRIED_BLOCK, Optional.ofNullable(p_195406_1_));
+   public void setHeldBlockState(@Nullable BlockState state) {
+      this.dataManager.set(CARRIED_BLOCK, Optional.ofNullable(state));
    }
 
    @Nullable
@@ -410,13 +410,13 @@ public class EndermanEntity extends MonsterEntity {
          BlockState blockstate2 = this.enderman.getHeldBlockState();
          if (blockstate2 != null && this.func_220836_a(iworld, blockpos, blockstate2, blockstate, blockstate1, blockpos1)) {
             iworld.setBlockState(blockpos, blockstate2, 3);
-            this.enderman.func_195406_b((BlockState)null);
+            this.enderman.setHeldBlockState((BlockState)null);
          }
 
       }
 
       private boolean func_220836_a(IWorldReader p_220836_1_, BlockPos p_220836_2_, BlockState p_220836_3_, BlockState p_220836_4_, BlockState p_220836_5_, BlockPos p_220836_6_) {
-         return p_220836_4_.isAir() && !p_220836_5_.isAir() && p_220836_5_.func_224756_o(p_220836_1_, p_220836_6_) && p_220836_3_.isValidPosition(p_220836_1_, p_220836_2_);
+         return p_220836_4_.isAir() && !p_220836_5_.isAir() && p_220836_5_.isCollisionShapeOpaque(p_220836_1_, p_220836_6_) && p_220836_3_.isValidPosition(p_220836_1_, p_220836_2_);
       }
    }
 
@@ -444,7 +444,7 @@ public class EndermanEntity extends MonsterEntity {
       }
 
       public void tick() {
-         this.field_220835_a.getLookController().func_220679_a(this.field_226540_b_.getPosX(), this.field_226540_b_.getPosYPlusEyeHeight(), this.field_226540_b_.getPosZ());
+         this.field_220835_a.getLookController().setLookPosition(this.field_226540_b_.getPosX(), this.field_226540_b_.getPosYEye(), this.field_226540_b_.getPosZ());
       }
    }
 
@@ -479,7 +479,7 @@ public class EndermanEntity extends MonsterEntity {
          BlockRayTraceResult blockraytraceresult = world.rayTraceBlocks(new RayTraceContext(vec3d, vec3d1, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, this.enderman));
          boolean flag = blockraytraceresult.getPos().equals(blockpos);
          if (block.isIn(BlockTags.ENDERMAN_HOLDABLE) && flag) {
-            this.enderman.func_195406_b(blockstate);
+            this.enderman.setHeldBlockState(blockstate);
             world.removeBlock(blockpos, false);
          }
 

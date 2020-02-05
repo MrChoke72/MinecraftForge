@@ -23,8 +23,8 @@ public interface IEntityReader {
 
    <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> clazz, AxisAlignedBB aabb, @Nullable Predicate<? super T> filter);
 
-   default <T extends Entity> List<T> getEntitiesWithinAABBDef(Class<? extends T> entityClass, AxisAlignedBB boundingBox, @Nullable Predicate<? super T> entityPred) {
-      return this.getEntitiesWithinAABB(entityClass, boundingBox, entityPred);
+   default <T extends Entity> List<T> func_225316_b(Class<? extends T> p_225316_1_, AxisAlignedBB p_225316_2_, @Nullable Predicate<? super T> p_225316_3_) {
+      return this.getEntitiesWithinAABB(p_225316_1_, p_225316_2_, p_225316_3_);
    }
 
    List<? extends PlayerEntity> getPlayers();
@@ -41,12 +41,12 @@ public interface IEntityReader {
       });
    }
 
-   default <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> entityClass, AxisAlignedBB boundingBox) {
-      return this.getEntitiesWithinAABB(entityClass, boundingBox, EntityPredicates.NOT_SPECTATING);
+   default <T extends Entity> List<T> getEntitiesWithinAABB(Class<? extends T> p_217357_1_, AxisAlignedBB p_217357_2_) {
+      return this.getEntitiesWithinAABB(p_217357_1_, p_217357_2_, EntityPredicates.NOT_SPECTATING);
    }
 
-   default <T extends Entity> List<T> getEntitiesWithinAABBNoPred(Class<? extends T> entityClass, AxisAlignedBB boundingBox) {
-      return this.getEntitiesWithinAABBDef(entityClass, boundingBox, EntityPredicates.NOT_SPECTATING);
+   default <T extends Entity> List<T> getEntitiesWithinAABBNoPred(Class<? extends T> p_225317_1_, AxisAlignedBB p_225317_2_) {
+      return this.func_225316_b(p_225317_1_, p_225317_2_, EntityPredicates.NOT_SPECTATING);
    }
 
    default Stream<VoxelShape> getEmptyCollisionShapes(@Nullable Entity entityIn, AxisAlignedBB aabb, Set<Entity> entitiesToIgnore) {
@@ -83,8 +83,8 @@ public interface IEntityReader {
    }
 
    @Nullable
-   default PlayerEntity getClosestPlayer(Entity p_217362_1_, double distance) {
-      return this.getClosestPlayer(p_217362_1_.getPosX(), p_217362_1_.getPosY(), p_217362_1_.getPosZ(), distance, false);
+   default PlayerEntity getClosestPlayer(Entity entityIn, double distance) {
+      return this.getClosestPlayer(entityIn.getPosX(), entityIn.getPosY(), entityIn.getPosZ(), distance, false);
    }
 
    @Nullable
@@ -94,14 +94,14 @@ public interface IEntityReader {
    }
 
    @Nullable
-   default PlayerEntity getClosestPlayer(double p_217365_1_, double p_217365_3_, double p_217365_5_) {
+   default PlayerEntity getClosestPlayer(double x, double y, double z) {
       double d0 = -1.0D;
       PlayerEntity playerentity = null;
 
       for(PlayerEntity playerentity1 : this.getPlayers()) {
          if (EntityPredicates.NOT_SPECTATING.test(playerentity1)) {
-            double d1 = playerentity1.getDistanceSq(p_217365_1_, playerentity1.getPosY(), p_217365_3_);
-            if ((p_217365_5_ < 0.0D || d1 < p_217365_5_ * p_217365_5_) && (d0 == -1.0D || d1 < d0)) {
+            double d1 = playerentity1.getDistanceSq(x, playerentity1.getPosY(), y);
+            if ((z < 0.0D || d1 < z * z) && (d0 == -1.0D || d1 < d0)) {
                d0 = d1;
                playerentity = playerentity1;
             }
@@ -125,37 +125,37 @@ public interface IEntityReader {
    }
 
    @Nullable
-   default PlayerEntity getClosestPlayer(EntityPredicate p_217370_1_, LivingEntity p_217370_2_) {
-      return this.getClosestEntity(this.getPlayers(), p_217370_1_, p_217370_2_, p_217370_2_.getPosX(), p_217370_2_.getPosY(), p_217370_2_.getPosZ());
+   default PlayerEntity getClosestPlayer(EntityPredicate predicate, LivingEntity target) {
+      return this.getClosestEntity(this.getPlayers(), predicate, target, target.getPosX(), target.getPosY(), target.getPosZ());
    }
 
    @Nullable
-   default PlayerEntity getClosestPlayer(EntityPredicate entityPred, LivingEntity entityIn, double x, double y, double z) {
-      return this.getClosestEntity(this.getPlayers(), entityPred, entityIn, x, y, z);
+   default PlayerEntity getClosestPlayer(EntityPredicate predicate, LivingEntity target, double p_217372_3_, double p_217372_5_, double p_217372_7_) {
+      return this.getClosestEntity(this.getPlayers(), predicate, target, p_217372_3_, p_217372_5_, p_217372_7_);
    }
 
    @Nullable
-   default PlayerEntity getClosestPlayer(EntityPredicate p_217359_1_, double p_217359_2_, double p_217359_4_, double p_217359_6_) {
-      return this.getClosestEntity(this.getPlayers(), p_217359_1_, (LivingEntity)null, p_217359_2_, p_217359_4_, p_217359_6_);
+   default PlayerEntity getClosestPlayer(EntityPredicate predicate, double x, double y, double z) {
+      return this.getClosestEntity(this.getPlayers(), predicate, (LivingEntity)null, x, y, z);
    }
 
    @Nullable
-   default <T extends LivingEntity> T getClosestEntityWithinAABB(Class<? extends T> p_217360_1_, EntityPredicate p_217360_2_, @Nullable LivingEntity p_217360_3_, double p_217360_4_, double p_217360_6_, double p_217360_8_, AxisAlignedBB p_217360_10_) {
-      return this.getClosestEntity(this.getEntitiesWithinAABB(p_217360_1_, p_217360_10_, (Predicate<T>)null), p_217360_2_, p_217360_3_, p_217360_4_, p_217360_6_, p_217360_8_);
+   default <T extends LivingEntity> T getClosestEntityWithinAABB(Class<? extends T> entityClazz, EntityPredicate p_217360_2_, @Nullable LivingEntity target, double x, double y, double z, AxisAlignedBB boundingBox) {
+      return this.getClosestEntity(this.getEntitiesWithinAABB(entityClazz, boundingBox, (Predicate<T>)null), p_217360_2_, target, x, y, z);
    }
 
    @Nullable
-   default <T extends LivingEntity> T getClosestEntity(Class<? extends T> targetClass, EntityPredicate tgtEntitySelector, @Nullable LivingEntity owner, double x, double y, double z, AxisAlignedBB targetArea) {
-      return this.getClosestEntity(this.getEntitiesWithinAABBDef(targetClass, targetArea, (Predicate<T>)null), tgtEntitySelector, owner, x, y, z);
+   default <T extends LivingEntity> T getClosestEntity(Class<? extends T> p_225318_1_, EntityPredicate p_225318_2_, @Nullable LivingEntity p_225318_3_, double p_225318_4_, double p_225318_6_, double p_225318_8_, AxisAlignedBB p_225318_10_) {
+      return this.getClosestEntity(this.func_225316_b(p_225318_1_, p_225318_10_, (Predicate<T>)null), p_225318_2_, p_225318_3_, p_225318_4_, p_225318_6_, p_225318_8_);
    }
 
    @Nullable
-   default <T extends LivingEntity> T getClosestEntity(List<? extends T> tgtEntityList, EntityPredicate tgtEntitySelector, @Nullable LivingEntity owner, double x, double y, double z) {
+   default <T extends LivingEntity> T getClosestEntity(List<? extends T> entities, EntityPredicate predicate, @Nullable LivingEntity target, double x, double y, double z) {
       double d0 = -1.0D;
       T t = null;
 
-      for(T t1 : tgtEntityList) {
-         if (tgtEntitySelector.canTarget(owner, t1)) {
+      for(T t1 : entities) {
+         if (predicate.canTarget(target, t1)) {
             double d1 = t1.getDistanceSq(x, y, z);
             if (d0 == -1.0D || d1 < d0) {
                d0 = d1;
@@ -167,11 +167,11 @@ public interface IEntityReader {
       return t;
    }
 
-   default List<PlayerEntity> getTargettablePlayersWithinAABB(EntityPredicate p_217373_1_, LivingEntity p_217373_2_, AxisAlignedBB p_217373_3_) {
+   default List<PlayerEntity> getTargettablePlayersWithinAABB(EntityPredicate predicate, LivingEntity target, AxisAlignedBB box) {
       List<PlayerEntity> list = Lists.newArrayList();
 
       for(PlayerEntity playerentity : this.getPlayers()) {
-         if (p_217373_3_.contains(playerentity.getPosX(), playerentity.getPosY(), playerentity.getPosZ()) && p_217373_1_.canTarget(p_217373_2_, playerentity)) {
+         if (box.contains(playerentity.getPosX(), playerentity.getPosY(), playerentity.getPosZ()) && predicate.canTarget(target, playerentity)) {
             list.add(playerentity);
          }
       }

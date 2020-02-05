@@ -47,7 +47,7 @@ public abstract class DamagingProjectileEntity extends Entity {
       this(p_i50175_1_, p_i50175_9_);
       this.shootingEntity = p_i50175_2_;
       this.setLocationAndAngles(p_i50175_2_.getPosX(), p_i50175_2_.getPosY(), p_i50175_2_.getPosZ(), p_i50175_2_.rotationYaw, p_i50175_2_.rotationPitch);
-      this.func_226264_Z_();
+      this.recenterBoundingBox();
       this.setMotion(Vec3d.ZERO);
       p_i50175_3_ = p_i50175_3_ + this.rand.nextGaussian() * 0.4D;
       p_i50175_5_ = p_i50175_5_ + this.rand.nextGaussian() * 0.4D;
@@ -80,7 +80,7 @@ public abstract class DamagingProjectileEntity extends Entity {
          }
 
          ++this.ticksInAir;
-         RayTraceResult raytraceresult = ProjectileHelper.func_221266_a(this, true, this.ticksInAir >= 25, this.shootingEntity, RayTraceContext.BlockMode.COLLIDER);
+         RayTraceResult raytraceresult = ProjectileHelper.rayTrace(this, true, this.ticksInAir >= 25, this.shootingEntity, RayTraceContext.BlockMode.COLLIDER);
          if (raytraceresult.getType() != RayTraceResult.Type.MISS) {
             this.onImpact(raytraceresult);
          }

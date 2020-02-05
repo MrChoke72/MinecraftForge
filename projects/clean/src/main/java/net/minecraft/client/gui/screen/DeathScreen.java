@@ -18,22 +18,22 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class DeathScreen extends Screen {
    private int enableButtonsTimer;
    private final ITextComponent causeOfDeath;
-   private final boolean field_213023_c;
+   private final boolean isHardcoreMode;
 
    public DeathScreen(@Nullable ITextComponent p_i51118_1_, boolean p_i51118_2_) {
       super(new TranslationTextComponent(p_i51118_2_ ? "deathScreen.title.hardcore" : "deathScreen.title"));
       this.causeOfDeath = p_i51118_1_;
-      this.field_213023_c = p_i51118_2_;
+      this.isHardcoreMode = p_i51118_2_;
    }
 
    protected void init() {
       this.enableButtonsTimer = 0;
-      this.addButton(new Button(this.width / 2 - 100, this.height / 4 + 72, 200, 20, this.field_213023_c ? I18n.format("deathScreen.spectate") : I18n.format("deathScreen.respawn"), (p_213021_1_) -> {
+      this.addButton(new Button(this.width / 2 - 100, this.height / 4 + 72, 200, 20, this.isHardcoreMode ? I18n.format("deathScreen.spectate") : I18n.format("deathScreen.respawn"), (p_213021_1_) -> {
          this.minecraft.player.respawnPlayer();
          this.minecraft.displayGuiScreen((Screen)null);
       }));
       Button button = this.addButton(new Button(this.width / 2 - 100, this.height / 4 + 96, 200, 20, I18n.format("deathScreen.titleScreen"), (p_213020_1_) -> {
-         if (this.field_213023_c) {
+         if (this.isHardcoreMode) {
             this.func_228177_a_();
          } else {
             ConfirmScreen confirmscreen = new ConfirmScreen(this::confirmCallback, new TranslationTextComponent("deathScreen.quit.confirm"), new StringTextComponent(""), I18n.format("deathScreen.titleScreen"), I18n.format("deathScreen.respawn"));
@@ -41,7 +41,7 @@ public class DeathScreen extends Screen {
             confirmscreen.setButtonDelay(20);
          }
       }));
-      if (!this.field_213023_c && this.minecraft.getSession() == null) {
+      if (!this.isHardcoreMode && this.minecraft.getSession() == null) {
          button.active = false;
       }
 
@@ -70,7 +70,7 @@ public class DeathScreen extends Screen {
          this.minecraft.world.sendQuittingDisconnectingPacket();
       }
 
-      this.minecraft.func_213231_b(new DirtMessageScreen(new TranslationTextComponent("menu.savingLevel")));
+      this.minecraft.unloadWorld(new DirtMessageScreen(new TranslationTextComponent("menu.savingLevel")));
       this.minecraft.displayGuiScreen(new MainMenuScreen());
    }
 

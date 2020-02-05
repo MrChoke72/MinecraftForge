@@ -125,7 +125,6 @@ public abstract class MobEntity extends LivingEntity {
    protected void registerGoals() {
    }
 
-
    protected void registerAttributes() {
       super.registerAttributes();
       this.getAttributes().registerAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(16.0D);
@@ -261,7 +260,7 @@ public abstract class MobEntity extends LivingEntity {
             double d1 = this.rand.nextGaussian() * 0.02D;
             double d2 = this.rand.nextGaussian() * 0.02D;
             double d3 = 10.0D;
-            this.world.addParticle(ParticleTypes.POOF, this.func_226275_c_(1.0D) - d0 * 10.0D, this.func_226279_cv_() - d1 * 10.0D, this.func_226287_g_(1.0D) - d2 * 10.0D, d0, d1, d2);
+            this.world.addParticle(ParticleTypes.POOF, this.getPosXWidth(1.0D) - d0 * 10.0D, this.getPosYRandom() - d1 * 10.0D, this.getPosZRandom(1.0D) - d2 * 10.0D, d0, d1, d2);
          }
       } else {
          this.world.setEntityState(this, (byte)20);
@@ -284,13 +283,13 @@ public abstract class MobEntity extends LivingEntity {
       if (!this.world.isRemote) {
          this.updateLeashedState();
          if (this.ticksExisted % 5 == 0) {
-            this.func_213385_F();
+            this.updateMovementGoalFlags();
          }
       }
 
    }
 
-   protected void func_213385_F() {
+   protected void updateMovementGoalFlags() {
       boolean flag = !(this.getControllingPassenger() instanceof MobEntity);
       boolean flag1 = !(this.getRidingEntity() instanceof BoatEntity);
       this.goalSelector.setFlag(Goal.Flag.MOVE, flag);
@@ -339,14 +338,14 @@ public abstract class MobEntity extends LivingEntity {
       ListNBT listnbt2 = new ListNBT();
 
       for(float f : this.inventoryArmorDropChances) {
-         listnbt2.add(FloatNBT.func_229689_a_(f));
+         listnbt2.add(FloatNBT.valueOf(f));
       }
 
       compound.put("ArmorDropChances", listnbt2);
       ListNBT listnbt3 = new ListNBT();
 
       for(float f1 : this.inventoryHandsDropChances) {
-         listnbt3.add(FloatNBT.func_229689_a_(f1));
+         listnbt3.add(FloatNBT.valueOf(f1));
       }
 
       compound.put("HandDropChances", listnbt3);
@@ -433,21 +432,21 @@ public abstract class MobEntity extends LivingEntity {
       this.setNoAI(compound.getBoolean("NoAI"));
    }
 
-   protected void dropLoot(DamageSource p_213354_1_, boolean p_213354_2_) {
-      super.dropLoot(p_213354_1_, p_213354_2_);
+   protected void dropLoot(DamageSource damageSourceIn, boolean p_213354_2_) {
+      super.dropLoot(damageSourceIn, p_213354_2_);
       this.deathLootTable = null;
    }
 
-   protected LootContext.Builder func_213363_a(boolean p_213363_1_, DamageSource p_213363_2_) {
-      return super.func_213363_a(p_213363_1_, p_213363_2_).withSeededRandom(this.deathLootTableSeed, this.rand);
+   protected LootContext.Builder getLootContextBuilder(boolean p_213363_1_, DamageSource damageSourceIn) {
+      return super.getLootContextBuilder(p_213363_1_, damageSourceIn).withSeededRandom(this.deathLootTableSeed, this.rand);
    }
 
-   public final ResourceLocation func_213346_cF() {
+   public final ResourceLocation getLootTableResourceLocation() {
       return this.deathLootTable == null ? this.getLootTable() : this.deathLootTable;
    }
 
    protected ResourceLocation getLootTable() {
-      return super.func_213346_cF();
+      return super.getLootTableResourceLocation();
    }
 
    public void setMoveForward(float amount) {
@@ -508,10 +507,10 @@ public abstract class MobEntity extends LivingEntity {
 
    }
 
-   protected boolean shouldExchangeEquipment(ItemStack candidate, ItemStack existing, EquipmentSlotType p_208003_3_) {
+   protected boolean shouldExchangeEquipment(ItemStack candidate, ItemStack existing, EquipmentSlotType slotTypeIn) {
       boolean flag = true;
       if (!existing.isEmpty()) {
-         if (p_208003_3_.getSlotType() == EquipmentSlotType.Group.HAND) {
+         if (slotTypeIn.getSlotType() == EquipmentSlotType.Group.HAND) {
             if (candidate.getItem() instanceof SwordItem && !(existing.getItem() instanceof SwordItem)) {
                flag = true;
             } else if (candidate.getItem() instanceof SwordItem && existing.getItem() instanceof SwordItem) {
@@ -557,20 +556,17 @@ public abstract class MobEntity extends LivingEntity {
       return false;
    }
 
-   protected boolean func_225511_J_() {
+   protected boolean isDespawnPeaceful() {
       return false;
    }
 
    public void checkDespawn() {
-      if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.func_225511_J_()) {
+      if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.isDespawnPeaceful()) {
          this.remove();
       } else if (!this.isNoDespawnRequired() && !this.preventDespawn()) {
          Entity entity = this.world.getClosestPlayer(this, -1.0D);
          if (entity != null) {
             double d0 = entity.getDistanceSq(this);
-
-            //AH CHANGE CANCEL: increase despawn distance
-            //if (d0 > 36864.0D && this.canDespawn(d0)) {     //From 128 to 192
             if (d0 > 16384.0D && this.canDespawn(d0)) {
                this.remove();
             }
@@ -613,11 +609,11 @@ public abstract class MobEntity extends LivingEntity {
       this.jumpController.tick();
       this.world.getProfiler().endSection();
       this.world.getProfiler().endSection();
-      this.func_213387_K();
+      this.sendDebugPackets();
    }
 
-   protected void func_213387_K() {
-      DebugPacketSender.func_218800_a(this.world, this, this.goalSelector);
+   protected void sendDebugPackets() {
+      DebugPacketSender.sendGoal(this.world, this, this.goalSelector);
    }
 
    protected void updateAITasks() {
@@ -631,7 +627,7 @@ public abstract class MobEntity extends LivingEntity {
       return 75;
    }
 
-   public int func_213396_dB() {
+   public int getFaceRotSpeed() {
       return 10;
    }
 
@@ -641,9 +637,9 @@ public abstract class MobEntity extends LivingEntity {
       double d1;
       if (entityIn instanceof LivingEntity) {
          LivingEntity livingentity = (LivingEntity)entityIn;
-         d1 = livingentity.getPosYPlusEyeHeight() - this.getPosYPlusEyeHeight();
+         d1 = livingentity.getPosYEye() - this.getPosYEye();
       } else {
-         d1 = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - this.getPosYPlusEyeHeight();
+         d1 = (entityIn.getBoundingBox().minY + entityIn.getBoundingBox().maxY) / 2.0D - this.getPosYEye();
       }
 
       double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
@@ -666,9 +662,9 @@ public abstract class MobEntity extends LivingEntity {
       return angle + f;
    }
 
-   public static boolean canEntitySpawn(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason reason, BlockPos pos, Random rand) {
+   public static boolean canSpawnOn(EntityType<? extends MobEntity> typeIn, IWorld worldIn, SpawnReason reason, BlockPos pos, Random randomIn) {
       BlockPos blockpos = pos.down();
-      return reason == SpawnReason.SPAWNER || world.getBlockState(blockpos).canEntitySpawn(world, blockpos, entityType);
+      return reason == SpawnReason.SPAWNER || worldIn.getBlockState(blockpos).canEntitySpawn(worldIn, blockpos, typeIn);
    }
 
    public boolean canSpawn(IWorld worldIn, SpawnReason spawnReasonIn) {
@@ -683,7 +679,7 @@ public abstract class MobEntity extends LivingEntity {
       return 4;
    }
 
-   public boolean func_204209_c(int p_204209_1_) {
+   public boolean isMaxGroupSize(int sizeIn) {
       return false;
    }
 
@@ -930,8 +926,8 @@ public abstract class MobEntity extends LivingEntity {
       this.canPickUpLoot = canPickup;
    }
 
-   public boolean func_213365_e(ItemStack p_213365_1_) {
-      EquipmentSlotType equipmentslottype = getSlotForItemStack(p_213365_1_);
+   public boolean canPickUpItem(ItemStack itemstackIn) {
+      EquipmentSlotType equipmentslottype = getSlotForItemStack(itemstackIn);
       return this.getItemStackFromSlot(equipmentslottype).isEmpty() && this.canPickUpLoot();
    }
 
@@ -1057,7 +1053,7 @@ public abstract class MobEntity extends LivingEntity {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_213381_d(int leashHolderIDIn) {
+   public void setVehicleEntityId(int leashHolderIDIn) {
       this.leashHolderID = leashHolderIDIn;
       this.clearLeashed(false, false);
    }
@@ -1142,9 +1138,9 @@ public abstract class MobEntity extends LivingEntity {
       this.dataManager.set(AI_FLAGS, leftHanded ? (byte)(b0 | 2) : (byte)(b0 & -3));
    }
 
-   public void setAggroed(boolean p_213395_1_) {
+   public void setAggroed(boolean hasAggro) {
       byte b0 = this.dataManager.get(AI_FLAGS);
-      this.dataManager.set(AI_FLAGS, p_213395_1_ ? (byte)(b0 | 4) : (byte)(b0 & -5));
+      this.dataManager.set(AI_FLAGS, hasAggro ? (byte)(b0 | 4) : (byte)(b0 & -5));
    }
 
    public boolean isAIDisabled() {
@@ -1211,7 +1207,7 @@ public abstract class MobEntity extends LivingEntity {
       if (this.world.isDaytime() && !this.world.isRemote) {
          float f = this.getBrightness();
          BlockPos blockpos = this.getRidingEntity() instanceof BoatEntity ? (new BlockPos(this.getPosX(), (double)Math.round(this.getPosY()), this.getPosZ())).up() : new BlockPos(this.getPosX(), (double)Math.round(this.getPosY()), this.getPosZ());
-         if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.isMaxLightLevel(blockpos)) {
+         if (f > 0.5F && this.rand.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.canSeeSky(blockpos)) {
             return true;
          }
       }
@@ -1282,5 +1278,4 @@ public abstract class MobEntity extends LivingEntity {
       }
    }
    //AH CHANGE END *****
-
 }

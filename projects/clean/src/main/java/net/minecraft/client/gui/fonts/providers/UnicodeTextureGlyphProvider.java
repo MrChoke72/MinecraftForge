@@ -75,13 +75,13 @@ public class UnicodeTextureGlyphProvider implements IGlyphProvider {
    }
 
    @Nullable
-   public IGlyphInfo func_212248_a(char p_212248_1_) {
-      byte b0 = this.sizes[p_212248_1_];
+   public IGlyphInfo getGlyphInfo(char character) {
+      byte b0 = this.sizes[character];
       if (b0 != 0) {
-         NativeImage nativeimage = this.field_211845_e.computeIfAbsent(this.getTextureFor(p_212248_1_), this::loadTexture);
+         NativeImage nativeimage = this.field_211845_e.computeIfAbsent(this.getTextureFor(character), this::loadTexture);
          if (nativeimage != null) {
             int i = func_212453_a(b0);
-            return new UnicodeTextureGlyphProvider.GlpyhInfo(p_212248_1_ % 16 * 16 + i, (p_212248_1_ & 255) / 16 * 16, func_212454_b(b0) - i, 16, nativeimage);
+            return new UnicodeTextureGlyphProvider.GlpyhInfo(character % 16 * 16 + i, (character & 255) / 16 * 16, func_212454_b(b0) - i, 16, nativeimage);
          }
       }
 
@@ -168,7 +168,7 @@ public class UnicodeTextureGlyphProvider implements IGlyphProvider {
       }
 
       public void uploadGlyph(int xOffset, int yOffset) {
-         this.texture.func_227788_a_(0, xOffset, yOffset, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false, false);
+         this.texture.uploadTextureSub(0, xOffset, yOffset, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false, false);
       }
 
       public boolean isColored() {

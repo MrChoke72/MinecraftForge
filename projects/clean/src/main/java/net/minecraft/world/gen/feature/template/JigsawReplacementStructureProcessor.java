@@ -19,12 +19,12 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
    }
 
    @Nullable
-   public Template.BlockInfo process(IWorldReader p_215194_1_, BlockPos p_215194_2_, Template.BlockInfo p_215194_3_, Template.BlockInfo p_215194_4_, PlacementSettings p_215194_5_) {
-      Block block = p_215194_4_.state.getBlock();
+   public Template.BlockInfo process(IWorldReader worldReaderIn, BlockPos pos, Template.BlockInfo p_215194_3_, Template.BlockInfo blockInfo, PlacementSettings placementSettingsIn) {
+      Block block = blockInfo.state.getBlock();
       if (block != Blocks.JIGSAW) {
-         return p_215194_4_;
+         return blockInfo;
       } else {
-         String s = p_215194_4_.nbt.getString("final_state");
+         String s = blockInfo.nbt.getString("final_state");
          BlockStateParser blockstateparser = new BlockStateParser(new StringReader(s), false);
 
          try {
@@ -33,7 +33,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
             throw new RuntimeException(commandsyntaxexception);
          }
 
-         return blockstateparser.getState().getBlock() == Blocks.STRUCTURE_VOID ? null : new Template.BlockInfo(p_215194_4_.pos, blockstateparser.getState(), (CompoundNBT)null);
+         return blockstateparser.getState().getBlock() == Blocks.STRUCTURE_VOID ? null : new Template.BlockInfo(blockInfo.pos, blockstateparser.getState(), (CompoundNBT)null);
       }
    }
 

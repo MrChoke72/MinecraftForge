@@ -45,8 +45,8 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
       return p_195610_0_;
    };
 
-   public TextFieldWidget(FontRenderer fontIn, int p_i51137_2_, int p_i51137_3_, int p_i51137_4_, int p_i51137_5_, String msg) {
-      this(fontIn, p_i51137_2_, p_i51137_3_, p_i51137_4_, p_i51137_5_, (TextFieldWidget)null, msg);
+   public TextFieldWidget(FontRenderer fontIn, int xIn, int yIn, int widthIn, int heightIn, String msg) {
+      this(fontIn, xIn, yIn, widthIn, heightIn, (TextFieldWidget)null, msg);
    }
 
    public TextFieldWidget(FontRenderer fontIn, int xIn, int yIn, int widthIn, int heightIn, @Nullable TextFieldWidget p_i51138_6_, String msg) {
@@ -58,12 +58,12 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
 
    }
 
-   public void func_212954_a(Consumer<String> p_212954_1_) {
-      this.guiResponder = p_212954_1_;
+   public void setResponder(Consumer<String> rssponderIn) {
+      this.guiResponder = rssponderIn;
    }
 
-   public void setTextFormatter(BiFunction<String, Integer, String> p_195607_1_) {
-      this.textFormatter = p_195607_1_;
+   public void setTextFormatter(BiFunction<String, Integer, String> textFormatterIn) {
+      this.textFormatter = textFormatterIn;
    }
 
    public void tick() {
@@ -85,7 +85,7 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
 
          this.setCursorPositionEnd();
          this.setSelectionPos(this.cursorPosition);
-         this.func_212951_d(textIn);
+         this.onTextChanged(textIn);
       }
    }
 
@@ -99,8 +99,8 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
       return this.text.substring(i, j);
    }
 
-   public void setValidator(Predicate<String> p_200675_1_) {
-      this.validator = p_200675_1_;
+   public void setValidator(Predicate<String> validatorIn) {
+      this.validator = validatorIn;
    }
 
    public void writeText(String textToWrite) {
@@ -128,15 +128,15 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
 
       if (this.validator.test(s)) {
          this.text = s;
-         this.func_212422_f(i + l);
+         this.clampCursorPosition(i + l);
          this.setSelectionPos(this.cursorPosition);
-         this.func_212951_d(this.text);
+         this.onTextChanged(this.text);
       }
    }
 
-   private void func_212951_d(String p_212951_1_) {
+   private void onTextChanged(String newText) {
       if (this.guiResponder != null) {
-         this.guiResponder.accept(p_212951_1_);
+         this.guiResponder.accept(newText);
       }
 
       this.nextNarration = Util.milliTime() + 500L;
@@ -184,7 +184,7 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
                   this.moveCursorBy(num);
                }
 
-               this.func_212951_d(this.text);
+               this.onTextChanged(this.text);
             }
          }
       }
@@ -233,16 +233,16 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
    }
 
    public void setCursorPosition(int pos) {
-      this.func_212422_f(pos);
+      this.clampCursorPosition(pos);
       if (!this.field_212956_h) {
          this.setSelectionPos(this.cursorPosition);
       }
 
-      this.func_212951_d(this.text);
+      this.onTextChanged(this.text);
    }
 
-   public void func_212422_f(int p_212422_1_) {
-      this.cursorPosition = MathHelper.clamp(p_212422_1_, 0, this.text.length());
+   public void clampCursorPosition(int pos) {
+      this.cursorPosition = MathHelper.clamp(pos, 0, this.text.length());
    }
 
    public void setCursorPositionZero() {
@@ -254,7 +254,7 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
    }
 
    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-      if (!this.func_212955_f()) {
+      if (!this.canWrite()) {
          return false;
       } else {
          this.field_212956_h = Screen.hasShiftDown();
@@ -330,12 +330,12 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
       }
    }
 
-   public boolean func_212955_f() {
+   public boolean canWrite() {
       return this.getVisible() && this.isFocused() && this.isEnabled();
    }
 
    public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
-      if (!this.func_212955_f()) {
+      if (!this.canWrite()) {
          return false;
       } else if (SharedConstants.isAllowedCharacter(p_charTyped_1_)) {
          if (this.isEnabled) {
@@ -462,10 +462,10 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
       RenderSystem.enableColorLogicOp();
       RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-      bufferbuilder.func_225582_a_((double)startX, (double)endY, 0.0D).endVertex();
-      bufferbuilder.func_225582_a_((double)endX, (double)endY, 0.0D).endVertex();
-      bufferbuilder.func_225582_a_((double)endX, (double)startY, 0.0D).endVertex();
-      bufferbuilder.func_225582_a_((double)startX, (double)startY, 0.0D).endVertex();
+      bufferbuilder.pos((double)startX, (double)endY, 0.0D).endVertex();
+      bufferbuilder.pos((double)endX, (double)endY, 0.0D).endVertex();
+      bufferbuilder.pos((double)endX, (double)startY, 0.0D).endVertex();
+      bufferbuilder.pos((double)startX, (double)startY, 0.0D).endVertex();
       tessellator.draw();
       RenderSystem.disableColorLogicOp();
       RenderSystem.enableTexture();
@@ -475,7 +475,7 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
       this.maxStringLength = length;
       if (this.text.length() > length) {
          this.text = this.text.substring(0, length);
-         this.func_212951_d(this.text);
+         this.onTextChanged(this.text);
       }
 
    }
@@ -577,7 +577,7 @@ public class TextFieldWidget extends Widget implements IRenderable, IGuiEventLis
       return p_195611_1_ > this.text.length() ? this.x : this.x + this.fontRenderer.getStringWidth(this.text.substring(0, p_195611_1_));
    }
 
-   public void setX(int p_212952_1_) {
-      this.x = p_212952_1_;
+   public void setX(int xIn) {
+      this.x = xIn;
    }
 }

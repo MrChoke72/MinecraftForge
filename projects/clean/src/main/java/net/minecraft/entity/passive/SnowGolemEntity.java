@@ -84,7 +84,7 @@ public class SnowGolemEntity extends GolemEntity implements IRangedAttackMob {
             this.attackEntityFrom(DamageSource.DROWN, 1.0F);
          }
 
-         if (this.world.func_226691_t_(new BlockPos(i, 0, k)).func_225486_c(new BlockPos(i, j, k)) > 1.0F) {
+         if (this.world.getBiome(new BlockPos(i, 0, k)).getTemperature(new BlockPos(i, j, k)) > 1.0F) {
             this.attackEntityFrom(DamageSource.ON_FIRE, 1.0F);
          }
 
@@ -99,7 +99,7 @@ public class SnowGolemEntity extends GolemEntity implements IRangedAttackMob {
             j = MathHelper.floor(this.getPosY());
             k = MathHelper.floor(this.getPosZ() + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
             BlockPos blockpos = new BlockPos(i, j, k);
-            if (this.world.getBlockState(blockpos).isAir() && this.world.func_226691_t_(blockpos).func_225486_c(blockpos) < 0.8F && blockstate.isValidPosition(this.world, blockpos)) {
+            if (this.world.getBlockState(blockpos).isAir() && this.world.getBiome(blockpos).getTemperature(blockpos) < 0.8F && blockstate.isValidPosition(this.world, blockpos)) {
                this.world.setBlockState(blockpos, blockstate);
             }
          }
@@ -109,7 +109,7 @@ public class SnowGolemEntity extends GolemEntity implements IRangedAttackMob {
 
    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
       SnowballEntity snowballentity = new SnowballEntity(this.world, this);
-      double d0 = target.getPosYPlusEyeHeight() - (double)1.1F;
+      double d0 = target.getPosYEye() - (double)1.1F;
       double d1 = target.getPosX() - this.getPosX();
       double d2 = d0 - snowballentity.getPosY();
       double d3 = target.getPosZ() - this.getPosZ();

@@ -116,7 +116,7 @@ public class EyeOfEnderEntity extends Entity implements IRendersAsItem {
       double d0 = this.getPosX() + vec3d.x;
       double d1 = this.getPosY() + vec3d.y;
       double d2 = this.getPosZ() + vec3d.z;
-      float f = MathHelper.sqrt(func_213296_b(vec3d));
+      float f = MathHelper.sqrt(horizontalMag(vec3d));
       this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * (double)(180F / (float)Math.PI));
 
       for(this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * (double)(180F / (float)Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
@@ -176,7 +176,7 @@ public class EyeOfEnderEntity extends Entity implements IRendersAsItem {
             }
          }
       } else {
-         this.func_226288_n_(d0, d1, d2);
+         this.setRawPosition(d0, d1, d2);
       }
 
    }

@@ -10,41 +10,41 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 
 public class DefendVillageTargetGoal extends TargetGoal {
-   private final IronGolemEntity golem;
-   private LivingEntity targetEntity;
+   private final IronGolemEntity irongolem;
+   private LivingEntity villageAgressorTarget;
    private final EntityPredicate field_223190_c = (new EntityPredicate()).setDistance(64.0D);
 
    public DefendVillageTargetGoal(IronGolemEntity ironGolemIn) {
       super(ironGolemIn, false, true);
-      this.golem = ironGolemIn;
+      this.irongolem = ironGolemIn;
       this.setMutexFlags(EnumSet.of(Goal.Flag.TARGET));
    }
 
    public boolean shouldExecute() {
-      AxisAlignedBB axisalignedbb = this.golem.getBoundingBox().grow(10.0D, 8.0D, 10.0D);
-      List<LivingEntity> list = this.golem.world.getTargettableEntitiesWithinAABB(VillagerEntity.class, this.field_223190_c, this.golem, axisalignedbb);
-      List<PlayerEntity> list1 = this.golem.world.getTargettablePlayersWithinAABB(this.field_223190_c, this.golem, axisalignedbb);
+      AxisAlignedBB axisalignedbb = this.irongolem.getBoundingBox().grow(10.0D, 8.0D, 10.0D);
+      List<LivingEntity> list = this.irongolem.world.getTargettableEntitiesWithinAABB(VillagerEntity.class, this.field_223190_c, this.irongolem, axisalignedbb);
+      List<PlayerEntity> list1 = this.irongolem.world.getTargettablePlayersWithinAABB(this.field_223190_c, this.irongolem, axisalignedbb);
 
       for(LivingEntity livingentity : list) {
          VillagerEntity villagerentity = (VillagerEntity)livingentity;
 
          for(PlayerEntity playerentity : list1) {
-            int i = villagerentity.getGossipForPlayer(playerentity);
+            int i = villagerentity.getPlayerReputation(playerentity);
             if (i <= -100) {
-               this.targetEntity = playerentity;
+               this.villageAgressorTarget = playerentity;
             }
          }
       }
 
-      if (this.targetEntity == null) {
+      if (this.villageAgressorTarget == null) {
          return false;
       } else {
-         return !(this.targetEntity instanceof PlayerEntity) || !this.targetEntity.isSpectator() && !((PlayerEntity)this.targetEntity).isCreative();
+         return !(this.villageAgressorTarget instanceof PlayerEntity) || !this.villageAgressorTarget.isSpectator() && !((PlayerEntity)this.villageAgressorTarget).isCreative();
       }
    }
 
    public void startExecuting() {
-      this.golem.setAttackTarget(this.targetEntity);
+      this.irongolem.setAttackTarget(this.villageAgressorTarget);
       super.startExecuting();
    }
 }

@@ -51,12 +51,12 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
    protected final BlockState defaultBlock;
    protected final BlockState defaultFluid;
 
-   public NoiseChunkGenerator(IWorld worldIn, BiomeProvider biomeProviderIn, int p_i49931_3_, int p_i49931_4_, int p_i49931_5_, T p_i49931_6_, boolean usePerlin) {
-      super(worldIn, biomeProviderIn, p_i49931_6_);
-      this.verticalNoiseGranularity = p_i49931_4_;
-      this.horizontalNoiseGranularity = p_i49931_3_;
-      this.defaultBlock = p_i49931_6_.getDefaultBlock();
-      this.defaultFluid = p_i49931_6_.getDefaultFluid();
+   public NoiseChunkGenerator(IWorld worldIn, BiomeProvider biomeProviderIn, int horizontalNoiseGranularityIn, int verticalNoiseGranularityIn, int p_i49931_5_, T settingsIn, boolean usePerlin) {
+      super(worldIn, biomeProviderIn, settingsIn);
+      this.verticalNoiseGranularity = verticalNoiseGranularityIn;
+      this.horizontalNoiseGranularity = horizontalNoiseGranularityIn;
+      this.defaultBlock = settingsIn.getDefaultBlock();
+      this.defaultFluid = settingsIn.getDefaultFluid();
       this.noiseSizeX = 16 / this.horizontalNoiseGranularity;
       this.noiseSizeY = p_i49931_5_ / this.verticalNoiseGranularity;
       this.noiseSizeZ = 16 / this.horizontalNoiseGranularity;
@@ -103,19 +103,19 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
 
    protected double[] func_222547_b(int p_222547_1_, int p_222547_2_) {
       double[] adouble = new double[this.noiseSizeY + 1];
-      this.func_222548_a(adouble, p_222547_1_, p_222547_2_);
+      this.fillNoiseColumn(adouble, p_222547_1_, p_222547_2_);
       return adouble;
    }
 
-   protected void func_222546_a(double[] p_222546_1_, int p_222546_2_, int p_222546_3_, double p_222546_4_, double p_222546_6_, double p_222546_8_, double p_222546_10_, int p_222546_12_, int p_222546_13_) {
-      double[] adouble = this.func_222549_a(p_222546_2_, p_222546_3_);
+   protected void func_222546_a(double[] noiseColumn, int noiseX, int noiseZ, double p_222546_4_, double p_222546_6_, double p_222546_8_, double p_222546_10_, int p_222546_12_, int p_222546_13_) {
+      double[] adouble = this.getBiomeNoiseColumn(noiseX, noiseZ);
       double d0 = adouble[0];
       double d1 = adouble[1];
       double d2 = this.func_222551_g();
       double d3 = this.func_222553_h();
 
-      for(int i = 0; i < this.func_222550_i(); ++i) {
-         double d4 = this.func_222552_a(p_222546_2_, i, p_222546_3_, p_222546_4_, p_222546_6_, p_222546_8_, p_222546_10_);
+      for(int i = 0; i < this.noiseSizeY(); ++i) {
+         double d4 = this.func_222552_a(noiseX, i, noiseZ, p_222546_4_, p_222546_6_, p_222546_8_, p_222546_10_);
          d4 = d4 - this.func_222545_a(d0, d1, i);
          if ((double)i > d2) {
             d4 = MathHelper.clampedLerp(d4, (double)p_222546_13_, ((double)i - d2) / (double)p_222546_12_);
@@ -123,24 +123,24 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
             d4 = MathHelper.clampedLerp(d4, -30.0D, (d3 - (double)i) / (d3 - 1.0D));
          }
 
-         p_222546_1_[i] = d4;
+         noiseColumn[i] = d4;
       }
 
    }
 
-   protected abstract double[] func_222549_a(int p_222549_1_, int p_222549_2_);
+   protected abstract double[] getBiomeNoiseColumn(int noiseX, int noiseZ);
 
    protected abstract double func_222545_a(double p_222545_1_, double p_222545_3_, int p_222545_5_);
 
    protected double func_222551_g() {
-      return (double)(this.func_222550_i() - 4);
+      return (double)(this.noiseSizeY() - 4);
    }
 
    protected double func_222553_h() {
       return 0.0D;
    }
 
-   public int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type p_222529_3_) {
+   public int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type heightmapType) {
       int i = Math.floorDiv(p_222529_1_, this.horizontalNoiseGranularity);
       int j = Math.floorDiv(p_222529_2_, this.horizontalNoiseGranularity);
       int k = Math.floorMod(p_222529_1_, this.horizontalNoiseGranularity);
@@ -172,7 +172,7 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
                   blockstate = this.defaultFluid;
                }
 
-               if (p_222529_3_.func_222684_d().test(blockstate)) {
+               if (heightmapType.getHeightLimitPredicate().test(blockstate)) {
                   return l1 + 1;
                }
             }
@@ -182,9 +182,9 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
       return 0;
    }
 
-   protected abstract void func_222548_a(double[] p_222548_1_, int p_222548_2_, int p_222548_3_);
+   protected abstract void fillNoiseColumn(double[] noiseColumn, int noiseX, int noiseZ);
 
-   public int func_222550_i() {
+   public int noiseSizeY() {
       return this.noiseSizeY + 1;
    }
 
@@ -205,8 +205,8 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
             int k1 = k + i1;
             int l1 = l + j1;
             int i2 = p_225551_2_.getTopBlockY(Heightmap.Type.WORLD_SURFACE_WG, i1, j1) + 1;
-            double d1 = this.surfaceDepthNoise.func_215460_a((double)k1 * 0.0625D, (double)l1 * 0.0625D, 0.0625D, (double)i1 * 0.0625D) * 15.0D;
-            p_225551_1_.func_226691_t_(blockpos$mutable.setPos(k + i1, i2, l + j1)).buildSurface(sharedseedrandom, p_225551_2_, k1, l1, i2, d1, this.getSettings().getDefaultBlock(), this.getSettings().getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
+            double d1 = this.surfaceDepthNoise.noiseAt((double)k1 * 0.0625D, (double)l1 * 0.0625D, 0.0625D, (double)i1 * 0.0625D) * 15.0D;
+            p_225551_1_.getBiome(blockpos$mutable.setPos(k + i1, i2, l + j1)).buildSurface(sharedseedrandom, p_225551_2_, k1, l1, i2, d1, this.getSettings().getDefaultBlock(), this.getSettings().getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
          }
       }
 
@@ -251,7 +251,7 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
       int l = j << 4;
       int i1 = k << 4;
 
-      for(Structure<?> structure : Feature.field_214488_aQ) {
+      for(Structure<?> structure : Feature.ILLAGER_STRUCTURES) {
          String s = structure.getStructureName();
          LongIterator longiterator = chunkIn.getStructureReferences(s).iterator();
 
@@ -264,7 +264,7 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
                for(StructurePiece structurepiece : structurestart.getComponents()) {
                   if (structurepiece.func_214810_a(chunkpos, 12) && structurepiece instanceof AbstractVillagePiece) {
                      AbstractVillagePiece abstractvillagepiece = (AbstractVillagePiece)structurepiece;
-                     JigsawPattern.PlacementBehaviour jigsawpattern$placementbehaviour = abstractvillagepiece.func_214826_b().getPlacementBehaviour();
+                     JigsawPattern.PlacementBehaviour jigsawpattern$placementbehaviour = abstractvillagepiece.getJigsawPiece().getPlacementBehaviour();
                      if (jigsawpattern$placementbehaviour == JigsawPattern.PlacementBehaviour.RIGID) {
                         objectlist.add(abstractvillagepiece);
                      }
@@ -286,20 +286,20 @@ public abstract class NoiseChunkGenerator<T extends GenerationSettings> extends 
 
       for(int j5 = 0; j5 < this.noiseSizeZ + 1; ++j5) {
          adouble[0][j5] = new double[this.noiseSizeY + 1];
-         this.func_222548_a(adouble[0][j5], j * this.noiseSizeX, k * this.noiseSizeZ + j5);
+         this.fillNoiseColumn(adouble[0][j5], j * this.noiseSizeX, k * this.noiseSizeZ + j5);
          adouble[1][j5] = new double[this.noiseSizeY + 1];
       }
 
       ChunkPrimer chunkprimer = (ChunkPrimer)chunkIn;
-      Heightmap heightmap = chunkprimer.func_217303_b(Heightmap.Type.OCEAN_FLOOR_WG);
-      Heightmap heightmap1 = chunkprimer.func_217303_b(Heightmap.Type.WORLD_SURFACE_WG);
+      Heightmap heightmap = chunkprimer.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
+      Heightmap heightmap1 = chunkprimer.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
       BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
       ObjectListIterator<AbstractVillagePiece> objectlistiterator = objectlist.iterator();
       ObjectListIterator<JigsawJunction> objectlistiterator1 = objectlist1.iterator();
 
       for(int k5 = 0; k5 < this.noiseSizeX; ++k5) {
          for(int l5 = 0; l5 < this.noiseSizeZ + 1; ++l5) {
-            this.func_222548_a(adouble[1][l5], j * this.noiseSizeX + k5 + 1, k * this.noiseSizeZ + l5);
+            this.fillNoiseColumn(adouble[1][l5], j * this.noiseSizeX + k5 + 1, k * this.noiseSizeZ + l5);
          }
 
          for(int i6 = 0; i6 < this.noiseSizeZ; ++i6) {

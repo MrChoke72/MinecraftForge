@@ -9,7 +9,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class DefaultGlyphProvider implements IGlyphProvider {
    @Nullable
-   public IGlyphInfo func_212248_a(char p_212248_1_) {
+   public IGlyphInfo getGlyphInfo(char character) {
       return DefaultGlyph.INSTANCE;
    }
 }

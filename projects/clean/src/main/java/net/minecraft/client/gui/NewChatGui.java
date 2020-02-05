@@ -32,7 +32,7 @@ public class NewChatGui extends AbstractGui {
    }
 
    public void render(int updateCounter) {
-      if (this.func_228091_i_()) {
+      if (this.isChatVisible()) {
          int i = this.getLineCount();
          int j = this.drawnChatLines.size();
          if (j > 0) {
@@ -49,14 +49,14 @@ public class NewChatGui extends AbstractGui {
             double d1 = this.mc.gameSettings.chatOpacity * (double)0.9F + (double)0.1F;
             double d2 = this.mc.gameSettings.accessibilityTextBackgroundOpacity;
             int l = 0;
-            Matrix4f matrix4f = Matrix4f.func_226599_b_(0.0F, 0.0F, -100.0F);
+            Matrix4f matrix4f = Matrix4f.makeTranslate(0.0F, 0.0F, -100.0F);
 
             for(int i1 = 0; i1 + this.scrollPos < this.drawnChatLines.size() && i1 < i; ++i1) {
                ChatLine chatline = this.drawnChatLines.get(i1 + this.scrollPos);
                if (chatline != null) {
                   int j1 = updateCounter - chatline.getUpdatedCounter();
                   if (j1 < 200 || flag) {
-                     double d3 = flag ? 1.0D : func_212915_c(j1);
+                     double d3 = flag ? 1.0D : getLineBrightness(j1);
                      int l1 = (int)(255.0D * d3 * d1);
                      int i2 = (int)(255.0D * d3 * d2);
                      ++l;
@@ -94,12 +94,12 @@ public class NewChatGui extends AbstractGui {
       }
    }
 
-   private boolean func_228091_i_() {
+   private boolean isChatVisible() {
       return this.mc.gameSettings.chatVisibility != ChatVisibility.HIDDEN;
    }
 
-   private static double func_212915_c(int p_212915_0_) {
-      double d0 = (double)p_212915_0_ / 200.0D;
+   private static double getLineBrightness(int counterIn) {
+      double d0 = (double)counterIn / 200.0D;
       d0 = 1.0D - d0;
       d0 = d0 * 10.0D;
       d0 = MathHelper.clamp(d0, 0.0D, 1.0D);
@@ -137,7 +137,7 @@ public class NewChatGui extends AbstractGui {
       for(ITextComponent itextcomponent : list) {
          if (flag && this.scrollPos > 0) {
             this.isScrolled = true;
-            this.func_194813_a(1.0D);
+            this.addScrollPos(1.0D);
          }
 
          this.drawnChatLines.add(0, new ChatLine(updateCounter, itextcomponent, chatLineId));
@@ -184,8 +184,8 @@ public class NewChatGui extends AbstractGui {
       this.isScrolled = false;
    }
 
-   public void func_194813_a(double p_194813_1_) {
-      this.scrollPos = (int)((double)this.scrollPos + p_194813_1_);
+   public void addScrollPos(double posInc) {
+      this.scrollPos = (int)((double)this.scrollPos + posInc);
       int i = this.drawnChatLines.size();
       if (this.scrollPos > i - this.getLineCount()) {
          this.scrollPos = i - this.getLineCount();
@@ -200,10 +200,10 @@ public class NewChatGui extends AbstractGui {
 
    @Nullable
    public ITextComponent getTextComponent(double p_194817_1_, double p_194817_3_) {
-      if (this.getChatOpen() && !this.mc.gameSettings.hideGUI && this.func_228091_i_()) {
+      if (this.getChatOpen() && !this.mc.gameSettings.hideGUI && this.isChatVisible()) {
          double d0 = this.getScale();
          double d1 = p_194817_1_ - 2.0D;
-         double d2 = (double)this.mc.func_228018_at_().getScaledHeight() - p_194817_3_ - 40.0D;
+         double d2 = (double)this.mc.getMainWindow().getScaledHeight() - p_194817_3_ - 40.0D;
          d1 = (double)MathHelper.floor(d1 / d0);
          d2 = (double)MathHelper.floor(d2 / d0);
          if (!(d1 < 0.0D) && !(d2 < 0.0D)) {

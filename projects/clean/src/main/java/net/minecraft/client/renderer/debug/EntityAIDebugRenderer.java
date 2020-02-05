@@ -17,7 +17,7 @@ public class EntityAIDebugRenderer implements DebugRenderer.IDebugRenderer {
    private final Minecraft client;
    private final Map<Integer, List<EntityAIDebugRenderer.Entry>> field_217685_b = Maps.newHashMap();
 
-   public void func_217675_a() {
+   public void clear() {
       this.field_217685_b.clear();
    }
 
@@ -29,7 +29,7 @@ public class EntityAIDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.client = client;
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       ActiveRenderInfo activerenderinfo = this.client.gameRenderer.getActiveRenderInfo();
       RenderSystem.pushMatrix();
       RenderSystem.enableBlend();
@@ -44,7 +44,7 @@ public class EntityAIDebugRenderer implements DebugRenderer.IDebugRenderer {
                double d1 = (double)entityaidebugrenderer$entry.field_217723_a.getY() + 2.0D + (double)i * 0.25D;
                double d2 = (double)entityaidebugrenderer$entry.field_217723_a.getZ() + 0.5D;
                int j = entityaidebugrenderer$entry.field_217726_d ? -16711936 : -3355444;
-               DebugRenderer.func_217732_a(entityaidebugrenderer$entry.field_217725_c, d0, d1, d2, j);
+               DebugRenderer.renderText(entityaidebugrenderer$entry.field_217725_c, d0, d1, d2, j);
             }
          }
 

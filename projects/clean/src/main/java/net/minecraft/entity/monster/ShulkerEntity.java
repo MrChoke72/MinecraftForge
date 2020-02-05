@@ -92,7 +92,7 @@ public class ShulkerEntity extends GolemEntity implements IMob {
       this.targetSelector.addGoal(3, new ShulkerEntity.DefenseAttackGoal(this));
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -206,12 +206,12 @@ public class ShulkerEntity extends GolemEntity implements IMob {
          }
 
          BlockPos blockpos1 = blockpos.offset(this.getAttachmentFacing());
-         if (!this.world.func_217400_a(blockpos1, this)) {
+         if (!this.world.isTopSolid(blockpos1, this)) {
             boolean flag = false;
 
             for(Direction direction1 : Direction.values()) {
                blockpos1 = blockpos.offset(direction1);
-               if (this.world.func_217400_a(blockpos1, this)) {
+               if (this.world.isTopSolid(blockpos1, this)) {
                   this.dataManager.set(ATTACHED_FACE, direction1);
                   flag = true;
                   break;
@@ -224,7 +224,7 @@ public class ShulkerEntity extends GolemEntity implements IMob {
          }
 
          BlockPos blockpos2 = blockpos.offset(this.getAttachmentFacing().getOpposite());
-         if (this.world.func_217400_a(blockpos2, this)) {
+         if (this.world.isTopSolid(blockpos2, this)) {
             this.tryTeleportToNewPosition();
          }
       }
@@ -246,7 +246,7 @@ public class ShulkerEntity extends GolemEntity implements IMob {
             }
          }
 
-         this.func_226286_f_((double)blockpos.getX() + 0.5D, (double)blockpos.getY(), (double)blockpos.getZ() + 0.5D);
+         this.forceSetPosition((double)blockpos.getX() + 0.5D, (double)blockpos.getY(), (double)blockpos.getZ() + 0.5D);
          double d0 = 0.5D - (double)MathHelper.sin((0.5F + this.peekAmount) * (float)Math.PI) * 0.5D;
          double d1 = 0.5D - (double)MathHelper.sin((0.5F + this.prevPeekAmount) * (float)Math.PI) * 0.5D;
          Direction direction3 = this.getAttachmentFacing().getOpposite();
@@ -299,7 +299,7 @@ public class ShulkerEntity extends GolemEntity implements IMob {
                boolean flag = false;
 
                for(Direction direction : Direction.values()) {
-                  if (this.world.func_217400_a(blockpos1.offset(direction), this)) {
+                  if (this.world.isTopSolid(blockpos1.offset(direction), this)) {
                      this.dataManager.set(ATTACHED_FACE, direction);
                      flag = true;
                      break;
@@ -340,7 +340,7 @@ public class ShulkerEntity extends GolemEntity implements IMob {
                this.clientSideTeleportInterpolation = 6;
             }
 
-            this.func_226286_f_((double)blockpos.getX() + 0.5D, (double)blockpos.getY(), (double)blockpos.getZ() + 0.5D);
+            this.forceSetPosition((double)blockpos.getX() + 0.5D, (double)blockpos.getY(), (double)blockpos.getZ() + 0.5D);
          }
       }
 

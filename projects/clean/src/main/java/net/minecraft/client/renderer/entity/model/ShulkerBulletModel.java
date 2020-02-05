@@ -14,18 +14,18 @@ public class ShulkerBulletModel<T extends Entity> extends SegmentedModel<T> {
       this.textureWidth = 64;
       this.textureHeight = 32;
       this.renderer = new ModelRenderer(this);
-      this.renderer.setTextureOffset(0, 0).func_228301_a_(-4.0F, -4.0F, -1.0F, 8.0F, 8.0F, 2.0F, 0.0F);
-      this.renderer.setTextureOffset(0, 10).func_228301_a_(-1.0F, -4.0F, -4.0F, 2.0F, 8.0F, 8.0F, 0.0F);
-      this.renderer.setTextureOffset(20, 0).func_228301_a_(-4.0F, -1.0F, -4.0F, 8.0F, 2.0F, 8.0F, 0.0F);
+      this.renderer.setTextureOffset(0, 0).addBox(-4.0F, -4.0F, -1.0F, 8.0F, 8.0F, 2.0F, 0.0F);
+      this.renderer.setTextureOffset(0, 10).addBox(-1.0F, -4.0F, -4.0F, 2.0F, 8.0F, 8.0F, 0.0F);
+      this.renderer.setTextureOffset(20, 0).addBox(-4.0F, -1.0F, -4.0F, 8.0F, 2.0F, 8.0F, 0.0F);
       this.renderer.setRotationPoint(0.0F, 0.0F, 0.0F);
    }
 
-   public Iterable<ModelRenderer> func_225601_a_() {
+   public Iterable<ModelRenderer> getParts() {
       return ImmutableList.of(this.renderer);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      this.renderer.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F);
-      this.renderer.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.renderer.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
+      this.renderer.rotateAngleX = headPitch * ((float)Math.PI / 180F);
    }
 }

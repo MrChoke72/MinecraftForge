@@ -122,9 +122,7 @@ public abstract class PathNavigator {
    }
 
    @Nullable
-   //AH REFACTOR
-   public Path getPathToEntityLiving(Entity entityIn, int keepDist) {
-   //public Path getPathToEntityLiving(Entity entityIn, int p_75494_2_) {
+   public Path getPathToEntity(Entity entityIn, int keepDist) {
       return this.findPath(ImmutableSet.of(new BlockPos(entityIn)), 16, true, keepDist);
    }
 
@@ -162,7 +160,7 @@ public abstract class PathNavigator {
    }
 
    public boolean tryMoveToEntityLiving(Entity entityIn, double speedIn) {
-      Path path = this.getPathToEntityLiving(entityIn, 1);
+      Path path = this.getPathToEntity(entityIn, 1);
       return path != null && this.setPath(path, speedIn);
    }
 
@@ -224,7 +222,7 @@ public abstract class PathNavigator {
             }
          }
 
-         DebugPacketSender.func_218803_a(this.world, this.entity, this.currentPath, this.maxDistanceToWaypoint);
+         DebugPacketSender.sendPath(this.world, this.entity, this.currentPath, this.maxDistanceToWaypoint);
          if (!this.noPath()) {
             Vec3d vec3d2 = this.currentPath.getPosition(this.entity);
             BlockPos blockpos = new BlockPos(vec3d2);

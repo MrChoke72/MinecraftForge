@@ -40,7 +40,7 @@ public class TestUtils {
 
          public void func_225645_c_(TestTracker p_225645_1_) {
             TestUtils.func_229559_b_(p_225645_1_, p_225645_1_.func_229520_q_() ? Blocks.RED_STAINED_GLASS : Blocks.ORANGE_STAINED_GLASS);
-            TestUtils.func_229560_b_(p_225645_1_, Util.func_229758_d_(p_225645_1_.func_229519_n_()));
+            TestUtils.func_229560_b_(p_225645_1_, Util.getMessage(p_225645_1_.func_229519_n_()));
             TestUtils.func_229563_c_(p_225645_1_);
          }
       });
@@ -78,7 +78,7 @@ public class TestUtils {
 
    private static void func_229563_c_(TestTracker p_229563_0_) {
       Throwable throwable = p_229563_0_.func_229519_n_();
-      String s = p_229563_0_.func_229510_c_() + " failed! " + Util.func_229758_d_(throwable);
+      String s = p_229563_0_.func_229510_c_() + " failed! " + Util.getMessage(throwable);
       func_229556_a_(p_229563_0_.func_229514_g_(), TextFormatting.RED, s);
       if (throwable instanceof TestBlockPosException) {
          TestBlockPosException testblockposexception = (TestBlockPosException)throwable;
@@ -127,7 +127,7 @@ public class TestUtils {
       }
 
       stringbuffer.append("-------------------\n");
-      listnbt.add(StringNBT.func_229705_a_(stringbuffer.toString() + p_229546_2_));
+      listnbt.add(StringNBT.valueOf(stringbuffer.toString() + p_229546_2_));
       itemstack.setTagInfo("pages", listnbt);
       return itemstack;
    }

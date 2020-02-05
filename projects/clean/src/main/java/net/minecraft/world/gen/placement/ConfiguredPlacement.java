@@ -27,7 +27,7 @@ public class ConfiguredPlacement<DC extends IPlacementConfig> {
       this.config = config;
    }
 
-   public <FC extends IFeatureConfig, F extends Feature<FC>> boolean func_215093_a(IWorld p_215093_1_, ChunkGenerator<? extends GenerationSettings> p_215093_2_, Random p_215093_3_, BlockPos p_215093_4_, ConfiguredFeature<FC, F> p_215093_5_) {
+   public <FC extends IFeatureConfig, F extends Feature<FC>> boolean place(IWorld p_215093_1_, ChunkGenerator<? extends GenerationSettings> p_215093_2_, Random p_215093_3_, BlockPos p_215093_4_, ConfiguredFeature<FC, F> p_215093_5_) {
       return this.decorator.place(p_215093_1_, p_215093_2_, p_215093_3_, p_215093_4_, this.config, p_215093_5_);
    }
 

@@ -38,11 +38,11 @@ public class LootParameterSets {
       p_227559_0_.required(LootParameters.BLOCK_STATE).required(LootParameters.POSITION).required(LootParameters.TOOL).optional(LootParameters.THIS_ENTITY).optional(LootParameters.BLOCK_ENTITY).optional(LootParameters.EXPLOSION_RADIUS);
    });
 
-   private static LootParameterSet register(String p_216253_0_, Consumer<LootParameterSet.Builder> p_216253_1_) {
+   private static LootParameterSet register(String registryName, Consumer<LootParameterSet.Builder> p_216253_1_) {
       LootParameterSet.Builder lootparameterset$builder = new LootParameterSet.Builder();
       p_216253_1_.accept(lootparameterset$builder);
       LootParameterSet lootparameterset = lootparameterset$builder.build();
-      ResourceLocation resourcelocation = new ResourceLocation(p_216253_0_);
+      ResourceLocation resourcelocation = new ResourceLocation(registryName);
       LootParameterSet lootparameterset1 = REGISTRY.put(resourcelocation, lootparameterset);
       if (lootparameterset1 != null) {
          throw new IllegalStateException("Loot table parameter set " + resourcelocation + " is already registered");
@@ -52,8 +52,8 @@ public class LootParameterSets {
    }
 
    @Nullable
-   public static LootParameterSet getValue(ResourceLocation p_216256_0_) {
-      return REGISTRY.get(p_216256_0_);
+   public static LootParameterSet getValue(ResourceLocation registryName) {
+      return REGISTRY.get(registryName);
    }
 
    @Nullable

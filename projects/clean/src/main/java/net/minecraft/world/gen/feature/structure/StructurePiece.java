@@ -33,31 +33,31 @@ public abstract class StructurePiece {
    protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
    protected MutableBoundingBox boundingBox;
    @Nullable
-   private Direction field_74885_f;
+   private Direction coordBaseMode;
    private Mirror mirror;
    private Rotation rotation;
    protected int componentType;
-   private final IStructurePieceType field_214811_d;
+   private final IStructurePieceType structurePieceType;
    private static final Set<Block> BLOCKS_NEEDING_POSTPROCESSING = ImmutableSet.<Block>builder().add(Blocks.NETHER_BRICK_FENCE).add(Blocks.TORCH).add(Blocks.WALL_TORCH).add(Blocks.OAK_FENCE).add(Blocks.SPRUCE_FENCE).add(Blocks.DARK_OAK_FENCE).add(Blocks.ACACIA_FENCE).add(Blocks.BIRCH_FENCE).add(Blocks.JUNGLE_FENCE).add(Blocks.LADDER).add(Blocks.IRON_BARS).build();
 
-   protected StructurePiece(IStructurePieceType p_i51342_1_, int p_i51342_2_) {
-      this.field_214811_d = p_i51342_1_;
-      this.componentType = p_i51342_2_;
+   protected StructurePiece(IStructurePieceType structurePieceTypeIn, int componentTypeIn) {
+      this.structurePieceType = structurePieceTypeIn;
+      this.componentType = componentTypeIn;
    }
 
-   public StructurePiece(IStructurePieceType p_i51343_1_, CompoundNBT p_i51343_2_) {
-      this(p_i51343_1_, p_i51343_2_.getInt("GD"));
-      if (p_i51343_2_.contains("BB")) {
-         this.boundingBox = new MutableBoundingBox(p_i51343_2_.getIntArray("BB"));
+   public StructurePiece(IStructurePieceType structurePierceTypeIn, CompoundNBT nbt) {
+      this(structurePierceTypeIn, nbt.getInt("GD"));
+      if (nbt.contains("BB")) {
+         this.boundingBox = new MutableBoundingBox(nbt.getIntArray("BB"));
       }
 
-      int i = p_i51343_2_.getInt("O");
+      int i = nbt.getInt("O");
       this.setCoordBaseMode(i == -1 ? null : Direction.byHorizontalIndex(i));
    }
 
    public final CompoundNBT write() {
       CompoundNBT compoundnbt = new CompoundNBT();
-      compoundnbt.putString("id", Registry.STRUCTURE_PIECE.getKey(this.func_214807_k()).toString());
+      compoundnbt.putString("id", Registry.STRUCTURE_PIECE.getKey(this.getStructurePieceType()).toString());
       compoundnbt.put("BB", this.boundingBox.toNBTTagIntArray());
       Direction direction = this.getCoordBaseMode();
       compoundnbt.putInt("O", direction == null ? -1 : direction.getHorizontalIndex());
@@ -342,17 +342,17 @@ public abstract class StructurePiece {
       return this.generateChest(worldIn, structurebb, randomIn, blockpos, loot, (BlockState)null);
    }
 
-   public static BlockState func_197528_a(IBlockReader p_197528_0_, BlockPos p_197528_1_, BlockState p_197528_2_) {
+   public static BlockState func_197528_a(IBlockReader worldIn, BlockPos posIn, BlockState blockStateIn) {
       Direction direction = null;
 
       for(Direction direction1 : Direction.Plane.HORIZONTAL) {
-         BlockPos blockpos = p_197528_1_.offset(direction1);
-         BlockState blockstate = p_197528_0_.getBlockState(blockpos);
+         BlockPos blockpos = posIn.offset(direction1);
+         BlockState blockstate = worldIn.getBlockState(blockpos);
          if (blockstate.getBlock() == Blocks.CHEST) {
-            return p_197528_2_;
+            return blockStateIn;
          }
 
-         if (blockstate.isOpaqueCube(p_197528_0_, blockpos)) {
+         if (blockstate.isOpaqueCube(worldIn, blockpos)) {
             if (direction != null) {
                direction = null;
                break;
@@ -363,39 +363,39 @@ public abstract class StructurePiece {
       }
 
       if (direction != null) {
-         return p_197528_2_.with(HorizontalBlock.HORIZONTAL_FACING, direction.getOpposite());
+         return blockStateIn.with(HorizontalBlock.HORIZONTAL_FACING, direction.getOpposite());
       } else {
-         Direction direction2 = p_197528_2_.get(HorizontalBlock.HORIZONTAL_FACING);
-         BlockPos blockpos1 = p_197528_1_.offset(direction2);
-         if (p_197528_0_.getBlockState(blockpos1).isOpaqueCube(p_197528_0_, blockpos1)) {
+         Direction direction2 = blockStateIn.get(HorizontalBlock.HORIZONTAL_FACING);
+         BlockPos blockpos1 = posIn.offset(direction2);
+         if (worldIn.getBlockState(blockpos1).isOpaqueCube(worldIn, blockpos1)) {
             direction2 = direction2.getOpposite();
-            blockpos1 = p_197528_1_.offset(direction2);
+            blockpos1 = posIn.offset(direction2);
          }
 
-         if (p_197528_0_.getBlockState(blockpos1).isOpaqueCube(p_197528_0_, blockpos1)) {
+         if (worldIn.getBlockState(blockpos1).isOpaqueCube(worldIn, blockpos1)) {
             direction2 = direction2.rotateY();
-            blockpos1 = p_197528_1_.offset(direction2);
+            blockpos1 = posIn.offset(direction2);
          }
 
-         if (p_197528_0_.getBlockState(blockpos1).isOpaqueCube(p_197528_0_, blockpos1)) {
+         if (worldIn.getBlockState(blockpos1).isOpaqueCube(worldIn, blockpos1)) {
             direction2 = direction2.getOpposite();
-            p_197528_1_.offset(direction2);
+            posIn.offset(direction2);
          }
 
-         return p_197528_2_.with(HorizontalBlock.HORIZONTAL_FACING, direction2);
+         return blockStateIn.with(HorizontalBlock.HORIZONTAL_FACING, direction2);
       }
    }
 
-   protected boolean generateChest(IWorld p_191080_1_, MutableBoundingBox p_191080_2_, Random p_191080_3_, BlockPos p_191080_4_, ResourceLocation p_191080_5_, @Nullable BlockState p_191080_6_) {
-      if (p_191080_2_.isVecInside(p_191080_4_) && p_191080_1_.getBlockState(p_191080_4_).getBlock() != Blocks.CHEST) {
+   protected boolean generateChest(IWorld worldIn, MutableBoundingBox boundsIn, Random rand, BlockPos posIn, ResourceLocation resourceLocationIn, @Nullable BlockState p_191080_6_) {
+      if (boundsIn.isVecInside(posIn) && worldIn.getBlockState(posIn).getBlock() != Blocks.CHEST) {
          if (p_191080_6_ == null) {
-            p_191080_6_ = func_197528_a(p_191080_1_, p_191080_4_, Blocks.CHEST.getDefaultState());
+            p_191080_6_ = func_197528_a(worldIn, posIn, Blocks.CHEST.getDefaultState());
          }
 
-         p_191080_1_.setBlockState(p_191080_4_, p_191080_6_, 2);
-         TileEntity tileentity = p_191080_1_.getTileEntity(p_191080_4_);
+         worldIn.setBlockState(posIn, p_191080_6_, 2);
+         TileEntity tileentity = worldIn.getTileEntity(posIn);
          if (tileentity instanceof ChestTileEntity) {
-            ((ChestTileEntity)tileentity).setLootTable(p_191080_5_, p_191080_3_.nextLong());
+            ((ChestTileEntity)tileentity).setLootTable(resourceLocationIn, rand.nextLong());
          }
 
          return true;
@@ -425,11 +425,11 @@ public abstract class StructurePiece {
 
    @Nullable
    public Direction getCoordBaseMode() {
-      return this.field_74885_f;
+      return this.coordBaseMode;
    }
 
    public void setCoordBaseMode(@Nullable Direction facing) {
-      this.field_74885_f = facing;
+      this.coordBaseMode = facing;
       if (facing == null) {
          this.rotation = Rotation.NONE;
          this.mirror = Mirror.NONE;
@@ -459,8 +459,8 @@ public abstract class StructurePiece {
       return this.rotation;
    }
 
-   public IStructurePieceType func_214807_k() {
-      return this.field_214811_d;
+   public IStructurePieceType getStructurePieceType() {
+      return this.structurePieceType;
    }
 
    public abstract static class BlockSelector {

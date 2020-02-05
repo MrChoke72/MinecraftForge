@@ -529,7 +529,7 @@ public class Items {
    public static final Item REPEATER = register(Blocks.REPEATER, ItemGroup.REDSTONE);
    public static final Item COMPARATOR = register(Blocks.COMPARATOR, ItemGroup.REDSTONE);
    public static final Item STRUCTURE_BLOCK = register(new OperatorOnlyItem(Blocks.STRUCTURE_BLOCK, (new Item.Properties()).rarity(Rarity.EPIC)));
-   public static final Item field_226633_iW_ = register(new OperatorOnlyItem(Blocks.JIGSAW, (new Item.Properties()).rarity(Rarity.EPIC)));
+   public static final Item JIGSAW = register(new OperatorOnlyItem(Blocks.JIGSAW, (new Item.Properties()).rarity(Rarity.EPIC)));
    public static final Item COMPOSTER = register(Blocks.COMPOSTER, ItemGroup.MISC);
    public static final Item TURTLE_HELMET = register("turtle_helmet", new ArmorItem(ArmorMaterial.TURTLE, EquipmentSlotType.HEAD, (new Item.Properties()).group(ItemGroup.COMBAT)));
    public static final Item SCUTE = register("scute", new Item((new Item.Properties()).group(ItemGroup.MATERIALS)));
@@ -711,7 +711,7 @@ public class Items {
    public static final Item ENDER_EYE = register("ender_eye", new EnderEyeItem((new Item.Properties()).group(ItemGroup.MISC)));
    public static final Item GLISTERING_MELON_SLICE = register("glistering_melon_slice", new Item((new Item.Properties()).group(ItemGroup.BREWING)));
    public static final Item BAT_SPAWN_EGG = register("bat_spawn_egg", new SpawnEggItem(EntityType.BAT, 4996656, 986895, (new Item.Properties()).group(ItemGroup.MISC)));
-   public static final Item field_226634_mw_ = register("bee_spawn_egg", new SpawnEggItem(EntityType.field_226289_e_, 15582019, 4400155, (new Item.Properties()).group(ItemGroup.MISC)));
+   public static final Item BEE_SPAWN_EGG = register("bee_spawn_egg", new SpawnEggItem(EntityType.BEE, 15582019, 4400155, (new Item.Properties()).group(ItemGroup.MISC)));
    public static final Item BLAZE_SPAWN_EGG = register("blaze_spawn_egg", new SpawnEggItem(EntityType.BLAZE, 16167425, 16775294, (new Item.Properties()).group(ItemGroup.MISC)));
    public static final Item CAT_SPAWN_EGG = register("cat_spawn_egg", new SpawnEggItem(EntityType.CAT, 15714446, 9794134, (new Item.Properties()).group(ItemGroup.MISC)));
    public static final Item CAVE_SPIDER_SPAWN_EGG = register("cave_spider_spawn_egg", new SpawnEggItem(EntityType.CAVE_SPIDER, 803406, 11013646, (new Item.Properties()).group(ItemGroup.MISC)));
@@ -891,12 +891,12 @@ public class Items {
    public static final Item LANTERN = register(Blocks.LANTERN, ItemGroup.DECORATIONS);
    public static final Item SWEET_BERRIES = register("sweet_berries", new BlockNamedItem(Blocks.SWEET_BERRY_BUSH, (new Item.Properties()).group(ItemGroup.FOOD).food(Foods.SWEET_BERRIES)));
    public static final Item CAMPFIRE = register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
-   public static final Item field_226635_pU_ = register("honeycomb", new Item((new Item.Properties()).group(ItemGroup.MATERIALS)));
-   public static final Item field_226636_pV_ = register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
-   public static final Item field_226637_pW_ = register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
-   public static final Item field_226638_pX_ = register("honey_bottle", new HoneyBottleItem((new Item.Properties()).containerItem(GLASS_BOTTLE).food(Foods.field_226604_w_).group(ItemGroup.FOOD).maxStackSize(16)));
-   public static final Item field_226639_pY_ = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
-   public static final Item field_226640_pZ_ = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
+   public static final Item HONEYCOMB = register("honeycomb", new Item((new Item.Properties()).group(ItemGroup.MATERIALS)));
+   public static final Item BEE_NEST = register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
+   public static final Item BEEHIVE = register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
+   public static final Item HONEY_BOTTLE = register("honey_bottle", new HoneyBottleItem((new Item.Properties()).containerItem(GLASS_BOTTLE).food(Foods.HONEY).group(ItemGroup.FOOD).maxStackSize(16)));
+   public static final Item HONEY_BLOCK = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
+   public static final Item HONEYCOMB_BLOCK = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
 
    //AH ADD ****
    public static final Item ZOMBIENASTY_SPAWN_EGG = register("choke:zombienasty_spawn_egg", new SpawnEggItem(EntityType.ZOMBIE_NASTY, 14680064, 12607488, (new Item.Properties()).group(ItemGroup.MISC)));
@@ -910,27 +910,27 @@ public class Items {
       return register(new BlockItem(p_221545_0_, new Item.Properties()));
    }
 
-   private static Item register(Block p_221542_0_, ItemGroup p_221542_1_) {
-      return register(new BlockItem(p_221542_0_, (new Item.Properties()).group(p_221542_1_)));
+   private static Item register(Block blockIn, ItemGroup itemGroupIn) {
+      return register(new BlockItem(blockIn, (new Item.Properties()).group(itemGroupIn)));
    }
 
-   private static Item register(BlockItem p_221543_0_) {
-      return register(p_221543_0_.getBlock(), p_221543_0_);
+   private static Item register(BlockItem blockItemIn) {
+      return register(blockItemIn.getBlock(), blockItemIn);
    }
 
-   protected static Item register(Block p_221546_0_, Item p_221546_1_) {
-      return register(Registry.BLOCK.getKey(p_221546_0_), p_221546_1_);
+   protected static Item register(Block blockIn, Item itemIn) {
+      return register(Registry.BLOCK.getKey(blockIn), itemIn);
    }
 
-   private static Item register(String key, Item p_221547_1_) {
-      return register(new ResourceLocation(key), p_221547_1_);
+   private static Item register(String key, Item itemIn) {
+      return register(new ResourceLocation(key), itemIn);
    }
 
-   private static Item register(ResourceLocation key, Item p_221544_1_) {
-      if (p_221544_1_ instanceof BlockItem) {
-         ((BlockItem)p_221544_1_).addToBlockToItemMap(Item.BLOCK_TO_ITEM, p_221544_1_);
+   private static Item register(ResourceLocation key, Item itemIn) {
+      if (itemIn instanceof BlockItem) {
+         ((BlockItem)itemIn).addToBlockToItemMap(Item.BLOCK_TO_ITEM, itemIn);
       }
 
-      return Registry.register(Registry.ITEM, key, p_221544_1_);
+      return Registry.register(Registry.ITEM, key, itemIn);
    }
 }

@@ -23,9 +23,9 @@ public interface IMerchant {
    MerchantOffers getOffers();
 
    @OnlyIn(Dist.CLIENT)
-   void func_213703_a(@Nullable MerchantOffers p_213703_1_);
+   void setClientSideOffers(@Nullable MerchantOffers offers);
 
-   void onTrade(MerchantOffer p_213704_1_);
+   void onTrade(MerchantOffer offer);
 
    void verifySellingItem(ItemStack stack);
 
@@ -33,24 +33,24 @@ public interface IMerchant {
 
    int getXp();
 
-   void func_213702_q(int p_213702_1_);
+   void setXP(int xpIn);
 
    boolean func_213705_dZ();
 
-   SoundEvent func_213714_ea();
+   SoundEvent getYesSound();
 
    default boolean func_223340_ej() {
       return false;
    }
 
-   default void func_213707_a(PlayerEntity p_213707_1_, ITextComponent p_213707_2_, int p_213707_3_) {
-      OptionalInt optionalint = p_213707_1_.openContainer(new SimpleNamedContainerProvider((p_213701_1_, p_213701_2_, p_213701_3_) -> {
+   default void openMerchantContainer(PlayerEntity player, ITextComponent p_213707_2_, int level) {
+      OptionalInt optionalint = player.openContainer(new SimpleNamedContainerProvider((p_213701_1_, p_213701_2_, p_213701_3_) -> {
          return new MerchantContainer(p_213701_1_, p_213701_2_, this);
       }, p_213707_2_));
       if (optionalint.isPresent()) {
          MerchantOffers merchantoffers = this.getOffers();
          if (!merchantoffers.isEmpty()) {
-            p_213707_1_.func_213818_a(optionalint.getAsInt(), merchantoffers, p_213707_3_, this.getXp(), this.func_213705_dZ(), this.func_223340_ej());
+            player.openMerchantContainer(optionalint.getAsInt(), merchantoffers, level, this.getXp(), this.func_213705_dZ(), this.func_223340_ej());
          }
       }
 

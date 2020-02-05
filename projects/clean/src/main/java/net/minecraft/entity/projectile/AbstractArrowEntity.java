@@ -51,7 +51,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public abstract class AbstractArrowEntity extends Entity implements IProjectile {
    private static final DataParameter<Byte> CRITICAL = EntityDataManager.createKey(AbstractArrowEntity.class, DataSerializers.BYTE);
    protected static final DataParameter<Optional<UUID>> field_212362_a = EntityDataManager.createKey(AbstractArrowEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
-   private static final DataParameter<Byte> field_213876_as = EntityDataManager.createKey(AbstractArrowEntity.class, DataSerializers.BYTE);
+   private static final DataParameter<Byte> PIERCE_LEVEL = EntityDataManager.createKey(AbstractArrowEntity.class, DataSerializers.BYTE);
    @Nullable
    private BlockState inBlockState;
    protected boolean inGround;
@@ -63,30 +63,30 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
    private int ticksInAir;
    private double damage = 2.0D;
    private int knockbackStrength;
-   private SoundEvent field_213877_ay = this.func_213867_k();
-   private IntOpenHashSet field_213878_az;
-   private List<Entity> field_213875_aA;
+   private SoundEvent hitSound = this.getHitEntitySound();
+   private IntOpenHashSet piercedEntities;
+   private List<Entity> hitEntities;
 
-   protected AbstractArrowEntity(EntityType<? extends AbstractArrowEntity> type, World p_i48546_2_) {
-      super(type, p_i48546_2_);
+   protected AbstractArrowEntity(EntityType<? extends AbstractArrowEntity> type, World worldIn) {
+      super(type, worldIn);
    }
 
-   protected AbstractArrowEntity(EntityType<? extends AbstractArrowEntity> p_i48547_1_, double p_i48547_2_, double p_i48547_4_, double p_i48547_6_, World p_i48547_8_) {
-      this(p_i48547_1_, p_i48547_8_);
-      this.setPosition(p_i48547_2_, p_i48547_4_, p_i48547_6_);
+   protected AbstractArrowEntity(EntityType<? extends AbstractArrowEntity> type, double x, double y, double z, World worldIn) {
+      this(type, worldIn);
+      this.setPosition(x, y, z);
    }
 
-   protected AbstractArrowEntity(EntityType<? extends AbstractArrowEntity> p_i48548_1_, LivingEntity p_i48548_2_, World p_i48548_3_) {
-      this(p_i48548_1_, p_i48548_2_.getPosX(), p_i48548_2_.getPosYPlusEyeHeight() - (double)0.1F, p_i48548_2_.getPosZ(), p_i48548_3_);
-      this.setShooter(p_i48548_2_);
-      if (p_i48548_2_ instanceof PlayerEntity) {
+   protected AbstractArrowEntity(EntityType<? extends AbstractArrowEntity> type, LivingEntity shooter, World worldIn) {
+      this(type, shooter.getPosX(), shooter.getPosYEye() - (double)0.1F, shooter.getPosZ(), worldIn);
+      this.setShooter(shooter);
+      if (shooter instanceof PlayerEntity) {
          this.pickupStatus = AbstractArrowEntity.PickupStatus.ALLOWED;
       }
 
    }
 
-   public void setHitSound(SoundEvent p_213869_1_) {
-      this.field_213877_ay = p_213869_1_;
+   public void setHitSound(SoundEvent soundIn) {
+      this.hitSound = soundIn;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -103,7 +103,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
    protected void registerData() {
       this.dataManager.register(CRITICAL, (byte)0);
       this.dataManager.register(field_212362_a, Optional.empty());
-      this.dataManager.register(field_213876_as, (byte)0);
+      this.dataManager.register(PIERCE_LEVEL, (byte)0);
    }
 
    public void shoot(Entity shooter, float pitch, float yaw, float p_184547_4_, float velocity, float inaccuracy) {
@@ -117,7 +117,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
    public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
       Vec3d vec3d = (new Vec3d(x, y, z)).normalize().add(this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy, this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy, this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy).scale((double)velocity);
       this.setMotion(vec3d);
-      float f = MathHelper.sqrt(func_213296_b(vec3d));
+      float f = MathHelper.sqrt(horizontalMag(vec3d));
       this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * (double)(180F / (float)Math.PI));
       this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * (double)(180F / (float)Math.PI));
       this.prevRotationYaw = this.rotationYaw;
@@ -148,10 +148,10 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
 
    public void tick() {
       super.tick();
-      boolean flag = this.func_203047_q();
+      boolean flag = this.getNoClip();
       Vec3d vec3d = this.getMotion();
       if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F) {
-         float f = MathHelper.sqrt(func_213296_b(vec3d));
+         float f = MathHelper.sqrt(horizontalMag(vec3d));
          this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * (double)(180F / (float)Math.PI));
          this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * (double)(180F / (float)Math.PI));
          this.prevRotationYaw = this.rotationYaw;
@@ -204,7 +204,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
          }
 
          while(!this.removed) {
-            EntityRayTraceResult entityraytraceresult = this.func_213866_a(vec3d2, vec3d3);
+            EntityRayTraceResult entityraytraceresult = this.rayTraceEntities(vec3d2, vec3d3);
             if (entityraytraceresult != null) {
                raytraceresult = entityraytraceresult;
             }
@@ -223,7 +223,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
                this.isAirBorne = true;
             }
 
-            if (entityraytraceresult == null || this.func_213874_s() <= 0) {
+            if (entityraytraceresult == null || this.getPierceLevel() <= 0) {
                break;
             }
 
@@ -243,7 +243,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
          double d5 = this.getPosX() + d3;
          double d1 = this.getPosY() + d4;
          double d2 = this.getPosZ() + d0;
-         float f1 = MathHelper.sqrt(func_213296_b(vec3d));
+         float f1 = MathHelper.sqrt(horizontalMag(vec3d));
          if (flag) {
             this.rotationYaw = (float)(MathHelper.atan2(-d3, -d0) * (double)(180F / (float)Math.PI));
          } else {
@@ -301,7 +301,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
    protected void onHit(RayTraceResult raytraceResultIn) {
       RayTraceResult.Type raytraceresult$type = raytraceResultIn.getType();
       if (raytraceresult$type == RayTraceResult.Type.ENTITY) {
-         this.func_213868_a((EntityRayTraceResult)raytraceResultIn);
+         this.onEntityHit((EntityRayTraceResult)raytraceResultIn);
       } else if (raytraceresult$type == RayTraceResult.Type.BLOCK) {
          BlockRayTraceResult blockraytraceresult = (BlockRayTraceResult)raytraceResultIn;
          BlockState blockstate = this.world.getBlockState(blockraytraceresult.getPos());
@@ -309,14 +309,14 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
          Vec3d vec3d = blockraytraceresult.getHitVec().subtract(this.getPosX(), this.getPosY(), this.getPosZ());
          this.setMotion(vec3d);
          Vec3d vec3d1 = vec3d.normalize().scale((double)0.05F);
-         this.func_226288_n_(this.getPosX() - vec3d1.x, this.getPosY() - vec3d1.y, this.getPosZ() - vec3d1.z);
+         this.setRawPosition(this.getPosX() - vec3d1.x, this.getPosY() - vec3d1.y, this.getPosZ() - vec3d1.z);
          this.playSound(this.getHitGroundSound(), 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
          this.inGround = true;
          this.arrowShake = 7;
          this.setIsCritical(false);
-         this.func_213872_b((byte)0);
+         this.setPierceLevel((byte)0);
          this.setHitSound(SoundEvents.ENTITY_ARROW_HIT);
-         this.func_213865_o(false);
+         this.setShotFromCrossbow(false);
          this.func_213870_w();
          blockstate.onProjectileCollision(this.world, blockstate, blockraytraceresult, this);
       }
@@ -324,35 +324,35 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
    }
 
    private void func_213870_w() {
-      if (this.field_213875_aA != null) {
-         this.field_213875_aA.clear();
+      if (this.hitEntities != null) {
+         this.hitEntities.clear();
       }
 
-      if (this.field_213878_az != null) {
-         this.field_213878_az.clear();
+      if (this.piercedEntities != null) {
+         this.piercedEntities.clear();
       }
 
    }
 
-   protected void func_213868_a(EntityRayTraceResult p_213868_1_) {
+   protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
       Entity entity = p_213868_1_.getEntity();
       float f = (float)this.getMotion().length();
       int i = MathHelper.ceil(Math.max((double)f * this.damage, 0.0D));
-      if (this.func_213874_s() > 0) {
-         if (this.field_213878_az == null) {
-            this.field_213878_az = new IntOpenHashSet(5);
+      if (this.getPierceLevel() > 0) {
+         if (this.piercedEntities == null) {
+            this.piercedEntities = new IntOpenHashSet(5);
          }
 
-         if (this.field_213875_aA == null) {
-            this.field_213875_aA = Lists.newArrayListWithCapacity(5);
+         if (this.hitEntities == null) {
+            this.hitEntities = Lists.newArrayListWithCapacity(5);
          }
 
-         if (this.field_213878_az.size() >= this.func_213874_s() + 1) {
+         if (this.piercedEntities.size() >= this.getPierceLevel() + 1) {
             this.remove();
             return;
          }
 
-         this.field_213878_az.add(entity.getEntityId());
+         this.piercedEntities.add(entity.getEntityId());
       }
 
       if (this.getIsCritical()) {
@@ -371,7 +371,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
       }
 
       boolean flag = entity.getType() == EntityType.ENDERMAN;
-      int j = entity.func_223314_ad();
+      int j = entity.getFireTimer();
       if (this.isBurning() && !flag) {
          entity.setFire(5);
       }
@@ -383,7 +383,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
 
          if (entity instanceof LivingEntity) {
             LivingEntity livingentity = (LivingEntity)entity;
-            if (!this.world.isRemote && this.func_213874_s() <= 0) {
+            if (!this.world.isRemote && this.getPierceLevel() <= 0) {
                livingentity.setArrowCountInEntity(livingentity.getArrowCountInEntity() + 1);
             }
 
@@ -404,26 +404,26 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
                ((ServerPlayerEntity)entity1).connection.sendPacket(new SChangeGameStatePacket(6, 0.0F));
             }
 
-            if (!entity.isAlive() && this.field_213875_aA != null) {
-               this.field_213875_aA.add(livingentity);
+            if (!entity.isAlive() && this.hitEntities != null) {
+               this.hitEntities.add(livingentity);
             }
 
             if (!this.world.isRemote && entity1 instanceof ServerPlayerEntity) {
                ServerPlayerEntity serverplayerentity = (ServerPlayerEntity)entity1;
-               if (this.field_213875_aA != null && this.func_213873_r()) {
-                  CriteriaTriggers.KILLED_BY_CROSSBOW.func_215105_a(serverplayerentity, this.field_213875_aA, this.field_213875_aA.size());
-               } else if (!entity.isAlive() && this.func_213873_r()) {
-                  CriteriaTriggers.KILLED_BY_CROSSBOW.func_215105_a(serverplayerentity, Arrays.asList(entity), 0);
+               if (this.hitEntities != null && this.getShotFromCrossbow()) {
+                  CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverplayerentity, this.hitEntities, this.hitEntities.size());
+               } else if (!entity.isAlive() && this.getShotFromCrossbow()) {
+                  CriteriaTriggers.KILLED_BY_CROSSBOW.trigger(serverplayerentity, Arrays.asList(entity), 0);
                }
             }
          }
 
-         this.playSound(this.field_213877_ay, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
-         if (this.func_213874_s() <= 0) {
+         this.playSound(this.hitSound, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+         if (this.getPierceLevel() <= 0) {
             this.remove();
          }
       } else {
-         entity.func_223308_g(j);
+         entity.setFireTimer(j);
          this.setMotion(this.getMotion().scale(-0.1D));
          this.rotationYaw += 180.0F;
          this.prevRotationYaw += 180.0F;
@@ -439,21 +439,21 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
 
    }
 
-   protected SoundEvent func_213867_k() {
+   protected SoundEvent getHitEntitySound() {
       return SoundEvents.ENTITY_ARROW_HIT;
    }
 
    protected final SoundEvent getHitGroundSound() {
-      return this.field_213877_ay;
+      return this.hitSound;
    }
 
    protected void arrowHit(LivingEntity living) {
    }
 
    @Nullable
-   protected EntityRayTraceResult func_213866_a(Vec3d p_213866_1_, Vec3d p_213866_2_) {
-      return ProjectileHelper.func_221271_a(this.world, this, p_213866_1_, p_213866_2_, this.getBoundingBox().expand(this.getMotion()).grow(1.0D), (p_213871_1_) -> {
-         return !p_213871_1_.isSpectator() && p_213871_1_.isAlive() && p_213871_1_.canBeCollidedWith() && (p_213871_1_ != this.getShooter() || this.ticksInAir >= 5) && (this.field_213878_az == null || !this.field_213878_az.contains(p_213871_1_.getEntityId()));
+   protected EntityRayTraceResult rayTraceEntities(Vec3d startVec, Vec3d endVec) {
+      return ProjectileHelper.rayTraceEntities(this.world, this, startVec, endVec, this.getBoundingBox().expand(this.getMotion()).grow(1.0D), (p_213871_1_) -> {
+         return !p_213871_1_.isSpectator() && p_213871_1_.isAlive() && p_213871_1_.canBeCollidedWith() && (p_213871_1_ != this.getShooter() || this.ticksInAir >= 5) && (this.piercedEntities == null || !this.piercedEntities.contains(p_213871_1_.getEntityId()));
       });
    }
 
@@ -468,13 +468,13 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
       compound.putByte("pickup", (byte)this.pickupStatus.ordinal());
       compound.putDouble("damage", this.damage);
       compound.putBoolean("crit", this.getIsCritical());
-      compound.putByte("PierceLevel", this.func_213874_s());
+      compound.putByte("PierceLevel", this.getPierceLevel());
       if (this.shootingEntity != null) {
          compound.putUniqueId("OwnerUUID", this.shootingEntity);
       }
 
-      compound.putString("SoundEvent", Registry.SOUND_EVENT.getKey(this.field_213877_ay).toString());
-      compound.putBoolean("ShotFromCrossbow", this.func_213873_r());
+      compound.putString("SoundEvent", Registry.SOUND_EVENT.getKey(this.hitSound).toString());
+      compound.putBoolean("ShotFromCrossbow", this.getShotFromCrossbow());
    }
 
    public void readAdditional(CompoundNBT compound) {
@@ -496,22 +496,22 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
       }
 
       this.setIsCritical(compound.getBoolean("crit"));
-      this.func_213872_b(compound.getByte("PierceLevel"));
+      this.setPierceLevel(compound.getByte("PierceLevel"));
       if (compound.hasUniqueId("OwnerUUID")) {
          this.shootingEntity = compound.getUniqueId("OwnerUUID");
       }
 
       if (compound.contains("SoundEvent", 8)) {
-         this.field_213877_ay = Registry.SOUND_EVENT.getValue(new ResourceLocation(compound.getString("SoundEvent"))).orElse(this.func_213867_k());
+         this.hitSound = Registry.SOUND_EVENT.getValue(new ResourceLocation(compound.getString("SoundEvent"))).orElse(this.getHitEntitySound());
       }
 
-      this.func_213865_o(compound.getBoolean("ShotFromCrossbow"));
+      this.setShotFromCrossbow(compound.getBoolean("ShotFromCrossbow"));
    }
 
-   public void setShooter(@Nullable Entity p_212361_1_) {
-      this.shootingEntity = p_212361_1_ == null ? null : p_212361_1_.getUniqueID();
-      if (p_212361_1_ instanceof PlayerEntity) {
-         this.pickupStatus = ((PlayerEntity)p_212361_1_).abilities.isCreativeMode ? AbstractArrowEntity.PickupStatus.CREATIVE_ONLY : AbstractArrowEntity.PickupStatus.ALLOWED;
+   public void setShooter(@Nullable Entity entityIn) {
+      this.shootingEntity = entityIn == null ? null : entityIn.getUniqueID();
+      if (entityIn instanceof PlayerEntity) {
+         this.pickupStatus = ((PlayerEntity)entityIn).abilities.isCreativeMode ? AbstractArrowEntity.PickupStatus.CREATIVE_ONLY : AbstractArrowEntity.PickupStatus.ALLOWED;
       }
 
    }
@@ -522,8 +522,8 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
    }
 
    public void onCollideWithPlayer(PlayerEntity entityIn) {
-      if (!this.world.isRemote && (this.inGround || this.func_203047_q()) && this.arrowShake <= 0) {
-         boolean flag = this.pickupStatus == AbstractArrowEntity.PickupStatus.ALLOWED || this.pickupStatus == AbstractArrowEntity.PickupStatus.CREATIVE_ONLY && entityIn.abilities.isCreativeMode || this.func_203047_q() && this.getShooter().getUniqueID() == entityIn.getUniqueID();
+      if (!this.world.isRemote && (this.inGround || this.getNoClip()) && this.arrowShake <= 0) {
+         boolean flag = this.pickupStatus == AbstractArrowEntity.PickupStatus.ALLOWED || this.pickupStatus == AbstractArrowEntity.PickupStatus.CREATIVE_ONLY && entityIn.abilities.isCreativeMode || this.getNoClip() && this.getShooter().getUniqueID() == entityIn.getUniqueID();
          if (this.pickupStatus == AbstractArrowEntity.PickupStatus.ALLOWED && !entityIn.inventory.addItemStackToInventory(this.getArrowStack())) {
             flag = false;
          }
@@ -538,7 +538,7 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
 
    protected abstract ItemStack getArrowStack();
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -558,19 +558,19 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
       return false;
    }
 
-   protected float getEyeHeight(Pose p_213316_1_, EntitySize p_213316_2_) {
+   protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
       return 0.0F;
    }
 
    public void setIsCritical(boolean critical) {
-      this.func_203049_a(1, critical);
+      this.setArrowFlag(1, critical);
    }
 
-   public void func_213872_b(byte p_213872_1_) {
-      this.dataManager.set(field_213876_as, p_213872_1_);
+   public void setPierceLevel(byte level) {
+      this.dataManager.set(PIERCE_LEVEL, level);
    }
 
-   private void func_203049_a(int p_203049_1_, boolean p_203049_2_) {
+   private void setArrowFlag(int p_203049_1_, boolean p_203049_2_) {
       byte b0 = this.dataManager.get(CRITICAL);
       if (p_203049_2_) {
          this.dataManager.set(CRITICAL, (byte)(b0 | p_203049_1_));
@@ -585,13 +585,13 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
       return (b0 & 1) != 0;
    }
 
-   public boolean func_213873_r() {
+   public boolean getShotFromCrossbow() {
       byte b0 = this.dataManager.get(CRITICAL);
       return (b0 & 4) != 0;
    }
 
-   public byte func_213874_s() {
-      return this.dataManager.get(field_213876_as);
+   public byte getPierceLevel() {
+      return this.dataManager.get(PIERCE_LEVEL);
    }
 
    public void setEnchantmentEffectsFromEntity(LivingEntity p_190547_1_, float p_190547_2_) {
@@ -616,12 +616,12 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
       return 0.6F;
    }
 
-   public void func_203045_n(boolean p_203045_1_) {
-      this.noClip = p_203045_1_;
-      this.func_203049_a(2, p_203045_1_);
+   public void setNoClip(boolean noClipIn) {
+      this.noClip = noClipIn;
+      this.setArrowFlag(2, noClipIn);
    }
 
-   public boolean func_203047_q() {
+   public boolean getNoClip() {
       if (!this.world.isRemote) {
          return this.noClip;
       } else {
@@ -629,8 +629,8 @@ public abstract class AbstractArrowEntity extends Entity implements IProjectile 
       }
    }
 
-   public void func_213865_o(boolean p_213865_1_) {
-      this.func_203049_a(4, p_213865_1_);
+   public void setShotFromCrossbow(boolean fromCrossbow) {
+      this.setArrowFlag(4, fromCrossbow);
    }
 
    public IPacket<?> createSpawnPacket() {

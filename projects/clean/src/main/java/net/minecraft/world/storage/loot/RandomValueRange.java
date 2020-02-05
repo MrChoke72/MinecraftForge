@@ -28,8 +28,8 @@ public class RandomValueRange implements IRandomRange {
       this.max = value;
    }
 
-   public static RandomValueRange createRandRange(float minVal, float maxVal) {
-      return new RandomValueRange(minVal, maxVal);
+   public static RandomValueRange of(float minIn, float maxIn) {
+      return new RandomValueRange(minIn, maxIn);
    }
 
    public float getMin() {
@@ -52,7 +52,7 @@ public class RandomValueRange implements IRandomRange {
       return (float)value <= this.max && (float)value >= this.min;
    }
 
-   public ResourceLocation getLocation() {
+   public ResourceLocation getType() {
       return UNIFORM;
    }
 

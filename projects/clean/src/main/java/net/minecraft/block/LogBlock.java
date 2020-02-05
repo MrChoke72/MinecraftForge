@@ -8,9 +8,9 @@ import net.minecraft.world.IBlockReader;
 public class LogBlock extends RotatedPillarBlock {
    private final MaterialColor verticalColor;
 
-   public LogBlock(MaterialColor p_i48367_1_, Block.Properties p_i48367_2_) {
-      super(p_i48367_2_);
-      this.verticalColor = p_i48367_1_;
+   public LogBlock(MaterialColor verticalColorIn, Block.Properties properties) {
+      super(properties);
+      this.verticalColor = verticalColorIn;
    }
 
    public MaterialColor getMaterialColor(BlockState state, IBlockReader worldIn, BlockPos pos) {

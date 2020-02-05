@@ -13,26 +13,26 @@ public class BipedArmorLayer<T extends LivingEntity, M extends BipedModel<T>, A 
       super(p_i50936_1_, p_i50936_2_, p_i50936_3_);
    }
 
-   protected void setModelSlotVisible(A p_188359_1_, EquipmentSlotType slotIn) {
-      this.setModelVisible(p_188359_1_);
+   protected void setModelSlotVisible(A modelIn, EquipmentSlotType slotIn) {
+      this.setModelVisible(modelIn);
       switch(slotIn) {
       case HEAD:
-         p_188359_1_.bipedHead.showModel = true;
-         p_188359_1_.bipedHeadwear.showModel = true;
+         modelIn.bipedHead.showModel = true;
+         modelIn.bipedHeadwear.showModel = true;
          break;
       case CHEST:
-         p_188359_1_.bipedBody.showModel = true;
-         p_188359_1_.bipedRightArm.showModel = true;
-         p_188359_1_.bipedLeftArm.showModel = true;
+         modelIn.bipedBody.showModel = true;
+         modelIn.bipedRightArm.showModel = true;
+         modelIn.bipedLeftArm.showModel = true;
          break;
       case LEGS:
-         p_188359_1_.bipedBody.showModel = true;
-         p_188359_1_.bipedRightLeg.showModel = true;
-         p_188359_1_.bipedLeftLeg.showModel = true;
+         modelIn.bipedBody.showModel = true;
+         modelIn.bipedRightLeg.showModel = true;
+         modelIn.bipedLeftLeg.showModel = true;
          break;
       case FEET:
-         p_188359_1_.bipedRightLeg.showModel = true;
-         p_188359_1_.bipedLeftLeg.showModel = true;
+         modelIn.bipedRightLeg.showModel = true;
+         modelIn.bipedLeftLeg.showModel = true;
       }
 
    }

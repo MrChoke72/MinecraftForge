@@ -204,12 +204,12 @@ public class DolphinEntity extends WaterMobEntity {
       return true;
    }
 
-   public boolean func_213365_e(ItemStack p_213365_1_) {
-      EquipmentSlotType equipmentslottype = MobEntity.getSlotForItemStack(p_213365_1_);
+   public boolean canPickUpItem(ItemStack itemstackIn) {
+      EquipmentSlotType equipmentslottype = MobEntity.getSlotForItemStack(itemstackIn);
       if (!this.getItemStackFromSlot(equipmentslottype).isEmpty()) {
          return false;
       } else {
-         return equipmentslottype == EquipmentSlotType.MAINHAND && super.func_213365_e(p_213365_1_);
+         return equipmentslottype == EquipmentSlotType.MAINHAND && super.canPickUpItem(itemstackIn);
       }
    }
 
@@ -276,7 +276,7 @@ public class DolphinEntity extends WaterMobEntity {
          double d0 = this.rand.nextGaussian() * 0.01D;
          double d1 = this.rand.nextGaussian() * 0.01D;
          double d2 = this.rand.nextGaussian() * 0.01D;
-         this.world.addParticle(p_208401_1_, this.func_226282_d_(1.0D), this.func_226279_cv_() + 0.2D, this.func_226287_g_(1.0D), d0, d1, d2);
+         this.world.addParticle(p_208401_1_, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.2D, this.getPosZRandom(1.0D), d0, d1, d2);
       }
 
    }
@@ -299,8 +299,8 @@ public class DolphinEntity extends WaterMobEntity {
       }
    }
 
-   public static boolean func_223364_b(EntityType<DolphinEntity> p_223364_0_, IWorld p_223364_1_, SpawnReason p_223364_2_, BlockPos p_223364_3_, Random p_223364_4_) {
-      return p_223364_3_.getY() > 45 && p_223364_3_.getY() < p_223364_1_.getSeaLevel() && (p_223364_1_.func_226691_t_(p_223364_3_) != Biomes.OCEAN || p_223364_1_.func_226691_t_(p_223364_3_) != Biomes.DEEP_OCEAN) && p_223364_1_.getFluidState(p_223364_3_).isTagged(FluidTags.WATER);
+   public static boolean func_223364_b(EntityType<DolphinEntity> p_223364_0_, IWorld p_223364_1_, SpawnReason reason, BlockPos p_223364_3_, Random p_223364_4_) {
+      return p_223364_3_.getY() > 45 && p_223364_3_.getY() < p_223364_1_.getSeaLevel() && (p_223364_1_.getBiome(p_223364_3_) != Biomes.OCEAN || p_223364_1_.getBiome(p_223364_3_) != Biomes.DEEP_OCEAN) && p_223364_1_.getFluidState(p_223364_3_).isTagged(FluidTags.WATER);
    }
 
    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
@@ -446,7 +446,7 @@ public class DolphinEntity extends WaterMobEntity {
 
       private void func_220810_a(ItemStack p_220810_1_) {
          if (!p_220810_1_.isEmpty()) {
-            double d0 = DolphinEntity.this.getPosYPlusEyeHeight() - (double)0.3F;
+            double d0 = DolphinEntity.this.getPosYEye() - (double)0.3F;
             ItemEntity itementity = new ItemEntity(DolphinEntity.this.world, DolphinEntity.this.getPosX(), d0, DolphinEntity.this.getPosZ(), p_220810_1_);
             itementity.setPickupDelay(40);
             itementity.setThrowerId(DolphinEntity.this.getUniqueID());
@@ -517,15 +517,15 @@ public class DolphinEntity extends WaterMobEntity {
          World world = this.dolphin.world;
          if (this.dolphin.closeToTarget() || this.dolphin.getNavigator().noPath()) {
             Vec3d vec3d = new Vec3d(this.dolphin.getTreasurePos());
-            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardScaled(this.dolphin, 16, 1, vec3d, (double)((float)Math.PI / 8F));
+            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardsScaled(this.dolphin, 16, 1, vec3d, (double)((float)Math.PI / 8F));
             if (vec3d1 == null) {
-               vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.dolphin, 8, 4, vec3d);
+               vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.dolphin, 8, 4, vec3d);
             }
 
             if (vec3d1 != null) {
                BlockPos blockpos = new BlockPos(vec3d1);
                if (!world.getFluidState(blockpos).isTagged(FluidTags.WATER) || !world.getBlockState(blockpos).allowsMovement(world, blockpos, PathType.WATER)) {
-                  vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.dolphin, 8, 5, vec3d);
+                  vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.dolphin, 8, 5, vec3d);
                }
             }
 

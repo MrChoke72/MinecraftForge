@@ -17,7 +17,7 @@ public class NPCMerchant implements IMerchant {
    private final MerchantInventory merchantInventory;
    private final PlayerEntity customer;
    private MerchantOffers offers = new MerchantOffers();
-   private int field_213710_d;
+   private int xp;
 
    public NPCMerchant(PlayerEntity p_i50184_1_) {
       this.customer = p_i50184_1_;
@@ -37,12 +37,12 @@ public class NPCMerchant implements IMerchant {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_213703_a(@Nullable MerchantOffers p_213703_1_) {
-      this.offers = p_213703_1_;
+   public void setClientSideOffers(@Nullable MerchantOffers offers) {
+      this.offers = offers;
    }
 
-   public void onTrade(MerchantOffer p_213704_1_) {
-      p_213704_1_.func_222219_j();
+   public void onTrade(MerchantOffer offer) {
+      offer.increaseUses();
    }
 
    public void verifySellingItem(ItemStack stack) {
@@ -53,18 +53,18 @@ public class NPCMerchant implements IMerchant {
    }
 
    public int getXp() {
-      return this.field_213710_d;
+      return this.xp;
    }
 
-   public void func_213702_q(int p_213702_1_) {
-      this.field_213710_d = p_213702_1_;
+   public void setXP(int xpIn) {
+      this.xp = xpIn;
    }
 
    public boolean func_213705_dZ() {
       return true;
    }
 
-   public SoundEvent func_213714_ea() {
+   public SoundEvent getYesSound() {
       return SoundEvents.ENTITY_VILLAGER_YES;
    }
 }

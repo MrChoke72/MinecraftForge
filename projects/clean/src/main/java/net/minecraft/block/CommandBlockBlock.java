@@ -63,8 +63,8 @@ public class CommandBlockBlock extends ContainerBlock {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      TileEntity tileentity = p_225534_2_.getTileEntity(p_225534_3_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      TileEntity tileentity = worldIn.getTileEntity(pos);
       if (tileentity instanceof CommandBlockTileEntity) {
          CommandBlockTileEntity commandblocktileentity = (CommandBlockTileEntity)tileentity;
          CommandBlockLogic commandblocklogic = commandblocktileentity.getCommandBlockLogic();
@@ -74,23 +74,23 @@ public class CommandBlockBlock extends ContainerBlock {
          if (commandblocktileentity$mode == CommandBlockTileEntity.Mode.AUTO) {
             commandblocktileentity.setConditionMet();
             if (flag1) {
-               this.execute(p_225534_1_, p_225534_2_, p_225534_3_, commandblocklogic, flag);
+               this.execute(state, worldIn, pos, commandblocklogic, flag);
             } else if (commandblocktileentity.isConditional()) {
                commandblocklogic.setSuccessCount(0);
             }
 
             if (commandblocktileentity.isPowered() || commandblocktileentity.isAuto()) {
-               p_225534_2_.getPendingBlockTicks().scheduleTick(p_225534_3_, this, this.tickRate(p_225534_2_));
+               worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
             }
          } else if (commandblocktileentity$mode == CommandBlockTileEntity.Mode.REDSTONE) {
             if (flag1) {
-               this.execute(p_225534_1_, p_225534_2_, p_225534_3_, commandblocklogic, flag);
+               this.execute(state, worldIn, pos, commandblocklogic, flag);
             } else if (commandblocktileentity.isConditional()) {
                commandblocklogic.setSuccessCount(0);
             }
          }
 
-         p_225534_2_.updateComparatorOutputLevel(p_225534_3_, this);
+         worldIn.updateComparatorOutputLevel(pos, this);
       }
 
    }
@@ -109,10 +109,10 @@ public class CommandBlockBlock extends ContainerBlock {
       return 1;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      TileEntity tileentity = p_225533_2_.getTileEntity(p_225533_3_);
-      if (tileentity instanceof CommandBlockTileEntity && p_225533_4_.canUseCommandBlock()) {
-         p_225533_4_.openCommandBlock((CommandBlockTileEntity)tileentity);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      TileEntity tileentity = worldIn.getTileEntity(pos);
+      if (tileentity instanceof CommandBlockTileEntity && player.canUseCommandBlock()) {
+         player.openCommandBlock((CommandBlockTileEntity)tileentity);
          return ActionResultType.SUCCESS;
       } else {
          return ActionResultType.PASS;

@@ -18,7 +18,7 @@ public class BreedGoal extends Goal {
    protected final AnimalEntity animal;
    private final Class<? extends AnimalEntity> mateClass;
    protected final World world;
-   protected AnimalEntity field_75391_e;
+   protected AnimalEntity targetMate;
    private int spawnBabyDelay;
    private final double moveSpeed;
 
@@ -38,25 +38,25 @@ public class BreedGoal extends Goal {
       if (!this.animal.isInLove()) {
          return false;
       } else {
-         this.field_75391_e = this.getNearbyMate();
-         return this.field_75391_e != null;
+         this.targetMate = this.getNearbyMate();
+         return this.targetMate != null;
       }
    }
 
    public boolean shouldContinueExecuting() {
-      return this.field_75391_e.isAlive() && this.field_75391_e.isInLove() && this.spawnBabyDelay < 60;
+      return this.targetMate.isAlive() && this.targetMate.isInLove() && this.spawnBabyDelay < 60;
    }
 
    public void resetTask() {
-      this.field_75391_e = null;
+      this.targetMate = null;
       this.spawnBabyDelay = 0;
    }
 
    public void tick() {
-      this.animal.getLookController().setLookPositionWithEntity(this.field_75391_e, 10.0F, (float)this.animal.getVerticalFaceSpeed());
-      this.animal.getNavigator().tryMoveToEntityLiving(this.field_75391_e, this.moveSpeed);
+      this.animal.getLookController().setLookPositionWithEntity(this.targetMate, 10.0F, (float)this.animal.getVerticalFaceSpeed());
+      this.animal.getNavigator().tryMoveToEntityLiving(this.targetMate, this.moveSpeed);
       ++this.spawnBabyDelay;
-      if (this.spawnBabyDelay >= 60 && this.animal.getDistanceSq(this.field_75391_e) < 9.0D) {
+      if (this.spawnBabyDelay >= 60 && this.animal.getDistanceSq(this.targetMate) < 9.0D) {
          this.spawnBaby();
       }
 
@@ -79,22 +79,22 @@ public class BreedGoal extends Goal {
    }
 
    protected void spawnBaby() {
-      AgeableEntity ageableentity = this.animal.createChild(this.field_75391_e);
+      AgeableEntity ageableentity = this.animal.createChild(this.targetMate);
       if (ageableentity != null) {
          ServerPlayerEntity serverplayerentity = this.animal.getLoveCause();
-         if (serverplayerentity == null && this.field_75391_e.getLoveCause() != null) {
-            serverplayerentity = this.field_75391_e.getLoveCause();
+         if (serverplayerentity == null && this.targetMate.getLoveCause() != null) {
+            serverplayerentity = this.targetMate.getLoveCause();
          }
 
          if (serverplayerentity != null) {
             serverplayerentity.addStat(Stats.ANIMALS_BRED);
-            CriteriaTriggers.BRED_ANIMALS.trigger(serverplayerentity, this.animal, this.field_75391_e, ageableentity);
+            CriteriaTriggers.BRED_ANIMALS.trigger(serverplayerentity, this.animal, this.targetMate, ageableentity);
          }
 
          this.animal.setGrowingAge(6000);
-         this.field_75391_e.setGrowingAge(6000);
+         this.targetMate.setGrowingAge(6000);
          this.animal.resetInLove();
-         this.field_75391_e.resetInLove();
+         this.targetMate.resetInLove();
          ageableentity.setGrowingAge(-24000);
          ageableentity.setLocationAndAngles(this.animal.getPosX(), this.animal.getPosY(), this.animal.getPosZ(), 0.0F, 0.0F);
          this.world.addEntity(ageableentity);

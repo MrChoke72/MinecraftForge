@@ -47,7 +47,7 @@ public abstract class BiomeProvider implements BiomeManager.IBiomeReader {
                int i3 = i + k2;
                int j3 = j + l2;
                int k3 = k + j2;
-               set.add(this.func_225526_b_(i3, j3, k3));
+               set.add(this.getNoiseBiome(i3, j3, k3));
             }
          }
       }
@@ -71,7 +71,7 @@ public abstract class BiomeProvider implements BiomeManager.IBiomeReader {
          for(int j2 = 0; j2 < i1; ++j2) {
             int k2 = i + j2;
             int l2 = j + i2;
-            if (p_225531_5_.contains(this.func_225526_b_(k2, k1, l2))) {
+            if (p_225531_5_.contains(this.getNoiseBiome(k2, k1, l2))) {
                if (blockpos == null || p_225531_6_.nextInt(l1 + 1) == 0) {
                   blockpos = new BlockPos(k2 << 2, p_225531_2_, l2 << 2);
                }

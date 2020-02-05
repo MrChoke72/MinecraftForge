@@ -68,7 +68,7 @@ public abstract class Biome {
    protected final float downfall;
    protected final int waterColor;
    protected final int waterFogColor;
-   private final int field_229978_u_;
+   private final int skyColor;
    @Nullable
    protected final String parent;
    protected final ConfiguredSurfaceBuilder<?> surfaceBuilder;
@@ -110,7 +110,7 @@ public abstract class Biome {
          this.downfall = biomeBuilder.downfall;
          this.waterColor = biomeBuilder.waterColor;
          this.waterFogColor = biomeBuilder.waterFogColor;
-         this.field_229978_u_ = this.func_229979_u_();
+         this.skyColor = this.calculateSkyColor();
          this.parent = biomeBuilder.parent;
 
          for(GenerationStage.Decoration generationstage$decoration : GenerationStage.Decoration.values()) {
@@ -130,7 +130,7 @@ public abstract class Biome {
       return this.parent != null;
    }
 
-   private int func_229979_u_() {
+   private int calculateSkyColor() {
       float f = this.temperature;
       f = f / 3.0F;
       f = MathHelper.clamp(f, -1.0F, 1.0F);
@@ -138,8 +138,8 @@ public abstract class Biome {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225529_c_() {
-      return this.field_229978_u_;
+   public int getSkyColor() {
+      return this.skyColor;
    }
 
    protected void addSpawn(EntityClassification type, Biome.SpawnListEntry spawnListEntry) {
@@ -162,23 +162,23 @@ public abstract class Biome {
       return 0.1F;
    }
 
-   public float getTemperature(BlockPos pos) {
+   public float getTemperatureRaw(BlockPos pos) {
       if (pos.getY() > 64) {
-         float f = (float)(TEMPERATURE_NOISE.func_215464_a((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 4.0D);
+         float f = (float)(TEMPERATURE_NOISE.noiseAt((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 4.0D);
          return this.getDefaultTemperature() - (f + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
       } else {
          return this.getDefaultTemperature();
       }
    }
 
-   public final float func_225486_c(BlockPos p_225486_1_) {
+   public final float getTemperature(BlockPos p_225486_1_) {
       long i = p_225486_1_.toLong();
       Long2FloatLinkedOpenHashMap long2floatlinkedopenhashmap = this.field_225488_v.get();
       float f = long2floatlinkedopenhashmap.get(i);
       if (!Float.isNaN(f)) {
          return f;
       } else {
-         float f1 = this.getTemperature(p_225486_1_);
+         float f1 = this.getTemperatureRaw(p_225486_1_);
          if (long2floatlinkedopenhashmap.size() == 1024) {
             long2floatlinkedopenhashmap.removeFirstFloat();
          }
@@ -193,10 +193,10 @@ public abstract class Biome {
    }
 
    public boolean doesWaterFreeze(IWorldReader worldIn, BlockPos water, boolean mustBeAtEdge) {
-      if (this.func_225486_c(water) >= 0.15F) {
+      if (this.getTemperature(water) >= 0.15F) {
          return false;
       } else {
-         if (water.getY() >= 0 && water.getY() < 256 && worldIn.getLightLevel(LightType.BLOCK, water) < 10) {
+         if (water.getY() >= 0 && water.getY() < 256 && worldIn.getLightFor(LightType.BLOCK, water) < 10) {
             BlockState blockstate = worldIn.getBlockState(water);
             IFluidState ifluidstate = worldIn.getFluidState(water);
             if (ifluidstate.getFluid() == Fluids.WATER && blockstate.getBlock() instanceof FlowingFluidBlock) {
@@ -216,10 +216,10 @@ public abstract class Biome {
    }
 
    public boolean doesSnowGenerate(IWorldReader worldIn, BlockPos pos) {
-      if (this.func_225486_c(pos) >= 0.15F) {
+      if (this.getTemperature(pos) >= 0.15F) {
          return false;
       } else {
-         if (pos.getY() >= 0 && pos.getY() < 256 && worldIn.getLightLevel(LightType.BLOCK, pos) < 10) {
+         if (pos.getY() >= 0 && pos.getY() < 256 && worldIn.getLightFor(LightType.BLOCK, pos) < 10) {
             BlockState blockstate = worldIn.getBlockState(pos);
             if (blockstate.isAir() && Blocks.SNOW.getDefaultState().isValidPosition(worldIn, pos)) {
                return true;
@@ -250,8 +250,8 @@ public abstract class Biome {
       });
    }
 
-   public <C extends IFeatureConfig> void func_226711_a_(ConfiguredFeature<C, ? extends Structure<C>> p_226711_1_) {
-      this.structures.put(p_226711_1_.feature, p_226711_1_.config);
+   public <C extends IFeatureConfig> void addStructure(ConfiguredFeature<C, ? extends Structure<C>> structureIn) {
+      this.structures.put(structureIn.feature, structureIn.config);
    }
 
    public <C extends IFeatureConfig> boolean hasStructure(Structure<C> structureIn) {
@@ -293,14 +293,14 @@ public abstract class Biome {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225528_a_(double p_225528_1_, double p_225528_3_) {
+   public int getGrassColor(double p_225528_1_, double p_225528_3_) {
       double d0 = (double)MathHelper.clamp(this.getDefaultTemperature(), 0.0F, 1.0F);
       double d1 = (double)MathHelper.clamp(this.getDownfall(), 0.0F, 1.0F);
       return GrassColors.get(d0, d1);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225527_a_() {
+   public int getFoliageColor() {
       double d0 = (double)MathHelper.clamp(this.getDefaultTemperature(), 0.0F, 1.0F);
       double d1 = (double)MathHelper.clamp(this.getDownfall(), 0.0F, 1.0F);
       return FoliageColors.get(d0, d1);
@@ -397,8 +397,8 @@ public abstract class Biome {
       @Nullable
       private String parent;
 
-      public <SC extends ISurfaceBuilderConfig> Biome.Builder surfaceBuilder(SurfaceBuilder<SC> p_222351_1_, SC p_222351_2_) {
-         this.surfaceBuilder = new ConfiguredSurfaceBuilder<>(p_222351_1_, p_222351_2_);
+      public <SC extends ISurfaceBuilderConfig> Biome.Builder surfaceBuilder(SurfaceBuilder<SC> surfaceBuilderIn, SC surfaceBuilderConfigIn) {
+         this.surfaceBuilder = new ConfiguredSurfaceBuilder<>(surfaceBuilderIn, surfaceBuilderConfigIn);
          return this;
       }
 
@@ -532,17 +532,17 @@ public abstract class Biome {
       MEDIUM("medium"),
       WARM("warm");
 
-      private static final Map<String, Biome.TempCategory> field_222358_e = Arrays.stream(values()).collect(Collectors.toMap(Biome.TempCategory::func_222357_a, (p_222356_0_) -> {
+      private static final Map<String, Biome.TempCategory> BY_NAME = Arrays.stream(values()).collect(Collectors.toMap(Biome.TempCategory::getName, (p_222356_0_) -> {
          return p_222356_0_;
       }));
-      private final String field_222359_f;
+      private final String name;
 
-      private TempCategory(String p_i50594_3_) {
-         this.field_222359_f = p_i50594_3_;
+      private TempCategory(String nameIn) {
+         this.name = nameIn;
       }
 
-      public String func_222357_a() {
-         return this.field_222359_f;
+      public String getName() {
+         return this.name;
       }
    }
 }

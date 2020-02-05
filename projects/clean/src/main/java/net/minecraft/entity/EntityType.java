@@ -144,7 +144,7 @@ public class EntityType<T extends Entity> {
    public static final EntityType<ArmorStandEntity> ARMOR_STAND = register("armor_stand", EntityType.Builder.<ArmorStandEntity>create(ArmorStandEntity::new, EntityClassification.MISC).size(0.5F, 1.975F));
    public static final EntityType<ArrowEntity> ARROW = register("arrow", EntityType.Builder.<ArrowEntity>create(ArrowEntity::new, EntityClassification.MISC).size(0.5F, 0.5F));
    public static final EntityType<BatEntity> BAT = register("bat", EntityType.Builder.create(BatEntity::new, EntityClassification.AMBIENT).size(0.5F, 0.9F));
-   public static final EntityType<BeeEntity> field_226289_e_ = register("bee", EntityType.Builder.create(BeeEntity::new, EntityClassification.CREATURE).size(0.7F, 0.6F));
+   public static final EntityType<BeeEntity> BEE = register("bee", EntityType.Builder.create(BeeEntity::new, EntityClassification.CREATURE).size(0.7F, 0.6F));
    public static final EntityType<BlazeEntity> BLAZE = register("blaze", EntityType.Builder.create(BlazeEntity::new, EntityClassification.MONSTER).immuneToFire().size(0.6F, 1.8F));
    public static final EntityType<BoatEntity> BOAT = register("boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, EntityClassification.MISC).size(1.375F, 0.5625F));
    public static final EntityType<CatEntity> CAT = register("cat", EntityType.Builder.create(CatEntity::new, EntityClassification.CREATURE).size(0.6F, 0.7F));
@@ -276,14 +276,14 @@ public class EntityType<T extends Entity> {
       return Registry.ENTITY_TYPE.getValue(ResourceLocation.tryCreate(key));
    }
 
-   public EntityType(EntityType.IFactory<T> p_i51559_1_, EntityClassification p_i51559_2_, boolean p_i51559_3_, boolean p_i51559_4_, boolean p_i51559_5_, boolean p_i51559_6_, EntitySize p_i51559_7_) {
-      this.factory = p_i51559_1_;
-      this.classification = p_i51559_2_;
+   public EntityType(EntityType.IFactory<T> factoryIn, EntityClassification classificationIn, boolean serializableIn, boolean summonableIn, boolean immuneToFireIn, boolean p_i51559_6_, EntitySize sizeIn) {
+      this.factory = factoryIn;
+      this.classification = classificationIn;
       this.field_225438_be = p_i51559_6_;
-      this.serializable = p_i51559_3_;
-      this.summonable = p_i51559_4_;
-      this.immuneToFire = p_i51559_5_;
-      this.size = p_i51559_7_;
+      this.serializable = serializableIn;
+      this.summonable = summonableIn;
+      this.immuneToFire = immuneToFireIn;
+      this.size = sizeIn;
    }
 
    @Nullable

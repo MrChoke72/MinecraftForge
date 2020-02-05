@@ -88,7 +88,7 @@ public class StructureHelper {
    }
 
    public static void func_229595_a_(MutableBoundingBox p_229595_0_, int p_229595_1_, ServerWorld p_229595_2_) {
-      BlockPos.func_229383_a_(p_229595_0_).forEach((p_229592_2_) -> {
+      BlockPos.getAllInBox(p_229595_0_).forEach((p_229592_2_) -> {
          func_229591_a_(p_229595_1_, p_229592_2_, p_229595_2_);
       });
       p_229595_2_.getPendingBlockTicks().getPending(p_229595_0_, true, false);
@@ -203,9 +203,9 @@ public class StructureHelper {
             blockstate = Blocks.AIR.getDefaultState();
          }
       } else if (p_229591_1_.getY() == p_229591_0_ - 1) {
-         blockstate = p_229591_2_.func_226691_t_(p_229591_1_).getSurfaceBuilderConfig().getTop();
+         blockstate = p_229591_2_.getBiome(p_229591_1_).getSurfaceBuilderConfig().getTop();
       } else if (p_229591_1_.getY() < p_229591_0_ - 1) {
-         blockstate = p_229591_2_.func_226691_t_(p_229591_1_).getSurfaceBuilderConfig().getUnder();
+         blockstate = p_229591_2_.getBiome(p_229591_1_).getSurfaceBuilderConfig().getUnder();
       } else {
          blockstate = Blocks.AIR.getDefaultState();
       }

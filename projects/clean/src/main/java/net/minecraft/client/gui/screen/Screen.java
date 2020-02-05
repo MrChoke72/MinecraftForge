@@ -172,14 +172,14 @@ public abstract class Screen extends FocusableGui implements IRenderable {
          this.fillGradient(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, 1347420415, 1347420415);
          this.fillGradient(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, 1344798847, 1344798847);
          MatrixStack matrixstack = new MatrixStack();
-         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.func_228455_a_(Tessellator.getInstance().getBuffer());
-         matrixstack.func_227861_a_(0.0D, 0.0D, (double)this.itemRenderer.zLevel);
-         Matrix4f matrix4f = matrixstack.func_227866_c_().func_227870_a_();
+         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+         matrixstack.translate(0.0D, 0.0D, (double)this.itemRenderer.zLevel);
+         Matrix4f matrix4f = matrixstack.getLast().getPositionMatrix();
 
          for(int k1 = 0; k1 < p_renderTooltip_1_.size(); ++k1) {
             String s1 = p_renderTooltip_1_.get(k1);
             if (s1 != null) {
-               this.font.func_228079_a_(s1, (float)l1, (float)i2, -1, true, matrix4f, irendertypebuffer$impl, false, 0, 15728880);
+               this.font.renderString(s1, (float)l1, (float)i2, -1, true, matrix4f, irendertypebuffer$impl, false, 0, 15728880);
             }
 
             if (k1 == 0) {
@@ -189,7 +189,7 @@ public abstract class Screen extends FocusableGui implements IRenderable {
             i2 += 10;
          }
 
-         irendertypebuffer$impl.func_228461_a_();
+         irendertypebuffer$impl.finish();
          this.setBlitOffset(0);
          this.itemRenderer.zLevel = 0.0F;
          RenderSystem.enableDepthTest();
@@ -365,10 +365,10 @@ public abstract class Screen extends FocusableGui implements IRenderable {
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       float f = 32.0F;
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_(0.0D, (double)this.height, 0.0D).func_225583_a_(0.0F, (float)this.height / 32.0F + (float)p_renderDirtBackground_1_).func_225586_a_(64, 64, 64, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)this.width, (double)this.height, 0.0D).func_225583_a_((float)this.width / 32.0F, (float)this.height / 32.0F + (float)p_renderDirtBackground_1_).func_225586_a_(64, 64, 64, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)this.width, 0.0D, 0.0D).func_225583_a_((float)this.width / 32.0F, (float)p_renderDirtBackground_1_).func_225586_a_(64, 64, 64, 255).endVertex();
-      bufferbuilder.func_225582_a_(0.0D, 0.0D, 0.0D).func_225583_a_(0.0F, (float)p_renderDirtBackground_1_).func_225586_a_(64, 64, 64, 255).endVertex();
+      bufferbuilder.pos(0.0D, (double)this.height, 0.0D).tex(0.0F, (float)this.height / 32.0F + (float)p_renderDirtBackground_1_).color(64, 64, 64, 255).endVertex();
+      bufferbuilder.pos((double)this.width, (double)this.height, 0.0D).tex((float)this.width / 32.0F, (float)this.height / 32.0F + (float)p_renderDirtBackground_1_).color(64, 64, 64, 255).endVertex();
+      bufferbuilder.pos((double)this.width, 0.0D, 0.0D).tex((float)this.width / 32.0F, (float)p_renderDirtBackground_1_).color(64, 64, 64, 255).endVertex();
+      bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex(0.0F, (float)p_renderDirtBackground_1_).color(64, 64, 64, 255).endVertex();
       tessellator.draw();
    }
 
@@ -391,18 +391,18 @@ public abstract class Screen extends FocusableGui implements IRenderable {
 
    public static boolean hasControlDown() {
       if (Minecraft.IS_RUNNING_ON_MAC) {
-         return InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 343) || InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 347);
+         return InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 343) || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 347);
       } else {
-         return InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 341) || InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 345);
+         return InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 341) || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 345);
       }
    }
 
    public static boolean hasShiftDown() {
-      return InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 340) || InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 344);
+      return InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 340) || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 344);
    }
 
    public static boolean hasAltDown() {
-      return InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 342) || InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 346);
+      return InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 342) || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 346);
    }
 
    public static boolean isCut(int p_isCut_0_) {

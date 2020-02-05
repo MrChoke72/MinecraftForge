@@ -14,39 +14,39 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class VideoSettingsScreen extends SettingsScreen {
    private OptionsRowList optionsRowList;
    private static final AbstractOption[] OPTIONS = new AbstractOption[]{AbstractOption.GRAPHICS, AbstractOption.RENDER_DISTANCE, AbstractOption.AO, AbstractOption.FRAMERATE_LIMIT, AbstractOption.VSYNC, AbstractOption.VIEW_BOBBING, AbstractOption.GUI_SCALE, AbstractOption.ATTACK_INDICATOR, AbstractOption.GAMMA, AbstractOption.RENDER_CLOUDS, AbstractOption.FULLSCREEN, AbstractOption.PARTICLES, AbstractOption.MIPMAP_LEVELS, AbstractOption.ENTITY_SHADOWS};
-   private int field_213108_e;
+   private int mipmapLevels;
 
    public VideoSettingsScreen(Screen parentScreenIn, GameSettings gameSettingsIn) {
       super(parentScreenIn, gameSettingsIn, new TranslationTextComponent("options.videoTitle"));
    }
 
    protected void init() {
-      this.field_213108_e = this.field_228183_b_.mipmapLevels;
+      this.mipmapLevels = this.gameSettings.mipmapLevels;
       this.optionsRowList = new OptionsRowList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-      this.optionsRowList.func_214333_a(new FullscreenResolutionOption(this.minecraft.func_228018_at_()));
-      this.optionsRowList.func_214333_a(AbstractOption.BIOME_BLEND_RADIUS);
-      this.optionsRowList.func_214335_a(OPTIONS);
+      this.optionsRowList.addOption(new FullscreenResolutionOption(this.minecraft.getMainWindow()));
+      this.optionsRowList.addOption(AbstractOption.BIOME_BLEND_RADIUS);
+      this.optionsRowList.addOptions(OPTIONS);
       this.children.add(this.optionsRowList);
       this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, I18n.format("gui.done"), (p_213106_1_) -> {
          this.minecraft.gameSettings.saveOptions();
-         this.minecraft.func_228018_at_().update();
-         this.minecraft.displayGuiScreen(this.field_228182_a_);
+         this.minecraft.getMainWindow().update();
+         this.minecraft.displayGuiScreen(this.parentScreen);
       }));
    }
 
    public void removed() {
-      if (this.field_228183_b_.mipmapLevels != this.field_213108_e) {
-         this.minecraft.func_228020_b_(this.field_228183_b_.mipmapLevels);
-         this.minecraft.func_213245_w();
+      if (this.gameSettings.mipmapLevels != this.mipmapLevels) {
+         this.minecraft.setMipmapLevels(this.gameSettings.mipmapLevels);
+         this.minecraft.scheduleResourcesRefresh();
       }
 
       super.removed();
    }
 
    public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
-      int i = this.field_228183_b_.guiScale;
+      int i = this.gameSettings.guiScale;
       if (super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_)) {
-         if (this.field_228183_b_.guiScale != i) {
+         if (this.gameSettings.guiScale != i) {
             this.minecraft.updateWindowSize();
          }
 
@@ -57,11 +57,11 @@ public class VideoSettingsScreen extends SettingsScreen {
    }
 
    public boolean mouseReleased(double p_mouseReleased_1_, double p_mouseReleased_3_, int p_mouseReleased_5_) {
-      int i = this.field_228183_b_.guiScale;
+      int i = this.gameSettings.guiScale;
       if (super.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_)) {
          return true;
       } else if (this.optionsRowList.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_)) {
-         if (this.field_228183_b_.guiScale != i) {
+         if (this.gameSettings.guiScale != i) {
             this.minecraft.updateWindowSize();
          }
 

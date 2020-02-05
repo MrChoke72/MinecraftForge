@@ -79,7 +79,7 @@ public class TropicalFishEntity extends AbstractGroupFishEntity {
       this.dataManager.set(VARIANT, p_204215_1_);
    }
 
-   public boolean func_204209_c(int p_204209_1_) {
+   public boolean isMaxGroupSize(int sizeIn) {
       return !this.field_204228_bA;
    }
 

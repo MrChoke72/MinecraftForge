@@ -27,7 +27,7 @@ public class InventoryScreen extends DisplayEffectsScreen<PlayerContainer> imple
    private float oldMouseX;
    private float oldMouseY;
    private final RecipeBookGui recipeBookGui = new RecipeBookGui();
-   private boolean field_212353_B;
+   private boolean removeRecipeBookGui;
    private boolean widthTooNarrow;
    private boolean buttonClicked;
 
@@ -50,13 +50,13 @@ public class InventoryScreen extends DisplayEffectsScreen<PlayerContainer> imple
       } else {
          super.init();
          this.widthTooNarrow = this.width < 379;
-         this.recipeBookGui.func_201520_a(this.width, this.height, this.minecraft, this.widthTooNarrow, this.container);
-         this.field_212353_B = true;
+         this.recipeBookGui.init(this.width, this.height, this.minecraft, this.widthTooNarrow, this.container);
+         this.removeRecipeBookGui = true;
          this.guiLeft = this.recipeBookGui.updateScreenPosition(this.widthTooNarrow, this.width, this.xSize);
          this.children.add(this.recipeBookGui);
-         this.func_212928_a(this.recipeBookGui);
+         this.setFocusedDefault(this.recipeBookGui);
          this.addButton(new ImageButton(this.guiLeft + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, (p_214086_1_) -> {
-            this.recipeBookGui.func_201518_a(this.widthTooNarrow);
+            this.recipeBookGui.initSearchBar(this.widthTooNarrow);
             this.recipeBookGui.toggleVisibility();
             this.guiLeft = this.recipeBookGui.updateScreenPosition(this.widthTooNarrow, this.width, this.xSize);
             ((ImageButton)p_214086_1_).setPosition(this.guiLeft + 104, this.height / 2 - 22);
@@ -104,12 +104,12 @@ public class InventoryScreen extends DisplayEffectsScreen<PlayerContainer> imple
       RenderSystem.translatef((float)p_228187_0_, (float)p_228187_1_, 1050.0F);
       RenderSystem.scalef(1.0F, 1.0F, -1.0F);
       MatrixStack matrixstack = new MatrixStack();
-      matrixstack.func_227861_a_(0.0D, 0.0D, 1000.0D);
-      matrixstack.func_227862_a_((float)p_228187_2_, (float)p_228187_2_, (float)p_228187_2_);
-      Quaternion quaternion = Vector3f.field_229183_f_.func_229187_a_(180.0F);
-      Quaternion quaternion1 = Vector3f.field_229179_b_.func_229187_a_(f1 * 20.0F);
+      matrixstack.translate(0.0D, 0.0D, 1000.0D);
+      matrixstack.scale((float)p_228187_2_, (float)p_228187_2_, (float)p_228187_2_);
+      Quaternion quaternion = Vector3f.ZP.rotationDegrees(180.0F);
+      Quaternion quaternion1 = Vector3f.XP.rotationDegrees(f1 * 20.0F);
       quaternion.multiply(quaternion1);
-      matrixstack.func_227863_a_(quaternion);
+      matrixstack.rotate(quaternion);
       float f2 = p_228187_5_.renderYawOffset;
       float f3 = p_228187_5_.rotationYaw;
       float f4 = p_228187_5_.rotationPitch;
@@ -122,11 +122,11 @@ public class InventoryScreen extends DisplayEffectsScreen<PlayerContainer> imple
       p_228187_5_.prevRotationYawHead = p_228187_5_.rotationYaw;
       EntityRendererManager entityrenderermanager = Minecraft.getInstance().getRenderManager();
       quaternion1.conjugate();
-      entityrenderermanager.func_229089_a_(quaternion1);
+      entityrenderermanager.setCameraOrientation(quaternion1);
       entityrenderermanager.setRenderShadow(false);
-      IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().func_228019_au_().func_228487_b_();
-      entityrenderermanager.func_229084_a_(p_228187_5_, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrixstack, irendertypebuffer$impl, 15728880);
-      irendertypebuffer$impl.func_228461_a_();
+      IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+      entityrenderermanager.renderEntityStatic(p_228187_5_, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, matrixstack, irendertypebuffer$impl, 15728880);
+      irendertypebuffer$impl.finish();
       entityrenderermanager.setRenderShadow(true);
       p_228187_5_.renderYawOffset = f2;
       p_228187_5_.rotationYaw = f3;
@@ -136,8 +136,8 @@ public class InventoryScreen extends DisplayEffectsScreen<PlayerContainer> imple
       RenderSystem.popMatrix();
    }
 
-   protected boolean isPointInRegion(int p_195359_1_, int p_195359_2_, int p_195359_3_, int p_195359_4_, double p_195359_5_, double p_195359_7_) {
-      return (!this.widthTooNarrow || !this.recipeBookGui.isVisible()) && super.isPointInRegion(p_195359_1_, p_195359_2_, p_195359_3_, p_195359_4_, p_195359_5_, p_195359_7_);
+   protected boolean isPointInRegion(int x, int y, int width, int height, double mouseX, double mouseY) {
+      return (!this.widthTooNarrow || !this.recipeBookGui.isVisible()) && super.isPointInRegion(x, y, width, height, mouseX, mouseY);
    }
 
    public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
@@ -157,9 +157,9 @@ public class InventoryScreen extends DisplayEffectsScreen<PlayerContainer> imple
       }
    }
 
-   protected boolean hasClickedOutside(double p_195361_1_, double p_195361_3_, int p_195361_5_, int p_195361_6_, int p_195361_7_) {
-      boolean flag = p_195361_1_ < (double)p_195361_5_ || p_195361_3_ < (double)p_195361_6_ || p_195361_1_ >= (double)(p_195361_5_ + this.xSize) || p_195361_3_ >= (double)(p_195361_6_ + this.ySize);
-      return this.recipeBookGui.func_195604_a(p_195361_1_, p_195361_3_, this.guiLeft, this.guiTop, this.xSize, this.ySize, p_195361_7_) && flag;
+   protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
+      boolean flag = mouseX < (double)guiLeftIn || mouseY < (double)guiTopIn || mouseX >= (double)(guiLeftIn + this.xSize) || mouseY >= (double)(guiTopIn + this.ySize);
+      return this.recipeBookGui.func_195604_a(mouseX, mouseY, this.guiLeft, this.guiTop, this.xSize, this.ySize, mouseButton) && flag;
    }
 
    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
@@ -172,14 +172,14 @@ public class InventoryScreen extends DisplayEffectsScreen<PlayerContainer> imple
    }
 
    public void removed() {
-      if (this.field_212353_B) {
+      if (this.removeRecipeBookGui) {
          this.recipeBookGui.removed();
       }
 
       super.removed();
    }
 
-   public RecipeBookGui func_194310_f() {
+   public RecipeBookGui getRecipeGui() {
       return this.recipeBookGui;
    }
 }

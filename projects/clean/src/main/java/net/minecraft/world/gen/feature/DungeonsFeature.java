@@ -111,7 +111,7 @@ public class DungeonsFeature extends Feature<NoFeatureConfig> {
          worldIn.setBlockState(pos, Blocks.SPAWNER.getDefaultState(), 2);
          TileEntity tileentity = worldIn.getTileEntity(pos);
          if (tileentity instanceof MobSpawnerTileEntity) {
-            ((MobSpawnerTileEntity)tileentity).getSpawnerBaseLogic().setEntityType(this.func_201043_a(rand));
+            ((MobSpawnerTileEntity)tileentity).getSpawnerBaseLogic().setEntityType(this.getRandomDungeonMob(rand));
          } else {
             LOGGER.error("Failed to fetch mob spawner entity at ({}, {}, {})", pos.getX(), pos.getY(), pos.getZ());
          }
@@ -122,7 +122,7 @@ public class DungeonsFeature extends Feature<NoFeatureConfig> {
       }
    }
 
-   private EntityType<?> func_201043_a(Random p_201043_1_) {
-      return SPAWNERTYPES[p_201043_1_.nextInt(SPAWNERTYPES.length)];
+   private EntityType<?> getRandomDungeonMob(Random rand) {
+      return SPAWNERTYPES[rand.nextInt(SPAWNERTYPES.length)];
    }
 }

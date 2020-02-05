@@ -58,7 +58,7 @@ public class CubeCoordinateIterator {
       return this.z;
    }
 
-   public int func_223473_e() {
+   public int numBoundariesTouched() {
       int i = 0;
       if (this.x == this.startX || this.x == this.endX) {
          ++i;

@@ -163,7 +163,7 @@ public class ChunkSerializer {
          }
       }
 
-      Heightmap.func_222690_a(ichunk, enumset);
+      Heightmap.updateChunkHeightmaps(ichunk, enumset);
       CompoundNBT compoundnbt4 = compoundnbt.getCompound("Structures");
       ichunk.setStructureStarts(func_227076_a_(chunkgenerator, p_222656_1_, compoundnbt4));
       ichunk.setStructureReferences(func_227075_a_(pos, compoundnbt4));
@@ -271,15 +271,15 @@ public class ChunkSerializer {
          compoundnbt1.putBoolean("isLightOn", true);
       }
 
-      BiomeContainer biomecontainer = chunkIn.func_225549_i_();
+      BiomeContainer biomecontainer = chunkIn.getBiomes();
       if (biomecontainer != null) {
-         compoundnbt1.putIntArray("Biomes", biomecontainer.func_227055_a_());
+         compoundnbt1.putIntArray("Biomes", biomecontainer.getIdArray());
       }
 
       ListNBT listnbt1 = new ListNBT();
 
       for(BlockPos blockpos : chunkIn.getTileEntitiesPos()) {
-         CompoundNBT compoundnbt4 = chunkIn.func_223134_j(blockpos);
+         CompoundNBT compoundnbt4 = chunkIn.getTileEntityNBT(blockpos);
          if (compoundnbt4 != null) {
             listnbt1.add(compoundnbt4);
          }
@@ -335,7 +335,7 @@ public class ChunkSerializer {
       compoundnbt1.put("PostProcessing", toNbt(chunkIn.getPackedPositions()));
       CompoundNBT compoundnbt6 = new CompoundNBT();
 
-      for(Entry<Heightmap.Type, Heightmap> entry : chunkIn.func_217311_f()) {
+      for(Entry<Heightmap.Type, Heightmap> entry : chunkIn.getHeightmaps()) {
          if (chunkIn.getStatus().getHeightMaps().contains(entry.getKey())) {
             compoundnbt6.put(entry.getKey().getId(), new LongArrayNBT(entry.getValue().getDataArray()));
          }
@@ -424,7 +424,7 @@ public class ChunkSerializer {
       for(String s : compoundnbt.keySet()) {
          map.put(s, new LongOpenHashSet(Arrays.stream(compoundnbt.getLongArray(s)).filter((p_227074_2_) -> {
             ChunkPos chunkpos = new ChunkPos(p_227074_2_);
-            if (chunkpos.func_226661_a_(p_227075_0_) > 8) {
+            if (chunkpos.getChessboardDistance(p_227075_0_) > 8) {
                LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", s, chunkpos, p_227075_0_);
                return false;
             } else {
@@ -443,7 +443,7 @@ public class ChunkSerializer {
          ListNBT listnbt1 = new ListNBT();
          if (shortlist != null) {
             for(Short oshort : shortlist) {
-               listnbt1.add(ShortNBT.func_229701_a_(oshort));
+               listnbt1.add(ShortNBT.valueOf(oshort));
             }
          }
 

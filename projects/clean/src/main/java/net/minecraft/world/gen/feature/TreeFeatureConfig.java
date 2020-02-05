@@ -25,8 +25,8 @@ public class TreeFeatureConfig extends BaseTreeFeatureConfig {
    public final int field_227336_k_;
    public final boolean field_227337_l_;
 
-   protected TreeFeatureConfig(BlockStateProvider p_i225839_1_, BlockStateProvider p_i225839_2_, FoliagePlacer p_i225839_3_, List<TreeDecorator> p_i225839_4_, int p_i225839_5_, int p_i225839_6_, int p_i225839_7_, int p_i225839_8_, int p_i225839_9_, int p_i225839_10_, int p_i225839_11_, int p_i225839_12_, int p_i225839_13_, int p_i225839_14_, boolean p_i225839_15_) {
-      super(p_i225839_1_, p_i225839_2_, p_i225839_4_, p_i225839_5_);
+   protected TreeFeatureConfig(BlockStateProvider trunkProviderIn, BlockStateProvider leavesProviderIn, FoliagePlacer p_i225839_3_, List<TreeDecorator> p_i225839_4_, int p_i225839_5_, int p_i225839_6_, int p_i225839_7_, int p_i225839_8_, int p_i225839_9_, int p_i225839_10_, int p_i225839_11_, int p_i225839_12_, int p_i225839_13_, int p_i225839_14_, boolean p_i225839_15_) {
+      super(trunkProviderIn, leavesProviderIn, p_i225839_4_, p_i225839_5_);
       this.field_227327_a_ = p_i225839_3_;
       this.field_227328_b_ = p_i225839_6_;
       this.field_227329_c_ = p_i225839_7_;
@@ -48,9 +48,9 @@ public class TreeFeatureConfig extends BaseTreeFeatureConfig {
    }
 
    public static <T> TreeFeatureConfig func_227338_a_(Dynamic<T> p_227338_0_) {
-      BaseTreeFeatureConfig basetreefeatureconfig = BaseTreeFeatureConfig.func_227376_b_(p_227338_0_);
-      FoliagePlacerType<?> foliageplacertype = Registry.field_229389_v_.getOrDefault(new ResourceLocation(p_227338_0_.get("foliage_placer").get("type").asString().orElseThrow(RuntimeException::new)));
-      return new TreeFeatureConfig(basetreefeatureconfig.field_227368_m_, basetreefeatureconfig.field_227369_n_, foliageplacertype.func_227391_a_(p_227338_0_.get("foliage_placer").orElseEmptyMap()), basetreefeatureconfig.field_227370_o_, basetreefeatureconfig.field_227371_p_, p_227338_0_.get("height_rand_a").asInt(0), p_227338_0_.get("height_rand_b").asInt(0), p_227338_0_.get("trunk_height").asInt(-1), p_227338_0_.get("trunk_height_random").asInt(0), p_227338_0_.get("trunk_top_offset").asInt(0), p_227338_0_.get("trunk_top_offset_random").asInt(0), p_227338_0_.get("foliage_height").asInt(-1), p_227338_0_.get("foliage_height_random").asInt(0), p_227338_0_.get("max_water_depth").asInt(0), p_227338_0_.get("ignore_vines").asBoolean(false));
+      BaseTreeFeatureConfig basetreefeatureconfig = BaseTreeFeatureConfig.deserialize(p_227338_0_);
+      FoliagePlacerType<?> foliageplacertype = Registry.FOLIAGE_PLACER_TYPE.getOrDefault(new ResourceLocation(p_227338_0_.get("foliage_placer").get("type").asString().orElseThrow(RuntimeException::new)));
+      return new TreeFeatureConfig(basetreefeatureconfig.trunkProvider, basetreefeatureconfig.leavesProvider, foliageplacertype.func_227391_a_(p_227338_0_.get("foliage_placer").orElseEmptyMap()), basetreefeatureconfig.decorators, basetreefeatureconfig.baseHeight, p_227338_0_.get("height_rand_a").asInt(0), p_227338_0_.get("height_rand_b").asInt(0), p_227338_0_.get("trunk_height").asInt(-1), p_227338_0_.get("trunk_height_random").asInt(0), p_227338_0_.get("trunk_top_offset").asInt(0), p_227338_0_.get("trunk_top_offset_random").asInt(0), p_227338_0_.get("foliage_height").asInt(-1), p_227338_0_.get("foliage_height_random").asInt(0), p_227338_0_.get("max_water_depth").asInt(0), p_227338_0_.get("ignore_vines").asBoolean(false));
    }
 
    public static class Builder extends BaseTreeFeatureConfig.Builder {
@@ -78,8 +78,8 @@ public class TreeFeatureConfig extends BaseTreeFeatureConfig {
          return this;
       }
 
-      public TreeFeatureConfig.Builder func_225569_d_(int p_225569_1_) {
-         this.field_227341_e_ = p_225569_1_;
+      public TreeFeatureConfig.Builder baseHeight(int baseHeightIn) {
+         this.field_227341_e_ = baseHeightIn;
          return this;
       }
 
@@ -133,8 +133,8 @@ public class TreeFeatureConfig extends BaseTreeFeatureConfig {
          return this;
       }
 
-      public TreeFeatureConfig func_225568_b_() {
-         return new TreeFeatureConfig(this.field_227377_a_, this.field_227378_b_, this.field_227339_c_, this.field_227340_d_, this.field_227341_e_, this.field_227342_f_, this.field_227343_g_, this.field_227344_h_, this.field_227345_i_, this.field_227346_j_, this.field_227347_k_, this.field_227348_l_, this.field_227349_m_, this.field_227350_n_, this.field_227351_o_);
+      public TreeFeatureConfig build() {
+         return new TreeFeatureConfig(this.trunkProvider, this.leavesProvider, this.field_227339_c_, this.field_227340_d_, this.field_227341_e_, this.field_227342_f_, this.field_227343_g_, this.field_227344_h_, this.field_227345_i_, this.field_227346_j_, this.field_227347_k_, this.field_227348_l_, this.field_227349_m_, this.field_227350_n_, this.field_227351_o_);
       }
    }
 }

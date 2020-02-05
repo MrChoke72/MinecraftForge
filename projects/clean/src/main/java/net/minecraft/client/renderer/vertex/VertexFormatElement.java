@@ -14,7 +14,7 @@ public class VertexFormatElement {
    private final VertexFormatElement.Usage usage;
    private final int index;
    private final int elementCount;
-   private final int field_227896_f_;
+   private final int sizeBytes;
 
    public VertexFormatElement(int indexIn, VertexFormatElement.Type typeIn, VertexFormatElement.Usage usageIn, int count) {
       if (this.isFirstOrUV(indexIn, usageIn)) {
@@ -27,11 +27,11 @@ public class VertexFormatElement {
       this.type = typeIn;
       this.index = indexIn;
       this.elementCount = count;
-      this.field_227896_f_ = typeIn.getSize() * this.elementCount;
+      this.sizeBytes = typeIn.getSize() * this.elementCount;
    }
 
-   private boolean isFirstOrUV(int p_177372_1_, VertexFormatElement.Usage p_177372_2_) {
-      return p_177372_1_ == 0 || p_177372_2_ == VertexFormatElement.Usage.UV;
+   private boolean isFirstOrUV(int indexIn, VertexFormatElement.Usage usageIn) {
+      return indexIn == 0 || usageIn == VertexFormatElement.Usage.UV;
    }
 
    public final VertexFormatElement.Type getType() {
@@ -55,7 +55,7 @@ public class VertexFormatElement {
    }
 
    public final int getSize() {
-      return this.field_227896_f_;
+      return this.sizeBytes;
    }
 
    public final boolean isPositionElement() {
@@ -89,12 +89,12 @@ public class VertexFormatElement {
       return i;
    }
 
-   public void func_227897_a_(long p_227897_1_, int p_227897_3_) {
-      this.usage.func_227902_a_(this.elementCount, this.type.getGlConstant(), p_227897_3_, p_227897_1_, this.index);
+   public void setupBufferState(long pointerIn, int strideIn) {
+      this.usage.setupBufferState(this.elementCount, this.type.getGlConstant(), strideIn, pointerIn, this.index);
    }
 
-   public void func_227898_g_() {
-      this.usage.func_227901_a_(this.index);
+   public void clearBufferState() {
+      this.usage.clearBufferState(this.index);
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -133,58 +133,58 @@ public class VertexFormatElement {
    @OnlyIn(Dist.CLIENT)
    public static enum Usage {
       POSITION("Position", (p_227914_0_, p_227914_1_, p_227914_2_, p_227914_3_, p_227914_5_) -> {
-         GlStateManager.func_227679_b_(p_227914_0_, p_227914_1_, p_227914_2_, p_227914_3_);
-         GlStateManager.func_227770_y_(32884);
+         GlStateManager.vertexPointer(p_227914_0_, p_227914_1_, p_227914_2_, p_227914_3_);
+         GlStateManager.enableClientState(32884);
       }, (p_227912_0_) -> {
-         GlStateManager.func_227772_z_(32884);
+         GlStateManager.disableClientState(32884);
       }),
       NORMAL("Normal", (p_227913_0_, p_227913_1_, p_227913_2_, p_227913_3_, p_227913_5_) -> {
-         GlStateManager.func_227652_a_(p_227913_1_, p_227913_2_, p_227913_3_);
-         GlStateManager.func_227770_y_(32885);
+         GlStateManager.normalPointer(p_227913_1_, p_227913_2_, p_227913_3_);
+         GlStateManager.enableClientState(32885);
       }, (p_227910_0_) -> {
-         GlStateManager.func_227772_z_(32885);
+         GlStateManager.disableClientState(32885);
       }),
       COLOR("Vertex Color", (p_227911_0_, p_227911_1_, p_227911_2_, p_227911_3_, p_227911_5_) -> {
-         GlStateManager.func_227694_c_(p_227911_0_, p_227911_1_, p_227911_2_, p_227911_3_);
-         GlStateManager.func_227770_y_(32886);
+         GlStateManager.colorPointer(p_227911_0_, p_227911_1_, p_227911_2_, p_227911_3_);
+         GlStateManager.enableClientState(32886);
       }, (p_227908_0_) -> {
-         GlStateManager.func_227772_z_(32886);
-         GlStateManager.func_227628_P_();
+         GlStateManager.disableClientState(32886);
+         GlStateManager.clearCurrentColor();
       }),
       UV("UV", (p_227909_0_, p_227909_1_, p_227909_2_, p_227909_3_, p_227909_5_) -> {
-         GlStateManager.func_227747_o_('\u84c0' + p_227909_5_);
-         GlStateManager.func_227650_a_(p_227909_0_, p_227909_1_, p_227909_2_, p_227909_3_);
-         GlStateManager.func_227770_y_(32888);
-         GlStateManager.func_227747_o_(33984);
+         GlStateManager.clientActiveTexture('\u84c0' + p_227909_5_);
+         GlStateManager.texCoordPointer(p_227909_0_, p_227909_1_, p_227909_2_, p_227909_3_);
+         GlStateManager.enableClientState(32888);
+         GlStateManager.clientActiveTexture(33984);
       }, (p_227906_0_) -> {
-         GlStateManager.func_227747_o_('\u84c0' + p_227906_0_);
-         GlStateManager.func_227772_z_(32888);
-         GlStateManager.func_227747_o_(33984);
+         GlStateManager.clientActiveTexture('\u84c0' + p_227906_0_);
+         GlStateManager.disableClientState(32888);
+         GlStateManager.clientActiveTexture(33984);
       }),
       PADDING("Padding", (p_227907_0_, p_227907_1_, p_227907_2_, p_227907_3_, p_227907_5_) -> {
       }, (p_227904_0_) -> {
       }),
       GENERIC("Generic", (p_227905_0_, p_227905_1_, p_227905_2_, p_227905_3_, p_227905_5_) -> {
-         GlStateManager.func_227606_A_(p_227905_5_);
-         GlStateManager.func_227651_a_(p_227905_5_, p_227905_0_, p_227905_1_, false, p_227905_2_, p_227905_3_);
-      }, GlStateManager::func_227608_B_);
+         GlStateManager.enableVertexAttribArray(p_227905_5_);
+         GlStateManager.vertexAttribPointer(p_227905_5_, p_227905_0_, p_227905_1_, false, p_227905_2_, p_227905_3_);
+      }, GlStateManager::glEnableVertexAttribArray);
 
       private final String displayName;
-      private final VertexFormatElement.Usage.ISetupState field_227899_h_;
-      private final IntConsumer field_227900_i_;
+      private final VertexFormatElement.Usage.ISetupState setupState;
+      private final IntConsumer clearState;
 
-      private Usage(String p_i225912_3_, VertexFormatElement.Usage.ISetupState p_i225912_4_, IntConsumer p_i225912_5_) {
-         this.displayName = p_i225912_3_;
-         this.field_227899_h_ = p_i225912_4_;
-         this.field_227900_i_ = p_i225912_5_;
+      private Usage(String displayNameIn, VertexFormatElement.Usage.ISetupState setupStateIn, IntConsumer clearStateIn) {
+         this.displayName = displayNameIn;
+         this.setupState = setupStateIn;
+         this.clearState = clearStateIn;
       }
 
-      private void func_227902_a_(int p_227902_1_, int p_227902_2_, int p_227902_3_, long p_227902_4_, int p_227902_6_) {
-         this.field_227899_h_.setupBufferState(p_227902_1_, p_227902_2_, p_227902_3_, p_227902_4_, p_227902_6_);
+      private void setupBufferState(int countIn, int glTypeIn, int strideIn, long pointerIn, int indexIn) {
+         this.setupState.setupBufferState(countIn, glTypeIn, strideIn, pointerIn, indexIn);
       }
 
-      public void func_227901_a_(int p_227901_1_) {
-         this.field_227900_i_.accept(p_227901_1_);
+      public void clearBufferState(int indexIn) {
+         this.clearState.accept(indexIn);
       }
 
       public String getDisplayName() {

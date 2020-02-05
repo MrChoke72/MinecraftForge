@@ -25,7 +25,7 @@ public final class VoxelShapeArray extends VoxelShape {
          this.yPoints = yPointsIn;
          this.zPoints = zPointsIn;
       } else {
-         throw (IllegalArgumentException)Util.func_229757_c_(new IllegalArgumentException("Lengths of point arrays must be consistent with the size of the VoxelShape."));
+         throw (IllegalArgumentException)Util.spinlockIfDevMode(new IllegalArgumentException("Lengths of point arrays must be consistent with the size of the VoxelShape."));
       }
    }
 

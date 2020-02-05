@@ -50,21 +50,21 @@ public class VariantList implements IUnbakedModel {
       return this.getVariantList().stream().map(Variant::getModelLocation).collect(Collectors.toSet());
    }
 
-   public Collection<Material> func_225614_a_(Function<ResourceLocation, IUnbakedModel> p_225614_1_, Set<Pair<String, String>> p_225614_2_) {
+   public Collection<Material> getTextures(Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
       return this.getVariantList().stream().map(Variant::getModelLocation).distinct().flatMap((p_228831_2_) -> {
-         return p_225614_1_.apply(p_228831_2_).func_225614_a_(p_225614_1_, p_225614_2_).stream();
+         return modelGetter.apply(p_228831_2_).getTextures(modelGetter, missingTextureErrors).stream();
       }).collect(Collectors.toSet());
    }
 
    @Nullable
-   public IBakedModel func_225613_a_(ModelBakery p_225613_1_, Function<Material, TextureAtlasSprite> p_225613_2_, IModelTransform p_225613_3_, ResourceLocation p_225613_4_) {
+   public IBakedModel bakeModel(ModelBakery modelBakeryIn, Function<Material, TextureAtlasSprite> spriteGetterIn, IModelTransform transformIn, ResourceLocation locationIn) {
       if (this.getVariantList().isEmpty()) {
          return null;
       } else {
          WeightedBakedModel.Builder weightedbakedmodel$builder = new WeightedBakedModel.Builder();
 
          for(Variant variant : this.getVariantList()) {
-            IBakedModel ibakedmodel = p_225613_1_.func_217845_a(variant.getModelLocation(), variant);
+            IBakedModel ibakedmodel = modelBakeryIn.bake(variant.getModelLocation(), variant);
             weightedbakedmodel$builder.add(ibakedmodel, variant.getWeight());
          }
 

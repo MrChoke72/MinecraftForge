@@ -7,21 +7,21 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class RegionRenderCacheBuilder {
-   private final Map<RenderType, BufferBuilder> builders = RenderType.func_228661_n_().stream().collect(Collectors.toMap((p_228369_0_) -> {
+   private final Map<RenderType, BufferBuilder> builders = RenderType.getBlockRenderTypes().stream().collect(Collectors.toMap((p_228369_0_) -> {
       return p_228369_0_;
    }, (p_228368_0_) -> {
-      return new BufferBuilder(p_228368_0_.func_228662_o_());
+      return new BufferBuilder(p_228368_0_.defaultBufferSize());
    }));
 
-   public BufferBuilder func_228366_a_(RenderType p_228366_1_) {
-      return this.builders.get(p_228366_1_);
+   public BufferBuilder getBuilder(RenderType renderTypeIn) {
+      return this.builders.get(renderTypeIn);
    }
 
-   public void func_228365_a_() {
+   public void resetBuilders() {
       this.builders.values().forEach(BufferBuilder::reset);
    }
 
-   public void func_228367_b_() {
-      this.builders.values().forEach(BufferBuilder::func_227833_h_);
+   public void discardBuilders() {
+      this.builders.values().forEach(BufferBuilder::discard);
    }
 }

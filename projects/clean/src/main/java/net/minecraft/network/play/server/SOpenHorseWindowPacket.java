@@ -22,7 +22,7 @@ public class SOpenHorseWindowPacket implements IPacket<IClientPlayNetHandler> {
    }
 
    public void processPacket(IClientPlayNetHandler handler) {
-      handler.func_217271_a(this);
+      handler.handleOpenHorseWindow(this);
    }
 
    public void readPacketData(PacketBuffer buf) throws IOException {

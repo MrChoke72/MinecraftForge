@@ -20,7 +20,7 @@ public class SEntityPacket implements IPacket<IClientPlayNetHandler> {
    protected byte pitch;
    protected boolean onGround;
    protected boolean rotating;
-   protected boolean field_229744_i_;
+   protected boolean isMovePacket;
 
    public static long func_218743_a(double p_218743_0_) {
       return MathHelper.lfloor(p_218743_0_ * 4096.0D);
@@ -90,7 +90,7 @@ public class SEntityPacket implements IPacket<IClientPlayNetHandler> {
 
    @OnlyIn(Dist.CLIENT)
    public boolean func_229745_h_() {
-      return this.field_229744_i_;
+      return this.isMovePacket;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -129,19 +129,19 @@ public class SEntityPacket implements IPacket<IClientPlayNetHandler> {
    public static class MovePacket extends SEntityPacket {
       public MovePacket() {
          this.rotating = true;
-         this.field_229744_i_ = true;
+         this.isMovePacket = true;
       }
 
-      public MovePacket(int p_i49988_1_, short p_i49988_2_, short p_i49988_3_, short p_i49988_4_, byte p_i49988_5_, byte p_i49988_6_, boolean p_i49988_7_) {
+      public MovePacket(int p_i49988_1_, short p_i49988_2_, short p_i49988_3_, short p_i49988_4_, byte p_i49988_5_, byte p_i49988_6_, boolean onGroundIn) {
          super(p_i49988_1_);
          this.posX = p_i49988_2_;
          this.posY = p_i49988_3_;
          this.posZ = p_i49988_4_;
          this.yaw = p_i49988_5_;
          this.pitch = p_i49988_6_;
-         this.onGround = p_i49988_7_;
+         this.onGround = onGroundIn;
          this.rotating = true;
-         this.field_229744_i_ = true;
+         this.isMovePacket = true;
       }
 
       public void readPacketData(PacketBuffer buf) throws IOException {
@@ -167,7 +167,7 @@ public class SEntityPacket implements IPacket<IClientPlayNetHandler> {
 
    public static class RelativeMovePacket extends SEntityPacket {
       public RelativeMovePacket() {
-         this.field_229744_i_ = true;
+         this.isMovePacket = true;
       }
 
       public RelativeMovePacket(int p_i49990_1_, short p_i49990_2_, short p_i49990_3_, short p_i49990_4_, boolean p_i49990_5_) {
@@ -176,7 +176,7 @@ public class SEntityPacket implements IPacket<IClientPlayNetHandler> {
          this.posY = p_i49990_3_;
          this.posZ = p_i49990_4_;
          this.onGround = p_i49990_5_;
-         this.field_229744_i_ = true;
+         this.isMovePacket = true;
       }
 
       public void readPacketData(PacketBuffer buf) throws IOException {

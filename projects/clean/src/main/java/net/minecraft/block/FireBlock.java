@@ -64,7 +64,7 @@ public class FireBlock extends Block {
    public BlockState getStateForPlacement(IBlockReader p_196448_1_, BlockPos p_196448_2_) {
       BlockPos blockpos = p_196448_2_.down();
       BlockState blockstate = p_196448_1_.getBlockState(blockpos);
-      if (!this.canBurn(blockstate) && !blockstate.func_224755_d(p_196448_1_, blockpos, Direction.UP)) {
+      if (!this.canBurn(blockstate) && !blockstate.isSolidSide(p_196448_1_, blockpos, Direction.UP)) {
          BlockState blockstate1 = this.getDefaultState();
 
          for(Direction direction : Direction.values()) {
@@ -82,56 +82,56 @@ public class FireBlock extends Block {
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
       BlockPos blockpos = pos.down();
-      return worldIn.getBlockState(blockpos).func_224755_d(worldIn, blockpos, Direction.UP) || this.areNeighborsFlammable(worldIn, pos);
+      return worldIn.getBlockState(blockpos).isSolidSide(worldIn, blockpos, Direction.UP) || this.areNeighborsFlammable(worldIn, pos);
    }
 
    public int tickRate(IWorldReader worldIn) {
       return 30;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_2_.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
-         if (!p_225534_1_.isValidPosition(p_225534_2_, p_225534_3_)) {
-            p_225534_2_.removeBlock(p_225534_3_, false);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (worldIn.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+         if (!state.isValidPosition(worldIn, pos)) {
+            worldIn.removeBlock(pos, false);
          }
 
-         Block block = p_225534_2_.getBlockState(p_225534_3_.down()).getBlock();
-         boolean flag = p_225534_2_.dimension instanceof EndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
-         int i = p_225534_1_.get(AGE);
-         if (!flag && p_225534_2_.isRaining() && this.canDie(p_225534_2_, p_225534_3_) && p_225534_4_.nextFloat() < 0.2F + (float)i * 0.03F) {
-            p_225534_2_.removeBlock(p_225534_3_, false);
+         Block block = worldIn.getBlockState(pos.down()).getBlock();
+         boolean flag = worldIn.dimension instanceof EndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
+         int i = state.get(AGE);
+         if (!flag && worldIn.isRaining() && this.canDie(worldIn, pos) && rand.nextFloat() < 0.2F + (float)i * 0.03F) {
+            worldIn.removeBlock(pos, false);
          } else {
-            int j = Math.min(15, i + p_225534_4_.nextInt(3) / 2);
+            int j = Math.min(15, i + rand.nextInt(3) / 2);
             if (i != j) {
-               p_225534_1_ = p_225534_1_.with(AGE, Integer.valueOf(j));
-               p_225534_2_.setBlockState(p_225534_3_, p_225534_1_, 4);
+               state = state.with(AGE, Integer.valueOf(j));
+               worldIn.setBlockState(pos, state, 4);
             }
 
             if (!flag) {
-               p_225534_2_.getPendingBlockTicks().scheduleTick(p_225534_3_, this, this.tickRate(p_225534_2_) + p_225534_4_.nextInt(10));
-               if (!this.areNeighborsFlammable(p_225534_2_, p_225534_3_)) {
-                  BlockPos blockpos = p_225534_3_.down();
-                  if (!p_225534_2_.getBlockState(blockpos).func_224755_d(p_225534_2_, blockpos, Direction.UP) || i > 3) {
-                     p_225534_2_.removeBlock(p_225534_3_, false);
+               worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn) + rand.nextInt(10));
+               if (!this.areNeighborsFlammable(worldIn, pos)) {
+                  BlockPos blockpos = pos.down();
+                  if (!worldIn.getBlockState(blockpos).isSolidSide(worldIn, blockpos, Direction.UP) || i > 3) {
+                     worldIn.removeBlock(pos, false);
                   }
 
                   return;
                }
 
-               if (i == 15 && p_225534_4_.nextInt(4) == 0 && !this.canBurn(p_225534_2_.getBlockState(p_225534_3_.down()))) {
-                  p_225534_2_.removeBlock(p_225534_3_, false);
+               if (i == 15 && rand.nextInt(4) == 0 && !this.canBurn(worldIn.getBlockState(pos.down()))) {
+                  worldIn.removeBlock(pos, false);
                   return;
                }
             }
 
-            boolean flag1 = p_225534_2_.isBlockinHighHumidity(p_225534_3_);
+            boolean flag1 = worldIn.isBlockinHighHumidity(pos);
             int k = flag1 ? -50 : 0;
-            this.catchOnFire(p_225534_2_, p_225534_3_.east(), 300 + k, p_225534_4_, i);
-            this.catchOnFire(p_225534_2_, p_225534_3_.west(), 300 + k, p_225534_4_, i);
-            this.catchOnFire(p_225534_2_, p_225534_3_.down(), 250 + k, p_225534_4_, i);
-            this.catchOnFire(p_225534_2_, p_225534_3_.up(), 250 + k, p_225534_4_, i);
-            this.catchOnFire(p_225534_2_, p_225534_3_.north(), 300 + k, p_225534_4_, i);
-            this.catchOnFire(p_225534_2_, p_225534_3_.south(), 300 + k, p_225534_4_, i);
+            this.catchOnFire(worldIn, pos.east(), 300 + k, rand, i);
+            this.catchOnFire(worldIn, pos.west(), 300 + k, rand, i);
+            this.catchOnFire(worldIn, pos.down(), 250 + k, rand, i);
+            this.catchOnFire(worldIn, pos.up(), 250 + k, rand, i);
+            this.catchOnFire(worldIn, pos.north(), 300 + k, rand, i);
+            this.catchOnFire(worldIn, pos.south(), 300 + k, rand, i);
             BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
 
             for(int l = -1; l <= 1; ++l) {
@@ -143,17 +143,17 @@ public class FireBlock extends Block {
                            k1 += (j1 - 1) * 100;
                         }
 
-                        blockpos$mutable.setPos(p_225534_3_).move(l, j1, i1);
-                        int l1 = this.getNeighborEncouragement(p_225534_2_, blockpos$mutable);
+                        blockpos$mutable.setPos(pos).move(l, j1, i1);
+                        int l1 = this.getNeighborEncouragement(worldIn, blockpos$mutable);
                         if (l1 > 0) {
-                           int i2 = (l1 + 40 + p_225534_2_.getDifficulty().getId() * 7) / (i + 30);
+                           int i2 = (l1 + 40 + worldIn.getDifficulty().getId() * 7) / (i + 30);
                            if (flag1) {
                               i2 /= 2;
                            }
 
-                           if (i2 > 0 && p_225534_4_.nextInt(k1) <= i2 && (!p_225534_2_.isRaining() || !this.canDie(p_225534_2_, blockpos$mutable))) {
-                              int j2 = Math.min(15, i + p_225534_4_.nextInt(5) / 4);
-                              p_225534_2_.setBlockState(blockpos$mutable, this.getStateForPlacement(p_225534_2_, blockpos$mutable).with(AGE, Integer.valueOf(j2)), 3);
+                           if (i2 > 0 && rand.nextInt(k1) <= i2 && (!worldIn.isRaining() || !this.canDie(worldIn, blockpos$mutable))) {
+                              int j2 = Math.min(15, i + rand.nextInt(5) / 4);
+                              worldIn.setBlockState(blockpos$mutable, this.getStateForPlacement(worldIn, blockpos$mutable).with(AGE, Integer.valueOf(j2)), 3);
                            }
                         }
                      }
@@ -246,7 +246,7 @@ public class FireBlock extends Block {
 
       BlockPos blockpos = pos.down();
       BlockState blockstate = worldIn.getBlockState(blockpos);
-      if (!this.canBurn(blockstate) && !blockstate.func_224755_d(worldIn, blockpos, Direction.UP)) {
+      if (!this.canBurn(blockstate) && !blockstate.isSolidSide(worldIn, blockpos, Direction.UP)) {
          if (this.canBurn(worldIn.getBlockState(pos.west()))) {
             for(int j = 0; j < 2; ++j) {
                double d3 = (double)pos.getX() + rand.nextDouble() * (double)0.1F;

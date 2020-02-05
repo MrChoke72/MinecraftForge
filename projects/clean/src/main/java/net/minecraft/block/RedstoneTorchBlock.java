@@ -55,8 +55,8 @@ public class RedstoneTorchBlock extends TorchBlock {
       return worldIn.isSidePowered(pos.down(), Direction.DOWN);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      update(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_, this.shouldBeOff(p_225534_2_, p_225534_3_, p_225534_1_));
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      update(state, worldIn, pos, rand, this.shouldBeOff(worldIn, pos, state));
    }
 
    public static void update(BlockState state, World worldIn, BlockPos pos, Random p_196527_3_, boolean p_196527_4_) {

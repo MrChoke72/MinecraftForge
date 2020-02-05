@@ -11,9 +11,9 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public final class DesertHillsBiome extends Biome {
    public DesertHillsBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_SAND_GRAVEL_CONFIG).precipitation(Biome.RainType.NONE).category(Biome.Category.DESERT).depth(0.45F).scale(0.3F).temperature(2.0F).downfall(0.0F).waterColor(4159204).waterFogColor(329011).parent((String)null));
-      this.func_226711_a_(Feature.DESERT_PYRAMID.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.STRONGHOLD.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.DESERT_PYRAMID.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.STRONGHOLD.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addDesertLakes(this);
@@ -22,7 +22,7 @@ public final class DesertHillsBiome extends Biome {
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
       DefaultBiomeFeatures.addDefaultFlowers(this);
-      DefaultBiomeFeatures.func_222348_W(this);
+      DefaultBiomeFeatures.addSparseGrass(this);
       DefaultBiomeFeatures.addDeadBushes(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addExtraReedsPumpkinsCactus(this);

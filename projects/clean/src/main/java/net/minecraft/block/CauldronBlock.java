@@ -59,121 +59,121 @@ public class CauldronBlock extends Block {
 
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      ItemStack itemstack = p_225533_4_.getHeldItem(p_225533_5_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      ItemStack itemstack = player.getHeldItem(handIn);
       if (itemstack.isEmpty()) {
          return ActionResultType.PASS;
       } else {
-         int i = p_225533_1_.get(LEVEL);
+         int i = state.get(LEVEL);
          Item item = itemstack.getItem();
          if (item == Items.WATER_BUCKET) {
-            if (i < 3 && !p_225533_2_.isRemote) {
-               if (!p_225533_4_.abilities.isCreativeMode) {
-                  p_225533_4_.setHeldItem(p_225533_5_, new ItemStack(Items.BUCKET));
+            if (i < 3 && !worldIn.isRemote) {
+               if (!player.abilities.isCreativeMode) {
+                  player.setHeldItem(handIn, new ItemStack(Items.BUCKET));
                }
 
-               p_225533_4_.addStat(Stats.FILL_CAULDRON);
-               this.setWaterLevel(p_225533_2_, p_225533_3_, p_225533_1_, 3);
-               p_225533_2_.playSound((PlayerEntity)null, p_225533_3_, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+               player.addStat(Stats.FILL_CAULDRON);
+               this.setWaterLevel(worldIn, pos, state, 3);
+               worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
 
             return ActionResultType.SUCCESS;
          } else if (item == Items.BUCKET) {
-            if (i == 3 && !p_225533_2_.isRemote) {
-               if (!p_225533_4_.abilities.isCreativeMode) {
+            if (i == 3 && !worldIn.isRemote) {
+               if (!player.abilities.isCreativeMode) {
                   itemstack.shrink(1);
                   if (itemstack.isEmpty()) {
-                     p_225533_4_.setHeldItem(p_225533_5_, new ItemStack(Items.WATER_BUCKET));
-                  } else if (!p_225533_4_.inventory.addItemStackToInventory(new ItemStack(Items.WATER_BUCKET))) {
-                     p_225533_4_.dropItem(new ItemStack(Items.WATER_BUCKET), false);
+                     player.setHeldItem(handIn, new ItemStack(Items.WATER_BUCKET));
+                  } else if (!player.inventory.addItemStackToInventory(new ItemStack(Items.WATER_BUCKET))) {
+                     player.dropItem(new ItemStack(Items.WATER_BUCKET), false);
                   }
                }
 
-               p_225533_4_.addStat(Stats.USE_CAULDRON);
-               this.setWaterLevel(p_225533_2_, p_225533_3_, p_225533_1_, 0);
-               p_225533_2_.playSound((PlayerEntity)null, p_225533_3_, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+               player.addStat(Stats.USE_CAULDRON);
+               this.setWaterLevel(worldIn, pos, state, 0);
+               worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
 
             return ActionResultType.SUCCESS;
          } else if (item == Items.GLASS_BOTTLE) {
-            if (i > 0 && !p_225533_2_.isRemote) {
-               if (!p_225533_4_.abilities.isCreativeMode) {
+            if (i > 0 && !worldIn.isRemote) {
+               if (!player.abilities.isCreativeMode) {
                   ItemStack itemstack4 = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.WATER);
-                  p_225533_4_.addStat(Stats.USE_CAULDRON);
+                  player.addStat(Stats.USE_CAULDRON);
                   itemstack.shrink(1);
                   if (itemstack.isEmpty()) {
-                     p_225533_4_.setHeldItem(p_225533_5_, itemstack4);
-                  } else if (!p_225533_4_.inventory.addItemStackToInventory(itemstack4)) {
-                     p_225533_4_.dropItem(itemstack4, false);
-                  } else if (p_225533_4_ instanceof ServerPlayerEntity) {
-                     ((ServerPlayerEntity)p_225533_4_).sendContainerToPlayer(p_225533_4_.container);
+                     player.setHeldItem(handIn, itemstack4);
+                  } else if (!player.inventory.addItemStackToInventory(itemstack4)) {
+                     player.dropItem(itemstack4, false);
+                  } else if (player instanceof ServerPlayerEntity) {
+                     ((ServerPlayerEntity)player).sendContainerToPlayer(player.container);
                   }
                }
 
-               p_225533_2_.playSound((PlayerEntity)null, p_225533_3_, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
-               this.setWaterLevel(p_225533_2_, p_225533_3_, p_225533_1_, i - 1);
+               worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+               this.setWaterLevel(worldIn, pos, state, i - 1);
             }
 
             return ActionResultType.SUCCESS;
          } else if (item == Items.POTION && PotionUtils.getPotionFromItem(itemstack) == Potions.WATER) {
-            if (i < 3 && !p_225533_2_.isRemote) {
-               if (!p_225533_4_.abilities.isCreativeMode) {
+            if (i < 3 && !worldIn.isRemote) {
+               if (!player.abilities.isCreativeMode) {
                   ItemStack itemstack3 = new ItemStack(Items.GLASS_BOTTLE);
-                  p_225533_4_.addStat(Stats.USE_CAULDRON);
-                  p_225533_4_.setHeldItem(p_225533_5_, itemstack3);
-                  if (p_225533_4_ instanceof ServerPlayerEntity) {
-                     ((ServerPlayerEntity)p_225533_4_).sendContainerToPlayer(p_225533_4_.container);
+                  player.addStat(Stats.USE_CAULDRON);
+                  player.setHeldItem(handIn, itemstack3);
+                  if (player instanceof ServerPlayerEntity) {
+                     ((ServerPlayerEntity)player).sendContainerToPlayer(player.container);
                   }
                }
 
-               p_225533_2_.playSound((PlayerEntity)null, p_225533_3_, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
-               this.setWaterLevel(p_225533_2_, p_225533_3_, p_225533_1_, i + 1);
+               worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+               this.setWaterLevel(worldIn, pos, state, i + 1);
             }
 
             return ActionResultType.SUCCESS;
          } else {
             if (i > 0 && item instanceof IDyeableArmorItem) {
                IDyeableArmorItem idyeablearmoritem = (IDyeableArmorItem)item;
-               if (idyeablearmoritem.hasColor(itemstack) && !p_225533_2_.isRemote) {
+               if (idyeablearmoritem.hasColor(itemstack) && !worldIn.isRemote) {
                   idyeablearmoritem.removeColor(itemstack);
-                  this.setWaterLevel(p_225533_2_, p_225533_3_, p_225533_1_, i - 1);
-                  p_225533_4_.addStat(Stats.CLEAN_ARMOR);
+                  this.setWaterLevel(worldIn, pos, state, i - 1);
+                  player.addStat(Stats.CLEAN_ARMOR);
                   return ActionResultType.SUCCESS;
                }
             }
 
             if (i > 0 && item instanceof BannerItem) {
-               if (BannerTileEntity.getPatterns(itemstack) > 0 && !p_225533_2_.isRemote) {
+               if (BannerTileEntity.getPatterns(itemstack) > 0 && !worldIn.isRemote) {
                   ItemStack itemstack2 = itemstack.copy();
                   itemstack2.setCount(1);
                   BannerTileEntity.removeBannerData(itemstack2);
-                  p_225533_4_.addStat(Stats.CLEAN_BANNER);
-                  if (!p_225533_4_.abilities.isCreativeMode) {
+                  player.addStat(Stats.CLEAN_BANNER);
+                  if (!player.abilities.isCreativeMode) {
                      itemstack.shrink(1);
-                     this.setWaterLevel(p_225533_2_, p_225533_3_, p_225533_1_, i - 1);
+                     this.setWaterLevel(worldIn, pos, state, i - 1);
                   }
 
                   if (itemstack.isEmpty()) {
-                     p_225533_4_.setHeldItem(p_225533_5_, itemstack2);
-                  } else if (!p_225533_4_.inventory.addItemStackToInventory(itemstack2)) {
-                     p_225533_4_.dropItem(itemstack2, false);
-                  } else if (p_225533_4_ instanceof ServerPlayerEntity) {
-                     ((ServerPlayerEntity)p_225533_4_).sendContainerToPlayer(p_225533_4_.container);
+                     player.setHeldItem(handIn, itemstack2);
+                  } else if (!player.inventory.addItemStackToInventory(itemstack2)) {
+                     player.dropItem(itemstack2, false);
+                  } else if (player instanceof ServerPlayerEntity) {
+                     ((ServerPlayerEntity)player).sendContainerToPlayer(player.container);
                   }
                }
 
                return ActionResultType.SUCCESS;
             } else if (i > 0 && item instanceof BlockItem) {
                Block block = ((BlockItem)item).getBlock();
-               if (block instanceof ShulkerBoxBlock && !p_225533_2_.isRemote()) {
+               if (block instanceof ShulkerBoxBlock && !worldIn.isRemote()) {
                   ItemStack itemstack1 = new ItemStack(Blocks.SHULKER_BOX, 1);
                   if (itemstack.hasTag()) {
                      itemstack1.setTag(itemstack.getTag().copy());
                   }
 
-                  p_225533_4_.setHeldItem(p_225533_5_, itemstack1);
-                  this.setWaterLevel(p_225533_2_, p_225533_3_, p_225533_1_, i - 1);
-                  p_225533_4_.addStat(Stats.CLEAN_SHULKER_BOX);
+                  player.setHeldItem(handIn, itemstack1);
+                  this.setWaterLevel(worldIn, pos, state, i - 1);
+                  player.addStat(Stats.CLEAN_SHULKER_BOX);
                   return ActionResultType.SUCCESS;
                } else {
                   return ActionResultType.CONSUME;
@@ -192,7 +192,7 @@ public class CauldronBlock extends Block {
 
    public void fillWithRain(World worldIn, BlockPos pos) {
       if (worldIn.rand.nextInt(20) == 1) {
-         float f = worldIn.func_226691_t_(pos).func_225486_c(pos);
+         float f = worldIn.getBiome(pos).getTemperature(pos);
          if (!(f < 0.15F)) {
             BlockState blockstate = worldIn.getBlockState(pos);
             if (blockstate.get(LEVEL) < 3) {

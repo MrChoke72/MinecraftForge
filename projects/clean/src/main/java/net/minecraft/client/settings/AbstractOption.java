@@ -32,7 +32,7 @@ public abstract class AbstractOption {
       p_216600_0_.chatHeightFocused = p_216600_1_;
       Minecraft.getInstance().ingameGUI.getChatGUI().refreshChat();
    }, (p_216642_0_, p_216642_1_) -> {
-      double d0 = p_216642_1_.func_216726_a(p_216642_1_.get(p_216642_0_));
+      double d0 = p_216642_1_.normalizeValue(p_216642_1_.get(p_216642_0_));
       return p_216642_1_.getDisplayString() + NewChatGui.calculateChatboxHeight(d0) + "px";
    });
    public static final SliderPercentageOption CHAT_HEIGHT_UNFOCUSED = new SliderPercentageOption("options.chat.height.unfocused", 0.0D, 1.0D, 0.0F, (p_216611_0_) -> {
@@ -41,7 +41,7 @@ public abstract class AbstractOption {
       p_216650_0_.chatHeightUnfocused = p_216650_1_;
       Minecraft.getInstance().ingameGUI.getChatGUI().refreshChat();
    }, (p_216604_0_, p_216604_1_) -> {
-      double d0 = p_216604_1_.func_216726_a(p_216604_1_.get(p_216604_0_));
+      double d0 = p_216604_1_.normalizeValue(p_216604_1_.get(p_216604_0_));
       return p_216604_1_.getDisplayString() + NewChatGui.calculateChatboxHeight(d0) + "px";
    });
    public static final SliderPercentageOption CHAT_OPACITY = new SliderPercentageOption("options.chat.opacity", 0.0D, 1.0D, 0.0F, (p_216649_0_) -> {
@@ -50,7 +50,7 @@ public abstract class AbstractOption {
       p_216578_0_.chatOpacity = p_216578_1_;
       Minecraft.getInstance().ingameGUI.getChatGUI().refreshChat();
    }, (p_216592_0_, p_216592_1_) -> {
-      double d0 = p_216592_1_.func_216726_a(p_216592_1_.get(p_216592_0_));
+      double d0 = p_216592_1_.normalizeValue(p_216592_1_.get(p_216592_0_));
       return p_216592_1_.getDisplayString() + (int)(d0 * 90.0D + 10.0D) + "%";
    });
    public static final SliderPercentageOption CHAT_SCALE = new SliderPercentageOption("options.chat.scale", 0.0D, 1.0D, 0.0F, (p_216591_0_) -> {
@@ -59,7 +59,7 @@ public abstract class AbstractOption {
       p_216624_0_.chatScale = p_216624_1_;
       Minecraft.getInstance().ingameGUI.getChatGUI().refreshChat();
    }, (p_216637_0_, p_216637_1_) -> {
-      double d0 = p_216637_1_.func_216726_a(p_216637_1_.get(p_216637_0_));
+      double d0 = p_216637_1_.normalizeValue(p_216637_1_.get(p_216637_0_));
       String s = p_216637_1_.getDisplayString();
       return d0 == 0.0D ? s + I18n.format("options.off") : s + (int)(d0 * 100.0D) + "%";
    });
@@ -69,7 +69,7 @@ public abstract class AbstractOption {
       p_216620_0_.chatWidth = p_216620_1_;
       Minecraft.getInstance().ingameGUI.getChatGUI().refreshChat();
    }, (p_216673_0_, p_216673_1_) -> {
-      double d0 = p_216673_1_.func_216726_a(p_216673_1_.get(p_216673_0_));
+      double d0 = p_216673_1_.normalizeValue(p_216673_1_.get(p_216673_0_));
       return p_216673_1_.getDisplayString() + NewChatGui.calculateChatboxWidth(d0) + "px";
    });
    public static final SliderPercentageOption FOV = new SliderPercentageOption("options.fov", 30.0D, 110.0D, 1.0F, (p_216655_0_) -> {
@@ -89,7 +89,7 @@ public abstract class AbstractOption {
       return (double)p_216672_0_.framerateLimit;
    }, (p_216608_0_, p_216608_1_) -> {
       p_216608_0_.framerateLimit = p_216608_1_.intValue();
-      Minecraft.getInstance().func_228018_at_().setFramerateLimit(p_216608_0_.framerateLimit);
+      Minecraft.getInstance().getMainWindow().setFramerateLimit(p_216608_0_.framerateLimit);
    }, (p_216645_0_, p_216645_1_) -> {
       double d0 = p_216645_1_.get(p_216645_0_);
       String s = p_216645_1_.getDisplayString();
@@ -100,7 +100,7 @@ public abstract class AbstractOption {
    }, (p_216651_0_, p_216651_1_) -> {
       p_216651_0_.gamma = p_216651_1_;
    }, (p_216594_0_, p_216594_1_) -> {
-      double d0 = p_216594_1_.func_216726_a(p_216594_1_.get(p_216594_0_));
+      double d0 = p_216594_1_.normalizeValue(p_216594_1_.get(p_216594_0_));
       String s = p_216594_1_.getDisplayString();
       if (d0 == 0.0D) {
          return s + I18n.format("options.gamma.min");
@@ -122,16 +122,16 @@ public abstract class AbstractOption {
    }, (p_216628_0_, p_216628_1_) -> {
       p_216628_0_.mouseWheelSensitivity = p_216628_1_;
    }, (p_216675_0_, p_216675_1_) -> {
-      double d0 = p_216675_1_.func_216726_a(p_216675_1_.get(p_216675_0_));
-      return p_216675_1_.getDisplayString() + String.format("%.2f", p_216675_1_.func_216725_b(d0));
+      double d0 = p_216675_1_.normalizeValue(p_216675_1_.get(p_216675_0_));
+      return p_216675_1_.getDisplayString() + String.format("%.2f", p_216675_1_.denormalizeValue(d0));
    });
-   public static final BooleanOption field_225302_l = new BooleanOption("options.rawMouseInput", (p_225287_0_) -> {
-      return p_225287_0_.field_225307_E;
+   public static final BooleanOption RAW_MOUSE_INPUT = new BooleanOption("options.rawMouseInput", (p_225287_0_) -> {
+      return p_225287_0_.rawMouseInput;
    }, (p_225259_0_, p_225259_1_) -> {
-      p_225259_0_.field_225307_E = p_225259_1_;
-      MainWindow mainwindow = Minecraft.getInstance().func_228018_at_();
+      p_225259_0_.rawMouseInput = p_225259_1_;
+      MainWindow mainwindow = Minecraft.getInstance().getMainWindow();
       if (mainwindow != null) {
-         mainwindow.func_224798_d(p_225259_1_);
+         mainwindow.setRawMouseInput(p_225259_1_);
       }
 
    });
@@ -149,7 +149,7 @@ public abstract class AbstractOption {
    }, (p_216644_0_, p_216644_1_) -> {
       p_216644_0_.mouseSensitivity = p_216644_1_;
    }, (p_216641_0_, p_216641_1_) -> {
-      double d0 = p_216641_1_.func_216726_a(p_216641_1_.get(p_216641_0_));
+      double d0 = p_216641_1_.normalizeValue(p_216641_1_.get(p_216641_0_));
       String s = p_216641_1_.getDisplayString();
       if (d0 == 0.0D) {
          return s + I18n.format("options.sensitivity.min");
@@ -163,23 +163,23 @@ public abstract class AbstractOption {
       p_216593_0_.accessibilityTextBackgroundOpacity = p_216593_1_;
       Minecraft.getInstance().ingameGUI.getChatGUI().refreshChat();
    }, (p_216626_0_, p_216626_1_) -> {
-      return p_216626_1_.getDisplayString() + (int)(p_216626_1_.func_216726_a(p_216626_1_.get(p_216626_0_)) * 100.0D) + "%";
+      return p_216626_1_.getDisplayString() + (int)(p_216626_1_.normalizeValue(p_216626_1_.get(p_216626_0_)) * 100.0D) + "%";
    });
    public static final IteratableOption AO = new IteratableOption("options.ao", (p_216653_0_, p_216653_1_) -> {
-      p_216653_0_.ambientOcclusionStatus = AmbientOcclusionStatus.func_216570_a(p_216653_0_.ambientOcclusionStatus.func_216572_a() + p_216653_1_);
+      p_216653_0_.ambientOcclusionStatus = AmbientOcclusionStatus.getValue(p_216653_0_.ambientOcclusionStatus.getId() + p_216653_1_);
       Minecraft.getInstance().worldRenderer.loadRenderers();
    }, (p_216630_0_, p_216630_1_) -> {
-      return p_216630_1_.getDisplayString() + I18n.format(p_216630_0_.ambientOcclusionStatus.func_216569_b());
+      return p_216630_1_.getDisplayString() + I18n.format(p_216630_0_.ambientOcclusionStatus.getResourceKey());
    });
    public static final IteratableOption ATTACK_INDICATOR = new IteratableOption("options.attackIndicator", (p_216615_0_, p_216615_1_) -> {
-      p_216615_0_.attackIndicator = AttackIndicatorStatus.byId(p_216615_0_.attackIndicator.func_216751_a() + p_216615_1_);
+      p_216615_0_.attackIndicator = AttackIndicatorStatus.byId(p_216615_0_.attackIndicator.getId() + p_216615_1_);
    }, (p_216609_0_, p_216609_1_) -> {
-      return p_216609_1_.getDisplayString() + I18n.format(p_216609_0_.attackIndicator.func_216748_b());
+      return p_216609_1_.getDisplayString() + I18n.format(p_216609_0_.attackIndicator.getResourceKey());
    });
    public static final IteratableOption CHAT_VISIBILITY = new IteratableOption("options.chat.visibility", (p_216640_0_, p_216640_1_) -> {
-      p_216640_0_.chatVisibility = ChatVisibility.func_221252_a((p_216640_0_.chatVisibility.func_221254_a() + p_216640_1_) % 3);
+      p_216640_0_.chatVisibility = ChatVisibility.getValue((p_216640_0_.chatVisibility.getId() + p_216640_1_) % 3);
    }, (p_216598_0_, p_216598_1_) -> {
-      return p_216598_1_.getDisplayString() + I18n.format(p_216598_0_.chatVisibility.func_221251_b());
+      return p_216598_1_.getDisplayString() + I18n.format(p_216598_0_.chatVisibility.getResourceKey());
    });
    public static final IteratableOption GRAPHICS = new IteratableOption("options.graphics", (p_216577_0_, p_216577_1_) -> {
       p_216577_0_.fancyGraphics = !p_216577_0_.fancyGraphics;
@@ -188,7 +188,7 @@ public abstract class AbstractOption {
       return p_216633_0_.fancyGraphics ? p_216633_1_.getDisplayString() + I18n.format("options.graphics.fancy") : p_216633_1_.getDisplayString() + I18n.format("options.graphics.fast");
    });
    public static final IteratableOption GUI_SCALE = new IteratableOption("options.guiScale", (p_216674_0_, p_216674_1_) -> {
-      p_216674_0_.guiScale = Integer.remainderUnsigned(p_216674_0_.guiScale + p_216674_1_, Minecraft.getInstance().func_228018_at_().calcGuiScale(0, Minecraft.getInstance().getForceUnicodeFont()) + 1);
+      p_216674_0_.guiScale = Integer.remainderUnsigned(p_216674_0_.guiScale + p_216674_1_, Minecraft.getInstance().getMainWindow().calcGuiScale(0, Minecraft.getInstance().getForceUnicodeFont()) + 1);
    }, (p_216668_0_, p_216668_1_) -> {
       return p_216668_1_.getDisplayString() + (p_216668_0_.guiScale == 0 ? I18n.format("options.guiScale.auto") : p_216668_0_.guiScale);
    });
@@ -199,24 +199,24 @@ public abstract class AbstractOption {
    });
    public static final IteratableOption NARRATOR = new IteratableOption("options.narrator", (p_216648_0_, p_216648_1_) -> {
       if (NarratorChatListener.INSTANCE.isActive()) {
-         p_216648_0_.narrator = NarratorStatus.byId(p_216648_0_.narrator.func_216827_a() + p_216648_1_);
+         p_216648_0_.narrator = NarratorStatus.byId(p_216648_0_.narrator.getId() + p_216648_1_);
       } else {
          p_216648_0_.narrator = NarratorStatus.OFF;
       }
 
-      NarratorChatListener.INSTANCE.func_216865_a(p_216648_0_.narrator);
+      NarratorChatListener.INSTANCE.announceMode(p_216648_0_.narrator);
    }, (p_216632_0_, p_216632_1_) -> {
-      return NarratorChatListener.INSTANCE.isActive() ? p_216632_1_.getDisplayString() + I18n.format(p_216632_0_.narrator.func_216824_b()) : p_216632_1_.getDisplayString() + I18n.format("options.narrator.notavailable");
+      return NarratorChatListener.INSTANCE.isActive() ? p_216632_1_.getDisplayString() + I18n.format(p_216632_0_.narrator.getResourceKey()) : p_216632_1_.getDisplayString() + I18n.format("options.narrator.notavailable");
    });
    public static final IteratableOption PARTICLES = new IteratableOption("options.particles", (p_216622_0_, p_216622_1_) -> {
-      p_216622_0_.particles = ParticleStatus.byId(p_216622_0_.particles.func_216832_b() + p_216622_1_);
+      p_216622_0_.particles = ParticleStatus.byId(p_216622_0_.particles.getId() + p_216622_1_);
    }, (p_216616_0_, p_216616_1_) -> {
-      return p_216616_1_.getDisplayString() + I18n.format(p_216616_0_.particles.func_216831_a());
+      return p_216616_1_.getDisplayString() + I18n.format(p_216616_0_.particles.getResourceKey());
    });
    public static final IteratableOption RENDER_CLOUDS = new IteratableOption("options.renderClouds", (p_216605_0_, p_216605_1_) -> {
-      p_216605_0_.cloudOption = CloudOption.byId(p_216605_0_.cloudOption.func_216806_a() + p_216605_1_);
+      p_216605_0_.cloudOption = CloudOption.byId(p_216605_0_.cloudOption.getId() + p_216605_1_);
    }, (p_216602_0_, p_216602_1_) -> {
-      return p_216602_1_.getDisplayString() + I18n.format(p_216602_0_.cloudOption.func_216803_b());
+      return p_216602_1_.getDisplayString() + I18n.format(p_216602_0_.cloudOption.getKey());
    });
    public static final IteratableOption ACCESSIBILITY_TEXT_BACKGROUND = new IteratableOption("options.accessibility.text_background", (p_216665_0_, p_216665_1_) -> {
       p_216665_0_.accessibilityTextBackground = !p_216665_0_.accessibilityTextBackground;
@@ -257,8 +257,8 @@ public abstract class AbstractOption {
       return p_216661_0_.vsync;
    }, (p_216635_0_, p_216635_1_) -> {
       p_216635_0_.vsync = p_216635_1_;
-      if (Minecraft.getInstance().func_228018_at_() != null) {
-         Minecraft.getInstance().func_228018_at_().setVsync(p_216635_0_.vsync);
+      if (Minecraft.getInstance().getMainWindow() != null) {
+         Minecraft.getInstance().getMainWindow().setVsync(p_216635_0_.vsync);
       }
 
    });
@@ -273,7 +273,7 @@ public abstract class AbstractOption {
       p_216631_0_.forceUnicodeFont = p_216631_1_;
       Minecraft minecraft = Minecraft.getInstance();
       if (minecraft.getFontResourceManager() != null) {
-         minecraft.getFontResourceManager().func_216883_a(p_216631_0_.forceUnicodeFont, Util.getServerExecutor(), minecraft);
+         minecraft.getFontResourceManager().setForceUnicodeFont(p_216631_0_.forceUnicodeFont, Util.getServerExecutor(), minecraft);
       }
 
    });
@@ -306,15 +306,15 @@ public abstract class AbstractOption {
    }, (p_216676_0_, p_216676_1_) -> {
       p_216676_0_.snooper = p_216676_1_;
    });
-   public static final IteratableOption field_228034_N_ = new IteratableOption("key.sneak", (p_228043_0_, p_228043_1_) -> {
-      p_228043_0_.field_228044_Y_ = !p_228043_0_.field_228044_Y_;
+   public static final IteratableOption SNEAK = new IteratableOption("key.sneak", (p_228043_0_, p_228043_1_) -> {
+      p_228043_0_.sneakToggleState = !p_228043_0_.sneakToggleState;
    }, (p_228041_0_, p_228041_1_) -> {
-      return p_228041_1_.getDisplayString() + I18n.format(p_228041_0_.field_228044_Y_ ? "options.key.toggle" : "options.key.hold");
+      return p_228041_1_.getDisplayString() + I18n.format(p_228041_0_.sneakToggleState ? "options.key.toggle" : "options.key.hold");
    });
-   public static final IteratableOption field_228035_O_ = new IteratableOption("key.sprint", (p_228039_0_, p_228039_1_) -> {
-      p_228039_0_.field_228045_Z_ = !p_228039_0_.field_228045_Z_;
+   public static final IteratableOption SPRINT = new IteratableOption("key.sprint", (p_228039_0_, p_228039_1_) -> {
+      p_228039_0_.sprintToggleState = !p_228039_0_.sprintToggleState;
    }, (p_228037_0_, p_228037_1_) -> {
-      return p_228037_1_.getDisplayString() + I18n.format(p_228037_0_.field_228045_Z_ ? "options.key.toggle" : "options.key.hold");
+      return p_228037_1_.getDisplayString() + I18n.format(p_228037_0_.sprintToggleState ? "options.key.toggle" : "options.key.hold");
    });
    public static final BooleanOption TOUCHSCREEN = new BooleanOption("options.touchscreen", (p_216647_0_) -> {
       return p_216647_0_.touchscreen;
@@ -326,9 +326,9 @@ public abstract class AbstractOption {
    }, (p_228042_0_, p_228042_1_) -> {
       p_228042_0_.fullscreen = p_228042_1_;
       Minecraft minecraft = Minecraft.getInstance();
-      if (minecraft.func_228018_at_() != null && minecraft.func_228018_at_().isFullscreen() != p_228042_0_.fullscreen) {
-         minecraft.func_228018_at_().toggleFullscreen();
-         p_228042_0_.fullscreen = minecraft.func_228018_at_().isFullscreen();
+      if (minecraft.getMainWindow() != null && minecraft.getMainWindow().isFullscreen() != p_228042_0_.fullscreen) {
+         minecraft.getMainWindow().toggleFullscreen();
+         p_228042_0_.fullscreen = minecraft.getMainWindow().isFullscreen();
       }
 
    });
@@ -343,7 +343,7 @@ public abstract class AbstractOption {
       this.translationKey = translationKeyIn;
    }
 
-   public abstract Widget createWidget(GameSettings options, int p_216586_2_, int p_216586_3_, int p_216586_4_);
+   public abstract Widget createWidget(GameSettings options, int xIn, int yIn, int widthIn);
 
    public String getDisplayString() {
       return I18n.format(this.translationKey) + ": ";

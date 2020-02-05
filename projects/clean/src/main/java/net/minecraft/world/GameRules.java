@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 public class GameRules {
    private static final Logger LOGGER = LogManager.getLogger();
    private static final Map<GameRules.RuleKey<?>, GameRules.RuleType<?>> GAME_RULES = Maps.newTreeMap(Comparator.comparing((p_223597_0_) -> {
-      return p_223597_0_.field_223578_a;
+      return p_223597_0_.gameRuleName;
    }));
    public static final GameRules.RuleKey<GameRules.BooleanValue> DO_FIRE_TICK = register("doFireTick", GameRules.BooleanValue.create(true));
    public static final GameRules.RuleKey<GameRules.BooleanValue> MOB_GRIEFING = register("mobGriefing", GameRules.BooleanValue.create(true));
@@ -60,25 +60,27 @@ public class GameRules {
    public static final GameRules.RuleKey<GameRules.IntegerValue> MAX_COMMAND_CHAIN_LENGTH = register("maxCommandChainLength", GameRules.IntegerValue.create(65536));
    public static final GameRules.RuleKey<GameRules.BooleanValue> ANNOUNCE_ADVANCEMENTS = register("announceAdvancements", GameRules.BooleanValue.create(true));
    public static final GameRules.RuleKey<GameRules.BooleanValue> DISABLE_RAIDS = register("disableRaids", GameRules.BooleanValue.create(false));
-   public static final GameRules.RuleKey<GameRules.BooleanValue> field_226682_y_ = register("doInsomnia", GameRules.BooleanValue.create(true));
-   public static final GameRules.RuleKey<GameRules.BooleanValue> field_226683_z_ = register("doImmediateRespawn", GameRules.BooleanValue.create(false, (p_226686_0_, p_226686_1_) -> {
+   public static final GameRules.RuleKey<GameRules.BooleanValue> DO_INSOMNIA = register("doInsomnia", GameRules.BooleanValue.create(true));
+   public static final GameRules.RuleKey<GameRules.BooleanValue> DO_IMMEDIATE_RESPAWN = register("doImmediateRespawn", GameRules.BooleanValue.create(false, (p_226686_0_, p_226686_1_) -> {
       for(ServerPlayerEntity serverplayerentity : p_226686_0_.getPlayerList().getPlayers()) {
          serverplayerentity.connection.sendPacket(new SChangeGameStatePacket(11, p_226686_1_.get() ? 1.0F : 0.0F));
       }
 
    }));
-   public static final GameRules.RuleKey<GameRules.BooleanValue> field_226679_A_ = register("drowningDamage", GameRules.BooleanValue.create(true));
-   public static final GameRules.RuleKey<GameRules.BooleanValue> field_226680_B_ = register("fallDamage", GameRules.BooleanValue.create(true));
-   public static final GameRules.RuleKey<GameRules.BooleanValue> field_226681_C_ = register("fireDamage", GameRules.BooleanValue.create(true));
+   public static final GameRules.RuleKey<GameRules.BooleanValue> DROWNING_DAMAGE = register("drowningDamage", GameRules.BooleanValue.create(true));
+   public static final GameRules.RuleKey<GameRules.BooleanValue> FALL_DAMAGE = register("fallDamage", GameRules.BooleanValue.create(true));
+   public static final GameRules.RuleKey<GameRules.BooleanValue> FIRE_DAMAGE = register("fireDamage", GameRules.BooleanValue.create(true));
+   public static final GameRules.RuleKey<GameRules.BooleanValue> field_230127_D_ = register("doPatrolSpawning", GameRules.BooleanValue.create(true));
+   public static final GameRules.RuleKey<GameRules.BooleanValue> field_230128_E_ = register("doTraderSpawning", GameRules.BooleanValue.create(true));
    private final Map<GameRules.RuleKey<?>, GameRules.RuleValue<?>> rules = GAME_RULES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (p_226684_0_) -> {
-      return p_226684_0_.getValue().func_223579_a();
+      return p_226684_0_.getValue().createValue();
    }));
 
-   public static <T extends GameRules.RuleValue<T>> GameRules.RuleKey<T> register(String p_223595_0_, GameRules.RuleType<T> p_223595_1_) {
-      GameRules.RuleKey<T> rulekey = new GameRules.RuleKey<>(p_223595_0_);
-      GameRules.RuleType<?> ruletype = GAME_RULES.put(rulekey, p_223595_1_);
+   public static <T extends GameRules.RuleValue<T>> GameRules.RuleKey<T> register(String gameRuleName, GameRules.RuleType<T> type) {
+      GameRules.RuleKey<T> rulekey = new GameRules.RuleKey<>(gameRuleName);
+      GameRules.RuleType<?> ruletype = GAME_RULES.put(rulekey, type);
       if (ruletype != null) {
-         throw new IllegalStateException("Duplicate game rule registration for " + p_223595_0_);
+         throw new IllegalStateException("Duplicate game rule registration for " + gameRuleName);
       } else {
          return rulekey;
       }
@@ -91,28 +93,28 @@ public class GameRules {
    public CompoundNBT write() {
       CompoundNBT compoundnbt = new CompoundNBT();
       this.rules.forEach((p_226688_1_, p_226688_2_) -> {
-         compoundnbt.putString(p_226688_1_.field_223578_a, p_226688_2_.func_223552_b());
+         compoundnbt.putString(p_226688_1_.gameRuleName, p_226688_2_.stringValue());
       });
       return compoundnbt;
    }
 
    public void read(CompoundNBT nbt) {
       this.rules.forEach((p_226685_1_, p_226685_2_) -> {
-         if (nbt.contains(p_226685_1_.field_223578_a)) {
-            p_226685_2_.func_223553_a(nbt.getString(p_226685_1_.field_223578_a));
+         if (nbt.contains(p_226685_1_.gameRuleName)) {
+            p_226685_2_.setStringValue(nbt.getString(p_226685_1_.gameRuleName));
          }
 
       });
    }
 
-   public static void func_223590_a(GameRules.IRuleEntryVisitor p_223590_0_) {
+   public static void visitAll(GameRules.IRuleEntryVisitor visitor) {
       GAME_RULES.forEach((p_226687_1_, p_226687_2_) -> {
-         func_223596_a(p_223590_0_, p_226687_1_, p_226687_2_);
+         visitHelper(visitor, p_226687_1_, p_226687_2_);
       });
    }
 
-   private static <T extends GameRules.RuleValue<T>> void func_223596_a(GameRules.IRuleEntryVisitor p_223596_0_, GameRules.RuleKey<?> p_223596_1_, GameRules.RuleType<?> p_223596_2_) {
-      p_223596_0_.func_223481_a((GameRules.RuleKey)p_223596_1_, p_223596_2_);
+   private static <T extends GameRules.RuleValue<T>> void visitHelper(GameRules.IRuleEntryVisitor visitor, GameRules.RuleKey<?> key, GameRules.RuleType<?> value) {
+      visitor.visit((GameRules.RuleKey)key, value);
    }
 
    public boolean getBoolean(GameRules.RuleKey<GameRules.BooleanValue> key) {
@@ -126,158 +128,158 @@ public class GameRules {
    public static class BooleanValue extends GameRules.RuleValue<GameRules.BooleanValue> {
       private boolean value;
 
-      private static GameRules.RuleType<GameRules.BooleanValue> create(boolean p_223567_0_, BiConsumer<MinecraftServer, GameRules.BooleanValue> p_223567_1_) {
+      private static GameRules.RuleType<GameRules.BooleanValue> create(boolean defaultValue, BiConsumer<MinecraftServer, GameRules.BooleanValue> changeListener) {
          return new GameRules.RuleType<>(BoolArgumentType::bool, (p_223574_1_) -> {
-            return new GameRules.BooleanValue(p_223574_1_, p_223567_0_);
-         }, p_223567_1_);
+            return new GameRules.BooleanValue(p_223574_1_, defaultValue);
+         }, changeListener);
       }
 
-      private static GameRules.RuleType<GameRules.BooleanValue> create(boolean p_223568_0_) {
-         return create(p_223568_0_, (p_223569_0_, p_223569_1_) -> {
+      private static GameRules.RuleType<GameRules.BooleanValue> create(boolean defaultValue) {
+         return create(defaultValue, (p_223569_0_, p_223569_1_) -> {
          });
       }
 
-      public BooleanValue(GameRules.RuleType<GameRules.BooleanValue> p_i51535_1_, boolean p_i51535_2_) {
-         super(p_i51535_1_);
-         this.value = p_i51535_2_;
+      public BooleanValue(GameRules.RuleType<GameRules.BooleanValue> type, boolean defaultValue) {
+         super(type);
+         this.value = defaultValue;
       }
 
-      protected void func_223555_a(CommandContext<CommandSource> p_223555_1_, String p_223555_2_) {
-         this.value = BoolArgumentType.getBool(p_223555_1_, p_223555_2_);
+      protected void updateValue0(CommandContext<CommandSource> context, String paramName) {
+         this.value = BoolArgumentType.getBool(context, paramName);
       }
 
       public boolean get() {
          return this.value;
       }
 
-      public void set(boolean p_223570_1_, @Nullable MinecraftServer p_223570_2_) {
-         this.value = p_223570_1_;
-         this.func_223556_a(p_223570_2_);
+      public void set(boolean valueIn, @Nullable MinecraftServer server) {
+         this.value = valueIn;
+         this.notifyChange(server);
       }
 
-      protected String func_223552_b() {
+      protected String stringValue() {
          return Boolean.toString(this.value);
       }
 
-      protected void func_223553_a(String p_223553_1_) {
-         this.value = Boolean.parseBoolean(p_223553_1_);
+      protected void setStringValue(String valueIn) {
+         this.value = Boolean.parseBoolean(valueIn);
       }
 
-      public int func_223557_c() {
+      public int intValue() {
          return this.value ? 1 : 0;
       }
 
-      protected GameRules.BooleanValue func_223213_e_() {
+      protected GameRules.BooleanValue getValue() {
          return this;
       }
    }
 
    @FunctionalInterface
    public interface IRuleEntryVisitor {
-      <T extends GameRules.RuleValue<T>> void func_223481_a(GameRules.RuleKey<T> p_223481_1_, GameRules.RuleType<T> p_223481_2_);
+      <T extends GameRules.RuleValue<T>> void visit(GameRules.RuleKey<T> key, GameRules.RuleType<T> type);
    }
 
    public static class IntegerValue extends GameRules.RuleValue<GameRules.IntegerValue> {
       private int value;
 
-      private static GameRules.RuleType<GameRules.IntegerValue> func_223564_a(int p_223564_0_, BiConsumer<MinecraftServer, GameRules.IntegerValue> p_223564_1_) {
+      private static GameRules.RuleType<GameRules.IntegerValue> create(int defaultValue, BiConsumer<MinecraftServer, GameRules.IntegerValue> changeListener) {
          return new GameRules.RuleType<>(IntegerArgumentType::integer, (p_223565_1_) -> {
-            return new GameRules.IntegerValue(p_223565_1_, p_223564_0_);
-         }, p_223564_1_);
+            return new GameRules.IntegerValue(p_223565_1_, defaultValue);
+         }, changeListener);
       }
 
-      private static GameRules.RuleType<GameRules.IntegerValue> create(int p_223559_0_) {
-         return func_223564_a(p_223559_0_, (p_223561_0_, p_223561_1_) -> {
+      private static GameRules.RuleType<GameRules.IntegerValue> create(int defaultValue) {
+         return create(defaultValue, (p_223561_0_, p_223561_1_) -> {
          });
       }
 
-      public IntegerValue(GameRules.RuleType<GameRules.IntegerValue> p_i51534_1_, int p_i51534_2_) {
-         super(p_i51534_1_);
-         this.value = p_i51534_2_;
+      public IntegerValue(GameRules.RuleType<GameRules.IntegerValue> type, int defaultValue) {
+         super(type);
+         this.value = defaultValue;
       }
 
-      protected void func_223555_a(CommandContext<CommandSource> p_223555_1_, String p_223555_2_) {
-         this.value = IntegerArgumentType.getInteger(p_223555_1_, p_223555_2_);
+      protected void updateValue0(CommandContext<CommandSource> context, String paramName) {
+         this.value = IntegerArgumentType.getInteger(context, paramName);
       }
 
       public int get() {
          return this.value;
       }
 
-      protected String func_223552_b() {
+      protected String stringValue() {
          return Integer.toString(this.value);
       }
 
-      protected void func_223553_a(String p_223553_1_) {
-         this.value = func_223563_b(p_223553_1_);
+      protected void setStringValue(String valueIn) {
+         this.value = parseInt(valueIn);
       }
 
-      private static int func_223563_b(String p_223563_0_) {
-         if (!p_223563_0_.isEmpty()) {
+      private static int parseInt(String strValue) {
+         if (!strValue.isEmpty()) {
             try {
-               return Integer.parseInt(p_223563_0_);
+               return Integer.parseInt(strValue);
             } catch (NumberFormatException var2) {
-               GameRules.LOGGER.warn("Failed to parse integer {}", (Object)p_223563_0_);
+               GameRules.LOGGER.warn("Failed to parse integer {}", (Object)strValue);
             }
          }
 
          return 0;
       }
 
-      public int func_223557_c() {
+      public int intValue() {
          return this.value;
       }
 
-      protected GameRules.IntegerValue func_223213_e_() {
+      protected GameRules.IntegerValue getValue() {
          return this;
       }
    }
 
    public static final class RuleKey<T extends GameRules.RuleValue<T>> {
-      private final String field_223578_a;
+      private final String gameRuleName;
 
-      public RuleKey(String p_i51533_1_) {
-         this.field_223578_a = p_i51533_1_;
+      public RuleKey(String name) {
+         this.gameRuleName = name;
       }
 
       public String toString() {
-         return this.field_223578_a;
+         return this.gameRuleName;
       }
 
       public boolean equals(Object p_equals_1_) {
          if (this == p_equals_1_) {
             return true;
          } else {
-            return p_equals_1_ instanceof GameRules.RuleKey && ((GameRules.RuleKey)p_equals_1_).field_223578_a.equals(this.field_223578_a);
+            return p_equals_1_ instanceof GameRules.RuleKey && ((GameRules.RuleKey)p_equals_1_).gameRuleName.equals(this.gameRuleName);
          }
       }
 
       public int hashCode() {
-         return this.field_223578_a.hashCode();
+         return this.gameRuleName.hashCode();
       }
 
-      public String func_223576_a() {
-         return this.field_223578_a;
+      public String getName() {
+         return this.gameRuleName;
       }
    }
 
    public static class RuleType<T extends GameRules.RuleValue<T>> {
-      private final Supplier<ArgumentType<?>> field_223582_a;
-      private final Function<GameRules.RuleType<T>, T> field_223583_b;
-      private final BiConsumer<MinecraftServer, T> field_223584_c;
+      private final Supplier<ArgumentType<?>> argTypeSupplier;
+      private final Function<GameRules.RuleType<T>, T> valueCreator;
+      private final BiConsumer<MinecraftServer, T> changeListener;
 
-      private RuleType(Supplier<ArgumentType<?>> p_i51531_1_, Function<GameRules.RuleType<T>, T> p_i51531_2_, BiConsumer<MinecraftServer, T> p_i51531_3_) {
-         this.field_223582_a = p_i51531_1_;
-         this.field_223583_b = p_i51531_2_;
-         this.field_223584_c = p_i51531_3_;
+      private RuleType(Supplier<ArgumentType<?>> argTypeSupplier, Function<GameRules.RuleType<T>, T> valueCreator, BiConsumer<MinecraftServer, T> changeListener) {
+         this.argTypeSupplier = argTypeSupplier;
+         this.valueCreator = valueCreator;
+         this.changeListener = changeListener;
       }
 
-      public RequiredArgumentBuilder<CommandSource, ?> func_223581_a(String p_223581_1_) {
-         return Commands.argument(p_223581_1_, this.field_223582_a.get());
+      public RequiredArgumentBuilder<CommandSource, ?> createArgument(String name) {
+         return Commands.argument(name, this.argTypeSupplier.get());
       }
 
-      public T func_223579_a() {
-         return (T)(this.field_223583_b.apply(this));
+      public T createValue() {
+         return (T)(this.valueCreator.apply(this));
       }
    }
 
@@ -288,30 +290,30 @@ public class GameRules {
          this.type = type;
       }
 
-      protected abstract void func_223555_a(CommandContext<CommandSource> p_223555_1_, String p_223555_2_);
+      protected abstract void updateValue0(CommandContext<CommandSource> context, String paramName);
 
-      public void func_223554_b(CommandContext<CommandSource> p_223554_1_, String p_223554_2_) {
-         this.func_223555_a(p_223554_1_, p_223554_2_);
-         this.func_223556_a(p_223554_1_.getSource().getServer());
+      public void updateValue(CommandContext<CommandSource> context, String paramName) {
+         this.updateValue0(context, paramName);
+         this.notifyChange(context.getSource().getServer());
       }
 
-      protected void func_223556_a(@Nullable MinecraftServer p_223556_1_) {
-         if (p_223556_1_ != null) {
-            this.type.field_223584_c.accept(p_223556_1_, (T)this.func_223213_e_());
+      protected void notifyChange(@Nullable MinecraftServer server) {
+         if (server != null) {
+            this.type.changeListener.accept(server, (T)this.getValue());
          }
 
       }
 
-      protected abstract void func_223553_a(String p_223553_1_);
+      protected abstract void setStringValue(String valueIn);
 
-      protected abstract String func_223552_b();
+      protected abstract String stringValue();
 
       public String toString() {
-         return this.func_223552_b();
+         return this.stringValue();
       }
 
-      public abstract int func_223557_c();
+      public abstract int intValue();
 
-      protected abstract T func_223213_e_();
+      protected abstract T getValue();
    }
 }

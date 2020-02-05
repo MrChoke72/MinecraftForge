@@ -28,22 +28,22 @@ public class SugarCaneBlock extends Block {
       return SHAPE;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!p_225534_1_.isValidPosition(p_225534_2_, p_225534_3_)) {
-         p_225534_2_.destroyBlock(p_225534_3_, true);
-      } else if (p_225534_2_.isAirBlock(p_225534_3_.up())) {
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!state.isValidPosition(worldIn, pos)) {
+         worldIn.destroyBlock(pos, true);
+      } else if (worldIn.isAirBlock(pos.up())) {
          int i;
-         for(i = 1; p_225534_2_.getBlockState(p_225534_3_.down(i)).getBlock() == this; ++i) {
+         for(i = 1; worldIn.getBlockState(pos.down(i)).getBlock() == this; ++i) {
             ;
          }
 
          if (i < 3) {
-            int j = p_225534_1_.get(AGE);
+            int j = state.get(AGE);
             if (j == 15) {
-               p_225534_2_.setBlockState(p_225534_3_.up(), this.getDefaultState());
-               p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(AGE, Integer.valueOf(0)), 4);
+               worldIn.setBlockState(pos.up(), this.getDefaultState());
+               worldIn.setBlockState(pos, state.with(AGE, Integer.valueOf(0)), 4);
             } else {
-               p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(AGE, Integer.valueOf(j + 1)), 4);
+               worldIn.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), 4);
             }
          }
       }

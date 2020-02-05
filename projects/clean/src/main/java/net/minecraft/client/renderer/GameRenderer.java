@@ -60,7 +60,7 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
    private float farPlaneDistance;
    public final FirstPersonRenderer itemRenderer;
    private final MapItemRenderer mapItemRenderer;
-   private final RenderTypeBuffers field_228374_i_;
+   private final RenderTypeBuffers renderTypeBuffers;
    private int rendererUpdateCount;
    private float fovModifierHand;
    private float fovModifierHandPrev;
@@ -71,11 +71,11 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
    private long timeWorldIcon;
    private long prevFrameTime = Util.milliTime();
    private final LightTexture lightmapTexture;
-   private final OverlayTexture field_228375_t_ = new OverlayTexture();
+   private final OverlayTexture overlayTexture = new OverlayTexture();
    private boolean debugView;
    private float cameraZoom = 1.0F;
-   private float field_228376_w_;
-   private float field_228377_x_;
+   private float cameraYaw;
+   private float cameraPitch;
    @Nullable
    private ItemStack itemActivationItem;
    private int itemActivationTicks;
@@ -89,20 +89,20 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
    private boolean useShader;
    private final ActiveRenderInfo activeRender = new ActiveRenderInfo();
 
-   public GameRenderer(Minecraft p_i225966_1_, IResourceManager p_i225966_2_, RenderTypeBuffers p_i225966_3_) {
-      this.mc = p_i225966_1_;
-      this.resourceManager = p_i225966_2_;
-      this.itemRenderer = p_i225966_1_.getFirstPersonRenderer();
-      this.mapItemRenderer = new MapItemRenderer(p_i225966_1_.getTextureManager());
-      this.lightmapTexture = new LightTexture(this, p_i225966_1_);
-      this.field_228374_i_ = p_i225966_3_;
+   public GameRenderer(Minecraft mcIn, IResourceManager resourceManagerIn, RenderTypeBuffers renderTypeBuffersIn) {
+      this.mc = mcIn;
+      this.resourceManager = resourceManagerIn;
+      this.itemRenderer = mcIn.getFirstPersonRenderer();
+      this.mapItemRenderer = new MapItemRenderer(mcIn.getTextureManager());
+      this.lightmapTexture = new LightTexture(this, mcIn);
+      this.renderTypeBuffers = renderTypeBuffersIn;
       this.shaderGroup = null;
    }
 
    public void close() {
       this.lightmapTexture.close();
       this.mapItemRenderer.close();
-      this.field_228375_t_.close();
+      this.overlayTexture.close();
       this.stopUseShader();
    }
 
@@ -142,7 +142,7 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
 
       try {
          this.shaderGroup = new ShaderGroup(this.mc.getTextureManager(), this.resourceManager, this.mc.getFramebuffer(), resourceLocationIn);
-         this.shaderGroup.createBindFramebuffers(this.mc.func_228018_at_().getFramebufferWidth(), this.mc.func_228018_at_().getFramebufferHeight());
+         this.shaderGroup.createBindFramebuffers(this.mc.getMainWindow().getFramebufferWidth(), this.mc.getMainWindow().getFramebufferHeight());
          this.useShader = true;
       } catch (IOException ioexception) {
          LOGGER.warn("Failed to load shader: {}", resourceLocationIn, ioexception);
@@ -180,7 +180,7 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
       this.activeRender.interpolateHeight();
       ++this.rendererUpdateCount;
       this.itemRenderer.tick();
-      this.mc.worldRenderer.func_228436_a_(this.activeRender);
+      this.mc.worldRenderer.addRainParticles(this.activeRender);
       this.bossColorModifierPrev = this.bossColorModifier;
       if (this.mc.ingameGUI.getBossOverlay().shouldDarkenSky()) {
          this.bossColorModifier += 0.05F;
@@ -220,7 +220,7 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
             this.mc.getProfiler().startSection("pick");
             this.mc.pointedEntity = null;
             double d0 = (double)this.mc.playerController.getBlockReachDistance();
-            this.mc.objectMouseOver = entity.func_213324_a(d0, partialTicks, false);
+            this.mc.objectMouseOver = entity.pick(d0, partialTicks, false);
             Vec3d vec3d = entity.getEyePosition(partialTicks);
             boolean flag = false;
             int i = 3;
@@ -245,7 +245,7 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
             Vec3d vec3d2 = vec3d.add(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0);
             float f = 1.0F;
             AxisAlignedBB axisalignedbb = entity.getBoundingBox().expand(vec3d1.scale(d0)).grow(1.0D, 1.0D, 1.0D);
-            EntityRayTraceResult entityraytraceresult = ProjectileHelper.func_221273_a(entity, vec3d, vec3d2, axisalignedbb, (p_215312_0_) -> {
+            EntityRayTraceResult entityraytraceresult = ProjectileHelper.rayTraceEntities(entity, vec3d, vec3d2, axisalignedbb, (p_215312_0_) -> {
                return !p_215312_0_.isSpectator() && p_215312_0_.canBeCollidedWith();
             }, d1);
             if (entityraytraceresult != null) {
@@ -286,22 +286,22 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
 
    }
 
-   private double getFOVModifier(ActiveRenderInfo p_215311_1_, float p_215311_2_, boolean p_215311_3_) {
+   private double getFOVModifier(ActiveRenderInfo activeRenderInfoIn, float partialTicks, boolean useFOVSetting) {
       if (this.debugView) {
          return 90.0D;
       } else {
          double d0 = 70.0D;
-         if (p_215311_3_) {
+         if (useFOVSetting) {
             d0 = this.mc.gameSettings.fov;
-            d0 = d0 * (double)MathHelper.lerp(p_215311_2_, this.fovModifierHandPrev, this.fovModifierHand);
+            d0 = d0 * (double)MathHelper.lerp(partialTicks, this.fovModifierHandPrev, this.fovModifierHand);
          }
 
-         if (p_215311_1_.getRenderViewEntity() instanceof LivingEntity && ((LivingEntity)p_215311_1_.getRenderViewEntity()).getHealth() <= 0.0F) {
-            float f = Math.min((float)((LivingEntity)p_215311_1_.getRenderViewEntity()).deathTime + p_215311_2_, 20.0F);
+         if (activeRenderInfoIn.getRenderViewEntity() instanceof LivingEntity && ((LivingEntity)activeRenderInfoIn.getRenderViewEntity()).getHealth() <= 0.0F) {
+            float f = Math.min((float)((LivingEntity)activeRenderInfoIn.getRenderViewEntity()).deathTime + partialTicks, 20.0F);
             d0 /= (double)((1.0F - 500.0F / (f + 500.0F)) * 2.0F + 1.0F);
          }
 
-         IFluidState ifluidstate = p_215311_1_.getFluidState();
+         IFluidState ifluidstate = activeRenderInfoIn.getFluidState();
          if (!ifluidstate.isEmpty()) {
             d0 = d0 * 60.0D / 70.0D;
          }
@@ -310,13 +310,13 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
       }
    }
 
-   private void func_228380_a_(MatrixStack p_228380_1_, float p_228380_2_) {
+   private void hurtCameraEffect(MatrixStack matrixStackIn, float partialTicks) {
       if (this.mc.getRenderViewEntity() instanceof LivingEntity) {
          LivingEntity livingentity = (LivingEntity)this.mc.getRenderViewEntity();
-         float f = (float)livingentity.hurtTime - p_228380_2_;
+         float f = (float)livingentity.hurtTime - partialTicks;
          if (livingentity.getHealth() <= 0.0F) {
-            float f1 = Math.min((float)livingentity.deathTime + p_228380_2_, 20.0F);
-            p_228380_1_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(40.0F - 8000.0F / (f1 + 200.0F)));
+            float f1 = Math.min((float)livingentity.deathTime + partialTicks, 20.0F);
+            matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(40.0F - 8000.0F / (f1 + 200.0F)));
          }
 
          if (f < 0.0F) {
@@ -326,78 +326,78 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
          f = f / (float)livingentity.maxHurtTime;
          f = MathHelper.sin(f * f * f * f * (float)Math.PI);
          float f2 = livingentity.attackedAtYaw;
-         p_228380_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(-f2));
-         p_228380_1_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(-f * 14.0F));
-         p_228380_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f2));
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-f2));
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-f * 14.0F));
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(f2));
       }
 
    }
 
-   private void func_228383_b_(MatrixStack p_228383_1_, float p_228383_2_) {
+   private void applyBobbing(MatrixStack matrixStackIn, float partialTicks) {
       if (this.mc.getRenderViewEntity() instanceof PlayerEntity) {
          PlayerEntity playerentity = (PlayerEntity)this.mc.getRenderViewEntity();
          float f = playerentity.distanceWalkedModified - playerentity.prevDistanceWalkedModified;
-         float f1 = -(playerentity.distanceWalkedModified + f * p_228383_2_);
-         float f2 = MathHelper.lerp(p_228383_2_, playerentity.prevCameraYaw, playerentity.cameraYaw);
-         p_228383_1_.func_227861_a_((double)(MathHelper.sin(f1 * (float)Math.PI) * f2 * 0.5F), (double)(-Math.abs(MathHelper.cos(f1 * (float)Math.PI) * f2)), 0.0D);
-         p_228383_1_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(MathHelper.sin(f1 * (float)Math.PI) * f2 * 3.0F));
-         p_228383_1_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(Math.abs(MathHelper.cos(f1 * (float)Math.PI - 0.2F) * f2) * 5.0F));
+         float f1 = -(playerentity.distanceWalkedModified + f * partialTicks);
+         float f2 = MathHelper.lerp(partialTicks, playerentity.prevCameraYaw, playerentity.cameraYaw);
+         matrixStackIn.translate((double)(MathHelper.sin(f1 * (float)Math.PI) * f2 * 0.5F), (double)(-Math.abs(MathHelper.cos(f1 * (float)Math.PI) * f2)), 0.0D);
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(MathHelper.sin(f1 * (float)Math.PI) * f2 * 3.0F));
+         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(Math.abs(MathHelper.cos(f1 * (float)Math.PI - 0.2F) * f2) * 5.0F));
       }
    }
 
-   private void func_228381_a_(MatrixStack p_228381_1_, ActiveRenderInfo p_228381_2_, float p_228381_3_) {
+   private void renderHand(MatrixStack matrixStackIn, ActiveRenderInfo activeRenderInfoIn, float partialTicks) {
       if (!this.debugView) {
-         this.func_228379_a_(this.func_228382_a_(p_228381_2_, p_228381_3_, false));
-         MatrixStack.Entry matrixstack$entry = p_228381_1_.func_227866_c_();
-         matrixstack$entry.func_227870_a_().func_226591_a_();
-         matrixstack$entry.func_227872_b_().func_226119_c_();
-         p_228381_1_.func_227860_a_();
-         this.func_228380_a_(p_228381_1_, p_228381_3_);
+         this.resetProjectionMatrix(this.getProjectionMatrix(activeRenderInfoIn, partialTicks, false));
+         MatrixStack.Entry matrixstack$entry = matrixStackIn.getLast();
+         matrixstack$entry.getPositionMatrix().identity();
+         matrixstack$entry.getNormalMatrix().identity();
+         matrixStackIn.push();
+         this.hurtCameraEffect(matrixStackIn, partialTicks);
          if (this.mc.gameSettings.viewBobbing) {
-            this.func_228383_b_(p_228381_1_, p_228381_3_);
+            this.applyBobbing(matrixStackIn, partialTicks);
          }
 
          boolean flag = this.mc.getRenderViewEntity() instanceof LivingEntity && ((LivingEntity)this.mc.getRenderViewEntity()).isSleeping();
          if (this.mc.gameSettings.thirdPersonView == 0 && !flag && !this.mc.gameSettings.hideGUI && this.mc.playerController.getCurrentGameType() != GameType.SPECTATOR) {
             this.lightmapTexture.enableLightmap();
-            this.itemRenderer.func_228396_a_(p_228381_3_, p_228381_1_, this.field_228374_i_.func_228487_b_(), this.mc.player, this.mc.getRenderManager().func_229085_a_(this.mc.player, p_228381_3_));
+            this.itemRenderer.renderItemInFirstPerson(partialTicks, matrixStackIn, this.renderTypeBuffers.getBufferSource(), this.mc.player, this.mc.getRenderManager().getPackedLight(this.mc.player, partialTicks));
             this.lightmapTexture.disableLightmap();
          }
 
-         p_228381_1_.func_227865_b_();
+         matrixStackIn.pop();
          if (this.mc.gameSettings.thirdPersonView == 0 && !flag) {
-            OverlayRenderer.func_228734_a_(this.mc, p_228381_1_);
-            this.func_228380_a_(p_228381_1_, p_228381_3_);
+            OverlayRenderer.renderOverlays(this.mc, matrixStackIn);
+            this.hurtCameraEffect(matrixStackIn, partialTicks);
          }
 
          if (this.mc.gameSettings.viewBobbing) {
-            this.func_228383_b_(p_228381_1_, p_228381_3_);
+            this.applyBobbing(matrixStackIn, partialTicks);
          }
 
       }
    }
 
-   public void func_228379_a_(Matrix4f p_228379_1_) {
+   public void resetProjectionMatrix(Matrix4f matrixIn) {
       RenderSystem.matrixMode(5889);
       RenderSystem.loadIdentity();
-      RenderSystem.multMatrix(p_228379_1_);
+      RenderSystem.multMatrix(matrixIn);
       RenderSystem.matrixMode(5888);
    }
 
-   public Matrix4f func_228382_a_(ActiveRenderInfo p_228382_1_, float p_228382_2_, boolean p_228382_3_) {
+   public Matrix4f getProjectionMatrix(ActiveRenderInfo activeRenderInfoIn, float partialTicks, boolean useFovSetting) {
       MatrixStack matrixstack = new MatrixStack();
-      matrixstack.func_227866_c_().func_227870_a_().func_226591_a_();
+      matrixstack.getLast().getPositionMatrix().identity();
       if (this.cameraZoom != 1.0F) {
-         matrixstack.func_227861_a_((double)this.field_228376_w_, (double)(-this.field_228377_x_), 0.0D);
-         matrixstack.func_227862_a_(this.cameraZoom, this.cameraZoom, 1.0F);
+         matrixstack.translate((double)this.cameraYaw, (double)(-this.cameraPitch), 0.0D);
+         matrixstack.scale(this.cameraZoom, this.cameraZoom, 1.0F);
       }
 
-      matrixstack.func_227866_c_().func_227870_a_().func_226595_a_(Matrix4f.perspective(this.getFOVModifier(p_228382_1_, p_228382_2_, p_228382_3_), (float)this.mc.func_228018_at_().getFramebufferWidth() / (float)this.mc.func_228018_at_().getFramebufferHeight(), 0.05F, this.farPlaneDistance * 4.0F));
-      return matrixstack.func_227866_c_().func_227870_a_();
+      matrixstack.getLast().getPositionMatrix().multiply(Matrix4f.perspective(this.getFOVModifier(activeRenderInfoIn, partialTicks, useFovSetting), (float)this.mc.getMainWindow().getFramebufferWidth() / (float)this.mc.getMainWindow().getFramebufferHeight(), 0.05F, this.farPlaneDistance * 4.0F));
+      return matrixstack.getLast().getPositionMatrix();
    }
 
-   public static float getNightVisionBrightness(LivingEntity p_180438_0_, float entitylivingbaseIn) {
-      int i = p_180438_0_.getActivePotionEffect(Effects.NIGHT_VISION).getDuration();
+   public static float getNightVisionBrightness(LivingEntity livingEntityIn, float entitylivingbaseIn) {
+      int i = livingEntityIn.getActivePotionEffect(Effects.NIGHT_VISION).getDuration();
       return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - entitylivingbaseIn) * (float)Math.PI * 0.2F) * 0.3F;
    }
 
@@ -411,13 +411,13 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
       }
 
       if (!this.mc.skipRenderWorld) {
-         int i = (int)(this.mc.mouseHelper.getMouseX() * (double)this.mc.func_228018_at_().getScaledWidth() / (double)this.mc.func_228018_at_().getWidth());
-         int j = (int)(this.mc.mouseHelper.getMouseY() * (double)this.mc.func_228018_at_().getScaledHeight() / (double)this.mc.func_228018_at_().getHeight());
+         int i = (int)(this.mc.mouseHelper.getMouseX() * (double)this.mc.getMainWindow().getScaledWidth() / (double)this.mc.getMainWindow().getWidth());
+         int j = (int)(this.mc.mouseHelper.getMouseY() * (double)this.mc.getMainWindow().getScaledHeight() / (double)this.mc.getMainWindow().getHeight());
          MatrixStack matrixstack = new MatrixStack();
-         RenderSystem.viewport(0, 0, this.mc.func_228018_at_().getFramebufferWidth(), this.mc.func_228018_at_().getFramebufferHeight());
+         RenderSystem.viewport(0, 0, this.mc.getMainWindow().getFramebufferWidth(), this.mc.getMainWindow().getFramebufferHeight());
          if (renderWorldIn && this.mc.world != null) {
             this.mc.getProfiler().startSection("level");
-            this.func_228378_a_(partialTicks, nanoTime, matrixstack);
+            this.renderWorld(partialTicks, nanoTime, matrixstack);
             if (this.mc.isSingleplayer() && this.timeWorldIcon < Util.milliTime() - 1000L) {
                this.timeWorldIcon = Util.milliTime();
                if (!this.mc.getIntegratedServer().isWorldIconSet()) {
@@ -441,7 +441,7 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
             this.mc.getFramebuffer().bindFramebuffer(true);
          }
 
-         MainWindow mainwindow = this.mc.func_228018_at_();
+         MainWindow mainwindow = this.mc.getMainWindow();
          RenderSystem.clear(256, Minecraft.IS_RUNNING_ON_MAC);
          RenderSystem.matrixMode(5889);
          RenderSystem.loadIdentity();
@@ -449,12 +449,12 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
          RenderSystem.matrixMode(5888);
          RenderSystem.loadIdentity();
          RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-         RenderHelper.func_227784_d_();
+         RenderHelper.setupGui3DDiffuseLighting();
          if (renderWorldIn && this.mc.world != null) {
             this.mc.getProfiler().endStartSection("gui");
             if (!this.mc.gameSettings.hideGUI || this.mc.currentScreen != null) {
                RenderSystem.defaultAlphaFunc();
-               this.renderItemActivation(this.mc.func_228018_at_().getScaledWidth(), this.mc.func_228018_at_().getScaledHeight(), partialTicks);
+               this.renderItemActivation(this.mc.getMainWindow().getScaledWidth(), this.mc.getMainWindow().getScaledHeight(), partialTicks);
                this.mc.ingameGUI.renderGameOverlay(partialTicks);
                RenderSystem.clear(256, Minecraft.IS_RUNNING_ON_MAC);
             }
@@ -486,7 +486,7 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
                   return String.format(Locale.ROOT, "Scaled: (%d, %d). Absolute: (%f, %f)", i, j, this.mc.mouseHelper.getMouseX(), this.mc.mouseHelper.getMouseY());
                });
                crashreportcategory1.addDetail("Screen size", () -> {
-                  return String.format(Locale.ROOT, "Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %f", this.mc.func_228018_at_().getScaledWidth(), this.mc.func_228018_at_().getScaledHeight(), this.mc.func_228018_at_().getFramebufferWidth(), this.mc.func_228018_at_().getFramebufferHeight(), this.mc.func_228018_at_().getGuiScaleFactor());
+                  return String.format(Locale.ROOT, "Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %f", this.mc.getMainWindow().getScaledWidth(), this.mc.getMainWindow().getScaledHeight(), this.mc.getMainWindow().getFramebufferWidth(), this.mc.getMainWindow().getFramebufferHeight(), this.mc.getMainWindow().getGuiScaleFactor());
                });
                throw new ReportedException(crashreport1);
             }
@@ -497,7 +497,7 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
 
    private void createWorldIcon() {
       if (this.mc.worldRenderer.getRenderedChunks() > 10 && this.mc.worldRenderer.hasNoChunkUpdates() && !this.mc.getIntegratedServer().isWorldIconSet()) {
-         NativeImage nativeimage = ScreenShotHelper.createScreenshot(this.mc.func_228018_at_().getFramebufferWidth(), this.mc.func_228018_at_().getFramebufferHeight(), this.mc.getFramebuffer());
+         NativeImage nativeimage = ScreenShotHelper.createScreenshot(this.mc.getMainWindow().getFramebufferWidth(), this.mc.getMainWindow().getFramebufferHeight(), this.mc.getFramebuffer());
          SimpleResource.RESOURCE_IO_EXECUTOR.execute(() -> {
             int i = nativeimage.getWidth();
             int j = nativeimage.getHeight();
@@ -550,26 +550,26 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
       }
    }
 
-   public void func_228378_a_(float p_228378_1_, long p_228378_2_, MatrixStack p_228378_4_) {
-      this.lightmapTexture.updateLightmap(p_228378_1_);
+   public void renderWorld(float partialTicks, long finishTimeNano, MatrixStack matrixStackIn) {
+      this.lightmapTexture.updateLightmap(partialTicks);
       if (this.mc.getRenderViewEntity() == null) {
          this.mc.setRenderViewEntity(this.mc.player);
       }
 
-      this.getMouseOver(p_228378_1_);
+      this.getMouseOver(partialTicks);
       this.mc.getProfiler().startSection("center");
       boolean flag = this.isDrawBlockOutline();
       this.mc.getProfiler().endStartSection("camera");
       ActiveRenderInfo activerenderinfo = this.activeRender;
       this.farPlaneDistance = (float)(this.mc.gameSettings.renderDistanceChunks * 16);
       MatrixStack matrixstack = new MatrixStack();
-      matrixstack.func_227866_c_().func_227870_a_().func_226595_a_(this.func_228382_a_(activerenderinfo, p_228378_1_, true));
-      this.func_228380_a_(matrixstack, p_228378_1_);
+      matrixstack.getLast().getPositionMatrix().multiply(this.getProjectionMatrix(activerenderinfo, partialTicks, true));
+      this.hurtCameraEffect(matrixstack, partialTicks);
       if (this.mc.gameSettings.viewBobbing) {
-         this.func_228383_b_(matrixstack, p_228378_1_);
+         this.applyBobbing(matrixstack, partialTicks);
       }
 
-      float f = MathHelper.lerp(p_228378_1_, this.mc.player.prevTimeInPortal, this.mc.player.timeInPortal);
+      float f = MathHelper.lerp(partialTicks, this.mc.player.prevTimeInPortal, this.mc.player.timeInPortal);
       if (f > 0.0F) {
          int i = 20;
          if (this.mc.player.isPotionActive(Effects.NAUSEA)) {
@@ -579,22 +579,22 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
          float f1 = 5.0F / (f * f + 5.0F) - f * 0.04F;
          f1 = f1 * f1;
          Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQRT_2 / 2.0F, MathHelper.SQRT_2 / 2.0F);
-         matrixstack.func_227863_a_(vector3f.func_229187_a_(((float)this.rendererUpdateCount + p_228378_1_) * (float)i));
-         matrixstack.func_227862_a_(1.0F / f1, 1.0F, 1.0F);
-         float f2 = -((float)this.rendererUpdateCount + p_228378_1_) * (float)i;
-         matrixstack.func_227863_a_(vector3f.func_229187_a_(f2));
+         matrixstack.rotate(vector3f.rotationDegrees(((float)this.rendererUpdateCount + partialTicks) * (float)i));
+         matrixstack.scale(1.0F / f1, 1.0F, 1.0F);
+         float f2 = -((float)this.rendererUpdateCount + partialTicks) * (float)i;
+         matrixstack.rotate(vector3f.rotationDegrees(f2));
       }
 
-      Matrix4f matrix4f = matrixstack.func_227866_c_().func_227870_a_();
-      this.func_228379_a_(matrix4f);
-      activerenderinfo.update(this.mc.world, (Entity)(this.mc.getRenderViewEntity() == null ? this.mc.player : this.mc.getRenderViewEntity()), this.mc.gameSettings.thirdPersonView > 0, this.mc.gameSettings.thirdPersonView == 2, p_228378_1_);
-      p_228378_4_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(activerenderinfo.getPitch()));
-      p_228378_4_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(activerenderinfo.getYaw() + 180.0F));
-      this.mc.worldRenderer.func_228426_a_(p_228378_4_, p_228378_1_, p_228378_2_, flag, activerenderinfo, this, this.lightmapTexture, matrix4f);
+      Matrix4f matrix4f = matrixstack.getLast().getPositionMatrix();
+      this.resetProjectionMatrix(matrix4f);
+      activerenderinfo.update(this.mc.world, (Entity)(this.mc.getRenderViewEntity() == null ? this.mc.player : this.mc.getRenderViewEntity()), this.mc.gameSettings.thirdPersonView > 0, this.mc.gameSettings.thirdPersonView == 2, partialTicks);
+      matrixStackIn.rotate(Vector3f.XP.rotationDegrees(activerenderinfo.getPitch()));
+      matrixStackIn.rotate(Vector3f.YP.rotationDegrees(activerenderinfo.getYaw() + 180.0F));
+      this.mc.worldRenderer.getViewVector(matrixStackIn, partialTicks, finishTimeNano, flag, activerenderinfo, this, this.lightmapTexture, matrix4f);
       this.mc.getProfiler().endStartSection("hand");
       if (this.renderHand) {
          RenderSystem.clear(256, Minecraft.IS_RUNNING_ON_MAC);
-         this.func_228381_a_(p_228378_4_, activerenderinfo, p_228378_1_);
+         this.renderHand(matrixStackIn, activerenderinfo, partialTicks);
       }
 
       this.mc.getProfiler().endSection();
@@ -633,17 +633,17 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
          RenderSystem.enableDepthTest();
          RenderSystem.disableCull();
          MatrixStack matrixstack = new MatrixStack();
-         matrixstack.func_227860_a_();
-         matrixstack.func_227861_a_((double)((float)(widthsp / 2) + f5 * MathHelper.abs(MathHelper.sin(f4 * 2.0F))), (double)((float)(heightScaled / 2) + f6 * MathHelper.abs(MathHelper.sin(f4 * 2.0F))), -50.0D);
+         matrixstack.push();
+         matrixstack.translate((double)((float)(widthsp / 2) + f5 * MathHelper.abs(MathHelper.sin(f4 * 2.0F))), (double)((float)(heightScaled / 2) + f6 * MathHelper.abs(MathHelper.sin(f4 * 2.0F))), -50.0D);
          float f7 = 50.0F + 175.0F * MathHelper.sin(f4);
-         matrixstack.func_227862_a_(f7, -f7, f7);
-         matrixstack.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(900.0F * MathHelper.abs(MathHelper.sin(f4))));
-         matrixstack.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(6.0F * MathHelper.cos(f * 8.0F)));
-         matrixstack.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(6.0F * MathHelper.cos(f * 8.0F)));
-         IRenderTypeBuffer.Impl irendertypebuffer$impl = this.field_228374_i_.func_228487_b_();
-         this.mc.getItemRenderer().func_229110_a_(this.itemActivationItem, ItemCameraTransforms.TransformType.FIXED, 15728880, OverlayTexture.field_229196_a_, matrixstack, irendertypebuffer$impl);
-         matrixstack.func_227865_b_();
-         irendertypebuffer$impl.func_228461_a_();
+         matrixstack.scale(f7, -f7, f7);
+         matrixstack.rotate(Vector3f.YP.rotationDegrees(900.0F * MathHelper.abs(MathHelper.sin(f4))));
+         matrixstack.rotate(Vector3f.XP.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
+         matrixstack.rotate(Vector3f.ZP.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
+         IRenderTypeBuffer.Impl irendertypebuffer$impl = this.renderTypeBuffers.getBufferSource();
+         this.mc.getItemRenderer().renderItem(this.itemActivationItem, ItemCameraTransforms.TransformType.FIXED, 15728880, OverlayTexture.DEFAULT_LIGHT, matrixstack, irendertypebuffer$impl);
+         matrixstack.pop();
+         irendertypebuffer$impl.finish();
          RenderSystem.popAttributes();
          RenderSystem.popMatrix();
          RenderSystem.enableCull();
@@ -663,11 +663,11 @@ public class GameRenderer implements AutoCloseable, IResourceManagerReloadListen
       return this.activeRender;
    }
 
-   public LightTexture func_228384_l_() {
+   public LightTexture getLightTexture() {
       return this.lightmapTexture;
    }
 
-   public OverlayTexture func_228385_m_() {
-      return this.field_228375_t_;
+   public OverlayTexture getOverlayTexture() {
+      return this.overlayTexture;
    }
 }

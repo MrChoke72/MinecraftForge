@@ -36,7 +36,7 @@ public abstract class BeeSound extends TickableSound {
          this.x = (float)this.field_229357_o_.getPosX();
          this.y = (float)this.field_229357_o_.getPosY();
          this.z = (float)this.field_229357_o_.getPosZ();
-         float f = MathHelper.sqrt(Entity.func_213296_b(this.field_229357_o_.getMotion()));
+         float f = MathHelper.sqrt(Entity.horizontalMag(this.field_229357_o_.getMotion()));
          if ((double)f >= 0.01D) {
             this.pitch = MathHelper.lerp(MathHelper.clamp(f, this.func_229359_s_(), this.func_229360_t_()), this.func_229359_s_(), this.func_229360_t_());
             this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0F, 0.5F), 0.0F, 1.2F);

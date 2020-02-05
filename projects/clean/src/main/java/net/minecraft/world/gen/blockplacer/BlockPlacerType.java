@@ -11,7 +11,7 @@ public class BlockPlacerType<P extends BlockPlacer> {
    private final Function<Dynamic<?>, P> field_227262_d_;
 
    private static <P extends BlockPlacer> BlockPlacerType<P> func_227264_a_(String p_227264_0_, Function<Dynamic<?>, P> p_227264_1_) {
-      return Registry.register(Registry.field_229388_u_, p_227264_0_, new BlockPlacerType<>(p_227264_1_));
+      return Registry.register(Registry.BLOCK_PLACER_TYPE, p_227264_0_, new BlockPlacerType<>(p_227264_1_));
    }
 
    private BlockPlacerType(Function<Dynamic<?>, P> p_i225825_1_) {

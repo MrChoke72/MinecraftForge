@@ -17,11 +17,11 @@ public class OceanRuinConfig implements IFeatureConfig {
    }
 
    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-      return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("biome_temp"), ops.createString(this.field_204031_a.func_215135_a()), ops.createString("large_probability"), ops.createFloat(this.largeProbability), ops.createString("cluster_probability"), ops.createFloat(this.clusterProbability))));
+      return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("biome_temp"), ops.createString(this.field_204031_a.getName()), ops.createString("large_probability"), ops.createFloat(this.largeProbability), ops.createString("cluster_probability"), ops.createFloat(this.clusterProbability))));
    }
 
    public static <T> OceanRuinConfig deserialize(Dynamic<T> p_214640_0_) {
-      OceanRuinStructure.Type oceanruinstructure$type = OceanRuinStructure.Type.func_215136_a(p_214640_0_.get("biome_temp").asString(""));
+      OceanRuinStructure.Type oceanruinstructure$type = OceanRuinStructure.Type.getType(p_214640_0_.get("biome_temp").asString(""));
       float f = p_214640_0_.get("large_probability").asFloat(0.0F);
       float f1 = p_214640_0_.get("cluster_probability").asFloat(0.0F);
       return new OceanRuinConfig(oceanruinstructure$type, f, f1);

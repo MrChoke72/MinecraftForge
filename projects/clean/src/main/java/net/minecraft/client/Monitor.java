@@ -19,8 +19,8 @@ public final class Monitor {
    private int virtualPosX;
    private int virtualPosY;
 
-   public Monitor(long p_i51795_1_) {
-      this.monitorPointer = p_i51795_1_;
+   public Monitor(long pointerIn) {
+      this.monitorPointer = pointerIn;
       this.videoModes = Lists.newArrayList();
       this.setup();
    }
@@ -62,9 +62,9 @@ public final class Monitor {
       return this.getDefaultVideoMode();
    }
 
-   public int func_224794_a(VideoMode p_224794_1_) {
+   public int getVideoModeIndex(VideoMode modeIn) {
       RenderSystem.assertThread(RenderSystem::isInInitPhase);
-      return this.videoModes.indexOf(p_224794_1_);
+      return this.videoModes.indexOf(modeIn);
    }
 
    public VideoMode getDefaultVideoMode() {

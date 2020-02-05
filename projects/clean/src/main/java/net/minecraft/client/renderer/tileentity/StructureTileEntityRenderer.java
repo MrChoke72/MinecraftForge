@@ -21,19 +21,19 @@ public class StructureTileEntityRenderer extends TileEntityRenderer<StructureBlo
       super(p_i226017_1_);
    }
 
-   public void func_225616_a_(StructureBlockTileEntity p_225616_1_, float p_225616_2_, MatrixStack p_225616_3_, IRenderTypeBuffer p_225616_4_, int p_225616_5_, int p_225616_6_) {
+   public void render(StructureBlockTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
       if (Minecraft.getInstance().player.canUseCommandBlock() || Minecraft.getInstance().player.isSpectator()) {
-         BlockPos blockpos = p_225616_1_.getPosition();
-         BlockPos blockpos1 = p_225616_1_.getStructureSize();
+         BlockPos blockpos = tileEntityIn.getPosition();
+         BlockPos blockpos1 = tileEntityIn.getStructureSize();
          if (blockpos1.getX() >= 1 && blockpos1.getY() >= 1 && blockpos1.getZ() >= 1) {
-            if (p_225616_1_.getMode() == StructureMode.SAVE || p_225616_1_.getMode() == StructureMode.LOAD) {
+            if (tileEntityIn.getMode() == StructureMode.SAVE || tileEntityIn.getMode() == StructureMode.LOAD) {
                double d0 = (double)blockpos.getX();
                double d1 = (double)blockpos.getZ();
                double d5 = (double)blockpos.getY();
                double d8 = d5 + (double)blockpos1.getY();
                double d2;
                double d3;
-               switch(p_225616_1_.getMirror()) {
+               switch(tileEntityIn.getMirror()) {
                case LEFT_RIGHT:
                   d2 = (double)blockpos1.getX();
                   d3 = (double)(-blockpos1.getZ());
@@ -51,7 +51,7 @@ public class StructureTileEntityRenderer extends TileEntityRenderer<StructureBlo
                double d6;
                double d7;
                double d9;
-               switch(p_225616_1_.getRotation()) {
+               switch(tileEntityIn.getRotation()) {
                case CLOCKWISE_90:
                   d4 = d3 < 0.0D ? d0 : d0 + 1.0D;
                   d6 = d2 < 0.0D ? d1 + 1.0D : d1;
@@ -80,14 +80,14 @@ public class StructureTileEntityRenderer extends TileEntityRenderer<StructureBlo
                float f = 1.0F;
                float f1 = 0.9F;
                float f2 = 0.5F;
-               IVertexBuilder ivertexbuilder = p_225616_4_.getBuffer(RenderType.func_228659_m_());
-               if (p_225616_1_.getMode() == StructureMode.SAVE || p_225616_1_.showsBoundingBox()) {
-                  WorldRenderer.func_228428_a_(p_225616_3_, ivertexbuilder, d4, d5, d6, d7, d8, d9, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
+               IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.lines());
+               if (tileEntityIn.getMode() == StructureMode.SAVE || tileEntityIn.showsBoundingBox()) {
+                  WorldRenderer.drawBoundingBox(matrixStackIn, ivertexbuilder, d4, d5, d6, d7, d8, d9, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
                }
 
-               if (p_225616_1_.getMode() == StructureMode.SAVE && p_225616_1_.showsAir()) {
-                  this.func_228880_a_(p_225616_1_, ivertexbuilder, blockpos, true, p_225616_3_);
-                  this.func_228880_a_(p_225616_1_, ivertexbuilder, blockpos, false, p_225616_3_);
+               if (tileEntityIn.getMode() == StructureMode.SAVE && tileEntityIn.showsAir()) {
+                  this.func_228880_a_(tileEntityIn, ivertexbuilder, blockpos, true, matrixStackIn);
+                  this.func_228880_a_(tileEntityIn, ivertexbuilder, blockpos, false, matrixStackIn);
                }
 
             }
@@ -113,11 +113,11 @@ public class StructureTileEntityRenderer extends TileEntityRenderer<StructureBlo
             double d4 = (double)((float)(blockpos2.getY() - blockpos.getY()) + 0.55F + f);
             double d5 = (double)((float)(blockpos2.getZ() - blockpos.getZ()) + 0.55F + f);
             if (p_228880_4_) {
-               WorldRenderer.func_228428_a_(p_228880_5_, p_228880_2_, d0, d1, d2, d3, d4, d5, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+               WorldRenderer.drawBoundingBox(p_228880_5_, p_228880_2_, d0, d1, d2, d3, d4, d5, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F);
             } else if (flag) {
-               WorldRenderer.func_228428_a_(p_228880_5_, p_228880_2_, d0, d1, d2, d3, d4, d5, 0.5F, 0.5F, 1.0F, 1.0F, 0.5F, 0.5F, 1.0F);
+               WorldRenderer.drawBoundingBox(p_228880_5_, p_228880_2_, d0, d1, d2, d3, d4, d5, 0.5F, 0.5F, 1.0F, 1.0F, 0.5F, 0.5F, 1.0F);
             } else {
-               WorldRenderer.func_228428_a_(p_228880_5_, p_228880_2_, d0, d1, d2, d3, d4, d5, 1.0F, 0.25F, 0.25F, 1.0F, 1.0F, 0.25F, 0.25F);
+               WorldRenderer.drawBoundingBox(p_228880_5_, p_228880_2_, d0, d1, d2, d3, d4, d5, 1.0F, 0.25F, 0.25F, 1.0F, 1.0F, 0.25F, 0.25F);
             }
          }
       }

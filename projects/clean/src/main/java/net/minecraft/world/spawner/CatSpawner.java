@@ -58,32 +58,32 @@ public class CatSpawner {
       }
    }
 
-   private int func_221121_a(ServerWorld p_221121_1_, BlockPos p_221121_2_) {
+   private int func_221121_a(ServerWorld worldIn, BlockPos p_221121_2_) {
       int i = 48;
-      if (p_221121_1_.getPoiMgr().poiByDistCount(PointOfInterestType.HOME.getPoiTypePred(), p_221121_2_, 48, PointOfInterestManager.Status.IS_OCCUPIED) > 4L) {
-         List<CatEntity> list = p_221121_1_.getEntitiesWithinAABB(CatEntity.class, (new AxisAlignedBB(p_221121_2_)).grow(48.0D, 8.0D, 48.0D));
+      if (worldIn.getPointOfInterestManager().poiByDistCount(PointOfInterestType.HOME.getPoiTypePred(), p_221121_2_, 48, PointOfInterestManager.Status.IS_OCCUPIED) > 4L) {
+         List<CatEntity> list = worldIn.getEntitiesWithinAABB(CatEntity.class, (new AxisAlignedBB(p_221121_2_)).grow(48.0D, 8.0D, 48.0D));
          if (list.size() < 5) {
-            return this.func_221122_a(p_221121_2_, p_221121_1_);
+            return this.spawnCat(p_221121_2_, worldIn);
          }
       }
 
       return 0;
    }
 
-   private int func_221123_a(World p_221123_1_, BlockPos p_221123_2_) {
+   private int func_221123_a(World worldIn, BlockPos pos) {
       int i = 16;
-      List<CatEntity> list = p_221123_1_.getEntitiesWithinAABB(CatEntity.class, (new AxisAlignedBB(p_221123_2_)).grow(16.0D, 8.0D, 16.0D));
-      return list.size() < 1 ? this.func_221122_a(p_221123_2_, p_221123_1_) : 0;
+      List<CatEntity> list = worldIn.getEntitiesWithinAABB(CatEntity.class, (new AxisAlignedBB(pos)).grow(16.0D, 8.0D, 16.0D));
+      return list.size() < 1 ? this.spawnCat(pos, worldIn) : 0;
    }
 
-   private int func_221122_a(BlockPos p_221122_1_, World p_221122_2_) {
-      CatEntity catentity = EntityType.CAT.create(p_221122_2_);
+   private int spawnCat(BlockPos pos, World worldIn) {
+      CatEntity catentity = EntityType.CAT.create(worldIn);
       if (catentity == null) {
          return 0;
       } else {
-         catentity.onInitialSpawn(p_221122_2_, p_221122_2_.getDifficultyForLocation(p_221122_1_), SpawnReason.NATURAL, (ILivingEntityData)null, (CompoundNBT)null);
-         catentity.moveToBlockPosAndAngles(p_221122_1_, 0.0F, 0.0F);
-         p_221122_2_.addEntity(catentity);
+         catentity.onInitialSpawn(worldIn, worldIn.getDifficultyForLocation(pos), SpawnReason.NATURAL, (ILivingEntityData)null, (CompoundNBT)null);
+         catentity.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
+         worldIn.addEntity(catentity);
          return 1;
       }
    }

@@ -122,9 +122,9 @@ public abstract class PlayerList {
       this.setPlayerGameTypeBasedOnOther(playerIn, (ServerPlayerEntity)null, serverworld);
       ServerPlayNetHandler serverplaynethandler = new ServerPlayNetHandler(this.server, netManager, playerIn);
       GameRules gamerules = serverworld.getGameRules();
-      boolean flag = gamerules.getBoolean(GameRules.field_226683_z_);
+      boolean flag = gamerules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
       boolean flag1 = gamerules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
-      serverplaynethandler.sendPacket(new SJoinGamePacket(playerIn.getEntityId(), playerIn.interactionManager.getGameType(), WorldInfo.func_227498_c_(worldinfo.getSeed()), worldinfo.isHardcore(), serverworld.dimension.getType(), this.getMaxPlayers(), worldinfo.getGenerator(), this.viewDistance, flag1, !flag));
+      serverplaynethandler.sendPacket(new SJoinGamePacket(playerIn.getEntityId(), playerIn.interactionManager.getGameType(), WorldInfo.byHashing(worldinfo.getSeed()), worldinfo.isHardcore(), serverworld.dimension.getType(), this.getMaxPlayers(), worldinfo.getGenerator(), this.viewDistance, flag1, !flag));
       serverplaynethandler.sendPacket(new SCustomPayloadPlayPacket(SCustomPayloadPlayPacket.BRAND, (new PacketBuffer(Unpooled.buffer())).writeString(this.getServer().getServerModName())));
       serverplaynethandler.sendPacket(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));
       serverplaynethandler.sendPacket(new SPlayerAbilitiesPacket(playerIn.abilities));
@@ -407,7 +407,7 @@ public abstract class PlayerList {
       }
 
       WorldInfo worldinfo = serverplayerentity.world.getWorldInfo();
-      serverplayerentity.connection.sendPacket(new SRespawnPacket(serverplayerentity.dimension, WorldInfo.func_227498_c_(worldinfo.getSeed()), worldinfo.getGenerator(), serverplayerentity.interactionManager.getGameType()));
+      serverplayerentity.connection.sendPacket(new SRespawnPacket(serverplayerentity.dimension, WorldInfo.byHashing(worldinfo.getSeed()), worldinfo.getGenerator(), serverplayerentity.interactionManager.getGameType()));
       BlockPos blockpos1 = serverworld.getSpawnPoint();
       serverplayerentity.connection.setPlayerLocation(serverplayerentity.getPosX(), serverplayerentity.getPosY(), serverplayerentity.getPosZ(), serverplayerentity.rotationYaw, serverplayerentity.rotationPitch);
       serverplayerentity.connection.sendPacket(new SSpawnPositionPacket(blockpos1));
@@ -540,7 +540,7 @@ public abstract class PlayerList {
    }
 
    public boolean canSendCommands(GameProfile profile) {
-      return this.ops.hasEntry(profile) || this.server.func_213199_b(profile) && this.server.getWorld(DimensionType.OVERWORLD).getWorldInfo().areCommandsAllowed() || this.commandsAllowedForAll;
+      return this.ops.hasEntry(profile) || this.server.isServerOwner(profile) && this.server.getWorld(DimensionType.OVERWORLD).getWorldInfo().areCommandsAllowed() || this.commandsAllowedForAll;
    }
 
    @Nullable
@@ -732,7 +732,7 @@ public abstract class PlayerList {
 
       for(ServerWorld serverworld : this.server.getWorlds()) {
          if (serverworld != null) {
-            serverworld.getChunkProvider().func_217219_a(viewDistanceIn);
+            serverworld.getChunkProvider().setViewDistance(viewDistanceIn);
          }
       }
 

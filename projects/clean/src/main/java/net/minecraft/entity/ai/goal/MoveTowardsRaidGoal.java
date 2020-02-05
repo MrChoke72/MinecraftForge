@@ -36,7 +36,7 @@ public class MoveTowardsRaidGoal<T extends AbstractRaiderEntity> extends Goal {
          }
 
          if (!this.field_220744_a.hasPath()) {
-            Vec3d vec3d = RandomPositionGenerator.findRandomTargetToward(this.field_220744_a, 15, 4, new Vec3d(raid.func_221304_t()));
+            Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.field_220744_a, 15, 4, new Vec3d(raid.func_221304_t()));
             if (vec3d != null) {
                this.field_220744_a.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
             }

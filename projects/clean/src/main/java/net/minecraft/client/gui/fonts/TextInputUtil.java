@@ -13,20 +13,20 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class TextInputUtil {
-   private final Minecraft field_216900_a;
-   private final FontRenderer field_216901_b;
-   private final Supplier<String> field_216902_c;
-   private final Consumer<String> field_216903_d;
-   private final int field_216904_e;
+   private final Minecraft minecraft;
+   private final FontRenderer fontRenderer;
+   private final Supplier<String> textSupplier;
+   private final Consumer<String> textConsumer;
+   private final int textWidth;
    private int field_216905_f;
    private int field_216906_g;
 
    public TextInputUtil(Minecraft p_i51124_1_, Supplier<String> p_i51124_2_, Consumer<String> p_i51124_3_, int p_i51124_4_) {
-      this.field_216900_a = p_i51124_1_;
-      this.field_216901_b = p_i51124_1_.fontRenderer;
-      this.field_216902_c = p_i51124_2_;
-      this.field_216903_d = p_i51124_3_;
-      this.field_216904_e = p_i51124_4_;
+      this.minecraft = p_i51124_1_;
+      this.fontRenderer = p_i51124_1_.fontRenderer;
+      this.textSupplier = p_i51124_2_;
+      this.textConsumer = p_i51124_3_;
+      this.textWidth = p_i51124_4_;
       this.func_216899_b();
    }
 
@@ -43,31 +43,31 @@ public class TextInputUtil {
          this.func_216893_f();
       }
 
-      String s = this.field_216902_c.get();
+      String s = this.textSupplier.get();
       this.field_216905_f = MathHelper.clamp(this.field_216905_f, 0, s.length());
       String s1 = (new StringBuilder(s)).insert(this.field_216905_f, p_216892_1_).toString();
-      if (this.field_216901_b.getStringWidth(s1) <= this.field_216904_e) {
-         this.field_216903_d.accept(s1);
+      if (this.fontRenderer.getStringWidth(s1) <= this.textWidth) {
+         this.textConsumer.accept(s1);
          this.field_216906_g = this.field_216905_f = Math.min(s1.length(), this.field_216905_f + p_216892_1_.length());
       }
 
    }
 
    public boolean func_216897_a(int p_216897_1_) {
-      String s = this.field_216902_c.get();
+      String s = this.textSupplier.get();
       if (Screen.isSelectAll(p_216897_1_)) {
          this.field_216906_g = 0;
          this.field_216905_f = s.length();
          return true;
       } else if (Screen.isCopy(p_216897_1_)) {
-         this.field_216900_a.keyboardListener.setClipboardString(this.func_216895_e());
+         this.minecraft.keyboardListener.setClipboardString(this.func_216895_e());
          return true;
       } else if (Screen.isPaste(p_216897_1_)) {
-         this.func_216892_a(SharedConstants.filterAllowedCharacters(TextFormatting.getTextWithoutFormattingCodes(this.field_216900_a.keyboardListener.getClipboardString().replaceAll("\\r", ""))));
+         this.func_216892_a(SharedConstants.filterAllowedCharacters(TextFormatting.getTextWithoutFormattingCodes(this.minecraft.keyboardListener.getClipboardString().replaceAll("\\r", ""))));
          this.field_216906_g = this.field_216905_f;
          return true;
       } else if (Screen.isCut(p_216897_1_)) {
-         this.field_216900_a.keyboardListener.setClipboardString(this.func_216895_e());
+         this.minecraft.keyboardListener.setClipboardString(this.func_216895_e());
          this.func_216893_f();
          return true;
       } else if (p_216897_1_ == 259) {
@@ -77,7 +77,7 @@ public class TextInputUtil {
             } else if (this.field_216905_f > 0) {
                s = (new StringBuilder(s)).deleteCharAt(Math.max(0, this.field_216905_f - 1)).toString();
                this.field_216906_g = this.field_216905_f = Math.max(0, this.field_216905_f - 1);
-               this.field_216903_d.accept(s);
+               this.textConsumer.accept(s);
             }
          }
 
@@ -88,15 +88,15 @@ public class TextInputUtil {
                this.func_216893_f();
             } else if (this.field_216905_f < s.length()) {
                s = (new StringBuilder(s)).deleteCharAt(Math.max(0, this.field_216905_f)).toString();
-               this.field_216903_d.accept(s);
+               this.textConsumer.accept(s);
             }
          }
 
          return true;
       } else if (p_216897_1_ == 263) {
-         int j = this.field_216901_b.getBidiFlag() ? 1 : -1;
+         int j = this.fontRenderer.getBidiFlag() ? 1 : -1;
          if (Screen.hasControlDown()) {
-            this.field_216905_f = this.field_216901_b.func_216863_a(s, j, this.field_216905_f, true);
+            this.field_216905_f = this.fontRenderer.getWordPosition(s, j, this.field_216905_f, true);
          } else {
             this.field_216905_f = Math.max(0, Math.min(s.length(), this.field_216905_f + j));
          }
@@ -107,9 +107,9 @@ public class TextInputUtil {
 
          return true;
       } else if (p_216897_1_ == 262) {
-         int i = this.field_216901_b.getBidiFlag() ? -1 : 1;
+         int i = this.fontRenderer.getBidiFlag() ? -1 : 1;
          if (Screen.hasControlDown()) {
-            this.field_216905_f = this.field_216901_b.func_216863_a(s, i, this.field_216905_f, true);
+            this.field_216905_f = this.fontRenderer.getWordPosition(s, i, this.field_216905_f, true);
          } else {
             this.field_216905_f = Math.max(0, Math.min(s.length(), this.field_216905_f + i));
          }
@@ -127,7 +127,7 @@ public class TextInputUtil {
 
          return true;
       } else if (p_216897_1_ == 269) {
-         this.field_216905_f = this.field_216902_c.get().length();
+         this.field_216905_f = this.textSupplier.get().length();
          if (!Screen.hasShiftDown()) {
             this.field_216906_g = this.field_216905_f;
          }
@@ -139,7 +139,7 @@ public class TextInputUtil {
    }
 
    private String func_216895_e() {
-      String s = this.field_216902_c.get();
+      String s = this.textSupplier.get();
       int i = Math.min(this.field_216905_f, this.field_216906_g);
       int j = Math.max(this.field_216905_f, this.field_216906_g);
       return s.substring(i, j);
@@ -147,18 +147,18 @@ public class TextInputUtil {
 
    private void func_216893_f() {
       if (this.field_216906_g != this.field_216905_f) {
-         String s = this.field_216902_c.get();
+         String s = this.textSupplier.get();
          int i = Math.min(this.field_216905_f, this.field_216906_g);
          int j = Math.max(this.field_216905_f, this.field_216906_g);
          String s1 = s.substring(0, i) + s.substring(j);
          this.field_216905_f = i;
          this.field_216906_g = this.field_216905_f;
-         this.field_216903_d.accept(s1);
+         this.textConsumer.accept(s1);
       }
    }
 
    public void func_216899_b() {
-      this.field_216906_g = this.field_216905_f = this.field_216902_c.get().length();
+      this.field_216906_g = this.field_216905_f = this.textSupplier.get().length();
    }
 
    public int func_216896_c() {

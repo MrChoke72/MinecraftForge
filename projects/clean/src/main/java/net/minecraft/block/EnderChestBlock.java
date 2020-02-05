@@ -67,22 +67,22 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestTileEntity> im
       return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite()).with(WATERLOGGED, Boolean.valueOf(ifluidstate.getFluid() == Fluids.WATER));
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      EnderChestInventory enderchestinventory = p_225533_4_.getInventoryEnderChest();
-      TileEntity tileentity = p_225533_2_.getTileEntity(p_225533_3_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      EnderChestInventory enderchestinventory = player.getInventoryEnderChest();
+      TileEntity tileentity = worldIn.getTileEntity(pos);
       if (enderchestinventory != null && tileentity instanceof EnderChestTileEntity) {
-         BlockPos blockpos = p_225533_3_.up();
-         if (p_225533_2_.getBlockState(blockpos).isNormalCube(p_225533_2_, blockpos)) {
+         BlockPos blockpos = pos.up();
+         if (worldIn.getBlockState(blockpos).isNormalCube(worldIn, blockpos)) {
             return ActionResultType.SUCCESS;
-         } else if (p_225533_2_.isRemote) {
+         } else if (worldIn.isRemote) {
             return ActionResultType.SUCCESS;
          } else {
             EnderChestTileEntity enderchesttileentity = (EnderChestTileEntity)tileentity;
             enderchestinventory.setChestTileEntity(enderchesttileentity);
-            p_225533_4_.openContainer(new SimpleNamedContainerProvider((p_226928_1_, p_226928_2_, p_226928_3_) -> {
+            player.openContainer(new SimpleNamedContainerProvider((p_226928_1_, p_226928_2_, p_226928_3_) -> {
                return ChestContainer.createGeneric9X3(p_226928_1_, p_226928_2_, enderchestinventory);
             }, field_220115_d));
-            p_225533_4_.addStat(Stats.OPEN_ENDERCHEST);
+            player.addStat(Stats.OPEN_ENDERCHEST);
             return ActionResultType.SUCCESS;
          }
       } else {

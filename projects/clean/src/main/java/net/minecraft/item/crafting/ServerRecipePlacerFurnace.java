@@ -15,9 +15,9 @@ public class ServerRecipePlacerFurnace<C extends IInventory> extends ServerRecip
       super(p_i50751_1_);
    }
 
-   protected void tryPlaceRecipe(IRecipe<C> p_201508_1_, boolean placeAll) {
-      this.matches = this.recipeBookContainer.matches(p_201508_1_);
-      int i = this.recipeItemHelper.getBiggestCraftableStack(p_201508_1_, (IntList)null);
+   protected void tryPlaceRecipe(IRecipe<C> recipe, boolean placeAll) {
+      this.matches = this.recipeBookContainer.matches(recipe);
+      int i = this.recipeItemHelper.getBiggestCraftableStack(recipe, (IntList)null);
       if (this.matches) {
          ItemStack itemstack = this.recipeBookContainer.getSlot(0).getStack();
          if (itemstack.isEmpty() || i <= itemstack.getCount()) {
@@ -27,7 +27,7 @@ public class ServerRecipePlacerFurnace<C extends IInventory> extends ServerRecip
 
       int j = this.getMaxAmount(placeAll, i, this.matches);
       IntList intlist = new IntArrayList();
-      if (this.recipeItemHelper.canCraft(p_201508_1_, intlist, j)) {
+      if (this.recipeItemHelper.canCraft(recipe, intlist, j)) {
          if (!this.matches) {
             this.giveToPlayer(this.recipeBookContainer.getOutputSlot());
             this.giveToPlayer(0);

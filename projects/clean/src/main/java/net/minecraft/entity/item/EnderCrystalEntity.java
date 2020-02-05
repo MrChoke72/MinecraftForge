@@ -38,7 +38,7 @@ public class EnderCrystalEntity extends Entity {
       this.setPosition(x, y, z);
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 

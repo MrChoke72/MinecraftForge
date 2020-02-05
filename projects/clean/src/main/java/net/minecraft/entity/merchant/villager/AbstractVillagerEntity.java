@@ -41,13 +41,10 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
    private PlayerEntity customer;
    @Nullable
    protected MerchantOffers offers;
+   private final Inventory villagerInventory = new Inventory(8);
 
-   //AH REFACTOR
-   private final Inventory inventory = new Inventory(8);
-   //private final Inventory field_213722_bB = new Inventory(8);
-
-   public AbstractVillagerEntity(EntityType<? extends AbstractVillagerEntity> p_i50185_1_, World p_i50185_2_) {
-      super(p_i50185_1_, p_i50185_2_);
+   public AbstractVillagerEntity(EntityType<? extends AbstractVillagerEntity> type, World worldIn) {
+      super(type, worldIn);
    }
 
    public ILivingEntityData onInitialSpawn(IWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
@@ -89,7 +86,7 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
       return this.customer;
    }
 
-   public boolean func_213716_dX() {
+   public boolean hasCustomer() {
       return this.customer != null;
    }
 
@@ -103,23 +100,23 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_213703_a(@Nullable MerchantOffers p_213703_1_) {
+   public void setClientSideOffers(@Nullable MerchantOffers offers) {
    }
 
-   public void func_213702_q(int p_213702_1_) {
+   public void setXP(int xpIn) {
    }
 
-   public void onTrade(MerchantOffer p_213704_1_) {
-      p_213704_1_.func_222219_j();
+   public void onTrade(MerchantOffer offer) {
+      offer.increaseUses();
       this.livingSoundTime = -this.getTalkInterval();
-      this.func_213713_b(p_213704_1_);
+      this.onVillagerTrade(offer);
       if (this.customer instanceof ServerPlayerEntity) {
-         CriteriaTriggers.VILLAGER_TRADE.func_215114_a((ServerPlayerEntity)this.customer, this, p_213704_1_.func_222200_d());
+         CriteriaTriggers.VILLAGER_TRADE.func_215114_a((ServerPlayerEntity)this.customer, this, offer.getSellingStack());
       }
 
    }
 
-   protected abstract void func_213713_b(MerchantOffer p_213713_1_);
+   protected abstract void onVillagerTrade(MerchantOffer offer);
 
    public boolean func_213705_dZ() {
       return true;
@@ -128,20 +125,20 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
    public void verifySellingItem(ItemStack stack) {
       if (!this.world.isRemote && this.livingSoundTime > -this.getTalkInterval() + 20) {
          this.livingSoundTime = -this.getTalkInterval();
-         this.playSound(this.func_213721_r(!stack.isEmpty()), this.getSoundVolume(), this.getSoundPitch());
+         this.playSound(this.getVillagerYesNoSound(!stack.isEmpty()), this.getSoundVolume(), this.getSoundPitch());
       }
 
    }
 
-   public SoundEvent func_213714_ea() {
+   public SoundEvent getYesSound() {
       return SoundEvents.ENTITY_VILLAGER_YES;
    }
 
-   protected SoundEvent func_213721_r(boolean p_213721_1_) {
-      return p_213721_1_ ? SoundEvents.ENTITY_VILLAGER_YES : SoundEvents.ENTITY_VILLAGER_NO;
+   protected SoundEvent getVillagerYesNoSound(boolean getYesSound) {
+      return getYesSound ? SoundEvents.ENTITY_VILLAGER_YES : SoundEvents.ENTITY_VILLAGER_NO;
    }
 
-   public void func_213711_eb() {
+   public void playCelebrateSound() {
       this.playSound(SoundEvents.ENTITY_VILLAGER_CELEBRATE, this.getSoundVolume(), this.getSoundPitch());
    }
 
@@ -149,13 +146,13 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
       super.writeAdditional(compound);
       MerchantOffers merchantoffers = this.getOffers();
       if (!merchantoffers.isEmpty()) {
-         compound.put("Offers", merchantoffers.func_222199_a());
+         compound.put("Offers", merchantoffers.write());
       }
 
       ListNBT listnbt = new ListNBT();
 
-      for(int i = 0; i < this.inventory.getSizeInventory(); ++i) {
-         ItemStack itemstack = this.inventory.getStackInSlot(i);
+      for(int i = 0; i < this.villagerInventory.getSizeInventory(); ++i) {
+         ItemStack itemstack = this.villagerInventory.getStackInSlot(i);
          if (!itemstack.isEmpty()) {
             listnbt.add(itemstack.write(new CompoundNBT()));
          }
@@ -175,7 +172,7 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
       for(int i = 0; i < listnbt.size(); ++i) {
          ItemStack itemstack = ItemStack.read(listnbt.getCompound(i));
          if (!itemstack.isEmpty()) {
-            this.inventory.addItem(itemstack);
+            this.villagerInventory.addItem(itemstack);
          }
       }
 
@@ -183,26 +180,26 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
 
    @Nullable
    public Entity changeDimension(DimensionType destination) {
-      this.func_213750_eg();
+      this.resetCustomer();
       return super.changeDimension(destination);
    }
 
-   protected void func_213750_eg() {
+   protected void resetCustomer() {
       this.setCustomer((PlayerEntity)null);
    }
 
    public void onDeath(DamageSource cause) {
       super.onDeath(cause);
-      this.func_213750_eg();
+      this.resetCustomer();
    }
 
    @OnlyIn(Dist.CLIENT)
-   protected void func_213718_a(IParticleData particleData) {
+   protected void spawnParticles(IParticleData particleData) {
       for(int i = 0; i < 5; ++i) {
          double d0 = this.rand.nextGaussian() * 0.02D;
          double d1 = this.rand.nextGaussian() * 0.02D;
          double d2 = this.rand.nextGaussian() * 0.02D;
-         this.world.addParticle(particleData, this.func_226282_d_(1.0D), this.func_226279_cv_() + 1.0D, this.func_226287_g_(1.0D), d0, d1, d2);
+         this.world.addParticle(particleData, this.getPosXRandom(1.0D), this.getPosYRandom() + 1.0D, this.getPosZRandom(1.0D), d0, d1, d2);
       }
 
    }
@@ -211,10 +208,8 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
       return false;
    }
 
-   //AH REFACTOR
-   public Inventory getInventory() {
-   //public Inventory func_213715_ed() {
-      return this.inventory;
+   public Inventory getVillagerInventory() {
+      return this.villagerInventory;
    }
 
    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn) {
@@ -222,8 +217,8 @@ public abstract class AbstractVillagerEntity extends AgeableEntity implements IN
          return true;
       } else {
          int i = inventorySlot - 300;
-         if (i >= 0 && i < this.inventory.getSizeInventory()) {
-            this.inventory.setInventorySlotContents(i, itemStackIn);
+         if (i >= 0 && i < this.villagerInventory.getSizeInventory()) {
+            this.villagerInventory.setInventorySlotContents(i, itemStackIn);
             return true;
          } else {
             return false;

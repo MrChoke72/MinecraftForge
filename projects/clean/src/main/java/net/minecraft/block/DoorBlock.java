@@ -153,7 +153,7 @@ public class DoorBlock extends Block {
       BlockState blockstate2 = iblockreader.getBlockState(blockpos4);
       BlockPos blockpos5 = blockpos1.offset(direction2);
       BlockState blockstate3 = iblockreader.getBlockState(blockpos5);
-      int i = (blockstate.func_224756_o(iblockreader, blockpos2) ? -1 : 0) + (blockstate1.func_224756_o(iblockreader, blockpos3) ? -1 : 0) + (blockstate2.func_224756_o(iblockreader, blockpos4) ? 1 : 0) + (blockstate3.func_224756_o(iblockreader, blockpos5) ? 1 : 0);
+      int i = (blockstate.isCollisionShapeOpaque(iblockreader, blockpos2) ? -1 : 0) + (blockstate1.isCollisionShapeOpaque(iblockreader, blockpos3) ? -1 : 0) + (blockstate2.isCollisionShapeOpaque(iblockreader, blockpos4) ? 1 : 0) + (blockstate3.isCollisionShapeOpaque(iblockreader, blockpos5) ? 1 : 0);
       boolean flag = blockstate.getBlock() == this && blockstate.get(HALF) == DoubleBlockHalf.LOWER;
       boolean flag1 = blockstate2.getBlock() == this && blockstate2.get(HALF) == DoubleBlockHalf.LOWER;
       if ((!flag || flag1) && i <= 0) {
@@ -172,13 +172,13 @@ public class DoorBlock extends Block {
       }
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
       if (this.material == Material.IRON) {
          return ActionResultType.PASS;
       } else {
-         p_225533_1_ = p_225533_1_.cycle(OPEN);
-         p_225533_2_.setBlockState(p_225533_3_, p_225533_1_, 10);
-         p_225533_2_.playEvent(p_225533_4_, p_225533_1_.get(OPEN) ? this.getOpenSound() : this.getCloseSound(), p_225533_3_, 0);
+         state = state.cycle(OPEN);
+         worldIn.setBlockState(pos, state, 10);
+         worldIn.playEvent(player, state.get(OPEN) ? this.getOpenSound() : this.getCloseSound(), pos, 0);
          return ActionResultType.SUCCESS;
       }
    }
@@ -189,8 +189,8 @@ public class DoorBlock extends Block {
          worldIn.setBlockState(pos, blockstate.with(OPEN, Boolean.valueOf(open)), 10);
          this.playSound(worldIn, pos, open);
       }
-
    }
+
    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
       boolean flag = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.offset(state.get(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN));
       if (blockIn != this && flag != state.get(POWERED)) {
@@ -207,14 +207,14 @@ public class DoorBlock extends Block {
       BlockPos blockpos = pos.down();
       BlockState blockstate = worldIn.getBlockState(blockpos);
       if (state.get(HALF) == DoubleBlockHalf.LOWER) {
-         return blockstate.func_224755_d(worldIn, blockpos, Direction.UP);
+         return blockstate.isSolidSide(worldIn, blockpos, Direction.UP);
       } else {
          return blockstate.getBlock() == this;
       }
    }
 
-   private void playSound(World p_196426_1_, BlockPos p_196426_2_, boolean p_196426_3_) {
-      p_196426_1_.playEvent((PlayerEntity)null, p_196426_3_ ? this.getOpenSound() : this.getCloseSound(), p_196426_2_, 0);
+   private void playSound(World worldIn, BlockPos pos, boolean isOpening) {
+      worldIn.playEvent((PlayerEntity)null, isOpening ? this.getOpenSound() : this.getCloseSound(), pos, 0);
    }
 
    public PushReaction getPushReaction(BlockState state) {

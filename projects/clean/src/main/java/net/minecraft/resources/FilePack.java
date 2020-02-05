@@ -96,7 +96,7 @@ public class FilePack extends ResourcePack {
 
    }
 
-   public Collection<ResourceLocation> func_225637_a_(ResourcePackType p_225637_1_, String p_225637_2_, String p_225637_3_, int p_225637_4_, Predicate<String> p_225637_5_) {
+   public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn) {
       ZipFile zipfile;
       try {
          zipfile = this.getResourcePackZipFile();
@@ -106,8 +106,8 @@ public class FilePack extends ResourcePack {
 
       Enumeration<? extends ZipEntry> enumeration = zipfile.entries();
       List<ResourceLocation> list = Lists.newArrayList();
-      String s = p_225637_1_.getDirectoryName() + "/" + p_225637_2_ + "/";
-      String s1 = s + p_225637_3_ + "/";
+      String s = type.getDirectoryName() + "/" + namespaceIn + "/";
+      String s1 = s + pathIn + "/";
 
       while(enumeration.hasMoreElements()) {
          ZipEntry zipentry = enumeration.nextElement();
@@ -116,8 +116,8 @@ public class FilePack extends ResourcePack {
             if (!s2.endsWith(".mcmeta") && s2.startsWith(s1)) {
                String s3 = s2.substring(s.length());
                String[] astring = s3.split("/");
-               if (astring.length >= p_225637_4_ + 1 && p_225637_5_.test(astring[astring.length - 1])) {
-                  list.add(new ResourceLocation(p_225637_2_, s3));
+               if (astring.length >= maxDepthIn + 1 && filterIn.test(astring[astring.length - 1])) {
+                  list.add(new ResourceLocation(namespaceIn, s3));
                }
             }
          }

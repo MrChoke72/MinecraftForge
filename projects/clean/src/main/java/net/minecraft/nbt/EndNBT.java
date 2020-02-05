@@ -7,10 +7,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class EndNBT implements INBT {
-   public static final INBTType<EndNBT> field_229685_a_ = new INBTType<EndNBT>() {
+   public static final INBTType<EndNBT> TYPE = new INBTType<EndNBT>() {
       public EndNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) {
          p_225649_3_.read(64L);
-         return EndNBT.field_229686_b_;
+         return EndNBT.INSTANCE;
       }
 
       public String func_225648_a_() {
@@ -25,7 +25,7 @@ public class EndNBT implements INBT {
          return true;
       }
    };
-   public static final EndNBT field_229686_b_ = new EndNBT();
+   public static final EndNBT INSTANCE = new EndNBT();
 
    private EndNBT() {
    }
@@ -37,8 +37,8 @@ public class EndNBT implements INBT {
       return 0;
    }
 
-   public INBTType<EndNBT> func_225647_b_() {
-      return field_229685_a_;
+   public INBTType<EndNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {

@@ -29,10 +29,10 @@ public class EditMinecartCommandBlockScreen extends AbstractCommandBlockScreen {
       this.commandTextField.setText(this.getLogic().getCommand());
    }
 
-   protected void func_195235_a(CommandBlockLogic p_195235_1_) {
-      if (p_195235_1_ instanceof MinecartCommandBlockEntity.MinecartCommandLogic) {
-         MinecartCommandBlockEntity.MinecartCommandLogic minecartcommandblockentity$minecartcommandlogic = (MinecartCommandBlockEntity.MinecartCommandLogic)p_195235_1_;
-         this.minecraft.getConnection().sendPacket(new CUpdateMinecartCommandBlockPacket(minecartcommandblockentity$minecartcommandlogic.getMinecart().getEntityId(), this.commandTextField.getText(), p_195235_1_.shouldTrackOutput()));
+   protected void func_195235_a(CommandBlockLogic commandBlockLogicIn) {
+      if (commandBlockLogicIn instanceof MinecartCommandBlockEntity.MinecartCommandLogic) {
+         MinecartCommandBlockEntity.MinecartCommandLogic minecartcommandblockentity$minecartcommandlogic = (MinecartCommandBlockEntity.MinecartCommandLogic)commandBlockLogicIn;
+         this.minecraft.getConnection().sendPacket(new CUpdateMinecartCommandBlockPacket(minecartcommandblockentity$minecartcommandlogic.getMinecart().getEntityId(), this.commandTextField.getText(), commandBlockLogicIn.shouldTrackOutput()));
       }
 
    }

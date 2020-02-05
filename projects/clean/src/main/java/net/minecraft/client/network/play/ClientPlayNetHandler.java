@@ -318,11 +318,11 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
    private final ClientSuggestionProvider clientSuggestionProvider;
    private NetworkTagManager networkTagManager = new NetworkTagManager();
    private final NBTQueryManager nbtQueryManager = new NBTQueryManager(this);
-   private int field_217287_m = 3;
+   private int viewDistance = 3;
    private final Random avRandomizer = new Random();
    private CommandDispatcher<ISuggestionProvider> commandDispatcher = new CommandDispatcher<>();
    private final RecipeManager recipeManager = new RecipeManager();
-   private final UUID field_217289_q = UUID.randomUUID();
+   private final UUID sessionId = UUID.randomUUID();
 
    public ClientPlayNetHandler(Minecraft mcIn, Screen p_i46300_2_, NetworkManager networkManagerIn, GameProfile profileIn) {
       this.client = mcIn;
@@ -348,8 +348,8 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
    public void handleJoinGame(SJoinGamePacket packetIn) {
       PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
       this.client.playerController = new PlayerController(this.client, this);
-      this.field_217287_m = packetIn.func_218728_h();
-      this.world = new ClientWorld(this, new WorldSettings(packetIn.func_229742_c_(), packetIn.getGameType(), false, packetIn.isHardcoreMode(), packetIn.getWorldType()), packetIn.getDimension(), this.field_217287_m, this.client.getProfiler(), this.client.worldRenderer);
+      this.viewDistance = packetIn.getViewDistance();
+      this.world = new ClientWorld(this, new WorldSettings(packetIn.func_229742_c_(), packetIn.getGameType(), false, packetIn.isHardcoreMode(), packetIn.getWorldType()), packetIn.getDimension(), this.viewDistance, this.client.getProfiler(), this.client.worldRenderer);
       this.client.loadWorld(this.world);
       if (this.client.player == null) {
          this.client.player = this.client.playerController.createPlayer(this.world, new StatisticsManager(), new ClientRecipeBook(this.world.getRecipeManager()));
@@ -359,7 +359,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
          }
       }
 
-      this.client.debugRenderer.func_217737_a();
+      this.client.debugRenderer.clear();
       this.client.player.preparePlayerToSpawn();
       int i = packetIn.getPlayerId();
       this.world.addPlayer(i, this.client.player);
@@ -370,11 +370,11 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       this.client.displayGuiScreen(new DownloadTerrainScreen());
       this.client.player.setEntityId(i);
       this.client.player.setReducedDebug(packetIn.isReducedDebugInfo());
-      this.client.player.func_228355_a_(packetIn.func_229743_k_());
+      this.client.player.setShowDeathScreen(packetIn.func_229743_k_());
       this.client.playerController.setGameType(packetIn.getGameType());
       this.client.gameSettings.sendSettingsToServer();
       this.netManager.sendPacket(new CCustomPayloadPacket(CCustomPayloadPacket.BRAND, (new PacketBuffer(Unpooled.buffer())).writeString(ClientBrandRetriever.getClientModName())));
-      this.client.getMinecraftGame().func_216814_a();
+      this.client.getMinecraftGame().startGameSession();
    }
 
    public void handleSpawnObject(SSpawnObjectPacket packetIn) {
@@ -475,7 +475,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
 
       if (entity != null) {
          int i = packetIn.getEntityID();
-         entity.func_213312_b(d0, d1, d2);
+         entity.setPacketCoordinates(d0, d1, d2);
          entity.rotationPitch = (float)(packetIn.getPitch() * 360) / 256.0F;
          entity.rotationYaw = (float)(packetIn.getYaw() * 360) / 256.0F;
          entity.setEntityId(i);
@@ -494,7 +494,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       double d1 = packetIn.getY();
       double d2 = packetIn.getZ();
       Entity entity = new ExperienceOrbEntity(this.world, d0, d1, d2, packetIn.getXPValue());
-      entity.func_213312_b(d0, d1, d2);
+      entity.setPacketCoordinates(d0, d1, d2);
       entity.rotationYaw = 0.0F;
       entity.rotationPitch = 0.0F;
       entity.setEntityId(packetIn.getEntityID());
@@ -508,7 +508,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       double d2 = packetIn.getZ();
       if (packetIn.getType() == 1) {
          LightningBoltEntity lightningboltentity = new LightningBoltEntity(this.world, d0, d1, d2, false);
-         lightningboltentity.func_213312_b(d0, d1, d2);
+         lightningboltentity.setPacketCoordinates(d0, d1, d2);
          lightningboltentity.rotationYaw = 0.0F;
          lightningboltentity.rotationPitch = 0.0F;
          lightningboltentity.setEntityId(packetIn.getEntityId());
@@ -552,8 +552,8 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       int i = packetIn.getEntityID();
       RemoteClientPlayerEntity remoteclientplayerentity = new RemoteClientPlayerEntity(this.client.world, this.getPlayerInfo(packetIn.getUniqueId()).getGameProfile());
       remoteclientplayerentity.setEntityId(i);
-      remoteclientplayerentity.func_226286_f_(d0, d1, d2);
-      remoteclientplayerentity.func_213312_b(d0, d1, d2);
+      remoteclientplayerentity.forceSetPosition(d0, d1, d2);
+      remoteclientplayerentity.setPacketCoordinates(d0, d1, d2);
       remoteclientplayerentity.setPositionAndRotation(d0, d1, d2, f, f1);
       this.world.addPlayer(i, remoteclientplayerentity);
    }
@@ -565,7 +565,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
          double d0 = packetIn.getX();
          double d1 = packetIn.getY();
          double d2 = packetIn.getZ();
-         entity.func_213312_b(d0, d1, d2);
+         entity.setPacketCoordinates(d0, d1, d2);
          if (!entity.canPassengerSteer()) {
             float f = (float)(packetIn.getYaw() * 360) / 256.0F;
             float f1 = (float)(packetIn.getPitch() * 360) / 256.0F;
@@ -676,7 +676,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
          playerentity.lastTickPosZ = d5;
       }
 
-      playerentity.func_226288_n_(d1, d3, d5);
+      playerentity.setRawPosition(d1, d3, d5);
       playerentity.prevPosX = d1;
       playerentity.prevPosY = d3;
       playerentity.prevPosZ = d5;
@@ -714,7 +714,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
       int i = packetIn.getChunkX();
       int j = packetIn.getChunkZ();
-      Chunk chunk = this.world.getChunkProvider().func_228313_a_(i, j, packetIn.func_229739_i_(), packetIn.getReadBuffer(), packetIn.getHeightmapTags(), packetIn.getAvailableSections());
+      Chunk chunk = this.world.getChunkProvider().loadChunk(i, j, packetIn.getBiomes(), packetIn.getReadBuffer(), packetIn.getHeightmapTags(), packetIn.getAvailableSections());
       if (chunk != null && packetIn.isFullChunk()) {
          this.world.addEntitiesToChunk(chunk);
       }
@@ -746,7 +746,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
          worldlightmanager.updateSectionStatus(SectionPos.of(i, k, j), true);
       }
 
-      worldlightmanager.func_215571_a(new ChunkPos(i, j), false);
+      worldlightmanager.enableLightSources(new ChunkPos(i, j), false);
    }
 
    public void handleBlockChange(SChangeBlockPacket packetIn) {
@@ -759,7 +759,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
    }
 
    public void onDisconnect(ITextComponent reason) {
-      this.client.func_213254_o();
+      this.client.unloadWorld();
       if (this.guiScreenServer != null) {
          if (this.guiScreenServer instanceof RealmsScreenProxy) {
             this.client.displayGuiScreen((new DisconnectedRealmsScreen(((RealmsScreenProxy)this.guiScreenServer).getScreen(), "disconnect.lost", reason)).getProxy());
@@ -795,7 +795,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
             ((ItemEntity)entity).getItem().setCount(packetIn.getAmount());
          }
 
-         this.client.particles.addEffect(new ItemPickupParticle(this.client.getRenderManager(), this.client.func_228019_au_(), this.world, entity, livingentity));
+         this.client.particles.addEffect(new ItemPickupParticle(this.client.getRenderManager(), this.client.getRenderTypeBuffers(), this.world, entity, livingentity));
          this.world.removeEntityFromWorld(packetIn.getCollectedItemEntityID());
       }
 
@@ -839,11 +839,11 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       float f1 = (float)(packetIn.getPitch() * 360) / 256.0F;
       LivingEntity livingentity = (LivingEntity)EntityType.create(packetIn.getEntityType(), this.client.world);
       if (livingentity != null) {
-         livingentity.func_213312_b(d0, d1, d2);
+         livingentity.setPacketCoordinates(d0, d1, d2);
          livingentity.renderYawOffset = (float)(packetIn.getHeadPitch() * 360) / 256.0F;
          livingentity.rotationYawHead = (float)(packetIn.getHeadPitch() * 360) / 256.0F;
          if (livingentity instanceof EnderDragonEntity) {
-            EnderDragonPartEntity[] aenderdragonpartentity = ((EnderDragonEntity)livingentity).func_213404_dT();
+            EnderDragonPartEntity[] aenderdragonpartentity = ((EnderDragonEntity)livingentity).getDragonParts();
 
             for(int i = 0; i < aenderdragonpartentity.length; ++i) {
                aenderdragonpartentity[i].setEntityId(i + packetIn.getEntityID());
@@ -898,7 +898,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
             if (entity1 != null) {
                entity1.startRiding(entity, true);
                if (entity1 == this.client.player && !flag) {
-                  this.client.ingameGUI.setOverlayMessage(I18n.format("mount.onboard", this.client.gameSettings.field_228046_af_.getLocalizedName()), false);
+                  this.client.ingameGUI.setOverlayMessage(I18n.format("mount.onboard", this.client.gameSettings.keyBindSneak.getLocalizedName()), false);
                }
             }
          }
@@ -910,7 +910,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
       Entity entity = this.world.getEntityByID(packetIn.getEntityId());
       if (entity instanceof MobEntity) {
-         ((MobEntity)entity).func_213381_d(packetIn.getVehicleEntityId());
+         ((MobEntity)entity).setVehicleEntityId(packetIn.getVehicleEntityId());
       }
 
    }
@@ -966,7 +966,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       if (dimensiontype != clientplayerentity.dimension) {
          this.doneLoadingTerrain = false;
          Scoreboard scoreboard = this.world.getScoreboard();
-         this.world = new ClientWorld(this, new WorldSettings(packetIn.func_229747_c_(), packetIn.getGameType(), false, this.client.world.getWorldInfo().isHardcore(), packetIn.getWorldType()), packetIn.getDimension(), this.field_217287_m, this.client.getProfiler(), this.client.worldRenderer);
+         this.world = new ClientWorld(this, new WorldSettings(packetIn.func_229747_c_(), packetIn.getGameType(), false, this.client.world.getWorldInfo().isHardcore(), packetIn.getWorldType()), packetIn.getDimension(), this.viewDistance, this.client.getProfiler(), this.client.worldRenderer);
          this.world.setScoreboard(scoreboard);
          this.client.loadWorld(this.world);
          this.client.displayGuiScreen(new DownloadTerrainScreen());
@@ -990,7 +990,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       clientplayerentity1.movementInput = new MovementInputFromOptions(this.client.gameSettings);
       this.client.playerController.setPlayerCapabilities(clientplayerentity1);
       clientplayerentity1.setReducedDebug(clientplayerentity.hasReducedDebug());
-      clientplayerentity1.func_228355_a_(clientplayerentity.func_228353_F_());
+      clientplayerentity1.setShowDeathScreen(clientplayerentity.isShowDeathScreen());
       if (this.client.currentScreen instanceof DeathScreen) {
          this.client.displayGuiScreen((Screen)null);
       }
@@ -1005,7 +1005,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       this.client.player.setMotion(this.client.player.getMotion().add((double)packetIn.getMotionX(), (double)packetIn.getMotionY(), (double)packetIn.getMotionZ()));
    }
 
-   public void func_217271_a(SOpenHorseWindowPacket p_217271_1_) {
+   public void handleOpenHorseWindow(SOpenHorseWindowPacket p_217271_1_) {
       PacketThreadUtil.checkThreadAndEnqueue(p_217271_1_, this, this.client);
       Entity entity = this.world.getEntityByID(p_217271_1_.func_218703_d());
       if (entity instanceof AbstractHorseEntity) {
@@ -1019,9 +1019,9 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
 
    }
 
-   public void func_217272_a(SOpenWindowPacket p_217272_1_) {
-      PacketThreadUtil.checkThreadAndEnqueue(p_217272_1_, this, this.client);
-      ScreenManager.openScreen(p_217272_1_.getContainerType(), this.client, p_217272_1_.getWindowId(), p_217272_1_.getTitle());
+   public void handleOpenWindowPacket(SOpenWindowPacket packetIn) {
+      PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
+      ScreenManager.openScreen(packetIn.getContainerType(), this.client, packetIn.getWindowId(), packetIn.getTitle());
    }
 
    public void handleSetSlot(SSetSlotPacket packetIn) {
@@ -1091,7 +1091,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       TileEntity tileentity = this.world.getTileEntity(packetIn.getSignPosition());
       if (!(tileentity instanceof SignTileEntity)) {
          tileentity = new SignTileEntity();
-         tileentity.func_226984_a_(this.world, packetIn.getSignPosition());
+         tileentity.setWorldAndPos(this.world, packetIn.getSignPosition());
       }
 
       this.client.player.openSignEditor((SignTileEntity)tileentity);
@@ -1188,7 +1188,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
             this.client.ingameGUI.getChatGUI().printChatMessage(new TranslationTextComponent("demo.day.6", gamesettings.keyBindScreenshot.getLocalizedName()));
          }
       } else if (i == 6) {
-         this.world.playSound(playerentity, playerentity.getPosX(), playerentity.getPosYPlusEyeHeight(), playerentity.getPosZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18F, 0.45F);
+         this.world.playSound(playerentity, playerentity.getPosX(), playerentity.getPosYEye(), playerentity.getPosZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18F, 0.45F);
       } else if (i == 7) {
          this.world.setRainStrength(f);
       } else if (i == 8) {
@@ -1199,7 +1199,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
          this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerentity.getPosX(), playerentity.getPosY(), playerentity.getPosZ(), 0.0D, 0.0D, 0.0D);
          this.world.playSound(playerentity, playerentity.getPosX(), playerentity.getPosY(), playerentity.getPosZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0F, 1.0F);
       } else if (i == 11) {
-         this.client.player.func_228355_a_(f == 0.0F);
+         this.client.player.setShowDeathScreen(f == 0.0F);
       }
 
    }
@@ -1207,8 +1207,8 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
    public void handleMaps(SMapDataPacket packetIn) {
       PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
       MapItemRenderer mapitemrenderer = this.client.gameRenderer.getMapItemRenderer();
-      String s = FilledMapItem.func_219993_a(packetIn.getMapId());
-      MapData mapdata = this.client.world.func_217406_a(s);
+      String s = FilledMapItem.getMapName(packetIn.getMapId());
+      MapData mapdata = this.client.world.getMapData(s);
       if (mapdata == null) {
          mapdata = new MapData(s);
          if (mapitemrenderer.getMapInstanceIfExists(s) != null) {
@@ -1218,7 +1218,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
             }
          }
 
-         this.client.world.func_217399_a(mapdata);
+         this.client.world.registerMapData(mapdata);
       }
 
       packetIn.setMapdataTo(mapdata);
@@ -1270,8 +1270,8 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
    public void handleUpdateRecipes(SUpdateRecipesPacket packetIn) {
       PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
       this.recipeManager.func_223389_a(packetIn.getRecipes());
-      IMutableSearchTree<RecipeList> imutablesearchtree = this.client.func_213253_a(SearchTreeManager.RECIPES);
-      imutablesearchtree.func_217871_a();
+      IMutableSearchTree<RecipeList> imutablesearchtree = this.client.getSearchTree(SearchTreeManager.RECIPES);
+      imutablesearchtree.clear();
       ClientRecipeBook clientrecipebook = this.client.player.getRecipeBook();
       clientrecipebook.rebuildTable();
       clientrecipebook.getRecipes().forEach(imutablesearchtree::func_217872_a);
@@ -1375,7 +1375,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
          EntityTypeTags.setCollection(this.networkTagManager.getEntityTypes());
       }
 
-      this.client.func_213253_a(SearchTreeManager.field_215360_b).recalculate();
+      this.client.getSearchTree(SearchTreeManager.TAGS).recalculate();
    }
 
    public void handleCombatEvent(SCombatPacket packetIn) {
@@ -1383,7 +1383,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       if (packetIn.eventType == SCombatPacket.Event.ENTITY_DIED) {
          Entity entity = this.world.getEntityByID(packetIn.playerId);
          if (entity == this.client.player) {
-            if (this.client.player.func_228353_F_()) {
+            if (this.client.player.isShowDeathScreen()) {
                this.client.displayGuiScreen(new DeathScreen(packetIn.deathMessage, this.world.getWorldInfo().isHardcore()));
             } else {
                this.client.player.respawnPlayer();
@@ -1531,7 +1531,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
                File file2 = new File(file1, s2);
                if (file2.isFile()) {
                   this.func_217283_a(CResourcePackStatusPacket.Action.ACCEPTED);
-                  CompletableFuture<?> completablefuture = this.client.getPackFinder().func_217816_a(file2);
+                  CompletableFuture<?> completablefuture = this.client.getPackFinder().setServerPack(file2);
                   this.func_217279_a(completablefuture);
                   return;
                }
@@ -1544,7 +1544,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
             ServerData serverdata = this.client.getCurrentServerData();
             if (serverdata != null && serverdata.getResourceMode() == ServerData.ServerResourceMode.ENABLED) {
                this.func_217283_a(CResourcePackStatusPacket.Action.ACCEPTED);
-               this.func_217279_a(this.client.getPackFinder().func_217818_a(s, s1));
+               this.func_217279_a(this.client.getPackFinder().downloadResourcePack(s, s1));
             } else if (serverdata != null && serverdata.getResourceMode() != ServerData.ServerResourceMode.PROMPT) {
                this.func_217283_a(CResourcePackStatusPacket.Action.DECLINED);
             } else {
@@ -1558,7 +1558,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
                         }
 
                         this.func_217283_a(CResourcePackStatusPacket.Action.ACCEPTED);
-                        this.func_217279_a(this.client.getPackFinder().func_217818_a(s, s1));
+                        this.func_217279_a(this.client.getPackFinder().downloadResourcePack(s, s1));
                      } else {
                         if (serverdata1 != null) {
                            serverdata1.setResourceMode(ServerData.ServerResourceMode.DISABLED);
@@ -1633,9 +1633,9 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
 
    }
 
-   public void func_217268_a(SOpenBookWindowPacket p_217268_1_) {
-      PacketThreadUtil.checkThreadAndEnqueue(p_217268_1_, this, this.client);
-      ItemStack itemstack = this.client.player.getHeldItem(p_217268_1_.getHand());
+   public void handleOpenBookPacket(SOpenBookWindowPacket packetIn) {
+      PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
+      ItemStack itemstack = this.client.player.getHeldItem(packetIn.getHand());
       if (itemstack.getItem() == Items.WRITTEN_BOOK) {
          this.client.displayGuiScreen(new ReadBookScreen(new ReadBookScreen.WrittenBookInfo(itemstack)));
       }
@@ -1843,7 +1843,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
             BeeDebugRenderer.Hive beedebugrenderer$hive = new BeeDebugRenderer.Hive(blockpos6, s9, j5, k5, flag3, this.world.getGameTime());
             this.client.debugRenderer.field_229017_n_.func_228966_a_(beedebugrenderer$hive);
          } else if (SCustomPayloadPlayPacket.field_229730_p_.equals(resourcelocation)) {
-            this.client.debugRenderer.field_229018_q_.func_217675_a();
+            this.client.debugRenderer.field_229018_q_.clear();
          } else if (SCustomPayloadPlayPacket.field_229729_o_.equals(resourcelocation)) {
             BlockPos blockpos7 = packetbuffer.readBlockPos();
             int l3 = packetbuffer.readInt();
@@ -2015,7 +2015,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       if (container.windowId == packetIn.getWindowId() && container.getCanCraft(this.client.player)) {
          this.recipeManager.getRecipe(packetIn.getRecipeId()).ifPresent((p_217285_2_) -> {
             if (this.client.currentScreen instanceof IRecipeShownListener) {
-               RecipeBookGui recipebookgui = ((IRecipeShownListener)this.client.currentScreen).func_194310_f();
+               RecipeBookGui recipebookgui = ((IRecipeShownListener)this.client.currentScreen).getRecipeGui();
                recipebookgui.setupGhostRecipe(p_217285_2_, container.inventorySlots);
             }
 
@@ -2038,28 +2038,28 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       this.setLightData(i, j, worldlightmanager, LightType.BLOCK, i1, j1, iterator1);
    }
 
-   public void func_217273_a(SMerchantOffersPacket p_217273_1_) {
-      PacketThreadUtil.checkThreadAndEnqueue(p_217273_1_, this, this.client);
+   public void handleMerchantOffers(SMerchantOffersPacket packetIn) {
+      PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
       Container container = this.client.player.openContainer;
-      if (p_217273_1_.func_218732_b() == container.windowId && container instanceof MerchantContainer) {
-         ((MerchantContainer)container).func_217044_a(new MerchantOffers(p_217273_1_.func_218733_c().func_222199_a()));
-         ((MerchantContainer)container).func_217052_e(p_217273_1_.func_218734_e());
-         ((MerchantContainer)container).func_217043_f(p_217273_1_.func_218731_d());
-         ((MerchantContainer)container).func_217045_a(p_217273_1_.func_218735_f());
-         ((MerchantContainer)container).func_223431_b(p_217273_1_.func_223477_g());
+      if (packetIn.getContainerId() == container.windowId && container instanceof MerchantContainer) {
+         ((MerchantContainer)container).setClientSideOffers(new MerchantOffers(packetIn.getOffers().write()));
+         ((MerchantContainer)container).setXp(packetIn.getExp());
+         ((MerchantContainer)container).setMerchantLevel(packetIn.getLevel());
+         ((MerchantContainer)container).func_217045_a(packetIn.func_218735_f());
+         ((MerchantContainer)container).func_223431_b(packetIn.func_223477_g());
       }
 
    }
 
-   public void func_217270_a(SUpdateViewDistancePacket p_217270_1_) {
-      PacketThreadUtil.checkThreadAndEnqueue(p_217270_1_, this, this.client);
-      this.field_217287_m = p_217270_1_.func_218758_b();
-      this.world.getChunkProvider().setViewDistance(p_217270_1_.func_218758_b());
+   public void handleUpdateViewDistancePacket(SUpdateViewDistancePacket packetIn) {
+      PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
+      this.viewDistance = packetIn.getViewDistance();
+      this.world.getChunkProvider().setViewDistance(packetIn.getViewDistance());
    }
 
-   public void func_217267_a(SUpdateChunkPositionPacket p_217267_1_) {
-      PacketThreadUtil.checkThreadAndEnqueue(p_217267_1_, this, this.client);
-      this.world.getChunkProvider().setCenter(p_217267_1_.func_218755_b(), p_217267_1_.func_218754_c());
+   public void handleChunkPositionPacket(SUpdateChunkPositionPacket packetIn) {
+      PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.client);
+      this.world.getChunkProvider().setCenter(packetIn.func_218755_b(), packetIn.func_218754_c());
    }
 
    public void func_225312_a(SPlayerDiggingPacket p_225312_1_) {
@@ -2112,7 +2112,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       return this.advancementManager;
    }
 
-   public CommandDispatcher<ISuggestionProvider> func_195515_i() {
+   public CommandDispatcher<ISuggestionProvider> getCommandDispatcher() {
       return this.commandDispatcher;
    }
 
@@ -2128,7 +2128,7 @@ public class ClientPlayNetHandler implements IClientPlayNetHandler {
       return this.nbtQueryManager;
    }
 
-   public UUID func_217277_l() {
-      return this.field_217289_q;
+   public UUID getSessionId() {
+      return this.sessionId;
    }
 }

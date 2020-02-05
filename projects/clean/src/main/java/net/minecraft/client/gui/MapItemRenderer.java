@@ -23,7 +23,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class MapItemRenderer implements AutoCloseable {
    private static final ResourceLocation TEXTURE_MAP_ICONS = new ResourceLocation("textures/map/map_icons.png");
-   private static final RenderType field_228085_d_ = RenderType.func_228658_l_(TEXTURE_MAP_ICONS);
+   private static final RenderType field_228085_d_ = RenderType.text(TEXTURE_MAP_ICONS);
    private final TextureManager textureManager;
    private final Map<String, MapItemRenderer.Instance> loadedMaps = Maps.newHashMap();
 
@@ -35,7 +35,7 @@ public class MapItemRenderer implements AutoCloseable {
       this.getMapRendererInstance(mapdataIn).updateMapTexture();
    }
 
-   public void func_228086_a_(MatrixStack p_228086_1_, IRenderTypeBuffer p_228086_2_, MapData p_228086_3_, boolean p_228086_4_, int p_228086_5_) {
+   public void renderMap(MatrixStack p_228086_1_, IRenderTypeBuffer p_228086_2_, MapData p_228086_3_, boolean p_228086_4_, int p_228086_5_) {
       this.getMapRendererInstance(p_228086_3_).func_228089_a_(p_228086_1_, p_228086_2_, p_228086_4_, p_228086_5_);
    }
 
@@ -81,7 +81,7 @@ public class MapItemRenderer implements AutoCloseable {
          this.mapData = mapdataIn;
          this.mapTexture = new DynamicTexture(128, 128, true);
          ResourceLocation resourcelocation = MapItemRenderer.this.textureManager.getDynamicTextureLocation("map/" + mapdataIn.getName(), this.mapTexture);
-         this.field_228088_d_ = RenderType.func_228658_l_(resourcelocation);
+         this.field_228088_d_ = RenderType.text(resourcelocation);
       }
 
       private void updateMapTexture() {
@@ -104,45 +104,45 @@ public class MapItemRenderer implements AutoCloseable {
          int i = 0;
          int j = 0;
          float f = 0.0F;
-         Matrix4f matrix4f = p_228089_1_.func_227866_c_().func_227870_a_();
+         Matrix4f matrix4f = p_228089_1_.getLast().getPositionMatrix();
          IVertexBuilder ivertexbuilder = p_228089_2_.getBuffer(this.field_228088_d_);
-         ivertexbuilder.func_227888_a_(matrix4f, 0.0F, 128.0F, -0.01F).func_225586_a_(255, 255, 255, 255).func_225583_a_(0.0F, 1.0F).func_227886_a_(p_228089_4_).endVertex();
-         ivertexbuilder.func_227888_a_(matrix4f, 128.0F, 128.0F, -0.01F).func_225586_a_(255, 255, 255, 255).func_225583_a_(1.0F, 1.0F).func_227886_a_(p_228089_4_).endVertex();
-         ivertexbuilder.func_227888_a_(matrix4f, 128.0F, 0.0F, -0.01F).func_225586_a_(255, 255, 255, 255).func_225583_a_(1.0F, 0.0F).func_227886_a_(p_228089_4_).endVertex();
-         ivertexbuilder.func_227888_a_(matrix4f, 0.0F, 0.0F, -0.01F).func_225586_a_(255, 255, 255, 255).func_225583_a_(0.0F, 0.0F).func_227886_a_(p_228089_4_).endVertex();
+         ivertexbuilder.pos(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).tex(0.0F, 1.0F).lightmap(p_228089_4_).endVertex();
+         ivertexbuilder.pos(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).tex(1.0F, 1.0F).lightmap(p_228089_4_).endVertex();
+         ivertexbuilder.pos(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).tex(1.0F, 0.0F).lightmap(p_228089_4_).endVertex();
+         ivertexbuilder.pos(matrix4f, 0.0F, 0.0F, -0.01F).color(255, 255, 255, 255).tex(0.0F, 0.0F).lightmap(p_228089_4_).endVertex();
          int k = 0;
 
          for(MapDecoration mapdecoration : this.mapData.mapDecorations.values()) {
             if (!p_228089_3_ || mapdecoration.renderOnFrame()) {
-               p_228089_1_.func_227860_a_();
-               p_228089_1_.func_227861_a_((double)(0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F), (double)(0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F), (double)-0.02F);
-               p_228089_1_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_((float)(mapdecoration.getRotation() * 360) / 16.0F));
-               p_228089_1_.func_227862_a_(4.0F, 4.0F, 3.0F);
-               p_228089_1_.func_227861_a_(-0.125D, 0.125D, 0.0D);
+               p_228089_1_.push();
+               p_228089_1_.translate((double)(0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F), (double)(0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F), (double)-0.02F);
+               p_228089_1_.rotate(Vector3f.ZP.rotationDegrees((float)(mapdecoration.getRotation() * 360) / 16.0F));
+               p_228089_1_.scale(4.0F, 4.0F, 3.0F);
+               p_228089_1_.translate(-0.125D, 0.125D, 0.0D);
                byte b0 = mapdecoration.getImage();
                float f1 = (float)(b0 % 16 + 0) / 16.0F;
                float f2 = (float)(b0 / 16 + 0) / 16.0F;
                float f3 = (float)(b0 % 16 + 1) / 16.0F;
                float f4 = (float)(b0 / 16 + 1) / 16.0F;
-               Matrix4f matrix4f1 = p_228089_1_.func_227866_c_().func_227870_a_();
+               Matrix4f matrix4f1 = p_228089_1_.getLast().getPositionMatrix();
                float f5 = -0.001F;
                IVertexBuilder ivertexbuilder1 = p_228089_2_.getBuffer(MapItemRenderer.field_228085_d_);
-               ivertexbuilder1.func_227888_a_(matrix4f1, -1.0F, 1.0F, (float)k * -0.001F).func_225586_a_(255, 255, 255, 255).func_225583_a_(f1, f2).func_227886_a_(p_228089_4_).endVertex();
-               ivertexbuilder1.func_227888_a_(matrix4f1, 1.0F, 1.0F, (float)k * -0.001F).func_225586_a_(255, 255, 255, 255).func_225583_a_(f3, f2).func_227886_a_(p_228089_4_).endVertex();
-               ivertexbuilder1.func_227888_a_(matrix4f1, 1.0F, -1.0F, (float)k * -0.001F).func_225586_a_(255, 255, 255, 255).func_225583_a_(f3, f4).func_227886_a_(p_228089_4_).endVertex();
-               ivertexbuilder1.func_227888_a_(matrix4f1, -1.0F, -1.0F, (float)k * -0.001F).func_225586_a_(255, 255, 255, 255).func_225583_a_(f1, f4).func_227886_a_(p_228089_4_).endVertex();
-               p_228089_1_.func_227865_b_();
+               ivertexbuilder1.pos(matrix4f1, -1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).tex(f1, f2).lightmap(p_228089_4_).endVertex();
+               ivertexbuilder1.pos(matrix4f1, 1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).tex(f3, f2).lightmap(p_228089_4_).endVertex();
+               ivertexbuilder1.pos(matrix4f1, 1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).tex(f3, f4).lightmap(p_228089_4_).endVertex();
+               ivertexbuilder1.pos(matrix4f1, -1.0F, -1.0F, (float)k * -0.001F).color(255, 255, 255, 255).tex(f1, f4).lightmap(p_228089_4_).endVertex();
+               p_228089_1_.pop();
                if (mapdecoration.getCustomName() != null) {
                   FontRenderer fontrenderer = Minecraft.getInstance().fontRenderer;
                   String s = mapdecoration.getCustomName().getFormattedText();
                   float f6 = (float)fontrenderer.getStringWidth(s);
                   float f7 = MathHelper.clamp(25.0F / f6, 0.0F, 6.0F / 9.0F);
-                  p_228089_1_.func_227860_a_();
-                  p_228089_1_.func_227861_a_((double)(0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F - f6 * f7 / 2.0F), (double)(0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F + 4.0F), (double)-0.025F);
-                  p_228089_1_.func_227862_a_(f7, f7, 1.0F);
-                  p_228089_1_.func_227861_a_(0.0D, 0.0D, (double)-0.1F);
-                  fontrenderer.func_228079_a_(s, 0.0F, 0.0F, -1, false, p_228089_1_.func_227866_c_().func_227870_a_(), p_228089_2_, false, Integer.MIN_VALUE, p_228089_4_);
-                  p_228089_1_.func_227865_b_();
+                  p_228089_1_.push();
+                  p_228089_1_.translate((double)(0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F - f6 * f7 / 2.0F), (double)(0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F + 4.0F), (double)-0.025F);
+                  p_228089_1_.scale(f7, f7, 1.0F);
+                  p_228089_1_.translate(0.0D, 0.0D, (double)-0.1F);
+                  fontrenderer.renderString(s, 0.0F, 0.0F, -1, false, p_228089_1_.getLast().getPositionMatrix(), p_228089_2_, false, Integer.MIN_VALUE, p_228089_4_);
+                  p_228089_1_.pop();
                }
 
                ++k;

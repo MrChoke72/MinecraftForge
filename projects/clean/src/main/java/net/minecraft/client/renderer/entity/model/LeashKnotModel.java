@@ -14,16 +14,16 @@ public class LeashKnotModel<T extends Entity> extends SegmentedModel<T> {
       this.textureWidth = 32;
       this.textureHeight = 32;
       this.knotRenderer = new ModelRenderer(this, 0, 0);
-      this.knotRenderer.func_228301_a_(-3.0F, -6.0F, -3.0F, 6.0F, 8.0F, 6.0F, 0.0F);
+      this.knotRenderer.addBox(-3.0F, -6.0F, -3.0F, 6.0F, 8.0F, 6.0F, 0.0F);
       this.knotRenderer.setRotationPoint(0.0F, 0.0F, 0.0F);
    }
 
-   public Iterable<ModelRenderer> func_225601_a_() {
+   public Iterable<ModelRenderer> getParts() {
       return ImmutableList.of(this.knotRenderer);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      this.knotRenderer.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F);
-      this.knotRenderer.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.knotRenderer.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
+      this.knotRenderer.rotateAngleX = headPitch * ((float)Math.PI / 180F);
    }
 }

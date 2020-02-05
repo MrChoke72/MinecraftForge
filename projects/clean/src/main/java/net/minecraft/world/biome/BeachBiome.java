@@ -12,9 +12,9 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public final class BeachBiome extends Biome {
    public BeachBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_SAND_GRAVEL_CONFIG).precipitation(Biome.RainType.RAIN).category(Biome.Category.BEACH).depth(0.0F).scale(0.025F).temperature(0.8F).downfall(0.4F).waterColor(4159204).waterFogColor(329011).parent((String)null));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.BURIED_TREASURE.func_225566_b_(new BuriedTreasureConfig(0.01F)));
-      this.func_226711_a_(Feature.SHIPWRECK.func_225566_b_(new ShipwreckConfig(true)));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.BURIED_TREASURE.withConfiguration(new BuriedTreasureConfig(0.01F)));
+      this.addStructure(Feature.SHIPWRECK.withConfiguration(new ShipwreckConfig(true)));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -23,7 +23,7 @@ public final class BeachBiome extends Biome {
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
       DefaultBiomeFeatures.addDefaultFlowers(this);
-      DefaultBiomeFeatures.func_222348_W(this);
+      DefaultBiomeFeatures.addSparseGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);

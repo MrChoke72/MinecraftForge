@@ -27,7 +27,7 @@ public interface IProfileResult {
       return this.ticksStart() - this.ticksStop();
    }
 
-   static String func_225434_b(String p_225434_0_) {
+   static String decodePath(String p_225434_0_) {
       return p_225434_0_.replace('\u001e', '.');
    }
 }

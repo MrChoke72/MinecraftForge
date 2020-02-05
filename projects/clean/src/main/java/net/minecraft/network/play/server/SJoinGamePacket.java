@@ -18,7 +18,7 @@ public class SJoinGamePacket implements IPacket<IClientPlayNetHandler> {
    private DimensionType dimension;
    private int maxPlayers;
    private WorldType worldType;
-   private int field_218729_g;
+   private int viewDistance;
    private boolean reducedDebugInfo;
    private boolean field_229741_j_;
 
@@ -33,7 +33,7 @@ public class SJoinGamePacket implements IPacket<IClientPlayNetHandler> {
       this.maxPlayers = p_i226090_7_;
       this.hardcoreMode = p_i226090_5_;
       this.worldType = p_i226090_8_;
-      this.field_218729_g = p_i226090_9_;
+      this.viewDistance = p_i226090_9_;
       this.reducedDebugInfo = p_i226090_10_;
       this.field_229741_j_ = p_i226090_11_;
    }
@@ -52,7 +52,7 @@ public class SJoinGamePacket implements IPacket<IClientPlayNetHandler> {
          this.worldType = WorldType.DEFAULT;
       }
 
-      this.field_218729_g = buf.readVarInt();
+      this.viewDistance = buf.readVarInt();
       this.reducedDebugInfo = buf.readBoolean();
       this.field_229741_j_ = buf.readBoolean();
    }
@@ -69,7 +69,7 @@ public class SJoinGamePacket implements IPacket<IClientPlayNetHandler> {
       buf.writeLong(this.field_229740_b_);
       buf.writeByte(this.maxPlayers);
       buf.writeString(this.worldType.getName());
-      buf.writeVarInt(this.field_218729_g);
+      buf.writeVarInt(this.viewDistance);
       buf.writeBoolean(this.reducedDebugInfo);
       buf.writeBoolean(this.field_229741_j_);
    }
@@ -109,8 +109,8 @@ public class SJoinGamePacket implements IPacket<IClientPlayNetHandler> {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_218728_h() {
-      return this.field_218729_g;
+   public int getViewDistance() {
+      return this.viewDistance;
    }
 
    @OnlyIn(Dist.CLIENT)

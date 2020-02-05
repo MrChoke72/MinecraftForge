@@ -31,9 +31,9 @@ public class FireworkParticle {
          return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
       }
 
-      public void func_225606_a_(IVertexBuilder p_225606_1_, ActiveRenderInfo p_225606_2_, float p_225606_3_) {
-         this.setAlphaF(0.6F - ((float)this.age + p_225606_3_ - 1.0F) * 0.25F * 0.5F);
-         super.func_225606_a_(p_225606_1_, p_225606_2_, p_225606_3_);
+      public void renderParticle(IVertexBuilder buffer, ActiveRenderInfo renderInfo, float partialTicks) {
+         this.setAlphaF(0.6F - ((float)this.age + partialTicks - 1.0F) * 0.25F * 0.5F);
+         super.renderParticle(buffer, renderInfo, partialTicks);
       }
 
       public float getScale(float p_217561_1_) {
@@ -85,9 +85,9 @@ public class FireworkParticle {
          this.twinkle = twinkleIn;
       }
 
-      public void func_225606_a_(IVertexBuilder p_225606_1_, ActiveRenderInfo p_225606_2_, float p_225606_3_) {
+      public void renderParticle(IVertexBuilder buffer, ActiveRenderInfo renderInfo, float partialTicks) {
          if (!this.twinkle || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-            super.func_225606_a_(p_225606_1_, p_225606_2_, p_225606_3_);
+            super.renderParticle(buffer, renderInfo, partialTicks);
          }
 
       }

@@ -22,9 +22,9 @@ public class ItemRenderer extends EntityRenderer<ItemEntity> {
    private final net.minecraft.client.renderer.ItemRenderer itemRenderer;
    private final Random random = new Random();
 
-   public ItemRenderer(EntityRendererManager renderManagerIn, net.minecraft.client.renderer.ItemRenderer p_i46167_2_) {
+   public ItemRenderer(EntityRendererManager renderManagerIn, net.minecraft.client.renderer.ItemRenderer itemRendererIn) {
       super(renderManagerIn);
-      this.itemRenderer = p_i46167_2_;
+      this.itemRenderer = itemRendererIn;
       this.shadowSize = 0.15F;
       this.shadowOpaque = 0.75F;
    }
@@ -44,20 +44,20 @@ public class ItemRenderer extends EntityRenderer<ItemEntity> {
       return i;
    }
 
-   public void func_225623_a_(ItemEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      p_225623_4_.func_227860_a_();
-      ItemStack itemstack = p_225623_1_.getItem();
+   public void render(ItemEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      matrixStackIn.push();
+      ItemStack itemstack = entityIn.getItem();
       int i = itemstack.isEmpty() ? 187 : Item.getIdFromItem(itemstack.getItem()) + itemstack.getDamage();
       this.random.setSeed((long)i);
-      IBakedModel ibakedmodel = this.itemRenderer.getItemModelWithOverrides(itemstack, p_225623_1_.world, (LivingEntity)null);
+      IBakedModel ibakedmodel = this.itemRenderer.getItemModelWithOverrides(itemstack, entityIn.world, (LivingEntity)null);
       boolean flag = ibakedmodel.isGui3d();
       int j = this.getModelCount(itemstack);
       float f = 0.25F;
-      float f1 = MathHelper.sin(((float)p_225623_1_.getAge() + p_225623_3_) / 10.0F + p_225623_1_.hoverStart) * 0.1F + 0.1F;
+      float f1 = MathHelper.sin(((float)entityIn.getAge() + partialTicks) / 10.0F + entityIn.hoverStart) * 0.1F + 0.1F;
       float f2 = ibakedmodel.getItemCameraTransforms().getTransform(ItemCameraTransforms.TransformType.GROUND).scale.getY();
-      p_225623_4_.func_227861_a_(0.0D, (double)(f1 + 0.25F * f2), 0.0D);
-      float f3 = ((float)p_225623_1_.getAge() + p_225623_3_) / 20.0F + p_225623_1_.hoverStart;
-      p_225623_4_.func_227863_a_(Vector3f.field_229181_d_.func_229193_c_(f3));
+      matrixStackIn.translate(0.0D, (double)(f1 + 0.25F * f2), 0.0D);
+      float f3 = ((float)entityIn.getAge() + partialTicks) / 20.0F + entityIn.hoverStart;
+      matrixStackIn.rotate(Vector3f.YP.rotation(f3));
       float f4 = ibakedmodel.getItemCameraTransforms().ground.scale.getX();
       float f5 = ibakedmodel.getItemCameraTransforms().ground.scale.getY();
       float f6 = ibakedmodel.getItemCameraTransforms().ground.scale.getZ();
@@ -65,33 +65,33 @@ public class ItemRenderer extends EntityRenderer<ItemEntity> {
          float f7 = -0.0F * (float)(j - 1) * 0.5F * f4;
          float f8 = -0.0F * (float)(j - 1) * 0.5F * f5;
          float f9 = -0.09375F * (float)(j - 1) * 0.5F * f6;
-         p_225623_4_.func_227861_a_((double)f7, (double)f8, (double)f9);
+         matrixStackIn.translate((double)f7, (double)f8, (double)f9);
       }
 
       for(int k = 0; k < j; ++k) {
-         p_225623_4_.func_227860_a_();
+         matrixStackIn.push();
          if (k > 0) {
             if (flag) {
                float f11 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                float f13 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                float f10 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
-               p_225623_4_.func_227861_a_((double)f11, (double)f13, (double)f10);
+               matrixStackIn.translate((double)f11, (double)f13, (double)f10);
             } else {
                float f12 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
                float f14 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
-               p_225623_4_.func_227861_a_((double)f12, (double)f14, 0.0D);
+               matrixStackIn.translate((double)f12, (double)f14, 0.0D);
             }
          }
 
-         this.itemRenderer.func_229111_a_(itemstack, ItemCameraTransforms.TransformType.GROUND, false, p_225623_4_, p_225623_5_, p_225623_6_, OverlayTexture.field_229196_a_, ibakedmodel);
-         p_225623_4_.func_227865_b_();
+         this.itemRenderer.renderItem(itemstack, ItemCameraTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_LIGHT, ibakedmodel);
+         matrixStackIn.pop();
          if (!flag) {
-            p_225623_4_.func_227861_a_((double)(0.0F * f4), (double)(0.0F * f5), (double)(0.09375F * f6));
+            matrixStackIn.translate((double)(0.0F * f4), (double)(0.0F * f5), (double)(0.09375F * f6));
          }
       }
 
-      p_225623_4_.func_227865_b_();
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      matrixStackIn.pop();
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
    public ResourceLocation getEntityTexture(ItemEntity entity) {

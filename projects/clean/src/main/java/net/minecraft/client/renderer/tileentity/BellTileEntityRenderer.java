@@ -16,39 +16,39 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class BellTileEntityRenderer extends TileEntityRenderer<BellTileEntity> {
-   public static final Material field_217653_c = new Material(AtlasTexture.LOCATION_BLOCKS_TEXTURE, new ResourceLocation("entity/bell/bell_body"));
-   private final ModelRenderer field_228848_c_ = new ModelRenderer(32, 32, 0, 0);
+   public static final Material BELL_BODY_TEXTURE = new Material(AtlasTexture.LOCATION_BLOCKS_TEXTURE, new ResourceLocation("entity/bell/bell_body"));
+   private final ModelRenderer modelRenderer = new ModelRenderer(32, 32, 0, 0);
 
    public BellTileEntityRenderer(TileEntityRendererDispatcher p_i226005_1_) {
       super(p_i226005_1_);
-      this.field_228848_c_.func_228300_a_(-3.0F, -6.0F, -3.0F, 6.0F, 7.0F, 6.0F);
-      this.field_228848_c_.setRotationPoint(8.0F, 12.0F, 8.0F);
+      this.modelRenderer.addBox(-3.0F, -6.0F, -3.0F, 6.0F, 7.0F, 6.0F);
+      this.modelRenderer.setRotationPoint(8.0F, 12.0F, 8.0F);
       ModelRenderer modelrenderer = new ModelRenderer(32, 32, 0, 13);
-      modelrenderer.func_228300_a_(4.0F, 4.0F, 4.0F, 8.0F, 2.0F, 8.0F);
+      modelrenderer.addBox(4.0F, 4.0F, 4.0F, 8.0F, 2.0F, 8.0F);
       modelrenderer.setRotationPoint(-8.0F, -12.0F, -8.0F);
-      this.field_228848_c_.addChild(modelrenderer);
+      this.modelRenderer.addChild(modelrenderer);
    }
 
-   public void func_225616_a_(BellTileEntity p_225616_1_, float p_225616_2_, MatrixStack p_225616_3_, IRenderTypeBuffer p_225616_4_, int p_225616_5_, int p_225616_6_) {
-      float f = (float)p_225616_1_.field_213943_a + p_225616_2_;
+   public void render(BellTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+      float f = (float)tileEntityIn.ringingTicks + partialTicks;
       float f1 = 0.0F;
       float f2 = 0.0F;
-      if (p_225616_1_.field_213944_b) {
+      if (tileEntityIn.isRinging) {
          float f3 = MathHelper.sin(f / (float)Math.PI) / (4.0F + f / 3.0F);
-         if (p_225616_1_.field_213945_c == Direction.NORTH) {
+         if (tileEntityIn.ringDirection == Direction.NORTH) {
             f1 = -f3;
-         } else if (p_225616_1_.field_213945_c == Direction.SOUTH) {
+         } else if (tileEntityIn.ringDirection == Direction.SOUTH) {
             f1 = f3;
-         } else if (p_225616_1_.field_213945_c == Direction.EAST) {
+         } else if (tileEntityIn.ringDirection == Direction.EAST) {
             f2 = -f3;
-         } else if (p_225616_1_.field_213945_c == Direction.WEST) {
+         } else if (tileEntityIn.ringDirection == Direction.WEST) {
             f2 = f3;
          }
       }
 
-      this.field_228848_c_.rotateAngleX = f1;
-      this.field_228848_c_.rotateAngleZ = f2;
-      IVertexBuilder ivertexbuilder = field_217653_c.func_229311_a_(p_225616_4_, RenderType::func_228634_a_);
-      this.field_228848_c_.func_228308_a_(p_225616_3_, ivertexbuilder, p_225616_5_, p_225616_6_);
+      this.modelRenderer.rotateAngleX = f1;
+      this.modelRenderer.rotateAngleZ = f2;
+      IVertexBuilder ivertexbuilder = BELL_BODY_TEXTURE.getBuffer(bufferIn, RenderType::entitySolid);
+      this.modelRenderer.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
    }
 }

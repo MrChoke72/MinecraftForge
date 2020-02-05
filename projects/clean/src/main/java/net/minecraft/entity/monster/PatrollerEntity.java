@@ -26,8 +26,8 @@ public abstract class PatrollerEntity extends MonsterEntity {
    private boolean patrolLeader;
    private boolean patrolling;
 
-   protected PatrollerEntity(EntityType<? extends PatrollerEntity> p_i50201_1_, World p_i50201_2_) {
-      super(p_i50201_1_, p_i50201_2_);
+   protected PatrollerEntity(EntityType<? extends PatrollerEntity> p_i50201_1_, World worldIn) {
+      super(p_i50201_1_, worldIn);
    }
 
    protected void registerGoals() {
@@ -81,8 +81,8 @@ public abstract class PatrollerEntity extends MonsterEntity {
       return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
    }
 
-   public static boolean func_223330_b(EntityType<? extends PatrollerEntity> p_223330_0_, IWorld p_223330_1_, SpawnReason p_223330_2_, BlockPos p_223330_3_, Random p_223330_4_) {
-      return p_223330_1_.getLightLevel(LightType.BLOCK, p_223330_3_) > 8 ? false : func_223324_d(p_223330_0_, p_223330_1_, p_223330_2_, p_223330_3_, p_223330_4_);
+   public static boolean func_223330_b(EntityType<? extends PatrollerEntity> patrollerType, IWorld worldIn, SpawnReason reason, BlockPos p_223330_3_, Random p_223330_4_) {
+      return worldIn.getLightFor(LightType.BLOCK, p_223330_3_) > 8 ? false : func_223324_d(patrollerType, worldIn, reason, p_223330_3_, p_223330_4_);
    }
 
    public boolean canDespawn(double distanceToClosestPlayer) {
@@ -102,8 +102,8 @@ public abstract class PatrollerEntity extends MonsterEntity {
       return this.patrolTarget != null;
    }
 
-   public void setLeader(boolean p_213635_1_) {
-      this.patrolLeader = p_213635_1_;
+   public void setLeader(boolean isLeader) {
+      this.patrolLeader = isLeader;
       this.patrolling = true;
    }
 
@@ -124,9 +124,7 @@ public abstract class PatrollerEntity extends MonsterEntity {
       return this.patrolling;
    }
 
-   //AH CHANGE REFACTOR
    protected void setPatrolling(boolean p_226541_1_) {
-   //protected void func_226541_s_(boolean p_226541_1_) {
       this.patrolling = p_226541_1_;
    }
 

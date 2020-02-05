@@ -15,8 +15,8 @@ public class CaveSpiderRenderer extends SpiderRenderer<CaveSpiderEntity> {
       this.shadowSize *= 0.7F;
    }
 
-   protected void func_225620_a_(CaveSpiderEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
-      p_225620_2_.func_227862_a_(0.7F, 0.7F, 0.7F);
+   protected void preRenderCallback(CaveSpiderEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+      matrixStackIn.scale(0.7F, 0.7F, 0.7F);
    }
 
    public ResourceLocation getEntityTexture(CaveSpiderEntity entity) {

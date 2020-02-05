@@ -20,7 +20,7 @@ public class MovementInputFromOptions extends MovementInput {
       this.moveForward = this.forwardKeyDown == this.backKeyDown ? 0.0F : (this.forwardKeyDown ? 1.0F : -1.0F);
       this.moveStrafe = this.leftKeyDown == this.rightKeyDown ? 0.0F : (this.leftKeyDown ? 1.0F : -1.0F);
       this.jump = this.gameSettings.keyBindJump.isKeyDown();
-      this.field_228350_h_ = this.gameSettings.field_228046_af_.isKeyDown();
+      this.field_228350_h_ = this.gameSettings.keyBindSneak.isKeyDown();
       if (p_225607_1_) {
          this.moveStrafe = (float)((double)this.moveStrafe * 0.3D);
          this.moveForward = (float)((double)this.moveForward * 0.3D);

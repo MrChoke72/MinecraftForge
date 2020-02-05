@@ -46,14 +46,14 @@ public class KelpTopBlock extends Block implements ILiquidContainer {
       return Fluids.WATER.getStillFluidState(false);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!p_225534_1_.isValidPosition(p_225534_2_, p_225534_3_)) {
-         p_225534_2_.destroyBlock(p_225534_3_, true);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!state.isValidPosition(worldIn, pos)) {
+         worldIn.destroyBlock(pos, true);
       } else {
-         BlockPos blockpos = p_225534_3_.up();
-         BlockState blockstate = p_225534_2_.getBlockState(blockpos);
-         if (blockstate.getBlock() == Blocks.WATER && p_225534_1_.get(AGE) < 25 && p_225534_4_.nextDouble() < 0.14D) {
-            p_225534_2_.setBlockState(blockpos, p_225534_1_.cycle(AGE));
+         BlockPos blockpos = pos.up();
+         BlockState blockstate = worldIn.getBlockState(blockpos);
+         if (blockstate.getBlock() == Blocks.WATER && state.get(AGE) < 25 && rand.nextDouble() < 0.14D) {
+            worldIn.setBlockState(blockpos, state.cycle(AGE));
          }
 
       }
@@ -66,7 +66,7 @@ public class KelpTopBlock extends Block implements ILiquidContainer {
       if (block == Blocks.MAGMA_BLOCK) {
          return false;
       } else {
-         return block == this || block == Blocks.KELP_PLANT || blockstate.func_224755_d(worldIn, blockpos, Direction.UP);
+         return block == this || block == Blocks.KELP_PLANT || blockstate.isSolidSide(worldIn, blockpos, Direction.UP);
       }
    }
 

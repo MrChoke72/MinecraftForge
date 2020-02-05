@@ -16,7 +16,7 @@ public class WorkingScreen extends Screen implements IProgressUpdate {
    private boolean doneWorking;
 
    public WorkingScreen() {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
    }
 
    public boolean shouldCloseOnEsc() {

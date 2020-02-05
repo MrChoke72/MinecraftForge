@@ -11,9 +11,9 @@ public abstract class AbstractZombieModel<T extends MonsterEntity> extends Biped
       super(p_i51070_1_, p_i51070_2_, p_i51070_3_, p_i51070_4_);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      super.func_225597_a_(p_225597_1_, p_225597_2_, p_225597_3_, p_225597_4_, p_225597_5_, p_225597_6_);
-      boolean flag = this.func_212850_a_(p_225597_1_);
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+      boolean flag = this.func_212850_a_(entityIn);
       float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
       float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
       this.bipedRightArm.rotateAngleZ = 0.0F;
@@ -25,10 +25,10 @@ public abstract class AbstractZombieModel<T extends MonsterEntity> extends Biped
       this.bipedLeftArm.rotateAngleX = f2;
       this.bipedRightArm.rotateAngleX += f * 1.2F - f1 * 0.4F;
       this.bipedLeftArm.rotateAngleX += f * 1.2F - f1 * 0.4F;
-      this.bipedRightArm.rotateAngleZ += MathHelper.cos(p_225597_4_ * 0.09F) * 0.05F + 0.05F;
-      this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(p_225597_4_ * 0.09F) * 0.05F + 0.05F;
-      this.bipedRightArm.rotateAngleX += MathHelper.sin(p_225597_4_ * 0.067F) * 0.05F;
-      this.bipedLeftArm.rotateAngleX -= MathHelper.sin(p_225597_4_ * 0.067F) * 0.05F;
+      this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+      this.bipedLeftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
+      this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
+      this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
    }
 
    public abstract boolean func_212850_a_(T p_212850_1_);

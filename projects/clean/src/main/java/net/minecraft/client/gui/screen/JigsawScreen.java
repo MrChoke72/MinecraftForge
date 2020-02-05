@@ -20,7 +20,7 @@ public class JigsawScreen extends Screen {
    private Button field_214263_e;
 
    public JigsawScreen(JigsawTileEntity p_i51083_1_) {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
       this.field_214259_a = p_i51083_1_;
    }
 
@@ -58,14 +58,14 @@ public class JigsawScreen extends Screen {
       this.field_214261_c = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.format("jigsaw_block.target_pool"));
       this.field_214261_c.setMaxStringLength(128);
       this.field_214261_c.setText(this.field_214259_a.getTargetPool().toString());
-      this.field_214261_c.func_212954_a((p_214254_1_) -> {
+      this.field_214261_c.setResponder((p_214254_1_) -> {
          this.func_214253_a();
       });
       this.children.add(this.field_214261_c);
       this.field_214260_b = new TextFieldWidget(this.font, this.width / 2 - 152, 80, 300, 20, I18n.format("jigsaw_block.attachement_type"));
       this.field_214260_b.setMaxStringLength(128);
       this.field_214260_b.setText(this.field_214259_a.getAttachmentType().toString());
-      this.field_214260_b.func_212954_a((p_214251_1_) -> {
+      this.field_214260_b.setResponder((p_214251_1_) -> {
          this.func_214253_a();
       });
       this.children.add(this.field_214260_b);
@@ -73,12 +73,12 @@ public class JigsawScreen extends Screen {
       this.field_214262_d.setMaxStringLength(256);
       this.field_214262_d.setText(this.field_214259_a.getFinalState());
       this.children.add(this.field_214262_d);
-      this.func_212928_a(this.field_214261_c);
+      this.setFocusedDefault(this.field_214261_c);
       this.func_214253_a();
    }
 
    protected void func_214253_a() {
-      this.field_214263_e.active = ResourceLocation.func_217855_b(this.field_214260_b.getText()) & ResourceLocation.func_217855_b(this.field_214261_c.getText());
+      this.field_214263_e.active = ResourceLocation.isResouceNameValid(this.field_214260_b.getText()) & ResourceLocation.isResouceNameValid(this.field_214261_c.getText());
    }
 
    public void resize(Minecraft p_resize_1_, int p_resize_2_, int p_resize_3_) {

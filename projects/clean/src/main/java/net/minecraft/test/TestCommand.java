@@ -98,7 +98,7 @@ public class TestCommand {
    }
 
    private static int func_229617_a_(CommandSource p_229617_0_, String p_229617_1_) throws CommandSyntaxException {
-      BlockRayTraceResult blockraytraceresult = (BlockRayTraceResult)p_229617_0_.asPlayer().func_213324_a(10.0D, 1.0F, false);
+      BlockRayTraceResult blockraytraceresult = (BlockRayTraceResult)p_229617_0_.asPlayer().pick(10.0D, 1.0F, false);
       BlockPos blockpos = blockraytraceresult.getPos();
       ServerWorld serverworld = p_229617_0_.getWorld();
       Optional<BlockPos> optional = StructureHelper.func_229596_a_(blockpos, 15, serverworld);

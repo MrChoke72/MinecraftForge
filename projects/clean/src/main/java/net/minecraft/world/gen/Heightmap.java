@@ -18,41 +18,41 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class Heightmap {
-   private static final Predicate<BlockState> field_222691_a = (p_222688_0_) -> {
+   private static final Predicate<BlockState> IS_NOT_AIR = (p_222688_0_) -> {
       return !p_222688_0_.isAir();
    };
-   private static final Predicate<BlockState> field_222692_b = (p_222689_0_) -> {
+   private static final Predicate<BlockState> BLOCKS_MOVEMENT = (p_222689_0_) -> {
       return p_222689_0_.getMaterial().blocksMovement();
    };
    private final BitArray data = new BitArray(9, 256);
-   private final Predicate<BlockState> field_222693_d;
+   private final Predicate<BlockState> heightLimitPredicate;
    private final IChunk chunk;
 
    public Heightmap(IChunk chunkIn, Heightmap.Type type) {
-      this.field_222693_d = type.func_222684_d();
+      this.heightLimitPredicate = type.getHeightLimitPredicate();
       this.chunk = chunkIn;
    }
 
-   public static void func_222690_a(IChunk p_222690_0_, Set<Heightmap.Type> p_222690_1_) {
-      int i = p_222690_1_.size();
+   public static void updateChunkHeightmaps(IChunk chunkIn, Set<Heightmap.Type> types) {
+      int i = types.size();
       ObjectList<Heightmap> objectlist = new ObjectArrayList<>(i);
       ObjectListIterator<Heightmap> objectlistiterator = objectlist.iterator();
-      int j = p_222690_0_.getTopFilledSegment() + 16;
+      int j = chunkIn.getTopFilledSegment() + 16;
 
       try (BlockPos.PooledMutable blockpos$pooledmutable = BlockPos.PooledMutable.retain()) {
          for(int k = 0; k < 16; ++k) {
             for(int l = 0; l < 16; ++l) {
-               for(Heightmap.Type heightmap$type : p_222690_1_) {
-                  objectlist.add(p_222690_0_.func_217303_b(heightmap$type));
+               for(Heightmap.Type heightmap$type : types) {
+                  objectlist.add(chunkIn.getHeightmap(heightmap$type));
                }
 
                for(int i1 = j - 1; i1 >= 0; --i1) {
                   blockpos$pooledmutable.setPos(k, i1, l);
-                  BlockState blockstate = p_222690_0_.getBlockState(blockpos$pooledmutable);
+                  BlockState blockstate = chunkIn.getBlockState(blockpos$pooledmutable);
                   if (blockstate.getBlock() != Blocks.AIR) {
                      while(objectlistiterator.hasNext()) {
                         Heightmap heightmap = objectlistiterator.next();
-                        if (heightmap.field_222693_d.test(blockstate)) {
+                        if (heightmap.heightLimitPredicate.test(blockstate)) {
                            heightmap.set(k, l, i1 + 1);
                            objectlistiterator.remove();
                         }
@@ -76,7 +76,7 @@ public class Heightmap {
       if (p_202270_2_ <= i - 2) {
          return false;
       } else {
-         if (this.field_222693_d.test(p_202270_4_)) {
+         if (this.heightLimitPredicate.test(p_202270_4_)) {
             if (p_202270_2_ >= i) {
                this.set(p_202270_1_, p_202270_3_, p_202270_2_ + 1);
                return true;
@@ -86,7 +86,7 @@ public class Heightmap {
 
             for(int j = p_202270_2_ - 1; j >= 0; --j) {
                blockpos$mutable.setPos(p_202270_1_, j, p_202270_3_);
-               if (this.field_222693_d.test(this.chunk.getBlockState(blockpos$mutable))) {
+               if (this.heightLimitPredicate.test(this.chunk.getBlockState(blockpos$mutable))) {
                   this.set(p_202270_1_, p_202270_3_, j + 1);
                   return true;
                }
@@ -125,10 +125,10 @@ public class Heightmap {
    }
 
    public static enum Type {
-      WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.Usage.WORLDGEN, Heightmap.field_222691_a),
-      WORLD_SURFACE("WORLD_SURFACE", Heightmap.Usage.CLIENT, Heightmap.field_222691_a),
-      OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Usage.WORLDGEN, Heightmap.field_222692_b),
-      OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Usage.LIVE_WORLD, Heightmap.field_222692_b),
+      WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.Usage.WORLDGEN, Heightmap.IS_NOT_AIR),
+      WORLD_SURFACE("WORLD_SURFACE", Heightmap.Usage.CLIENT, Heightmap.IS_NOT_AIR),
+      OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Usage.WORLDGEN, Heightmap.BLOCKS_MOVEMENT),
+      OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Usage.LIVE_WORLD, Heightmap.BLOCKS_MOVEMENT),
       MOTION_BLOCKING("MOTION_BLOCKING", Heightmap.Usage.CLIENT, (p_222680_0_) -> {
          return p_222680_0_.getMaterial().blocksMovement() || !p_222680_0_.getFluidState().isEmpty();
       }),
@@ -138,39 +138,39 @@ public class Heightmap {
 
       private final String id;
       private final Heightmap.Usage usage;
-      private final Predicate<BlockState> field_222685_i;
-      private static final Map<String, Heightmap.Type> field_203503_g = Util.make(Maps.newHashMap(), (p_222679_0_) -> {
+      private final Predicate<BlockState> heightLimitPredicate;
+      private static final Map<String, Heightmap.Type> BY_ID = Util.make(Maps.newHashMap(), (p_222679_0_) -> {
          for(Heightmap.Type heightmap$type : values()) {
             p_222679_0_.put(heightmap$type.id, heightmap$type);
          }
 
       });
 
-      private Type(String p_i50821_3_, Heightmap.Usage p_i50821_4_, Predicate<BlockState> p_i50821_5_) {
-         this.id = p_i50821_3_;
-         this.usage = p_i50821_4_;
-         this.field_222685_i = p_i50821_5_;
+      private Type(String idIn, Heightmap.Usage usageIn, Predicate<BlockState> heightLimitPredicateIn) {
+         this.id = idIn;
+         this.usage = usageIn;
+         this.heightLimitPredicate = heightLimitPredicateIn;
       }
 
       public String getId() {
          return this.id;
       }
 
-      public boolean func_222681_b() {
+      public boolean isUsageClient() {
          return this.usage == Heightmap.Usage.CLIENT;
       }
 
       @OnlyIn(Dist.CLIENT)
-      public boolean func_222683_c() {
+      public boolean isUsageNotWorldgen() {
          return this.usage != Heightmap.Usage.WORLDGEN;
       }
 
-      public static Heightmap.Type func_203501_a(String p_203501_0_) {
-         return field_203503_g.get(p_203501_0_);
+      public static Heightmap.Type getTypeFromId(String idIn) {
+         return BY_ID.get(idIn);
       }
 
-      public Predicate<BlockState> func_222684_d() {
-         return this.field_222685_i;
+      public Predicate<BlockState> getHeightLimitPredicate() {
+         return this.heightLimitPredicate;
       }
    }
 

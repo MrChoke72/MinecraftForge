@@ -56,7 +56,7 @@ public class LecternScreen extends ReadBookScreen implements IHasContainer<Lecte
       this.field_214182_c.removeListener(this.field_214183_d);
    }
 
-   protected void func_214162_b() {
+   protected void addDoneButton() {
       if (this.minecraft.player.isAllowEdit()) {
          this.addButton(new Button(this.width / 2 - 100, 196, 98, 20, I18n.format("gui.done"), (p_214181_1_) -> {
             this.minecraft.displayGuiScreen((Screen)null);
@@ -65,22 +65,22 @@ public class LecternScreen extends ReadBookScreen implements IHasContainer<Lecte
             this.func_214179_c(3);
          }));
       } else {
-         super.func_214162_b();
+         super.addDoneButton();
       }
 
    }
 
-   protected void func_214165_d() {
+   protected void previousPage() {
       this.func_214179_c(1);
    }
 
-   protected void func_214163_e() {
+   protected void nextPage() {
       this.func_214179_c(2);
    }
 
-   protected boolean func_214153_b(int p_214153_1_) {
-      if (p_214153_1_ != this.field_214182_c.getPage()) {
-         this.func_214179_c(100 + p_214153_1_);
+   protected boolean showPage2(int pageNum) {
+      if (pageNum != this.field_214182_c.getPage()) {
+         this.func_214179_c(100 + pageNum);
          return true;
       } else {
          return false;
@@ -101,6 +101,6 @@ public class LecternScreen extends ReadBookScreen implements IHasContainer<Lecte
    }
 
    private void func_214176_h() {
-      this.func_214160_a(this.field_214182_c.getPage());
+      this.showPage(this.field_214182_c.getPage());
    }
 }

@@ -30,12 +30,12 @@ public class AudioStreamBuffer {
          int i = ALUtils.func_216479_a(this.field_216476_b);
          int[] aint = new int[1];
          AL10.alGenBuffers(aint);
-         if (ALUtils.func_216483_a("Creating buffer")) {
+         if (ALUtils.checkALError("Creating buffer")) {
             return OptionalInt.empty();
          }
 
          AL10.alBufferData(aint[0], i, this.field_216475_a, (int)this.field_216476_b.getSampleRate());
-         if (ALUtils.func_216483_a("Assigning buffer data")) {
+         if (ALUtils.checkALError("Assigning buffer data")) {
             return OptionalInt.empty();
          }
 
@@ -50,7 +50,7 @@ public class AudioStreamBuffer {
    public void func_216474_b() {
       if (this.field_216477_c) {
          AL10.alDeleteBuffers(new int[]{this.field_216478_d});
-         if (ALUtils.func_216483_a("Deleting stream buffers")) {
+         if (ALUtils.checkALError("Deleting stream buffers")) {
             return;
          }
       }

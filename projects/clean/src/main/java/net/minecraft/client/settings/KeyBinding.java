@@ -45,7 +45,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
    public static void setKeyBindState(InputMappings.Input key, boolean held) {
       KeyBinding keybinding = HASH.get(key);
       if (keybinding != null) {
-         keybinding.func_225593_a_(held);
+         keybinding.setPressed(held);
       }
 
    }
@@ -53,7 +53,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
    public static void updateKeyBindState() {
       for(KeyBinding keybinding : KEYBIND_ARRAY.values()) {
          if (keybinding.keyCode.getType() == InputMappings.Type.KEYSYM && keybinding.keyCode.getKeyCode() != InputMappings.INPUT_INVALID.getKeyCode()) {
-            keybinding.func_225593_a_(InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), keybinding.keyCode.getKeyCode()));
+            keybinding.setPressed(InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), keybinding.keyCode.getKeyCode()));
          }
       }
 
@@ -108,7 +108,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
    private void unpressKey() {
       this.pressTime = 0;
-      this.func_225593_a_(false);
+      this.setPressed(false);
    }
 
    public String getKeyDescription() {
@@ -160,14 +160,14 @@ public class KeyBinding implements Comparable<KeyBinding> {
       String s1 = null;
       switch(this.keyCode.getType()) {
       case KEYSYM:
-         s1 = InputMappings.func_216507_a(i);
+         s1 = InputMappings.getKeynameFromKeycode(i);
          break;
       case SCANCODE:
-         s1 = InputMappings.func_216502_b(i);
+         s1 = InputMappings.getKeyNameFromScanCode(i);
          break;
       case MOUSE:
          String s2 = I18n.format(s);
-         s1 = Objects.equals(s2, s) ? I18n.format(InputMappings.Type.MOUSE.func_216500_a(), i + 1) : s2;
+         s1 = Objects.equals(s2, s) ? I18n.format(InputMappings.Type.MOUSE.getName(), i + 1) : s2;
       }
 
       return s1 == null ? I18n.format(s) : s1;
@@ -181,7 +181,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
       return this.keyCode.getTranslationKey();
    }
 
-   public void func_225593_a_(boolean p_225593_1_) {
-      this.pressed = p_225593_1_;
+   public void setPressed(boolean valueIn) {
+      this.pressed = valueIn;
    }
 }

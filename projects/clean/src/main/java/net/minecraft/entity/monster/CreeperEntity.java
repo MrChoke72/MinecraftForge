@@ -52,7 +52,6 @@ public class CreeperEntity extends MonsterEntity implements IChargeableMob {
    //AH CHAGE CANCEL TEMP SILLYNESS
    //private int explosionRadius = 30;
    private int explosionRadius = 3;
-
    private int droppedSkulls;
 
    public CreeperEntity(EntityType<? extends CreeperEntity> type, World worldIn) {
@@ -81,9 +80,9 @@ public class CreeperEntity extends MonsterEntity implements IChargeableMob {
       return this.getAttackTarget() == null ? 3 : 3 + (int)(this.getHealth() - 1.0F);
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
-      boolean flag = super.func_225503_b_(p_225503_1_, p_225503_2_);
-      this.timeSinceIgnited = (int)((float)this.timeSinceIgnited + p_225503_1_ * 1.5F);
+   public boolean onLivingFall(float distance, float damageMultiplier) {
+      boolean flag = super.onLivingFall(distance, damageMultiplier);
+      this.timeSinceIgnited = (int)((float)this.timeSinceIgnited + distance * 1.5F);
       if (this.timeSinceIgnited > this.fuseTime - 5) {
          this.timeSinceIgnited = this.fuseTime - 5;
       }

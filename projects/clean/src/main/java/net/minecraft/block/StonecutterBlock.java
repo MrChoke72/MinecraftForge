@@ -25,25 +25,25 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class StonecutterBlock extends Block {
-   private static final TranslationTextComponent field_220286_c = new TranslationTextComponent("container.stonecutter");
-   public static final DirectionProperty field_220284_a = HorizontalBlock.HORIZONTAL_FACING;
-   protected static final VoxelShape field_220285_b = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 9.0D, 16.0D);
+   private static final TranslationTextComponent CONTAINER_NAME = new TranslationTextComponent("container.stonecutter");
+   public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
+   protected static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 9.0D, 16.0D);
 
-   public StonecutterBlock(Block.Properties p_i49972_1_) {
-      super(p_i49972_1_);
-      this.setDefaultState(this.stateContainer.getBaseState().with(field_220284_a, Direction.NORTH));
+   public StonecutterBlock(Block.Properties propertiesIn) {
+      super(propertiesIn);
+      this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.NORTH));
    }
 
    public BlockState getStateForPlacement(BlockItemUseContext context) {
-      return this.getDefaultState().with(field_220284_a, context.getPlacementHorizontalFacing().getOpposite());
+      return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         p_225533_4_.openContainer(p_225533_1_.getContainer(p_225533_2_, p_225533_3_));
-         p_225533_4_.addStat(Stats.INTERACT_WITH_STONECUTTER);
+         player.openContainer(state.getContainer(worldIn, pos));
+         player.addStat(Stats.INTERACT_WITH_STONECUTTER);
          return ActionResultType.SUCCESS;
       }
    }
@@ -52,14 +52,14 @@ public class StonecutterBlock extends Block {
    public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
       return new SimpleNamedContainerProvider((p_220283_2_, p_220283_3_, p_220283_4_) -> {
          return new StonecutterContainer(p_220283_2_, p_220283_3_, IWorldPosCallable.of(worldIn, pos));
-      }, field_220286_c);
+      }, CONTAINER_NAME);
    }
 
    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-      return field_220285_b;
+      return SHAPE;
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 
@@ -68,15 +68,15 @@ public class StonecutterBlock extends Block {
    }
 
    public BlockState rotate(BlockState state, Rotation rot) {
-      return state.with(field_220284_a, rot.rotate(state.get(field_220284_a)));
+      return state.with(FACING, rot.rotate(state.get(FACING)));
    }
 
    public BlockState mirror(BlockState state, Mirror mirrorIn) {
-      return state.rotate(mirrorIn.toRotation(state.get(field_220284_a)));
+      return state.rotate(mirrorIn.toRotation(state.get(FACING)));
    }
 
    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-      builder.add(field_220284_a);
+      builder.add(FACING);
    }
 
    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {

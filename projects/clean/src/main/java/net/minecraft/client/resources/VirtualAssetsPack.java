@@ -51,7 +51,7 @@ public class VirtualAssetsPack extends VanillaPack {
 
    @Nullable
    protected InputStream getInputStreamVanilla(String pathIn) {
-      File file1 = this.field_195785_b.func_225638_a_(pathIn);
+      File file1 = this.field_195785_b.getFile(pathIn);
       if (file1 != null && file1.exists()) {
          try {
             return new FileInputStream(file1);
@@ -63,9 +63,9 @@ public class VirtualAssetsPack extends VanillaPack {
       return super.getInputStreamVanilla(pathIn);
    }
 
-   public Collection<ResourceLocation> func_225637_a_(ResourcePackType p_225637_1_, String p_225637_2_, String p_225637_3_, int p_225637_4_, Predicate<String> p_225637_5_) {
-      Collection<ResourceLocation> collection = super.func_225637_a_(p_225637_1_, p_225637_2_, p_225637_3_, p_225637_4_, p_225637_5_);
-      collection.addAll(this.field_195785_b.func_225639_a_(p_225637_3_, p_225637_2_, p_225637_4_, p_225637_5_));
+   public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn) {
+      Collection<ResourceLocation> collection = super.getAllResourceLocations(type, namespaceIn, pathIn, maxDepthIn, filterIn);
+      collection.addAll(this.field_195785_b.getFiles(pathIn, namespaceIn, maxDepthIn, filterIn));
       return collection;
    }
 }

@@ -12,21 +12,21 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public final class SavannaBiome extends Biome {
    protected SavannaBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.NONE).category(Biome.Category.SAVANNA).depth(0.125F).scale(0.05F).temperature(1.2F).downfall(0.0F).waterColor(4159204).waterFogColor(329011).parent((String)null));
-      this.func_226711_a_(Feature.VILLAGE.func_225566_b_(new VillageConfig("village/savanna/town_centers", 6)));
-      this.func_226711_a_(Feature.PILLAGER_OUTPOST.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.STRONGHOLD.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.VILLAGE.withConfiguration(new VillageConfig("village/savanna/town_centers", 6)));
+      this.addStructure(Feature.PILLAGER_OUTPOST.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.STRONGHOLD.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
       DefaultBiomeFeatures.addMonsterRooms(this);
-      DefaultBiomeFeatures.func_222344_J(this);
+      DefaultBiomeFeatures.addTallGrass(this);
       DefaultBiomeFeatures.addStoneVariants(this);
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
       DefaultBiomeFeatures.addSavannaTrees(this);
       DefaultBiomeFeatures.addExtraDefaultFlowers(this);
-      DefaultBiomeFeatures.func_222339_L(this);
+      DefaultBiomeFeatures.addVeryDenseGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);

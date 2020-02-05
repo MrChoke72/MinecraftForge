@@ -9,14 +9,14 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.NonNullList;
 
 public class CraftingResultSlot extends Slot {
-   private final CraftingInventory field_75239_a;
+   private final CraftingInventory craftMatrix;
    private final PlayerEntity player;
    private int amountCrafted;
 
    public CraftingResultSlot(PlayerEntity player, CraftingInventory craftingInventory, IInventory inventoryIn, int slotIndex, int xPosition, int yPosition) {
       super(inventoryIn, slotIndex, xPosition, yPosition);
       this.player = player;
-      this.field_75239_a = craftingInventory;
+      this.craftMatrix = craftingInventory;
    }
 
    public boolean isItemValid(ItemStack stack) {
@@ -54,22 +54,22 @@ public class CraftingResultSlot extends Slot {
 
    public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
       this.onCrafting(stack);
-      NonNullList<ItemStack> nonnulllist = thePlayer.world.getRecipeManager().getRecipeNonNull(IRecipeType.CRAFTING, this.field_75239_a, thePlayer.world);
+      NonNullList<ItemStack> nonnulllist = thePlayer.world.getRecipeManager().getRecipeNonNull(IRecipeType.CRAFTING, this.craftMatrix, thePlayer.world);
 
       for(int i = 0; i < nonnulllist.size(); ++i) {
-         ItemStack itemstack = this.field_75239_a.getStackInSlot(i);
+         ItemStack itemstack = this.craftMatrix.getStackInSlot(i);
          ItemStack itemstack1 = nonnulllist.get(i);
          if (!itemstack.isEmpty()) {
-            this.field_75239_a.decrStackSize(i, 1);
-            itemstack = this.field_75239_a.getStackInSlot(i);
+            this.craftMatrix.decrStackSize(i, 1);
+            itemstack = this.craftMatrix.getStackInSlot(i);
          }
 
          if (!itemstack1.isEmpty()) {
             if (itemstack.isEmpty()) {
-               this.field_75239_a.setInventorySlotContents(i, itemstack1);
+               this.craftMatrix.setInventorySlotContents(i, itemstack1);
             } else if (ItemStack.areItemsEqual(itemstack, itemstack1) && ItemStack.areItemStackTagsEqual(itemstack, itemstack1)) {
                itemstack1.grow(itemstack.getCount());
-               this.field_75239_a.setInventorySlotContents(i, itemstack1);
+               this.craftMatrix.setInventorySlotContents(i, itemstack1);
             } else if (!this.player.inventory.addItemStackToInventory(itemstack1)) {
                this.player.dropItem(itemstack1, false);
             }

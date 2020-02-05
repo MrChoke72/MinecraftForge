@@ -7,27 +7,27 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public final class Vector3f {
-   public static Vector3f field_229178_a_ = new Vector3f(-1.0F, 0.0F, 0.0F);
-   public static Vector3f field_229179_b_ = new Vector3f(1.0F, 0.0F, 0.0F);
-   public static Vector3f field_229180_c_ = new Vector3f(0.0F, -1.0F, 0.0F);
-   public static Vector3f field_229181_d_ = new Vector3f(0.0F, 1.0F, 0.0F);
-   public static Vector3f field_229182_e_ = new Vector3f(0.0F, 0.0F, -1.0F);
-   public static Vector3f field_229183_f_ = new Vector3f(0.0F, 0.0F, 1.0F);
-   private float field_229184_g_;
-   private float field_229185_h_;
-   private float field_229186_i_;
+   public static Vector3f XN = new Vector3f(-1.0F, 0.0F, 0.0F);
+   public static Vector3f XP = new Vector3f(1.0F, 0.0F, 0.0F);
+   public static Vector3f YN = new Vector3f(0.0F, -1.0F, 0.0F);
+   public static Vector3f YP = new Vector3f(0.0F, 1.0F, 0.0F);
+   public static Vector3f ZN = new Vector3f(0.0F, 0.0F, -1.0F);
+   public static Vector3f ZP = new Vector3f(0.0F, 0.0F, 1.0F);
+   private float x;
+   private float y;
+   private float z;
 
    public Vector3f() {
    }
 
    public Vector3f(float x, float y, float z) {
-      this.field_229184_g_ = x;
-      this.field_229185_h_ = y;
-      this.field_229186_i_ = z;
+      this.x = x;
+      this.y = y;
+      this.z = z;
    }
 
-   public Vector3f(Vec3d p_i51412_1_) {
-      this((float)p_i51412_1_.x, (float)p_i51412_1_.y, (float)p_i51412_1_.z);
+   public Vector3f(Vec3d vecIn) {
+      this((float)vecIn.x, (float)vecIn.y, (float)vecIn.z);
    }
 
    public boolean equals(Object p_equals_1_) {
@@ -35,12 +35,12 @@ public final class Vector3f {
          return true;
       } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
          Vector3f vector3f = (Vector3f)p_equals_1_;
-         if (Float.compare(vector3f.field_229184_g_, this.field_229184_g_) != 0) {
+         if (Float.compare(vector3f.x, this.x) != 0) {
             return false;
-         } else if (Float.compare(vector3f.field_229185_h_, this.field_229185_h_) != 0) {
+         } else if (Float.compare(vector3f.y, this.y) != 0) {
             return false;
          } else {
-            return Float.compare(vector3f.field_229186_i_, this.field_229186_i_) == 0;
+            return Float.compare(vector3f.z, this.z) == 0;
          }
       } else {
          return false;
@@ -48,154 +48,154 @@ public final class Vector3f {
    }
 
    public int hashCode() {
-      int i = Float.floatToIntBits(this.field_229184_g_);
-      i = 31 * i + Float.floatToIntBits(this.field_229185_h_);
-      i = 31 * i + Float.floatToIntBits(this.field_229186_i_);
+      int i = Float.floatToIntBits(this.x);
+      i = 31 * i + Float.floatToIntBits(this.y);
+      i = 31 * i + Float.floatToIntBits(this.z);
       return i;
    }
 
    public float getX() {
-      return this.field_229184_g_;
+      return this.x;
    }
 
    public float getY() {
-      return this.field_229185_h_;
+      return this.y;
    }
 
    public float getZ() {
-      return this.field_229186_i_;
+      return this.z;
    }
 
    @OnlyIn(Dist.CLIENT)
    public void mul(float multiplier) {
-      this.field_229184_g_ *= multiplier;
-      this.field_229185_h_ *= multiplier;
-      this.field_229186_i_ *= multiplier;
+      this.x *= multiplier;
+      this.y *= multiplier;
+      this.z *= multiplier;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_229192_b_(float p_229192_1_, float p_229192_2_, float p_229192_3_) {
-      this.field_229184_g_ *= p_229192_1_;
-      this.field_229185_h_ *= p_229192_2_;
-      this.field_229186_i_ *= p_229192_3_;
+   public void mul(float mx, float my, float mz) {
+      this.x *= mx;
+      this.y *= my;
+      this.z *= mz;
    }
 
    @OnlyIn(Dist.CLIENT)
    public void clamp(float min, float max) {
-      this.field_229184_g_ = MathHelper.clamp(this.field_229184_g_, min, max);
-      this.field_229185_h_ = MathHelper.clamp(this.field_229185_h_, min, max);
-      this.field_229186_i_ = MathHelper.clamp(this.field_229186_i_, min, max);
+      this.x = MathHelper.clamp(this.x, min, max);
+      this.y = MathHelper.clamp(this.y, min, max);
+      this.z = MathHelper.clamp(this.z, min, max);
    }
 
    public void set(float x, float y, float z) {
-      this.field_229184_g_ = x;
-      this.field_229185_h_ = y;
-      this.field_229186_i_ = z;
+      this.x = x;
+      this.y = y;
+      this.z = z;
    }
 
    @OnlyIn(Dist.CLIENT)
    public void add(float x, float y, float z) {
-      this.field_229184_g_ += x;
-      this.field_229185_h_ += y;
-      this.field_229186_i_ += z;
+      this.x += x;
+      this.y += y;
+      this.z += z;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_229189_a_(Vector3f p_229189_1_) {
-      this.field_229184_g_ += p_229189_1_.field_229184_g_;
-      this.field_229185_h_ += p_229189_1_.field_229185_h_;
-      this.field_229186_i_ += p_229189_1_.field_229186_i_;
+   public void add(Vector3f vectorIn) {
+      this.x += vectorIn.x;
+      this.y += vectorIn.y;
+      this.z += vectorIn.z;
    }
 
    @OnlyIn(Dist.CLIENT)
    public void sub(Vector3f vec) {
-      this.field_229184_g_ -= vec.field_229184_g_;
-      this.field_229185_h_ -= vec.field_229185_h_;
-      this.field_229186_i_ -= vec.field_229186_i_;
+      this.x -= vec.x;
+      this.y -= vec.y;
+      this.z -= vec.z;
    }
 
    @OnlyIn(Dist.CLIENT)
    public float dot(Vector3f vec) {
-      return this.field_229184_g_ * vec.field_229184_g_ + this.field_229185_h_ * vec.field_229185_h_ + this.field_229186_i_ * vec.field_229186_i_;
+      return this.x * vec.x + this.y * vec.y + this.z * vec.z;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_229194_d_() {
-      float f = this.field_229184_g_ * this.field_229184_g_ + this.field_229185_h_ * this.field_229185_h_ + this.field_229186_i_ * this.field_229186_i_;
+   public boolean normalize() {
+      float f = this.x * this.x + this.y * this.y + this.z * this.z;
       if ((double)f < 1.0E-5D) {
          return false;
       } else {
-         float f1 = MathHelper.func_226165_i_(f);
-         this.field_229184_g_ *= f1;
-         this.field_229185_h_ *= f1;
-         this.field_229186_i_ *= f1;
+         float f1 = MathHelper.fastInvSqrt(f);
+         this.x *= f1;
+         this.y *= f1;
+         this.z *= f1;
          return true;
       }
    }
 
    @OnlyIn(Dist.CLIENT)
    public void cross(Vector3f vec) {
-      float f = this.field_229184_g_;
-      float f1 = this.field_229185_h_;
-      float f2 = this.field_229186_i_;
+      float f = this.x;
+      float f1 = this.y;
+      float f2 = this.z;
       float f3 = vec.getX();
       float f4 = vec.getY();
       float f5 = vec.getZ();
-      this.field_229184_g_ = f1 * f5 - f2 * f4;
-      this.field_229185_h_ = f2 * f3 - f * f5;
-      this.field_229186_i_ = f * f4 - f1 * f3;
+      this.x = f1 * f5 - f2 * f4;
+      this.y = f2 * f3 - f * f5;
+      this.z = f * f4 - f1 * f3;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_229188_a_(Matrix3f p_229188_1_) {
-      float f = this.field_229184_g_;
-      float f1 = this.field_229185_h_;
-      float f2 = this.field_229186_i_;
-      this.field_229184_g_ = p_229188_1_.field_226097_a_ * f + p_229188_1_.field_226098_b_ * f1 + p_229188_1_.field_226099_c_ * f2;
-      this.field_229185_h_ = p_229188_1_.field_226100_d_ * f + p_229188_1_.field_226101_e_ * f1 + p_229188_1_.field_226102_f_ * f2;
-      this.field_229186_i_ = p_229188_1_.field_226103_g_ * f + p_229188_1_.field_226104_h_ * f1 + p_229188_1_.field_226105_i_ * f2;
+   public void transform(Matrix3f matrixIn) {
+      float f = this.x;
+      float f1 = this.y;
+      float f2 = this.z;
+      this.x = matrixIn.m00 * f + matrixIn.m10 * f1 + matrixIn.m20 * f2;
+      this.y = matrixIn.m01 * f + matrixIn.m11 * f1 + matrixIn.m21 * f2;
+      this.z = matrixIn.m02 * f + matrixIn.m12 * f1 + matrixIn.m22 * f2;
    }
 
-   public void func_214905_a(Quaternion p_214905_1_) {
-      Quaternion quaternion = new Quaternion(p_214905_1_);
+   public void transform(Quaternion quaternionIn) {
+      Quaternion quaternion = new Quaternion(quaternionIn);
       quaternion.multiply(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0F));
-      Quaternion quaternion1 = new Quaternion(p_214905_1_);
+      Quaternion quaternion1 = new Quaternion(quaternionIn);
       quaternion1.conjugate();
       quaternion.multiply(quaternion1);
       this.set(quaternion.getX(), quaternion.getY(), quaternion.getZ());
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_229190_a_(Vector3f p_229190_1_, float p_229190_2_) {
-      float f = 1.0F - p_229190_2_;
-      this.field_229184_g_ = this.field_229184_g_ * f + p_229190_1_.field_229184_g_ * p_229190_2_;
-      this.field_229185_h_ = this.field_229185_h_ * f + p_229190_1_.field_229185_h_ * p_229190_2_;
-      this.field_229186_i_ = this.field_229186_i_ * f + p_229190_1_.field_229186_i_ * p_229190_2_;
+   public void lerp(Vector3f vectorIn, float pctIn) {
+      float f = 1.0F - pctIn;
+      this.x = this.x * f + vectorIn.x * pctIn;
+      this.y = this.y * f + vectorIn.y * pctIn;
+      this.z = this.z * f + vectorIn.z * pctIn;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public Quaternion func_229193_c_(float p_229193_1_) {
-      return new Quaternion(this, p_229193_1_, false);
+   public Quaternion rotation(float valueIn) {
+      return new Quaternion(this, valueIn, false);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public Quaternion func_229187_a_(float p_229187_1_) {
-      return new Quaternion(this, p_229187_1_, true);
+   public Quaternion rotationDegrees(float valueIn) {
+      return new Quaternion(this, valueIn, true);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public Vector3f func_229195_e_() {
-      return new Vector3f(this.field_229184_g_, this.field_229185_h_, this.field_229186_i_);
+   public Vector3f copy() {
+      return new Vector3f(this.x, this.y, this.z);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_229191_a_(Float2FloatFunction p_229191_1_) {
-      this.field_229184_g_ = p_229191_1_.get(this.field_229184_g_);
-      this.field_229185_h_ = p_229191_1_.get(this.field_229185_h_);
-      this.field_229186_i_ = p_229191_1_.get(this.field_229186_i_);
+   public void apply(Float2FloatFunction functionIn) {
+      this.x = functionIn.get(this.x);
+      this.y = functionIn.get(this.y);
+      this.z = functionIn.get(this.z);
    }
 
    public String toString() {
-      return "[" + this.field_229184_g_ + ", " + this.field_229185_h_ + ", " + this.field_229186_i_ + "]";
+      return "[" + this.x + ", " + this.y + ", " + this.z + "]";
    }
 }

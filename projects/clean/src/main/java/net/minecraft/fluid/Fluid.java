@@ -63,9 +63,9 @@ public abstract class Fluid {
       return null;
    }
 
-   protected abstract boolean func_215665_a(IFluidState p_215665_1_, IBlockReader p_215665_2_, BlockPos p_215665_3_, Fluid p_215665_4_, Direction p_215665_5_);
+   protected abstract boolean canDisplace(IFluidState p_215665_1_, IBlockReader p_215665_2_, BlockPos p_215665_3_, Fluid p_215665_4_, Direction p_215665_5_);
 
-   protected abstract Vec3d func_215663_a(IBlockReader p_215663_1_, BlockPos p_215663_2_, IFluidState p_215663_3_);
+   protected abstract Vec3d getFlow(IBlockReader p_215663_1_, BlockPos p_215663_2_, IFluidState p_215663_3_);
 
    public abstract int getTickRate(IWorldReader p_205569_1_);
 
@@ -79,9 +79,9 @@ public abstract class Fluid {
 
    protected abstract float getExplosionResistance();
 
-   public abstract float func_215662_a(IFluidState p_215662_1_, IBlockReader p_215662_2_, BlockPos p_215662_3_);
+   public abstract float getActualHeight(IFluidState p_215662_1_, IBlockReader p_215662_2_, BlockPos p_215662_3_);
 
-   public abstract float func_223407_a(IFluidState p_223407_1_);
+   public abstract float getHeight(IFluidState p_223407_1_);
 
    protected abstract BlockState getBlockState(IFluidState state);
 

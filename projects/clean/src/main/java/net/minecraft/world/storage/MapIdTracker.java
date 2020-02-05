@@ -32,7 +32,7 @@ public class MapIdTracker extends WorldSavedData {
       return compound;
    }
 
-   public int func_215162_a() {
+   public int getNextId() {
       int i = this.field_215163_a.getInt("map") + 1;
       this.field_215163_a.put("map", i);
       this.markDirty();

@@ -31,16 +31,16 @@ public class LeavesBlock extends Block {
       return state.get(DISTANCE) == 7 && !state.get(PERSISTENT);
    }
 
-   public void func_225542_b_(BlockState p_225542_1_, ServerWorld p_225542_2_, BlockPos p_225542_3_, Random p_225542_4_) {
-      if (!p_225542_1_.get(PERSISTENT) && p_225542_1_.get(DISTANCE) == 7) {
-         spawnDrops(p_225542_1_, p_225542_2_, p_225542_3_);
-         p_225542_2_.removeBlock(p_225542_3_, false);
+   public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
+      if (!state.get(PERSISTENT) && state.get(DISTANCE) == 7) {
+         spawnDrops(state, worldIn, pos);
+         worldIn.removeBlock(pos, false);
       }
 
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      p_225534_2_.setBlockState(p_225534_3_, updateDistance(p_225534_1_, p_225534_2_, p_225534_3_), 3);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      worldIn.setBlockState(pos, updateDistance(state, worldIn, pos), 3);
    }
 
    public int getOpacity(BlockState state, IBlockReader worldIn, BlockPos pos) {
@@ -56,20 +56,20 @@ public class LeavesBlock extends Block {
       return stateIn;
    }
 
-   private static BlockState updateDistance(BlockState p_208493_0_, IWorld p_208493_1_, BlockPos p_208493_2_) {
+   private static BlockState updateDistance(BlockState state, IWorld worldIn, BlockPos pos) {
       int i = 7;
 
       try (BlockPos.PooledMutable blockpos$pooledmutable = BlockPos.PooledMutable.retain()) {
          for(Direction direction : Direction.values()) {
-            blockpos$pooledmutable.setPos(p_208493_2_).move(direction);
-            i = Math.min(i, getDistance(p_208493_1_.getBlockState(blockpos$pooledmutable)) + 1);
+            blockpos$pooledmutable.setPos(pos).move(direction);
+            i = Math.min(i, getDistance(worldIn.getBlockState(blockpos$pooledmutable)) + 1);
             if (i == 1) {
                break;
             }
          }
       }
 
-      return p_208493_0_.with(DISTANCE, Integer.valueOf(i));
+      return state.with(DISTANCE, Integer.valueOf(i));
    }
 
    private static int getDistance(BlockState neighbor) {
@@ -86,7 +86,7 @@ public class LeavesBlock extends Block {
          if (rand.nextInt(15) == 1) {
             BlockPos blockpos = pos.down();
             BlockState blockstate = worldIn.getBlockState(blockpos);
-            if (!blockstate.isSolid() || !blockstate.func_224755_d(worldIn, blockpos, Direction.UP)) {
+            if (!blockstate.isSolid() || !blockstate.isSolidSide(worldIn, blockpos, Direction.UP)) {
                double d0 = (double)((float)pos.getX() + rand.nextFloat());
                double d1 = (double)pos.getY() - 0.05D;
                double d2 = (double)((float)pos.getZ() + rand.nextFloat());
@@ -96,7 +96,7 @@ public class LeavesBlock extends Block {
       }
    }
 
-   public boolean func_229869_c_(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
+   public boolean causesSuffocation(BlockState state, IBlockReader worldIn, BlockPos pos) {
       return false;
    }
 

@@ -46,7 +46,7 @@ public class StayNearPointTask extends Task<VillagerEntity> {
             int i = 0;
 
             for(int j = 1000; i < 1000 && (vec3d == null || this.isDistanceTooFar(worldIn, entityIn, GlobalPos.of(entityIn.dimension, new BlockPos(vec3d)))); ++i) {
-               vec3d = RandomPositionGenerator.findRandomTargetToward(entityIn, 15, 7, new Vec3d(gPos.getPos()));
+               vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(entityIn, 15, 7, new Vec3d(gPos.getPos()));
             }
 
             if (i == 1000) {

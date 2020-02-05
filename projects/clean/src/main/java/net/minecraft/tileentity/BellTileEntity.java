@@ -19,12 +19,12 @@ import net.minecraft.world.World;
 
 public class BellTileEntity extends TileEntity implements ITickableTileEntity {
    private long ringTime;
-   public int field_213943_a;
-   public boolean field_213944_b;
-   public Direction field_213945_c;
+   public int ringingTicks;
+   public boolean isRinging;
+   public Direction ringDirection;
    private List<LivingEntity> entitiesAtRing;
-   private boolean field_213948_i;
-   private int field_213949_j;
+   private boolean shouldReveal;
+   private int revealWarmup;
 
    public BellTileEntity() {
       super(TileEntityType.BELL);
@@ -33,10 +33,10 @@ public class BellTileEntity extends TileEntity implements ITickableTileEntity {
    public boolean receiveClientEvent(int id, int type) {
       if (id == 1) {
          this.setVillagersHearBell();
-         this.field_213949_j = 0;
-         this.field_213945_c = Direction.byIndex(type);
-         this.field_213943_a = 0;
-         this.field_213944_b = true;
+         this.revealWarmup = 0;
+         this.ringDirection = Direction.byIndex(type);
+         this.ringingTicks = 0;
+         this.isRinging = true;
          return true;
       } else {
          return super.receiveClientEvent(id, type);
@@ -44,43 +44,43 @@ public class BellTileEntity extends TileEntity implements ITickableTileEntity {
    }
 
    public void tick() {
-      if (this.field_213944_b) {
-         ++this.field_213943_a;
+      if (this.isRinging) {
+         ++this.ringingTicks;
       }
 
-      if (this.field_213943_a >= 50) {
-         this.field_213944_b = false;
-         this.field_213943_a = 0;
+      if (this.ringingTicks >= 50) {
+         this.isRinging = false;
+         this.ringingTicks = 0;
       }
 
-      if (this.field_213943_a >= 5 && this.field_213949_j == 0 && this.hasRaidersNearby()) {
-         this.field_213948_i = true;
-         this.func_222833_c();
+      if (this.ringingTicks >= 5 && this.revealWarmup == 0 && this.hasRaidersNearby()) {
+         this.shouldReveal = true;
+         this.resonate();
       }
 
-      if (this.field_213948_i) {
-         if (this.field_213949_j < 40) {
-            ++this.field_213949_j;
+      if (this.shouldReveal) {
+         if (this.revealWarmup < 40) {
+            ++this.revealWarmup;
          } else {
-            this.func_222828_b(this.world);
-            this.func_222826_c(this.world);
-            this.field_213948_i = false;
+            this.glowRaiders(this.world);
+            this.addRaiderParticles(this.world);
+            this.shouldReveal = false;
          }
       }
 
    }
 
-   private void func_222833_c() {
+   private void resonate() {
       this.world.playSound((PlayerEntity)null, this.getPos(), SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
    }
 
-   public void func_213939_a(Direction p_213939_1_) {
+   public void ring(Direction p_213939_1_) {
       BlockPos blockpos = this.getPos();
-      this.field_213945_c = p_213939_1_;
-      if (this.field_213944_b) {
-         this.field_213943_a = 0;
+      this.ringDirection = p_213939_1_;
+      if (this.isRinging) {
+         this.ringingTicks = 0;
       } else {
-         this.field_213944_b = true;
+         this.isRinging = true;
       }
 
       this.world.addBlockEvent(blockpos, this.getBlockState().getBlock(), 1, p_213939_1_.getIndex());
@@ -116,13 +116,13 @@ public class BellTileEntity extends TileEntity implements ITickableTileEntity {
       return false;
    }
 
-   private void func_222828_b(World p_222828_1_) {
+   private void glowRaiders(World p_222828_1_) {
       if (!p_222828_1_.isRemote) {
          this.entitiesAtRing.stream().filter(this::isNearbyRaider).forEach(this::glow);
       }
    }
 
-   private void func_222826_c(World p_222826_1_) {
+   private void addRaiderParticles(World p_222826_1_) {
       if (p_222826_1_.isRemote) {
          BlockPos blockpos = this.getPos();
          AtomicInteger atomicinteger = new AtomicInteger(16700985);

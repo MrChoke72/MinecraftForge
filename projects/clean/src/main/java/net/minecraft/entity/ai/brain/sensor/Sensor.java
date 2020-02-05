@@ -20,17 +20,15 @@ public abstract class Sensor<E extends LivingEntity> {
       this(20);
    }
 
-   //AH REFACTOR
-   public final void tick(ServerWorld world, E entity) {
-   //public final void tick(ServerWorld p_220973_1_, E p_220973_2_) {
+   public final void tick(ServerWorld worldIn, E entityIn) {
       if (--this.counter <= 0L) {
          this.counter = (long)this.interval;
-         this.update(world, entity);
+         this.update(worldIn, entityIn);
       }
 
    }
 
-   protected abstract void update(ServerWorld world, E entity);
+   protected abstract void update(ServerWorld worldIn, E entityIn);
 
    public abstract Set<MemoryModuleType<?>> getUsedMemories();
 }

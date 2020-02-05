@@ -24,7 +24,7 @@ public class PhantomSpawner {
    public int tick(ServerWorld worldIn, boolean spawnHostileMobs, boolean spawnPeacefulMobs) {
       if (!spawnHostileMobs) {
          return 0;
-      } else if (!worldIn.getGameRules().getBoolean(GameRules.field_226682_y_)) {
+      } else if (!worldIn.getGameRules().getBoolean(GameRules.DO_INSOMNIA)) {
          return 0;
       } else {
          Random random = worldIn.rand;
@@ -41,7 +41,7 @@ public class PhantomSpawner {
                for(PlayerEntity playerentity : worldIn.getPlayers()) {
                   if (!playerentity.isSpectator()) {
                      BlockPos blockpos = new BlockPos(playerentity);
-                     if (!worldIn.dimension.hasSkyLight() || blockpos.getY() >= worldIn.getSeaLevel() && worldIn.isMaxLightLevel(blockpos)) {
+                     if (!worldIn.dimension.hasSkyLight() || blockpos.getY() >= worldIn.getSeaLevel() && worldIn.canSeeSky(blockpos)) {
                         DifficultyInstance difficultyinstance = worldIn.getDifficultyForLocation(blockpos);
                         if (difficultyinstance.isHarderThan(random.nextFloat() * 3.0F)) {
                            ServerStatisticsManager serverstatisticsmanager = ((ServerPlayerEntity)playerentity).getStats();

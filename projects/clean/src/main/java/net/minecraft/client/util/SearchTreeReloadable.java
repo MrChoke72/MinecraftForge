@@ -18,8 +18,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SearchTreeReloadable<T> implements IMutableSearchTree<T> {
-   protected SuffixArray<T> field_217875_a = new SuffixArray<>();
-   protected SuffixArray<T> field_217876_b = new SuffixArray<>();
+   protected SuffixArray<T> namespaceList = new SuffixArray<>();
+   protected SuffixArray<T> pathList = new SuffixArray<>();
    private final Function<T, Stream<ResourceLocation>> field_217877_c;
    private final List<T> field_217878_d = Lists.newArrayList();
    private final Object2IntMap<T> field_217879_e = new Object2IntOpenHashMap<>();
@@ -29,48 +29,48 @@ public class SearchTreeReloadable<T> implements IMutableSearchTree<T> {
    }
 
    public void recalculate() {
-      this.field_217875_a = new SuffixArray<>();
-      this.field_217876_b = new SuffixArray<>();
+      this.namespaceList = new SuffixArray<>();
+      this.pathList = new SuffixArray<>();
 
       for(T t : this.field_217878_d) {
          this.index(t);
       }
 
-      this.field_217875_a.generate();
-      this.field_217876_b.generate();
+      this.namespaceList.generate();
+      this.pathList.generate();
    }
 
-   public void func_217872_a(T p_217872_1_) {
-      this.field_217879_e.put(p_217872_1_, this.field_217878_d.size());
-      this.field_217878_d.add(p_217872_1_);
-      this.index(p_217872_1_);
+   public void func_217872_a(T element) {
+      this.field_217879_e.put(element, this.field_217878_d.size());
+      this.field_217878_d.add(element);
+      this.index(element);
    }
 
-   public void func_217871_a() {
+   public void clear() {
       this.field_217878_d.clear();
       this.field_217879_e.clear();
    }
 
    protected void index(T element) {
       this.field_217877_c.apply(element).forEach((p_217873_2_) -> {
-         this.field_217875_a.add(element, p_217873_2_.getNamespace().toLowerCase(Locale.ROOT));
-         this.field_217876_b.add(element, p_217873_2_.getPath().toLowerCase(Locale.ROOT));
+         this.namespaceList.add(element, p_217873_2_.getNamespace().toLowerCase(Locale.ROOT));
+         this.pathList.add(element, p_217873_2_.getPath().toLowerCase(Locale.ROOT));
       });
    }
 
-   protected int func_217874_a(T p_217874_1_, T p_217874_2_) {
+   protected int compare(T p_217874_1_, T p_217874_2_) {
       return Integer.compare(this.field_217879_e.getInt(p_217874_1_), this.field_217879_e.getInt(p_217874_2_));
    }
 
    public List<T> search(String searchText) {
       int i = searchText.indexOf(58);
       if (i == -1) {
-         return this.field_217876_b.search(searchText);
+         return this.pathList.search(searchText);
       } else {
-         List<T> list = this.field_217875_a.search(searchText.substring(0, i).trim());
+         List<T> list = this.namespaceList.search(searchText.substring(0, i).trim());
          String s = searchText.substring(i + 1).trim();
-         List<T> list1 = this.field_217876_b.search(s);
-         return Lists.newArrayList(new SearchTreeReloadable.JoinedIterator<>(list.iterator(), list1.iterator(), this::func_217874_a));
+         List<T> list1 = this.pathList.search(s);
+         return Lists.newArrayList(new SearchTreeReloadable.JoinedIterator<>(list.iterator(), list1.iterator(), this::compare));
       }
    }
 

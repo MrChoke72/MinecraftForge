@@ -64,14 +64,11 @@ public class PathFinder {
 
       Set<FlaggedPathPoint> flagPointSet = tgtPointMap.keySet();
 
-      //AH CHANGE DEBUG OFF
-      /*
+      //AH CHANGE DEBUG
       if(this.nodeProcessor.entity.getCustomName() != null && this.nodeProcessor.entity.getCustomName().getString().equals("Chuck"))
       {
          System.out.println("findPath before loop.  finalTgtPoint=" + tgtPointMap.toString());
       }
-       */
-
 
       startPoint.distFromStartPlusMalus = 0.0F;
       startPoint.closestDistToAnyTgt = this.getClosestDistInSet(startPoint, flagPointSet);

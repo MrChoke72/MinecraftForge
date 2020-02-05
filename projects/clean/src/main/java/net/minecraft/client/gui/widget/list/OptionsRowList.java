@@ -18,17 +18,17 @@ public class OptionsRowList extends AbstractOptionList<OptionsRowList.Row> {
       this.centerListVertically = false;
    }
 
-   public int func_214333_a(AbstractOption p_214333_1_) {
+   public int addOption(AbstractOption p_214333_1_) {
       return this.addEntry(OptionsRowList.Row.create(this.minecraft.gameSettings, this.width, p_214333_1_));
    }
 
-   public void func_214334_a(AbstractOption p_214334_1_, @Nullable AbstractOption p_214334_2_) {
+   public void addOption(AbstractOption p_214334_1_, @Nullable AbstractOption p_214334_2_) {
       this.addEntry(OptionsRowList.Row.create(this.minecraft.gameSettings, this.width, p_214334_1_, p_214334_2_));
    }
 
-   public void func_214335_a(AbstractOption[] p_214335_1_) {
+   public void addOptions(AbstractOption[] p_214335_1_) {
       for(int i = 0; i < p_214335_1_.length; i += 2) {
-         this.func_214334_a(p_214335_1_[i], i < p_214335_1_.length - 1 ? p_214335_1_[i + 1] : null);
+         this.addOption(p_214335_1_[i], i < p_214335_1_.length - 1 ? p_214335_1_[i + 1] : null);
       }
 
    }

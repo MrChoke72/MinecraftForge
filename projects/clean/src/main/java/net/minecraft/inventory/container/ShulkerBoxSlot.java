@@ -6,8 +6,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 public class ShulkerBoxSlot extends Slot {
-   public ShulkerBoxSlot(IInventory p_i47265_1_, int slotIndexIn, int xPosition, int yPosition) {
-      super(p_i47265_1_, slotIndexIn, xPosition, yPosition);
+   public ShulkerBoxSlot(IInventory inventoryIn, int slotIndexIn, int xPosition, int yPosition) {
+      super(inventoryIn, slotIndexIn, xPosition, yPosition);
    }
 
    public boolean isItemValid(ItemStack stack) {

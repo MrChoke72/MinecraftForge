@@ -37,7 +37,7 @@ public class FlintAndSteelItem extends Item {
          return ActionResultType.SUCCESS;
       } else {
          BlockPos blockpos1 = blockpos.offset(context.getFace());
-         if (func_219996_a(iworld.getBlockState(blockpos1), iworld, blockpos1)) {
+         if (canSetFire(iworld.getBlockState(blockpos1), iworld, blockpos1)) {
             iworld.playSound(playerentity, blockpos1, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, random.nextFloat() * 0.4F + 0.8F);
             BlockState blockstate1 = ((FireBlock)Blocks.FIRE).getStateForPlacement(iworld, blockpos1);
             iworld.setBlockState(blockpos1, blockstate1, 11);
@@ -60,16 +60,16 @@ public class FlintAndSteelItem extends Item {
       return state.getBlock() == Blocks.CAMPFIRE && !state.get(BlockStateProperties.WATERLOGGED) && !state.get(BlockStateProperties.LIT);
    }
 
-   public static boolean func_219996_a(BlockState p_219996_0_, IWorld p_219996_1_, BlockPos p_219996_2_) {
-      BlockState blockstate = ((FireBlock)Blocks.FIRE).getStateForPlacement(p_219996_1_, p_219996_2_);
+   public static boolean canSetFire(BlockState existingState, IWorld worldIn, BlockPos posIn) {
+      BlockState blockstate = ((FireBlock)Blocks.FIRE).getStateForPlacement(worldIn, posIn);
       boolean flag = false;
 
       for(Direction direction : Direction.Plane.HORIZONTAL) {
-         if (p_219996_1_.getBlockState(p_219996_2_.offset(direction)).getBlock() == Blocks.OBSIDIAN && ((NetherPortalBlock)Blocks.NETHER_PORTAL).isPortal(p_219996_1_, p_219996_2_) != null) {
+         if (worldIn.getBlockState(posIn.offset(direction)).getBlock() == Blocks.OBSIDIAN && ((NetherPortalBlock)Blocks.NETHER_PORTAL).isPortal(worldIn, posIn) != null) {
             flag = true;
          }
       }
 
-      return p_219996_0_.isAir() && (blockstate.isValidPosition(p_219996_1_, p_219996_2_) || flag);
+      return existingState.isAir() && (blockstate.isValidPosition(worldIn, posIn) || flag);
    }
 }

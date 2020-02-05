@@ -21,7 +21,7 @@ public class WaterAvoidingRandomFlyingGoal extends WaterAvoidingRandomWalkingGoa
    protected Vec3d getPosition() {
       Vec3d vec3d = null;
       if (this.creature.isInWater()) {
-         vec3d = RandomPositionGenerator.findLandPos(this.creature, 15, 15);
+         vec3d = RandomPositionGenerator.getLandPos(this.creature, 15, 15);
       }
 
       if (this.creature.getRNG().nextFloat() >= this.probability) {

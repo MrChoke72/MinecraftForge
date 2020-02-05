@@ -57,8 +57,8 @@ public class GuardianEntity extends MonsterEntity {
    private boolean clientSideTouchedGround;
    protected RandomWalkingGoal wander;
 
-   public GuardianEntity(EntityType<? extends GuardianEntity> p_i48554_1_, World p_i48554_2_) {
-      super(p_i48554_1_, p_i48554_2_);
+   public GuardianEntity(EntityType<? extends GuardianEntity> type, World worldIn) {
+      super(type, worldIn);
       this.experienceValue = 10;
       this.setPathPriority(PathNodeType.WATER, 0.0F);
       this.moveController = new GuardianEntity.MoveHelperController(this);
@@ -172,7 +172,7 @@ public class GuardianEntity extends MonsterEntity {
       return this.isInWaterOrBubbleColumn() ? SoundEvents.ENTITY_GUARDIAN_DEATH : SoundEvents.ENTITY_GUARDIAN_DEATH_LAND;
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -195,7 +195,7 @@ public class GuardianEntity extends MonsterEntity {
                   this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
                }
 
-               this.clientSideTouchedGround = vec3d.y < 0.0D && this.world.func_217400_a((new BlockPos(this)).down(), this);
+               this.clientSideTouchedGround = vec3d.y < 0.0D && this.world.isTopSolid((new BlockPos(this)).down(), this);
             } else if (this.isMoving()) {
                if (this.clientSideTailAnimationSpeed < 0.5F) {
                   this.clientSideTailAnimationSpeed = 4.0F;
@@ -220,7 +220,7 @@ public class GuardianEntity extends MonsterEntity {
                Vec3d vec3d1 = this.getLook(0.0F);
 
                for(int i = 0; i < 2; ++i) {
-                  this.world.addParticle(ParticleTypes.BUBBLE, this.func_226282_d_(0.5D) - vec3d1.x * 1.5D, this.func_226279_cv_() - vec3d1.y * 1.5D, this.func_226287_g_(0.5D) - vec3d1.z * 1.5D, 0.0D, 0.0D, 0.0D);
+                  this.world.addParticle(ParticleTypes.BUBBLE, this.getPosXRandom(0.5D) - vec3d1.x * 1.5D, this.getPosYRandom() - vec3d1.y * 1.5D, this.getPosZRandom(0.5D) - vec3d1.z * 1.5D, 0.0D, 0.0D, 0.0D);
                }
             }
 
@@ -235,7 +235,7 @@ public class GuardianEntity extends MonsterEntity {
                   this.getLookController().tick();
                   double d5 = (double)this.getAttackAnimationScale(0.0F);
                   double d0 = livingentity.getPosX() - this.getPosX();
-                  double d1 = livingentity.func_226283_e_(0.5D) - this.getPosYPlusEyeHeight();
+                  double d1 = livingentity.getPosYHeight(0.5D) - this.getPosYEye();
                   double d2 = livingentity.getPosZ() - this.getPosZ();
                   double d3 = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
                   d0 = d0 / d3;
@@ -245,7 +245,7 @@ public class GuardianEntity extends MonsterEntity {
 
                   while(d4 < d3) {
                      d4 += 1.8D - d5 + this.rand.nextDouble() * (1.7D - d5);
-                     this.world.addParticle(ParticleTypes.BUBBLE, this.getPosX() + d0 * d4, this.getPosYPlusEyeHeight() + d1 * d4, this.getPosZ() + d2 * d4, 0.0D, 0.0D, 0.0D);
+                     this.world.addParticle(ParticleTypes.BUBBLE, this.getPosX() + d0 * d4, this.getPosYEye() + d1 * d4, this.getPosZ() + d2 * d4, 0.0D, 0.0D, 0.0D);
                   }
                }
             }
@@ -290,8 +290,8 @@ public class GuardianEntity extends MonsterEntity {
       return worldIn.func_226668_i_(this);
    }
 
-   public static boolean func_223329_b(EntityType<? extends GuardianEntity> p_223329_0_, IWorld p_223329_1_, SpawnReason p_223329_2_, BlockPos p_223329_3_, Random p_223329_4_) {
-      return (p_223329_4_.nextInt(20) == 0 || !p_223329_1_.canBlockSeeSky(p_223329_3_)) && p_223329_1_.getDifficulty() != Difficulty.PEACEFUL && (p_223329_2_ == SpawnReason.SPAWNER || p_223329_1_.getFluidState(p_223329_3_).isTagged(FluidTags.WATER));
+   public static boolean func_223329_b(EntityType<? extends GuardianEntity> p_223329_0_, IWorld p_223329_1_, SpawnReason reason, BlockPos p_223329_3_, Random p_223329_4_) {
+      return (p_223329_4_.nextInt(20) == 0 || !p_223329_1_.canBlockSeeSky(p_223329_3_)) && p_223329_1_.getDifficulty() != Difficulty.PEACEFUL && (reason == SpawnReason.SPAWNER || p_223329_1_.getFluidState(p_223329_3_).isTagged(FluidTags.WATER));
    }
 
    public boolean attackEntityFrom(DamageSource source, float amount) {
@@ -419,7 +419,7 @@ public class GuardianEntity extends MonsterEntity {
             this.entityGuardian.setMotion(this.entityGuardian.getMotion().add(d4 * d5, d7 * (d6 + d5) * 0.25D + (double)f2 * d2 * 0.1D, d4 * d6));
             LookController lookcontroller = this.entityGuardian.getLookController();
             double d8 = this.entityGuardian.getPosX() + d1 * 2.0D;
-            double d9 = this.entityGuardian.getPosYPlusEyeHeight() + d2 / d0;
+            double d9 = this.entityGuardian.getPosYEye() + d2 / d0;
             double d10 = this.entityGuardian.getPosZ() + d3 * 2.0D;
             double d11 = lookcontroller.getLookPosX();
             double d12 = lookcontroller.getLookPosY();

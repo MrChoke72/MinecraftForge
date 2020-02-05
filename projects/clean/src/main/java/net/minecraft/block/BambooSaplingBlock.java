@@ -34,9 +34,9 @@ public class BambooSaplingBlock extends Block implements IGrowable {
       return field_220088_a.withOffset(vec3d.x, vec3d.y, vec3d.z);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_4_.nextInt(3) == 0 && p_225534_2_.isAirBlock(p_225534_3_.up()) && p_225534_2_.func_226659_b_(p_225534_3_.up(), 0) >= 9) {
-         this.func_220087_a(p_225534_2_, p_225534_3_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (rand.nextInt(3) == 0 && worldIn.isAirBlock(pos.up()) && worldIn.getLightSubtracted(pos.up(), 0) >= 9) {
+         this.func_220087_a(worldIn, pos);
       }
 
    }
@@ -69,7 +69,7 @@ public class BambooSaplingBlock extends Block implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       this.func_220087_a(p_225535_1_, p_225535_3_);
    }
 

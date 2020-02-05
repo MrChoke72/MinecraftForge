@@ -129,10 +129,10 @@ public class BlockItem extends Item {
    protected boolean canPlace(BlockItemUseContext p_195944_1_, BlockState p_195944_2_) {
       PlayerEntity playerentity = p_195944_1_.getPlayer();
       ISelectionContext iselectioncontext = playerentity == null ? ISelectionContext.dummy() : ISelectionContext.forEntity(playerentity);
-      return (!this.func_219987_d() || p_195944_2_.isValidPosition(p_195944_1_.getWorld(), p_195944_1_.getPos())) && p_195944_1_.getWorld().func_226663_a_(p_195944_2_, p_195944_1_.getPos(), iselectioncontext);
+      return (!this.checkPosition() || p_195944_2_.isValidPosition(p_195944_1_.getWorld(), p_195944_1_.getPos())) && p_195944_1_.getWorld().func_226663_a_(p_195944_2_, p_195944_1_.getPos(), iselectioncontext);
    }
 
-   protected boolean func_219987_d() {
+   protected boolean checkPosition() {
       return true;
    }
 

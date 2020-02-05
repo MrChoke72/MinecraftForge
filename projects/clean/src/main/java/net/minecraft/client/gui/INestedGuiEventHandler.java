@@ -13,9 +13,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public interface INestedGuiEventHandler extends IGuiEventListener {
    List<? extends IGuiEventListener> children();
 
-   default Optional<IGuiEventListener> func_212930_a(double p_212930_1_, double p_212930_3_) {
+   default Optional<IGuiEventListener> getEventListenerForPos(double mouseX, double mouseY) {
       for(IGuiEventListener iguieventlistener : this.children()) {
-         if (iguieventlistener.isMouseOver(p_212930_1_, p_212930_3_)) {
+         if (iguieventlistener.isMouseOver(mouseX, mouseY)) {
             return Optional.of(iguieventlistener);
          }
       }
@@ -40,7 +40,7 @@ public interface INestedGuiEventHandler extends IGuiEventListener {
 
    default boolean mouseReleased(double p_mouseReleased_1_, double p_mouseReleased_3_, int p_mouseReleased_5_) {
       this.setDragging(false);
-      return this.func_212930_a(p_mouseReleased_1_, p_mouseReleased_3_).filter((p_212931_5_) -> {
+      return this.getEventListenerForPos(p_mouseReleased_1_, p_mouseReleased_3_).filter((p_212931_5_) -> {
          return p_212931_5_.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_);
       }).isPresent();
    }
@@ -54,7 +54,7 @@ public interface INestedGuiEventHandler extends IGuiEventListener {
    void setDragging(boolean p_setDragging_1_);
 
    default boolean mouseScrolled(double p_mouseScrolled_1_, double p_mouseScrolled_3_, double p_mouseScrolled_5_) {
-      return this.func_212930_a(p_mouseScrolled_1_, p_mouseScrolled_3_).filter((p_212929_6_) -> {
+      return this.getEventListenerForPos(p_mouseScrolled_1_, p_mouseScrolled_3_).filter((p_212929_6_) -> {
          return p_212929_6_.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
       }).isPresent();
    }
@@ -63,8 +63,8 @@ public interface INestedGuiEventHandler extends IGuiEventListener {
       return this.getFocused() != null && this.getFocused().keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
    }
 
-   default boolean keyReleased(int p_223281_1_, int p_223281_2_, int p_223281_3_) {
-      return this.getFocused() != null && this.getFocused().keyReleased(p_223281_1_, p_223281_2_, p_223281_3_);
+   default boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+      return this.getFocused() != null && this.getFocused().keyReleased(keyCode, scanCode, modifiers);
    }
 
    default boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
@@ -76,12 +76,12 @@ public interface INestedGuiEventHandler extends IGuiEventListener {
 
    void setFocused(@Nullable IGuiEventListener p_setFocused_1_);
 
-   default void func_212928_a(@Nullable IGuiEventListener p_212928_1_) {
-      this.setFocused(p_212928_1_);
+   default void setFocusedDefault(@Nullable IGuiEventListener eventListener) {
+      this.setFocused(eventListener);
    }
 
-   default void func_212932_b(@Nullable IGuiEventListener p_212932_1_) {
-      this.setFocused(p_212932_1_);
+   default void func_212932_b(@Nullable IGuiEventListener eventListener) {
+      this.setFocused(eventListener);
    }
 
    default boolean changeFocus(boolean p_changeFocus_1_) {

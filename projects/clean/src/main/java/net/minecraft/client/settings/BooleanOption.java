@@ -14,37 +14,37 @@ public class BooleanOption extends AbstractOption {
    private final Predicate<GameSettings> getter;
    private final BiConsumer<GameSettings, Boolean> setter;
 
-   public BooleanOption(String p_i51167_1_, Predicate<GameSettings> getter, BiConsumer<GameSettings, Boolean> setter) {
-      super(p_i51167_1_);
+   public BooleanOption(String translationKeyIn, Predicate<GameSettings> getter, BiConsumer<GameSettings, Boolean> setter) {
+      super(translationKeyIn);
       this.getter = getter;
       this.setter = setter;
    }
 
-   public void set(GameSettings options, String p_216742_2_) {
-      this.set(options, "true".equals(p_216742_2_));
+   public void set(GameSettings options, String valueIn) {
+      this.set(options, "true".equals(valueIn));
    }
 
-   public void func_216740_a(GameSettings options) {
+   public void nextValue(GameSettings options) {
       this.set(options, !this.get(options));
       options.saveOptions();
    }
 
-   private void set(GameSettings options, boolean p_216744_2_) {
-      this.setter.accept(options, p_216744_2_);
+   private void set(GameSettings options, boolean valueIn) {
+      this.setter.accept(options, valueIn);
    }
 
    public boolean get(GameSettings options) {
       return this.getter.test(options);
    }
 
-   public Widget createWidget(GameSettings options, int p_216586_2_, int p_216586_3_, int p_216586_4_) {
-      return new OptionButton(p_216586_2_, p_216586_3_, p_216586_4_, 20, this, this.func_216743_c(options), (p_216745_2_) -> {
-         this.func_216740_a(options);
-         p_216745_2_.setMessage(this.func_216743_c(options));
+   public Widget createWidget(GameSettings options, int xIn, int yIn, int widthIn) {
+      return new OptionButton(xIn, yIn, widthIn, 20, this, this.getText(options), (p_216745_2_) -> {
+         this.nextValue(options);
+         p_216745_2_.setMessage(this.getText(options));
       });
    }
 
-   public String func_216743_c(GameSettings options) {
+   public String getText(GameSettings options) {
       return this.getDisplayString() + I18n.format(this.get(options) ? "options.on" : "options.off");
    }
 }

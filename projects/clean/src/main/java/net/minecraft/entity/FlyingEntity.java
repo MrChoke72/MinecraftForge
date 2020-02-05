@@ -7,11 +7,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class FlyingEntity extends MobEntity {
-   protected FlyingEntity(EntityType<? extends FlyingEntity> type, World p_i48578_2_) {
-      super(type, p_i48578_2_);
+   protected FlyingEntity(EntityType<? extends FlyingEntity> type, World worldIn) {
+      super(type, worldIn);
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 

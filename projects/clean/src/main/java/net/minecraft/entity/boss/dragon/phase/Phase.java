@@ -50,7 +50,7 @@ public abstract class Phase implements IPhase {
    }
 
    public float getYawFactor() {
-      float f = MathHelper.sqrt(Entity.func_213296_b(this.dragon.getMotion())) + 1.0F;
+      float f = MathHelper.sqrt(Entity.horizontalMag(this.dragon.getMotion())) + 1.0F;
       float f1 = Math.min(f, 40.0F);
       return 0.7F / f1 / f;
    }

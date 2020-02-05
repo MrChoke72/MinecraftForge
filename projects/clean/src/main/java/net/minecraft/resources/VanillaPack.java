@@ -35,7 +35,7 @@ public class VanillaPack implements IResourcePack {
    public static Path basePath;
    private static final Logger LOGGER = LogManager.getLogger();
    public static Class<?> baseClass;
-   private static final Map<ResourcePackType, FileSystem> field_217810_e = Util.make(Maps.newHashMap(), (p_217809_0_) -> {
+   private static final Map<ResourcePackType, FileSystem> FILE_SYSTEMS_BY_PACK_TYPE = Util.make(Maps.newHashMap(), (p_217809_0_) -> {
       synchronized(VanillaPack.class) {
          for(ResourcePackType resourcepacktype : ResourcePackType.values()) {
             URL url = VanillaPack.class.getResource("/" + resourcepacktype.getDirectoryName() + "/.mcassetsroot");
@@ -89,20 +89,20 @@ public class VanillaPack implements IResourcePack {
       }
    }
 
-   public Collection<ResourceLocation> func_225637_a_(ResourcePackType p_225637_1_, String p_225637_2_, String p_225637_3_, int p_225637_4_, Predicate<String> p_225637_5_) {
+   public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn) {
       Set<ResourceLocation> set = Sets.newHashSet();
       if (basePath != null) {
          try {
-            func_229867_a_(set, p_225637_4_, p_225637_2_, basePath.resolve(p_225637_1_.getDirectoryName()), p_225637_3_, p_225637_5_);
+            collectResources(set, maxDepthIn, namespaceIn, basePath.resolve(type.getDirectoryName()), pathIn, filterIn);
          } catch (IOException var15) {
             ;
          }
 
-         if (p_225637_1_ == ResourcePackType.CLIENT_RESOURCES) {
+         if (type == ResourcePackType.CLIENT_RESOURCES) {
             Enumeration<URL> enumeration = null;
 
             try {
-               enumeration = baseClass.getClassLoader().getResources(p_225637_1_.getDirectoryName() + "/");
+               enumeration = baseClass.getClassLoader().getResources(type.getDirectoryName() + "/");
             } catch (IOException var14) {
                ;
             }
@@ -111,7 +111,7 @@ public class VanillaPack implements IResourcePack {
                try {
                   URI uri = enumeration.nextElement().toURI();
                   if ("file".equals(uri.getScheme())) {
-                     func_229867_a_(set, p_225637_4_, p_225637_2_, Paths.get(uri), p_225637_3_, p_225637_5_);
+                     collectResources(set, maxDepthIn, namespaceIn, Paths.get(uri), pathIn, filterIn);
                   }
                } catch (IOException | URISyntaxException var13) {
                   ;
@@ -121,7 +121,7 @@ public class VanillaPack implements IResourcePack {
       }
 
       try {
-         URL url1 = VanillaPack.class.getResource("/" + p_225637_1_.getDirectoryName() + "/.mcassetsroot");
+         URL url1 = VanillaPack.class.getResource("/" + type.getDirectoryName() + "/.mcassetsroot");
          if (url1 == null) {
             LOGGER.error("Couldn't find .mcassetsroot, cannot load vanilla resources");
             return set;
@@ -131,10 +131,10 @@ public class VanillaPack implements IResourcePack {
          if ("file".equals(uri1.getScheme())) {
             URL url = new URL(url1.toString().substring(0, url1.toString().length() - ".mcassetsroot".length()));
             Path path = Paths.get(url.toURI());
-            func_229867_a_(set, p_225637_4_, p_225637_2_, path, p_225637_3_, p_225637_5_);
+            collectResources(set, maxDepthIn, namespaceIn, path, pathIn, filterIn);
          } else if ("jar".equals(uri1.getScheme())) {
-            Path path1 = field_217810_e.get(p_225637_1_).getPath("/" + p_225637_1_.getDirectoryName());
-            func_229867_a_(set, p_225637_4_, "minecraft", path1, p_225637_3_, p_225637_5_);
+            Path path1 = FILE_SYSTEMS_BY_PACK_TYPE.get(type).getPath("/" + type.getDirectoryName());
+            collectResources(set, maxDepthIn, "minecraft", path1, pathIn, filterIn);
          } else {
             LOGGER.error("Unsupported scheme {} trying to list vanilla resources (NYI?)", (Object)uri1);
          }
@@ -147,22 +147,22 @@ public class VanillaPack implements IResourcePack {
       return set;
    }
 
-   private static void func_229867_a_(Collection<ResourceLocation> p_229867_0_, int p_229867_1_, String p_229867_2_, Path p_229867_3_, String p_229867_4_, Predicate<String> p_229867_5_) throws IOException {
-      Path path = p_229867_3_.resolve(p_229867_2_);
+   private static void collectResources(Collection<ResourceLocation> resourceLocationsIn, int maxDepthIn, String namespaceIn, Path pathIn, String pathNameIn, Predicate<String> filterIn) throws IOException {
+      Path path = pathIn.resolve(namespaceIn);
 
-      try (Stream<Path> stream = Files.walk(path.resolve(p_229867_4_), p_229867_1_)) {
+      try (Stream<Path> stream = Files.walk(path.resolve(pathNameIn), maxDepthIn)) {
          stream.filter((p_229868_1_) -> {
-            return !p_229868_1_.endsWith(".mcmeta") && Files.isRegularFile(p_229868_1_) && p_229867_5_.test(p_229868_1_.getFileName().toString());
+            return !p_229868_1_.endsWith(".mcmeta") && Files.isRegularFile(p_229868_1_) && filterIn.test(p_229868_1_.getFileName().toString());
          }).map((p_229866_2_) -> {
-            return new ResourceLocation(p_229867_2_, path.relativize(p_229866_2_).toString().replaceAll("\\\\", "/"));
-         }).forEach(p_229867_0_::add);
+            return new ResourceLocation(namespaceIn, path.relativize(p_229866_2_).toString().replaceAll("\\\\", "/"));
+         }).forEach(resourceLocationsIn::add);
       }
 
    }
 
    @Nullable
    protected InputStream getInputStreamVanilla(ResourcePackType type, ResourceLocation location) {
-      String s = func_223458_d(type, location);
+      String s = getPath(type, location);
       if (basePath != null) {
          Path path = basePath.resolve(type.getDirectoryName() + "/" + location.getNamespace() + "/" + location.getPath());
          if (Files.exists(path)) {
@@ -176,18 +176,18 @@ public class VanillaPack implements IResourcePack {
 
       try {
          URL url = VanillaPack.class.getResource(s);
-         return func_223459_a(s, url) ? url.openStream() : null;
+         return isValid(s, url) ? url.openStream() : null;
       } catch (IOException var6) {
          return VanillaPack.class.getResourceAsStream(s);
       }
    }
 
-   private static String func_223458_d(ResourcePackType p_223458_0_, ResourceLocation p_223458_1_) {
-      return "/" + p_223458_0_.getDirectoryName() + "/" + p_223458_1_.getNamespace() + "/" + p_223458_1_.getPath();
+   private static String getPath(ResourcePackType packTypeIn, ResourceLocation locationIn) {
+      return "/" + packTypeIn.getDirectoryName() + "/" + locationIn.getNamespace() + "/" + locationIn.getPath();
    }
 
-   private static boolean func_223459_a(String p_223459_0_, @Nullable URL p_223459_1_) throws IOException {
-      return p_223459_1_ != null && (p_223459_1_.getProtocol().equals("jar") || FolderPack.validatePath(new File(p_223459_1_.getFile()), p_223459_0_));
+   private static boolean isValid(String pathIn, @Nullable URL urlIn) throws IOException {
+      return urlIn != null && (urlIn.getProtocol().equals("jar") || FolderPack.validatePath(new File(urlIn.getFile()), pathIn));
    }
 
    @Nullable
@@ -196,7 +196,7 @@ public class VanillaPack implements IResourcePack {
    }
 
    public boolean resourceExists(ResourcePackType type, ResourceLocation location) {
-      String s = func_223458_d(type, location);
+      String s = getPath(type, location);
       if (basePath != null) {
          Path path = basePath.resolve(type.getDirectoryName() + "/" + location.getNamespace() + "/" + location.getPath());
          if (Files.exists(path)) {
@@ -206,7 +206,7 @@ public class VanillaPack implements IResourcePack {
 
       try {
          URL url = VanillaPack.class.getResource(s);
-         return func_223459_a(s, url);
+         return isValid(s, url);
       } catch (IOException var5) {
          return false;
       }

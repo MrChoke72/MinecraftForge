@@ -40,10 +40,10 @@ public class ConfirmBackupScreen extends Screen {
       this.wrappedMessage.addAll(this.font.listFormattedStringToWidth(this.message.getFormattedText(), this.width - 50));
       int i = (this.wrappedMessage.size() + 1) * 9;
       this.addButton(new Button(this.width / 2 - 155, 100 + i, 150, 20, this.confirmText, (p_212993_1_) -> {
-         this.callback.proceed(true, this.field_212996_j.func_212942_a());
+         this.callback.proceed(true, this.field_212996_j.isChecked());
       }));
       this.addButton(new Button(this.width / 2 - 155 + 160, 100 + i, 150, 20, this.skipBackupText, (p_212992_1_) -> {
-         this.callback.proceed(false, this.field_212996_j.func_212942_a());
+         this.callback.proceed(false, this.field_212996_j.isChecked());
       }));
       this.addButton(new Button(this.width / 2 - 155 + 80, 124 + i, 150, 20, this.cancelText, (p_212991_1_) -> {
          this.minecraft.displayGuiScreen(this.parentScreen);

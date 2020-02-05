@@ -19,15 +19,15 @@ public abstract class EnergyLayer<T extends Entity & IChargeableMob, M extends E
       super(p_i226038_1_);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, T p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      if (((IChargeableMob)p_225628_4_).func_225509_J__()) {
-         float f = (float)p_225628_4_.ticksExisted + p_225628_7_;
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      if (((IChargeableMob)entitylivingbaseIn).func_225509_J__()) {
+         float f = (float)entitylivingbaseIn.ticksExisted + partialTicks;
          EntityModel<T> entitymodel = this.func_225635_b_();
-         entitymodel.setLivingAnimations(p_225628_4_, p_225628_5_, p_225628_6_, p_225628_7_);
+         entitymodel.setLivingAnimations(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks);
          this.getEntityModel().setModelAttributes(entitymodel);
-         IVertexBuilder ivertexbuilder = p_225628_2_.getBuffer(RenderType.func_228636_a_(this.func_225633_a_(), this.func_225634_a_(f), f * 0.01F));
-         entitymodel.func_225597_a_(p_225628_4_, p_225628_5_, p_225628_6_, p_225628_8_, p_225628_9_, p_225628_10_);
-         entitymodel.func_225598_a_(p_225628_1_, ivertexbuilder, p_225628_3_, OverlayTexture.field_229196_a_, 0.5F, 0.5F, 0.5F, 1.0F);
+         IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.energySwirl(this.func_225633_a_(), this.func_225634_a_(f), f * 0.01F));
+         entitymodel.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+         entitymodel.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_LIGHT, 0.5F, 0.5F, 0.5F, 1.0F);
       }
    }
 

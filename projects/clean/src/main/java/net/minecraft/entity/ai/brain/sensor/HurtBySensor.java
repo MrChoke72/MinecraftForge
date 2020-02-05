@@ -8,12 +8,11 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
 import net.minecraft.world.server.ServerWorld;
 
-public class 
-HurtBySensor extends Sensor<LivingEntity> {
-   protected void update(ServerWorld world, LivingEntity owner) {
-      Brain<?> brain = owner.getBrain();
-      if (owner.getLastDamageSource() != null) {
-         brain.setMemory(MemoryModuleType.HURT_BY, owner.getLastDamageSource());
+public class HurtBySensor extends Sensor<LivingEntity> {
+   protected void update(ServerWorld worldIn, LivingEntity entityIn) {
+      Brain<?> brain = entityIn.getBrain();
+      if (entityIn.getLastDamageSource() != null) {
+         brain.setMemory(MemoryModuleType.HURT_BY, entityIn.getLastDamageSource());
          Entity entity = brain.getMemory(MemoryModuleType.HURT_BY).get().getTrueSource();
          if (entity instanceof LivingEntity) {
             brain.setMemory(MemoryModuleType.HURT_BY_ENTITY, (LivingEntity)entity);

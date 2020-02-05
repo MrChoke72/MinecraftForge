@@ -20,8 +20,8 @@ import net.minecraft.world.World;
 public abstract class AbstractChestedHorseEntity extends AbstractHorseEntity {
    private static final DataParameter<Boolean> DATA_ID_CHEST = EntityDataManager.createKey(AbstractChestedHorseEntity.class, DataSerializers.BOOLEAN);
 
-   protected AbstractChestedHorseEntity(EntityType<? extends AbstractChestedHorseEntity> type, World p_i48564_2_) {
-      super(type, p_i48564_2_);
+   protected AbstractChestedHorseEntity(EntityType<? extends AbstractChestedHorseEntity> type, World worldIn) {
+      super(type, worldIn);
       this.canGallop = false;
    }
 

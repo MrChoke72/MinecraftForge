@@ -42,7 +42,7 @@ public enum DragonSpawnState {
          boolean flag = ticks % 40 == 0;
          boolean flag1 = ticks % 40 == 39;
          if (flag || flag1) {
-            List<EndSpikeFeature.EndSpike> list = EndSpikeFeature.func_214554_a(worldIn);
+            List<EndSpikeFeature.EndSpike> list = EndSpikeFeature.generateSpikes(worldIn);
             int j = ticks / 40;
             if (j < list.size()) {
                EndSpikeFeature.EndSpike endspikefeature$endspike = list.get(j);
@@ -59,7 +59,7 @@ public enum DragonSpawnState {
 
                   worldIn.createExplosion((Entity)null, (double)((float)endspikefeature$endspike.getCenterX() + 0.5F), (double)endspikefeature$endspike.getHeight(), (double)((float)endspikefeature$endspike.getCenterZ() + 0.5F), 5.0F, Explosion.Mode.DESTROY);
                   EndSpikeFeatureConfig endspikefeatureconfig = new EndSpikeFeatureConfig(true, ImmutableList.of(endspikefeature$endspike), new BlockPos(0, 128, 0));
-                  Feature.END_SPIKE.func_225566_b_(endspikefeatureconfig).place(worldIn, worldIn.getChunkProvider().getChunkGenerator(), new Random(), new BlockPos(endspikefeature$endspike.getCenterX(), 45, endspikefeature$endspike.getCenterZ()));
+                  Feature.END_SPIKE.withConfiguration(endspikefeatureconfig).place(worldIn, worldIn.getChunkProvider().getChunkGenerator(), new Random(), new BlockPos(endspikefeature$endspike.getCenterX(), 45, endspikefeature$endspike.getCenterZ()));
                }
             } else if (flag) {
                manager.setRespawnState(SUMMONING_DRAGON);

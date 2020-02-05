@@ -40,12 +40,12 @@ public class MapData extends WorldSavedData {
       super(mapname);
    }
 
-   public void func_212440_a(int p_212440_1_, int p_212440_2_, int p_212440_3_, boolean p_212440_4_, boolean p_212440_5_, DimensionType p_212440_6_) {
-      this.scale = (byte)p_212440_3_;
-      this.calculateMapCenter((double)p_212440_1_, (double)p_212440_2_, this.scale);
-      this.dimension = p_212440_6_;
-      this.trackingPosition = p_212440_4_;
-      this.unlimitedTracking = p_212440_5_;
+   public void func_212440_a(int x, int z, int scaleIn, boolean trackingPositionIn, boolean unlimitedTrackingIn, DimensionType dimensionTypeIn) {
+      this.scale = (byte)scaleIn;
+      this.calculateMapCenter((double)x, (double)z, this.scale);
+      this.dimension = dimensionTypeIn;
+      this.trackingPosition = trackingPositionIn;
+      this.unlimitedTracking = unlimitedTrackingIn;
       this.markDirty();
    }
 
@@ -120,13 +120,13 @@ public class MapData extends WorldSavedData {
       return compound;
    }
 
-   public void func_215160_a(MapData p_215160_1_) {
+   public void copyFrom(MapData mapDataIn) {
       this.locked = true;
-      this.xCenter = p_215160_1_.xCenter;
-      this.zCenter = p_215160_1_.zCenter;
-      this.banners.putAll(p_215160_1_.banners);
-      this.mapDecorations.putAll(p_215160_1_.mapDecorations);
-      System.arraycopy(p_215160_1_.colors, 0, this.colors, 0, p_215160_1_.colors.length);
+      this.xCenter = mapDataIn.xCenter;
+      this.zCenter = mapDataIn.zCenter;
+      this.banners.putAll(mapDataIn.banners);
+      this.mapDecorations.putAll(mapDataIn.mapDecorations);
+      System.arraycopy(mapDataIn.colors, 0, this.colors, 0, mapDataIn.colors.length);
       this.markDirty();
    }
 

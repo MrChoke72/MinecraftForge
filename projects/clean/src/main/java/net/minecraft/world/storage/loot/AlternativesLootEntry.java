@@ -42,31 +42,31 @@ public class AlternativesLootEntry extends ParentedLootEntry {
 
    }
 
-   public static AlternativesLootEntry.Builder func_216149_a(LootEntry.Builder<?>... p_216149_0_) {
+   public static AlternativesLootEntry.Builder builder(LootEntry.Builder<?>... p_216149_0_) {
       return new AlternativesLootEntry.Builder(p_216149_0_);
    }
 
    public static class Builder extends LootEntry.Builder<AlternativesLootEntry.Builder> {
-      private final List<LootEntry> field_216083_a = Lists.newArrayList();
+      private final List<LootEntry> lootEntries = Lists.newArrayList();
 
       public Builder(LootEntry.Builder<?>... p_i50579_1_) {
          for(LootEntry.Builder<?> builder : p_i50579_1_) {
-            this.field_216083_a.add(builder.func_216081_b());
+            this.lootEntries.add(builder.build());
          }
 
       }
 
-      protected AlternativesLootEntry.Builder builder() {
+      protected AlternativesLootEntry.Builder func_212845_d_() {
          return this;
       }
 
-      public AlternativesLootEntry.Builder func_216080_a(LootEntry.Builder<?> p_216080_1_) {
-         this.field_216083_a.add(p_216080_1_.func_216081_b());
+      public AlternativesLootEntry.Builder alternatively(LootEntry.Builder<?> p_216080_1_) {
+         this.lootEntries.add(p_216080_1_.build());
          return this;
       }
 
-      public LootEntry func_216081_b() {
-         return new AlternativesLootEntry(this.field_216083_a.toArray(new LootEntry[0]), this.func_216079_f());
+      public LootEntry build() {
+         return new AlternativesLootEntry(this.lootEntries.toArray(new LootEntry[0]), this.func_216079_f());
       }
    }
 }

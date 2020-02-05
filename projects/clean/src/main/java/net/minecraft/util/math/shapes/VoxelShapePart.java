@@ -249,14 +249,14 @@ public abstract class VoxelShapePart {
 
    }
 
-   public void forEachFace(VoxelShapePart.IFaceConsumer p_211540_1_) {
-      this.forEachFaceOnAxis(p_211540_1_, AxisRotation.NONE);
-      this.forEachFaceOnAxis(p_211540_1_, AxisRotation.FORWARD);
-      this.forEachFaceOnAxis(p_211540_1_, AxisRotation.BACKWARD);
+   public void forEachFace(VoxelShapePart.IFaceConsumer faceConsumer) {
+      this.forEachFaceOnAxis(faceConsumer, AxisRotation.NONE);
+      this.forEachFaceOnAxis(faceConsumer, AxisRotation.FORWARD);
+      this.forEachFaceOnAxis(faceConsumer, AxisRotation.BACKWARD);
    }
 
-   private void forEachFaceOnAxis(VoxelShapePart.IFaceConsumer p_211541_1_, AxisRotation p_211541_2_) {
-      AxisRotation axisrotation = p_211541_2_.reverse();
+   private void forEachFaceOnAxis(VoxelShapePart.IFaceConsumer faceConsumer, AxisRotation axisRotationIn) {
+      AxisRotation axisrotation = axisRotationIn.reverse();
       Direction.Axis direction$axis = axisrotation.rotate(Direction.Axis.Z);
       int i = this.getSize(axisrotation.rotate(Direction.Axis.X));
       int j = this.getSize(axisrotation.rotate(Direction.Axis.Y));
@@ -271,11 +271,11 @@ public abstract class VoxelShapePart {
             for(int j1 = 0; j1 <= k; ++j1) {
                boolean flag1 = j1 != k && this.isFilledWithRotation(axisrotation, l, i1, j1);
                if (!flag && flag1) {
-                  p_211541_1_.consume(direction, axisrotation.getCoordinate(l, i1, j1, Direction.Axis.X), axisrotation.getCoordinate(l, i1, j1, Direction.Axis.Y), axisrotation.getCoordinate(l, i1, j1, Direction.Axis.Z));
+                  faceConsumer.consume(direction, axisrotation.getCoordinate(l, i1, j1, Direction.Axis.X), axisrotation.getCoordinate(l, i1, j1, Direction.Axis.Y), axisrotation.getCoordinate(l, i1, j1, Direction.Axis.Z));
                }
 
                if (flag && !flag1) {
-                  p_211541_1_.consume(direction1, axisrotation.getCoordinate(l, i1, j1 - 1, Direction.Axis.X), axisrotation.getCoordinate(l, i1, j1 - 1, Direction.Axis.Y), axisrotation.getCoordinate(l, i1, j1 - 1, Direction.Axis.Z));
+                  faceConsumer.consume(direction1, axisrotation.getCoordinate(l, i1, j1 - 1, Direction.Axis.X), axisrotation.getCoordinate(l, i1, j1 - 1, Direction.Axis.Y), axisrotation.getCoordinate(l, i1, j1 - 1, Direction.Axis.Z));
                }
 
                flag = flag1;

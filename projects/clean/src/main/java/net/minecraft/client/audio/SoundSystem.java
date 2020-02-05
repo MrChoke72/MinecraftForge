@@ -25,11 +25,11 @@ public class SoundSystem {
    private long field_216412_c;
    private static final SoundSystem.IHandler DUMMY_HANDLER = new SoundSystem.IHandler() {
       @Nullable
-      public SoundSource func_216398_a() {
+      public SoundSource getSource() {
          return null;
       }
 
-      public boolean func_216396_a(SoundSource p_216396_1_) {
+      public boolean func_216396_a(SoundSource source) {
          return false;
       }
 
@@ -51,7 +51,7 @@ public class SoundSystem {
    public void func_216404_a() {
       this.field_216411_b = func_216406_f();
       ALCCapabilities alccapabilities = ALC.createCapabilities(this.field_216411_b);
-      if (ALUtils.func_216481_a(this.field_216411_b, "Get capabilities")) {
+      if (ALUtils.checkALCError(this.field_216411_b, "Get capabilities")) {
          throw new IllegalStateException("Failed to get OpenAL capabilities");
       } else if (!alccapabilities.OpenALC11) {
          throw new IllegalStateException("OpenAL 1.1 not supported");
@@ -64,7 +64,7 @@ public class SoundSystem {
          this.staticHandler = new SoundSystem.HandlerImpl(k);
          this.streamingHandler = new SoundSystem.HandlerImpl(j);
          ALCapabilities alcapabilities = AL.createCapabilities(alccapabilities);
-         ALUtils.func_216483_a("Initialization");
+         ALUtils.checkALError("Initialization");
          if (!alcapabilities.AL_EXT_source_distance_model) {
             throw new IllegalStateException("AL_EXT_source_distance_model is not supported");
          } else {
@@ -72,7 +72,7 @@ public class SoundSystem {
             if (!alcapabilities.AL_EXT_LINEAR_DISTANCE) {
                throw new IllegalStateException("AL_EXT_LINEAR_DISTANCE is not supported");
             } else {
-               ALUtils.func_216483_a("Enable per-source distance models");
+               ALUtils.checkALError("Enable per-source distance models");
                LOGGER.info("OpenAL initialized.");
             }
          }
@@ -83,13 +83,13 @@ public class SoundSystem {
       int i1;
       try (MemoryStack memorystack = MemoryStack.stackPush()) {
          int i = ALC10.alcGetInteger(this.field_216411_b, 4098);
-         if (ALUtils.func_216481_a(this.field_216411_b, "Get attributes size")) {
+         if (ALUtils.checkALCError(this.field_216411_b, "Get attributes size")) {
             throw new IllegalStateException("Failed to get OpenAL attributes");
          }
 
          IntBuffer intbuffer = memorystack.mallocInt(i);
          ALC10.alcGetIntegerv(this.field_216411_b, 4099, intbuffer);
-         if (ALUtils.func_216481_a(this.field_216411_b, "Get attributes")) {
+         if (ALUtils.checkALCError(this.field_216411_b, "Get attributes")) {
             throw new IllegalStateException("Failed to get OpenAL attributes");
          }
 
@@ -121,7 +121,7 @@ public class SoundSystem {
    private static long func_216406_f() {
       for(int i = 0; i < 3; ++i) {
          long j = ALC10.alcOpenDevice((ByteBuffer)null);
-         if (j != 0L && !ALUtils.func_216481_a(j, "Open device")) {
+         if (j != 0L && !ALUtils.checkALCError(j, "Open device")) {
             return j;
          }
       }
@@ -144,12 +144,12 @@ public class SoundSystem {
    }
 
    @Nullable
-   public SoundSource func_216403_a(SoundSystem.Mode p_216403_1_) {
-      return (p_216403_1_ == SoundSystem.Mode.STREAMING ? this.streamingHandler : this.staticHandler).func_216398_a();
+   public SoundSource getSource(SoundSystem.Mode soundMode) {
+      return (soundMode == SoundSystem.Mode.STREAMING ? this.streamingHandler : this.staticHandler).getSource();
    }
 
-   public void release(SoundSource p_216408_1_) {
-      if (!this.staticHandler.func_216396_a(p_216408_1_) && !this.streamingHandler.func_216396_a(p_216408_1_)) {
+   public void release(SoundSource source) {
+      if (!this.staticHandler.func_216396_a(source) && !this.streamingHandler.func_216396_a(source)) {
          throw new IllegalStateException("Tried to release unknown channel");
       }
    }
@@ -168,7 +168,7 @@ public class SoundSystem {
       }
 
       @Nullable
-      public SoundSource func_216398_a() {
+      public SoundSource getSource() {
          if (this.field_216401_b.size() >= this.field_216400_a) {
             return null;
          } else {
@@ -181,11 +181,11 @@ public class SoundSystem {
          }
       }
 
-      public boolean func_216396_a(SoundSource p_216396_1_) {
-         if (!this.field_216401_b.remove(p_216396_1_)) {
+      public boolean func_216396_a(SoundSource source) {
+         if (!this.field_216401_b.remove(source)) {
             return false;
          } else {
-            p_216396_1_.func_216436_b();
+            source.func_216436_b();
             return true;
          }
       }
@@ -207,9 +207,9 @@ public class SoundSystem {
    @OnlyIn(Dist.CLIENT)
    interface IHandler {
       @Nullable
-      SoundSource func_216398_a();
+      SoundSource getSource();
 
-      boolean func_216396_a(SoundSource p_216396_1_);
+      boolean func_216396_a(SoundSource source);
 
       void func_216399_b();
 

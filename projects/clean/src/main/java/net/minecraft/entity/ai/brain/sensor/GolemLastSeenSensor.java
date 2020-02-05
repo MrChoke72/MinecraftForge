@@ -19,8 +19,8 @@ public class GolemLastSeenSensor extends Sensor<LivingEntity> {
       super(p_i51525_1_);
    }
 
-   protected void update(ServerWorld world, LivingEntity entity) {
-      func_223545_a(world.getGameTime(), entity);
+   protected void update(ServerWorld worldIn, LivingEntity entityIn) {
+      func_223545_a(worldIn.getGameTime(), entityIn);
    }
 
    public Set<MemoryModuleType<?>> getUsedMemories() {

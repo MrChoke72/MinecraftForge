@@ -18,12 +18,12 @@ public class LightningBoltRenderer extends EntityRenderer<LightningBoltEntity> {
       super(renderManagerIn);
    }
 
-   public void func_225623_a_(LightningBoltEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
+   public void render(LightningBoltEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
       float[] afloat = new float[8];
       float[] afloat1 = new float[8];
       float f = 0.0F;
       float f1 = 0.0F;
-      Random random = new Random(p_225623_1_.boltVertex);
+      Random random = new Random(entityIn.boltVertex);
 
       for(int i = 7; i >= 0; --i) {
          afloat[i] = f;
@@ -32,11 +32,11 @@ public class LightningBoltRenderer extends EntityRenderer<LightningBoltEntity> {
          f1 += (float)(random.nextInt(11) - 5);
       }
 
-      IVertexBuilder ivertexbuilder = p_225623_5_.getBuffer(RenderType.func_228657_l_());
-      Matrix4f matrix4f = p_225623_4_.func_227866_c_().func_227870_a_();
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.lightning());
+      Matrix4f matrix4f = matrixStackIn.getLast().getPositionMatrix();
 
       for(int j = 0; j < 4; ++j) {
-         Random random1 = new Random(p_225623_1_.boltVertex);
+         Random random1 = new Random(entityIn.boltVertex);
 
          for(int k = 0; k < 3; ++k) {
             int l = 7;
@@ -88,10 +88,10 @@ public class LightningBoltRenderer extends EntityRenderer<LightningBoltEntity> {
    }
 
    private static void func_229116_a_(Matrix4f p_229116_0_, IVertexBuilder p_229116_1_, float p_229116_2_, float p_229116_3_, int p_229116_4_, float p_229116_5_, float p_229116_6_, float p_229116_7_, float p_229116_8_, float p_229116_9_, float p_229116_10_, float p_229116_11_, boolean p_229116_12_, boolean p_229116_13_, boolean p_229116_14_, boolean p_229116_15_) {
-      p_229116_1_.func_227888_a_(p_229116_0_, p_229116_2_ + (p_229116_12_ ? p_229116_11_ : -p_229116_11_), (float)(p_229116_4_ * 16), p_229116_3_ + (p_229116_13_ ? p_229116_11_ : -p_229116_11_)).func_227885_a_(p_229116_7_, p_229116_8_, p_229116_9_, 0.3F).endVertex();
-      p_229116_1_.func_227888_a_(p_229116_0_, p_229116_5_ + (p_229116_12_ ? p_229116_10_ : -p_229116_10_), (float)((p_229116_4_ + 1) * 16), p_229116_6_ + (p_229116_13_ ? p_229116_10_ : -p_229116_10_)).func_227885_a_(p_229116_7_, p_229116_8_, p_229116_9_, 0.3F).endVertex();
-      p_229116_1_.func_227888_a_(p_229116_0_, p_229116_5_ + (p_229116_14_ ? p_229116_10_ : -p_229116_10_), (float)((p_229116_4_ + 1) * 16), p_229116_6_ + (p_229116_15_ ? p_229116_10_ : -p_229116_10_)).func_227885_a_(p_229116_7_, p_229116_8_, p_229116_9_, 0.3F).endVertex();
-      p_229116_1_.func_227888_a_(p_229116_0_, p_229116_2_ + (p_229116_14_ ? p_229116_11_ : -p_229116_11_), (float)(p_229116_4_ * 16), p_229116_3_ + (p_229116_15_ ? p_229116_11_ : -p_229116_11_)).func_227885_a_(p_229116_7_, p_229116_8_, p_229116_9_, 0.3F).endVertex();
+      p_229116_1_.pos(p_229116_0_, p_229116_2_ + (p_229116_12_ ? p_229116_11_ : -p_229116_11_), (float)(p_229116_4_ * 16), p_229116_3_ + (p_229116_13_ ? p_229116_11_ : -p_229116_11_)).color(p_229116_7_, p_229116_8_, p_229116_9_, 0.3F).endVertex();
+      p_229116_1_.pos(p_229116_0_, p_229116_5_ + (p_229116_12_ ? p_229116_10_ : -p_229116_10_), (float)((p_229116_4_ + 1) * 16), p_229116_6_ + (p_229116_13_ ? p_229116_10_ : -p_229116_10_)).color(p_229116_7_, p_229116_8_, p_229116_9_, 0.3F).endVertex();
+      p_229116_1_.pos(p_229116_0_, p_229116_5_ + (p_229116_14_ ? p_229116_10_ : -p_229116_10_), (float)((p_229116_4_ + 1) * 16), p_229116_6_ + (p_229116_15_ ? p_229116_10_ : -p_229116_10_)).color(p_229116_7_, p_229116_8_, p_229116_9_, 0.3F).endVertex();
+      p_229116_1_.pos(p_229116_0_, p_229116_2_ + (p_229116_14_ ? p_229116_11_ : -p_229116_11_), (float)(p_229116_4_ * 16), p_229116_3_ + (p_229116_15_ ? p_229116_11_ : -p_229116_11_)).color(p_229116_7_, p_229116_8_, p_229116_9_, 0.3F).endVertex();
    }
 
    public ResourceLocation getEntityTexture(LightningBoltEntity entity) {

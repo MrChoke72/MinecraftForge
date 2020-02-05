@@ -20,43 +20,43 @@ public class BatModel extends SegmentedModel<BatEntity> {
       this.textureWidth = 64;
       this.textureHeight = 64;
       this.batHead = new ModelRenderer(this, 0, 0);
-      this.batHead.func_228300_a_(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F);
+      this.batHead.addBox(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F);
       ModelRenderer modelrenderer = new ModelRenderer(this, 24, 0);
-      modelrenderer.func_228300_a_(-4.0F, -6.0F, -2.0F, 3.0F, 4.0F, 1.0F);
+      modelrenderer.addBox(-4.0F, -6.0F, -2.0F, 3.0F, 4.0F, 1.0F);
       this.batHead.addChild(modelrenderer);
       ModelRenderer modelrenderer1 = new ModelRenderer(this, 24, 0);
       modelrenderer1.mirror = true;
-      modelrenderer1.func_228300_a_(1.0F, -6.0F, -2.0F, 3.0F, 4.0F, 1.0F);
+      modelrenderer1.addBox(1.0F, -6.0F, -2.0F, 3.0F, 4.0F, 1.0F);
       this.batHead.addChild(modelrenderer1);
       this.batBody = new ModelRenderer(this, 0, 16);
-      this.batBody.func_228300_a_(-3.0F, 4.0F, -3.0F, 6.0F, 12.0F, 6.0F);
-      this.batBody.setTextureOffset(0, 34).func_228300_a_(-5.0F, 16.0F, 0.0F, 10.0F, 6.0F, 1.0F);
+      this.batBody.addBox(-3.0F, 4.0F, -3.0F, 6.0F, 12.0F, 6.0F);
+      this.batBody.setTextureOffset(0, 34).addBox(-5.0F, 16.0F, 0.0F, 10.0F, 6.0F, 1.0F);
       this.batRightWing = new ModelRenderer(this, 42, 0);
-      this.batRightWing.func_228300_a_(-12.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F);
+      this.batRightWing.addBox(-12.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F);
       this.batOuterRightWing = new ModelRenderer(this, 24, 16);
       this.batOuterRightWing.setRotationPoint(-12.0F, 1.0F, 1.5F);
-      this.batOuterRightWing.func_228300_a_(-8.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F);
+      this.batOuterRightWing.addBox(-8.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F);
       this.batLeftWing = new ModelRenderer(this, 42, 0);
       this.batLeftWing.mirror = true;
-      this.batLeftWing.func_228300_a_(2.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F);
+      this.batLeftWing.addBox(2.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F);
       this.batOuterLeftWing = new ModelRenderer(this, 24, 16);
       this.batOuterLeftWing.mirror = true;
       this.batOuterLeftWing.setRotationPoint(12.0F, 1.0F, 1.5F);
-      this.batOuterLeftWing.func_228300_a_(0.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F);
+      this.batOuterLeftWing.addBox(0.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F);
       this.batBody.addChild(this.batRightWing);
       this.batBody.addChild(this.batLeftWing);
       this.batRightWing.addChild(this.batOuterRightWing);
       this.batLeftWing.addChild(this.batOuterLeftWing);
    }
 
-   public Iterable<ModelRenderer> func_225601_a_() {
+   public Iterable<ModelRenderer> getParts() {
       return ImmutableList.of(this.batHead, this.batBody);
    }
 
-   public void func_225597_a_(BatEntity p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      if (p_225597_1_.getIsBatHanging()) {
-         this.batHead.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
-         this.batHead.rotateAngleY = (float)Math.PI - p_225597_5_ * ((float)Math.PI / 180F);
+   public void render(BatEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      if (entityIn.getIsBatHanging()) {
+         this.batHead.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+         this.batHead.rotateAngleY = (float)Math.PI - netHeadYaw * ((float)Math.PI / 180F);
          this.batHead.rotateAngleZ = (float)Math.PI;
          this.batHead.setRotationPoint(0.0F, -2.0F, 0.0F);
          this.batRightWing.setRotationPoint(-3.0F, 0.0F, 3.0F);
@@ -69,15 +69,15 @@ public class BatModel extends SegmentedModel<BatEntity> {
          this.batLeftWing.rotateAngleY = -this.batRightWing.rotateAngleY;
          this.batOuterLeftWing.rotateAngleY = -this.batOuterRightWing.rotateAngleY;
       } else {
-         this.batHead.rotateAngleX = p_225597_6_ * ((float)Math.PI / 180F);
-         this.batHead.rotateAngleY = p_225597_5_ * ((float)Math.PI / 180F);
+         this.batHead.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+         this.batHead.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
          this.batHead.rotateAngleZ = 0.0F;
          this.batHead.setRotationPoint(0.0F, 0.0F, 0.0F);
          this.batRightWing.setRotationPoint(0.0F, 0.0F, 0.0F);
          this.batLeftWing.setRotationPoint(0.0F, 0.0F, 0.0F);
-         this.batBody.rotateAngleX = ((float)Math.PI / 4F) + MathHelper.cos(p_225597_4_ * 0.1F) * 0.15F;
+         this.batBody.rotateAngleX = ((float)Math.PI / 4F) + MathHelper.cos(ageInTicks * 0.1F) * 0.15F;
          this.batBody.rotateAngleY = 0.0F;
-         this.batRightWing.rotateAngleY = MathHelper.cos(p_225597_4_ * 1.3F) * (float)Math.PI * 0.25F;
+         this.batRightWing.rotateAngleY = MathHelper.cos(ageInTicks * 1.3F) * (float)Math.PI * 0.25F;
          this.batLeftWing.rotateAngleY = -this.batRightWing.rotateAngleY;
          this.batOuterRightWing.rotateAngleY = this.batRightWing.rotateAngleY * 0.5F;
          this.batOuterLeftWing.rotateAngleY = -this.batRightWing.rotateAngleY * 0.5F;

@@ -93,7 +93,7 @@ public class CreateBuffetWorldScreen extends Screen {
       compoundnbt1.putString("type", Registry.BIOME_SOURCE_TYPE.getKey(BiomeProviderType.FIXED).toString());
       CompoundNBT compoundnbt2 = new CompoundNBT();
       ListNBT listnbt = new ListNBT();
-      listnbt.add(StringNBT.func_229705_a_((this.biomeList.getSelected()).field_214394_b.toString()));
+      listnbt.add(StringNBT.valueOf((this.biomeList.getSelected()).field_214394_b.toString()));
       compoundnbt2.put("biomes", listnbt);
       compoundnbt1.put("options", compoundnbt2);
       CompoundNBT compoundnbt3 = new CompoundNBT();
@@ -138,7 +138,7 @@ public class CreateBuffetWorldScreen extends Screen {
       public void setSelected(@Nullable CreateBuffetWorldScreen.BiomeList.BiomeEntry p_setSelected_1_) {
          super.setSelected(p_setSelected_1_);
          if (p_setSelected_1_ != null) {
-            NarratorChatListener.INSTANCE.func_216864_a((new TranslationTextComponent("narrator.select", Registry.BIOME.getOrDefault(p_setSelected_1_.field_214394_b).getDisplayName().getString())).getString());
+            NarratorChatListener.INSTANCE.say((new TranslationTextComponent("narrator.select", Registry.BIOME.getOrDefault(p_setSelected_1_.field_214394_b).getDisplayName().getString())).getString());
          }
 
       }

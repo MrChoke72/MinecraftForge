@@ -85,7 +85,7 @@ public class FishingBobberEntity extends Entity {
       float f4 = -MathHelper.cos(-f * ((float)Math.PI / 180F));
       float f5 = MathHelper.sin(-f * ((float)Math.PI / 180F));
       double d0 = this.angler.getPosX() - (double)f3 * 0.3D;
-      double d1 = this.angler.getPosYPlusEyeHeight();
+      double d1 = this.angler.getPosYEye();
       double d2 = this.angler.getPosZ() - (double)f2 * 0.3D;
       this.setLocationAndAngles(d0, d1, d2, f1, f);
       Vec3d vec3d = new Vec3d((double)(-f3), (double)MathHelper.clamp(-(f5 / f4), -5.0F, 5.0F), (double)(-f2));
@@ -93,7 +93,7 @@ public class FishingBobberEntity extends Entity {
       vec3d = vec3d.mul(0.6D / d3 + 0.5D + this.rand.nextGaussian() * 0.0045D, 0.6D / d3 + 0.5D + this.rand.nextGaussian() * 0.0045D, 0.6D / d3 + 0.5D + this.rand.nextGaussian() * 0.0045D);
       this.setMotion(vec3d);
       this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * (double)(180F / (float)Math.PI));
-      this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)MathHelper.sqrt(func_213296_b(vec3d))) * (double)(180F / (float)Math.PI));
+      this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)MathHelper.sqrt(horizontalMag(vec3d))) * (double)(180F / (float)Math.PI));
       this.prevRotationYaw = this.rotationYaw;
       this.prevRotationPitch = this.rotationPitch;
    }
@@ -138,7 +138,7 @@ public class FishingBobberEntity extends Entity {
          BlockPos blockpos = new BlockPos(this);
          IFluidState ifluidstate = this.world.getFluidState(blockpos);
          if (ifluidstate.isTagged(FluidTags.WATER)) {
-            f = ifluidstate.func_215679_a(this.world, blockpos);
+            f = ifluidstate.getActualHeight(this.world, blockpos);
          }
 
          if (this.currentState == FishingBobberEntity.State.FLYING) {
@@ -171,7 +171,7 @@ public class FishingBobberEntity extends Entity {
                      this.caughtEntity = null;
                      this.currentState = FishingBobberEntity.State.FLYING;
                   } else {
-                     this.setPosition(this.caughtEntity.getPosX(), this.caughtEntity.func_226283_e_(0.8D), this.caughtEntity.getPosZ());
+                     this.setPosition(this.caughtEntity.getPosX(), this.caughtEntity.getPosYHeight(0.8D), this.caughtEntity.getPosZ());
                   }
                }
 
@@ -200,7 +200,7 @@ public class FishingBobberEntity extends Entity {
          this.updateRotation();
          double d1 = 0.92D;
          this.setMotion(this.getMotion().scale(0.92D));
-         this.func_226264_Z_();
+         this.recenterBoundingBox();
       }
    }
 
@@ -219,7 +219,7 @@ public class FishingBobberEntity extends Entity {
 
    private void updateRotation() {
       Vec3d vec3d = this.getMotion();
-      float f = MathHelper.sqrt(func_213296_b(vec3d));
+      float f = MathHelper.sqrt(horizontalMag(vec3d));
       this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * (double)(180F / (float)Math.PI));
 
       for(this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * (double)(180F / (float)Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
@@ -243,7 +243,7 @@ public class FishingBobberEntity extends Entity {
    }
 
    private void checkCollision() {
-      RayTraceResult raytraceresult = ProjectileHelper.func_221267_a(this, this.getBoundingBox().expand(this.getMotion()).grow(1.0D), (p_213856_1_) -> {
+      RayTraceResult raytraceresult = ProjectileHelper.rayTrace(this, this.getBoundingBox().expand(this.getMotion()).grow(1.0D), (p_213856_1_) -> {
          return !p_213856_1_.isSpectator() && (p_213856_1_.canBeCollidedWith() || p_213856_1_ instanceof ItemEntity) && (p_213856_1_ != this.angler || this.ticksInAir >= 5);
       }, RayTraceContext.BlockMode.COLLIDER, true);
       if (raytraceresult.getType() != RayTraceResult.Type.MISS) {
@@ -269,7 +269,7 @@ public class FishingBobberEntity extends Entity {
          ++i;
       }
 
-      if (this.rand.nextFloat() < 0.5F && !this.world.isMaxLightLevel(blockpos)) {
+      if (this.rand.nextFloat() < 0.5F && !this.world.canSeeSky(blockpos)) {
          --i;
       }
 
@@ -409,7 +409,7 @@ public class FishingBobberEntity extends Entity {
       }
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 

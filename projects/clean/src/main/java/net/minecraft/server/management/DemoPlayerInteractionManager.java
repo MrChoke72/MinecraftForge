@@ -85,12 +85,12 @@ public class DemoPlayerInteractionManager extends PlayerInteractionManager {
       }
    }
 
-   public ActionResultType func_219441_a(PlayerEntity p_219441_1_, World p_219441_2_, ItemStack p_219441_3_, Hand p_219441_4_, BlockRayTraceResult p_219441_5_) {
+   public ActionResultType func_219441_a(PlayerEntity playerIn, World worldIn, ItemStack stackIn, Hand handIn, BlockRayTraceResult blockRaytraceResultIn) {
       if (this.demoTimeExpired) {
          this.sendDemoReminder();
          return ActionResultType.PASS;
       } else {
-         return super.func_219441_a(p_219441_1_, p_219441_2_, p_219441_3_, p_219441_4_, p_219441_5_);
+         return super.func_219441_a(playerIn, worldIn, stackIn, handIn, blockRaytraceResultIn);
       }
    }
 }

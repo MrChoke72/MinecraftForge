@@ -35,7 +35,7 @@ public class BoneMealItem extends Item {
          return ActionResultType.SUCCESS;
       } else {
          BlockState blockstate = world.getBlockState(blockpos);
-         boolean flag = blockstate.func_224755_d(world, blockpos, context.getFace());
+         boolean flag = blockstate.isSolidSide(world, blockpos, context.getFace());
          if (flag && growSeagrass(context.getItem(), world, blockpos1, context.getFace())) {
             if (!world.isRemote) {
                world.playEvent(2005, blockpos1, 0);
@@ -55,7 +55,7 @@ public class BoneMealItem extends Item {
          if (igrowable.canGrow(worldIn, pos, blockstate, worldIn.isRemote)) {
             if (worldIn instanceof ServerWorld) {
                if (igrowable.canUseBonemeal(worldIn, worldIn.rand, pos, blockstate)) {
-                  igrowable.func_225535_a_((ServerWorld)worldIn, worldIn.rand, pos, blockstate);
+                  igrowable.grow((ServerWorld)worldIn, worldIn.rand, pos, blockstate);
                }
 
                stack.shrink(1);
@@ -76,13 +76,13 @@ public class BoneMealItem extends Item {
             label80:
             for(int i = 0; i < 128; ++i) {
                BlockPos blockpos = pos;
-               Biome biome = worldIn.func_226691_t_(pos);
+               Biome biome = worldIn.getBiome(pos);
                BlockState blockstate = Blocks.SEAGRASS.getDefaultState();
 
                for(int j = 0; j < i / 16; ++j) {
                   blockpos = blockpos.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
-                  biome = worldIn.func_226691_t_(blockpos);
-                  if (worldIn.getBlockState(blockpos).func_224756_o(worldIn, blockpos)) {
+                  biome = worldIn.getBiome(blockpos);
+                  if (worldIn.getBlockState(blockpos).isCollisionShapeOpaque(worldIn, blockpos)) {
                      continue label80;
                   }
                }
@@ -106,7 +106,7 @@ public class BoneMealItem extends Item {
                   if (blockstate1.getBlock() == Blocks.WATER && worldIn.getFluidState(blockpos).getLevel() == 8) {
                      worldIn.setBlockState(blockpos, blockstate, 3);
                   } else if (blockstate1.getBlock() == Blocks.SEAGRASS && random.nextInt(10) == 0) {
-                     ((IGrowable)Blocks.SEAGRASS).func_225535_a_((ServerWorld)worldIn, random, blockpos, blockstate1);
+                     ((IGrowable)Blocks.SEAGRASS).grow((ServerWorld)worldIn, random, blockpos, blockstate1);
                   }
                }
             }

@@ -32,25 +32,25 @@ public class Teleporter {
       this.random = new Random(worldIn.getSeed());
    }
 
-   public boolean func_222268_a(Entity p_222268_1_, float p_222268_2_) {
+   public boolean placeInPortal(Entity p_222268_1_, float p_222268_2_) {
       Vec3d vec3d = p_222268_1_.getLastPortalVec();
       Direction direction = p_222268_1_.getTeleportDirection();
-      BlockPattern.PortalInfo blockpattern$portalinfo = this.func_222272_a(new BlockPos(p_222268_1_), p_222268_1_.getMotion(), direction, vec3d.x, vec3d.y, p_222268_1_ instanceof PlayerEntity);
+      BlockPattern.PortalInfo blockpattern$portalinfo = this.placeInExistingPortal(new BlockPos(p_222268_1_), p_222268_1_.getMotion(), direction, vec3d.x, vec3d.y, p_222268_1_ instanceof PlayerEntity);
       if (blockpattern$portalinfo == null) {
          return false;
       } else {
-         Vec3d vec3d1 = blockpattern$portalinfo.field_222505_a;
-         Vec3d vec3d2 = blockpattern$portalinfo.field_222506_b;
+         Vec3d vec3d1 = blockpattern$portalinfo.pos;
+         Vec3d vec3d2 = blockpattern$portalinfo.motion;
          p_222268_1_.setMotion(vec3d2);
-         p_222268_1_.rotationYaw = p_222268_2_ + (float)blockpattern$portalinfo.field_222507_c;
-         p_222268_1_.func_225653_b_(vec3d1.x, vec3d1.y, vec3d1.z);
+         p_222268_1_.rotationYaw = p_222268_2_ + (float)blockpattern$portalinfo.rotation;
+         p_222268_1_.moveForced(vec3d1.x, vec3d1.y, vec3d1.z);
          return true;
       }
    }
 
    @Nullable
-   public BlockPattern.PortalInfo func_222272_a(BlockPos p_222272_1_, Vec3d p_222272_2_, Direction p_222272_3_, double p_222272_4_, double p_222272_6_, boolean p_222272_8_) {
-      PointOfInterestManager pointofinterestmanager = this.world.getPoiMgr();
+   public BlockPattern.PortalInfo placeInExistingPortal(BlockPos p_222272_1_, Vec3d p_222272_2_, Direction directionIn, double p_222272_4_, double p_222272_6_, boolean p_222272_8_) {
+      PointOfInterestManager pointofinterestmanager = this.world.getPointOfInterestManager();
       pointofinterestmanager.func_226347_a_(this.world, p_222272_1_, 128);
       List<PointOfInterest> list = pointofinterestmanager.poiStreamByRadius((p_226705_0_) -> {
          return p_226705_0_ == PointOfInterestType.NETHER_PORTAL;
@@ -62,9 +62,9 @@ public class Teleporter {
       }));
       return optional.map((p_226707_7_) -> {
          BlockPos blockpos = p_226707_7_.getPos();
-         this.world.getChunkProvider().func_217228_a(TicketType.PORTAL, new ChunkPos(blockpos), 3, blockpos);
+         this.world.getChunkProvider().registerTicket(TicketType.PORTAL, new ChunkPos(blockpos), 3, blockpos);
          BlockPattern.PatternHelper blockpattern$patternhelper = NetherPortalBlock.createPatternHelper(this.world, blockpos);
-         return blockpattern$patternhelper.func_222504_a(p_222272_3_, blockpos, p_222272_6_, p_222272_2_, p_222272_4_);
+         return blockpattern$patternhelper.getPortalInfo(directionIn, blockpos, p_222272_6_, p_222272_2_, p_222272_4_);
       }).orElse((BlockPattern.PortalInfo)null);
    }
 

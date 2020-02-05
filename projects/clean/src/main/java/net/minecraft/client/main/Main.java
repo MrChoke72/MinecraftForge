@@ -98,8 +98,8 @@ public class Main {
 
       int i = getValue(optionset, optionspec13);
       int j = getValue(optionset, optionspec14);
-      OptionalInt optionalint = func_224732_a(getValue(optionset, optionspec15));
-      OptionalInt optionalint1 = func_224732_a(getValue(optionset, optionspec16));
+      OptionalInt optionalint = toOptionalInt(getValue(optionset, optionspec15));
+      OptionalInt optionalint1 = toOptionalInt(getValue(optionset, optionspec16));
       boolean flag = optionset.has("fullscreen");
       boolean flag1 = optionset.has("demo");
       String s3 = getValue(optionset, optionspec12);
@@ -114,6 +114,7 @@ public class Main {
       String s6 = optionset.has(optionspec19) ? optionspec19.value(optionset) : null;
       String s7 = getValue(optionset, optionspec);
       Integer integer = getValue(optionset, optionspec1);
+      CrashReport.func_230188_h_();
       Session session = new Session(optionspec9.value(optionset), s5, optionspec11.value(optionset), optionspec20.value(optionset));
       GameConfiguration gameconfiguration = new GameConfiguration(new GameConfiguration.UserInformation(session, propertymap, propertymap1, proxy), new ScreenSize(i, j, optionalint, optionalint1, flag), new GameConfiguration.FolderInformation(file1, file3, file2, s6), new GameConfiguration.GameInformation(flag1, s3, s4), new GameConfiguration.ServerInformation(s7, integer));
       Thread thread = new Thread("Client Shutdown Thread") {
@@ -145,13 +146,13 @@ public class Main {
       } catch (Throwable throwable1) {
          CrashReport crashreport = CrashReport.makeCrashReport(throwable1, "Initializing game");
          crashreport.makeCategory("Initialization");
-         Minecraft.func_228009_a_((LanguageManager)null, gameconfiguration.gameInfo.version, (GameSettings)null, crashreport);
+         Minecraft.fillCrashReport((LanguageManager)null, gameconfiguration.gameInfo.version, (GameSettings)null, crashreport);
          Minecraft.displayCrashReport(crashreport);
          return;
       }
 
       Thread thread1;
-      if (minecraft.func_228017_as_()) {
+      if (minecraft.isRenderOnThread()) {
          thread1 = new Thread("Game thread") {
             public void run() {
                try {
@@ -165,7 +166,7 @@ public class Main {
          };
          thread1.start();
 
-         while(minecraft.func_228025_l_()) {
+         while(minecraft.isRunning()) {
             ;
          }
       } else {
@@ -192,7 +193,7 @@ public class Main {
 
    }
 
-   private static OptionalInt func_224732_a(@Nullable Integer p_224732_0_) {
+   private static OptionalInt toOptionalInt(@Nullable Integer p_224732_0_) {
       return p_224732_0_ != null ? OptionalInt.of(p_224732_0_) : OptionalInt.empty();
    }
 

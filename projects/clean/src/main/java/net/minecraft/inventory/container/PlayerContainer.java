@@ -17,16 +17,16 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class PlayerContainer extends RecipeBookContainer<CraftingInventory> {
-   public static final ResourceLocation field_226615_c_ = new ResourceLocation("textures/atlas/blocks.png");
-   public static final ResourceLocation field_226616_d_ = new ResourceLocation("item/empty_armor_slot_helmet");
-   public static final ResourceLocation field_226617_e_ = new ResourceLocation("item/empty_armor_slot_chestplate");
-   public static final ResourceLocation field_226618_f_ = new ResourceLocation("item/empty_armor_slot_leggings");
-   public static final ResourceLocation field_226619_g_ = new ResourceLocation("item/empty_armor_slot_boots");
-   public static final ResourceLocation field_226620_h_ = new ResourceLocation("item/empty_armor_slot_shield");
-   private static final ResourceLocation[] ARMOR_SLOT_TEXTURES = new ResourceLocation[]{field_226619_g_, field_226618_f_, field_226617_e_, field_226616_d_};
+   public static final ResourceLocation LOCATION_BLOCKS_TEXTURE = new ResourceLocation("textures/atlas/blocks.png");
+   public static final ResourceLocation EMPTY_ARMOR_SLOT_HELMET = new ResourceLocation("item/empty_armor_slot_helmet");
+   public static final ResourceLocation EMPTY_ARMOR_SLOT_CHESTPLATE = new ResourceLocation("item/empty_armor_slot_chestplate");
+   public static final ResourceLocation EMPTY_ARMOR_SLOT_LEGGINGS = new ResourceLocation("item/empty_armor_slot_leggings");
+   public static final ResourceLocation EMPTY_ARMOR_SLOT_BOOTS = new ResourceLocation("item/empty_armor_slot_boots");
+   public static final ResourceLocation EMPTY_ARMOR_SLOT_SHIELD = new ResourceLocation("item/empty_armor_slot_shield");
+   private static final ResourceLocation[] ARMOR_SLOT_TEXTURES = new ResourceLocation[]{EMPTY_ARMOR_SLOT_BOOTS, EMPTY_ARMOR_SLOT_LEGGINGS, EMPTY_ARMOR_SLOT_CHESTPLATE, EMPTY_ARMOR_SLOT_HELMET};
    private static final EquipmentSlotType[] VALID_EQUIPMENT_SLOTS = new EquipmentSlotType[]{EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS, EquipmentSlotType.FEET};
-   private final CraftingInventory field_75181_e = new CraftingInventory(this, 2, 2);
-   private final CraftResultInventory field_75179_f = new CraftResultInventory();
+   private final CraftingInventory craftMatrix = new CraftingInventory(this, 2, 2);
+   private final CraftResultInventory craftResult = new CraftResultInventory();
    public final boolean isLocalWorld;
    private final PlayerEntity player;
 
@@ -34,11 +34,11 @@ public class PlayerContainer extends RecipeBookContainer<CraftingInventory> {
       super((ContainerType<?>)null, 0);
       this.isLocalWorld = localWorld;
       this.player = playerIn;
-      this.addSlot(new CraftingResultSlot(playerInventory.player, this.field_75181_e, this.field_75179_f, 0, 154, 28));
+      this.addSlot(new CraftingResultSlot(playerInventory.player, this.craftMatrix, this.craftResult, 0, 154, 28));
 
       for(int i = 0; i < 2; ++i) {
          for(int j = 0; j < 2; ++j) {
-            this.addSlot(new Slot(this.field_75181_e, j + i * 2, 98 + j * 18, 18 + i * 18));
+            this.addSlot(new Slot(this.craftMatrix, j + i * 2, 98 + j * 18, 18 + i * 18));
          }
       }
 
@@ -60,7 +60,7 @@ public class PlayerContainer extends RecipeBookContainer<CraftingInventory> {
 
             @OnlyIn(Dist.CLIENT)
             public Pair<ResourceLocation, ResourceLocation> func_225517_c_() {
-               return Pair.of(PlayerContainer.field_226615_c_, PlayerContainer.ARMOR_SLOT_TEXTURES[equipmentslottype.getIndex()]);
+               return Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, PlayerContainer.ARMOR_SLOT_TEXTURES[equipmentslottype.getIndex()]);
             }
          });
       }
@@ -78,33 +78,33 @@ public class PlayerContainer extends RecipeBookContainer<CraftingInventory> {
       this.addSlot(new Slot(playerInventory, 40, 77, 62) {
          @OnlyIn(Dist.CLIENT)
          public Pair<ResourceLocation, ResourceLocation> func_225517_c_() {
-            return Pair.of(PlayerContainer.field_226615_c_, PlayerContainer.field_226620_h_);
+            return Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, PlayerContainer.EMPTY_ARMOR_SLOT_SHIELD);
          }
       });
    }
 
-   public void func_201771_a(RecipeItemHelper p_201771_1_) {
-      this.field_75181_e.fillStackedContents(p_201771_1_);
+   public void fillStackedContents(RecipeItemHelper itemHelperIn) {
+      this.craftMatrix.fillStackedContents(itemHelperIn);
    }
 
    public void clear() {
-      this.field_75179_f.clear();
-      this.field_75181_e.clear();
+      this.craftResult.clear();
+      this.craftMatrix.clear();
    }
 
    public boolean matches(IRecipe<? super CraftingInventory> recipeIn) {
-      return recipeIn.matches(this.field_75181_e, this.player.world);
+      return recipeIn.matches(this.craftMatrix, this.player.world);
    }
 
    public void onCraftMatrixChanged(IInventory inventoryIn) {
-      WorkbenchContainer.func_217066_a(this.windowId, this.player.world, this.player, this.field_75181_e, this.field_75179_f);
+      WorkbenchContainer.func_217066_a(this.windowId, this.player.world, this.player, this.craftMatrix, this.craftResult);
    }
 
    public void onContainerClosed(PlayerEntity playerIn) {
       super.onContainerClosed(playerIn);
-      this.field_75179_f.clear();
+      this.craftResult.clear();
       if (!playerIn.world.isRemote) {
-         this.clearContainer(playerIn, playerIn.world, this.field_75181_e);
+         this.clearContainer(playerIn, playerIn.world, this.craftMatrix);
       }
    }
 
@@ -174,7 +174,7 @@ public class PlayerContainer extends RecipeBookContainer<CraftingInventory> {
    }
 
    public boolean canMergeSlot(ItemStack stack, Slot slotIn) {
-      return slotIn.inventory != this.field_75179_f && super.canMergeSlot(stack, slotIn);
+      return slotIn.inventory != this.craftResult && super.canMergeSlot(stack, slotIn);
    }
 
    public int getOutputSlot() {
@@ -182,11 +182,11 @@ public class PlayerContainer extends RecipeBookContainer<CraftingInventory> {
    }
 
    public int getWidth() {
-      return this.field_75181_e.getWidth();
+      return this.craftMatrix.getWidth();
    }
 
    public int getHeight() {
-      return this.field_75181_e.getHeight();
+      return this.craftMatrix.getHeight();
    }
 
    @OnlyIn(Dist.CLIENT)

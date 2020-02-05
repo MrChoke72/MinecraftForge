@@ -29,7 +29,7 @@ public class PaneBlock extends FourWayBlock {
       BlockState blockstate1 = iblockreader.getBlockState(blockpos2);
       BlockState blockstate2 = iblockreader.getBlockState(blockpos3);
       BlockState blockstate3 = iblockreader.getBlockState(blockpos4);
-      return this.getDefaultState().with(NORTH, Boolean.valueOf(this.canAttachTo(blockstate, blockstate.func_224755_d(iblockreader, blockpos1, Direction.SOUTH)))).with(SOUTH, Boolean.valueOf(this.canAttachTo(blockstate1, blockstate1.func_224755_d(iblockreader, blockpos2, Direction.NORTH)))).with(WEST, Boolean.valueOf(this.canAttachTo(blockstate2, blockstate2.func_224755_d(iblockreader, blockpos3, Direction.EAST)))).with(EAST, Boolean.valueOf(this.canAttachTo(blockstate3, blockstate3.func_224755_d(iblockreader, blockpos4, Direction.WEST)))).with(WATERLOGGED, Boolean.valueOf(ifluidstate.getFluid() == Fluids.WATER));
+      return this.getDefaultState().with(NORTH, Boolean.valueOf(this.canAttachTo(blockstate, blockstate.isSolidSide(iblockreader, blockpos1, Direction.SOUTH)))).with(SOUTH, Boolean.valueOf(this.canAttachTo(blockstate1, blockstate1.isSolidSide(iblockreader, blockpos2, Direction.NORTH)))).with(WEST, Boolean.valueOf(this.canAttachTo(blockstate2, blockstate2.isSolidSide(iblockreader, blockpos3, Direction.EAST)))).with(EAST, Boolean.valueOf(this.canAttachTo(blockstate3, blockstate3.isSolidSide(iblockreader, blockpos4, Direction.WEST)))).with(WATERLOGGED, Boolean.valueOf(ifluidstate.getFluid() == Fluids.WATER));
    }
 
    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
@@ -37,7 +37,7 @@ public class PaneBlock extends FourWayBlock {
          worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
       }
 
-      return facing.getAxis().isHorizontal() ? stateIn.with(FACING_TO_PROPERTY_MAP.get(facing), Boolean.valueOf(this.canAttachTo(facingState, facingState.func_224755_d(worldIn, facingPos, facing.getOpposite())))) : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+      return facing.getAxis().isHorizontal() ? stateIn.with(FACING_TO_PROPERTY_MAP.get(facing), Boolean.valueOf(this.canAttachTo(facingState, facingState.isSolidSide(worldIn, facingPos, facing.getOpposite())))) : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
    }
 
    @OnlyIn(Dist.CLIENT)

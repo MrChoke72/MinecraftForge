@@ -20,8 +20,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public abstract class DisplayEffectsScreen<T extends Container> extends ContainerScreen<T> {
    protected boolean hasActivePotionEffects;
 
-   public DisplayEffectsScreen(T p_i51091_1_, PlayerInventory p_i51091_2_, ITextComponent p_i51091_3_) {
-      super(p_i51091_1_, p_i51091_2_, p_i51091_3_);
+   public DisplayEffectsScreen(T screenContainer, PlayerInventory inv, ITextComponent titleIn) {
+      super(screenContainer, inv, titleIn);
    }
 
    protected void init() {
@@ -59,51 +59,51 @@ public abstract class DisplayEffectsScreen<T extends Container> extends Containe
          }
 
          Iterable<EffectInstance> iterable = Ordering.<EffectInstance>natural().sortedCopy(collection);
-         this.func_214079_a(i, j, iterable);
-         this.func_214077_b(i, j, iterable);
-         this.func_214078_c(i, j, iterable);
+         this.drawActivePotionEffectsBackgrounds(i, j, iterable);
+         this.drawActivePotionEffectsIcons(i, j, iterable);
+         this.drawActivePotionEffectsNames(i, j, iterable);
       }
    }
 
-   private void func_214079_a(int p_214079_1_, int p_214079_2_, Iterable<EffectInstance> p_214079_3_) {
+   private void drawActivePotionEffectsBackgrounds(int x, int height, Iterable<EffectInstance> effectsIn) {
       this.minecraft.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
       int i = this.guiTop;
 
-      for(EffectInstance effectinstance : p_214079_3_) {
+      for(EffectInstance effectinstance : effectsIn) {
          RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-         this.blit(p_214079_1_, i, 0, 166, 140, 32);
-         i += p_214079_2_;
+         this.blit(x, i, 0, 166, 140, 32);
+         i += height;
       }
 
    }
 
-   private void func_214077_b(int p_214077_1_, int p_214077_2_, Iterable<EffectInstance> p_214077_3_) {
+   private void drawActivePotionEffectsIcons(int x, int height, Iterable<EffectInstance> effectsIn) {
       PotionSpriteUploader potionspriteuploader = this.minecraft.getPotionSpriteUploader();
       int i = this.guiTop;
 
-      for(EffectInstance effectinstance : p_214077_3_) {
+      for(EffectInstance effectinstance : effectsIn) {
          Effect effect = effectinstance.getPotion();
          TextureAtlasSprite textureatlassprite = potionspriteuploader.getSprite(effect);
-         this.minecraft.getTextureManager().bindTexture(textureatlassprite.func_229241_m_().func_229223_g_());
-         blit(p_214077_1_ + 6, i + 7, this.getBlitOffset(), 18, 18, textureatlassprite);
-         i += p_214077_2_;
+         this.minecraft.getTextureManager().bindTexture(textureatlassprite.getAtlasTexture().getBasePath());
+         blit(x + 6, i + 7, this.getBlitOffset(), 18, 18, textureatlassprite);
+         i += height;
       }
 
    }
 
-   private void func_214078_c(int p_214078_1_, int p_214078_2_, Iterable<EffectInstance> p_214078_3_) {
+   private void drawActivePotionEffectsNames(int x, int height, Iterable<EffectInstance> effectsIn) {
       int i = this.guiTop;
 
-      for(EffectInstance effectinstance : p_214078_3_) {
+      for(EffectInstance effectinstance : effectsIn) {
          String s = I18n.format(effectinstance.getPotion().getName());
          if (effectinstance.getAmplifier() >= 1 && effectinstance.getAmplifier() <= 9) {
             s = s + ' ' + I18n.format("enchantment.level." + (effectinstance.getAmplifier() + 1));
          }
 
-         this.font.drawStringWithShadow(s, (float)(p_214078_1_ + 10 + 18), (float)(i + 6), 16777215);
+         this.font.drawStringWithShadow(s, (float)(x + 10 + 18), (float)(i + 6), 16777215);
          String s1 = EffectUtils.getPotionDurationString(effectinstance, 1.0F);
-         this.font.drawStringWithShadow(s1, (float)(p_214078_1_ + 10 + 18), (float)(i + 6 + 10), 8355711);
-         i += p_214078_2_;
+         this.font.drawStringWithShadow(s1, (float)(x + 10 + 18), (float)(i + 6 + 10), 8355711);
+         i += height;
       }
 
    }

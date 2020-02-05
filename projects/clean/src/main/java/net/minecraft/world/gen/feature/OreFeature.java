@@ -12,8 +12,8 @@ import net.minecraft.world.gen.GenerationSettings;
 import net.minecraft.world.gen.Heightmap;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
-   public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> p_i51472_1_) {
-      super(p_i51472_1_);
+   public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> configFactoryIn) {
+      super(configFactoryIn);
    }
 
    public boolean place(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generator, Random rand, BlockPos pos, OreFeatureConfig config) {

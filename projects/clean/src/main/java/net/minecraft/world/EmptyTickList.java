@@ -24,6 +24,6 @@ public class EmptyTickList<T> implements ITickList<T> {
       return false;
    }
 
-   public void func_219497_a(Stream<NextTickListEntry<T>> p_219497_1_) {
+   public void addAll(Stream<NextTickListEntry<T>> p_219497_1_) {
    }
 }

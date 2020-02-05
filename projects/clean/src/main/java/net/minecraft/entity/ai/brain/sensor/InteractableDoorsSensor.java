@@ -14,25 +14,23 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 
 public class InteractableDoorsSensor extends Sensor<LivingEntity> {
-   //AH CHANGE REFACTOR
-   protected void update(ServerWorld world, LivingEntity entity) {
-   //protected void update(ServerWorld p_212872_1_, LivingEntity p_212872_2_) {
-      DimensionType dimensiontype = world.getDimension().getType();
-      BlockPos blockpos = new BlockPos(entity);
+   protected void update(ServerWorld worldIn, LivingEntity entityIn) {
+      DimensionType dimensiontype = worldIn.getDimension().getType();
+      BlockPos blockpos = new BlockPos(entityIn);
       List<GlobalPos> list = Lists.newArrayList();
 
       for(int i = -1; i <= 1; ++i) {
          for(int j = -1; j <= 1; ++j) {
             for(int k = -1; k <= 1; ++k) {
                BlockPos blockpos1 = blockpos.add(i, j, k);
-               if (world.getBlockState(blockpos1).isIn(BlockTags.WOODEN_DOORS)) {
+               if (worldIn.getBlockState(blockpos1).isIn(BlockTags.WOODEN_DOORS)) {
                   list.add(GlobalPos.of(dimensiontype, blockpos1));
                }
             }
          }
       }
 
-      Brain<?> brain = entity.getBrain();
+      Brain<?> brain = entityIn.getBrain();
       if (!list.isEmpty()) {
          brain.setMemory(MemoryModuleType.INTERACTABLE_DOORS, list);
       } else {

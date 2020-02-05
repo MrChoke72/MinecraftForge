@@ -18,12 +18,12 @@ public abstract class AbstractRailBlock extends Block {
    protected static final VoxelShape ASCENDING_AABB = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
    private final boolean disableCorners;
 
-   public static boolean isRail(World p_208488_0_, BlockPos p_208488_1_) {
-      return isRail(p_208488_0_.getBlockState(p_208488_1_));
+   public static boolean isRail(World worldIn, BlockPos pos) {
+      return isRail(worldIn.getBlockState(pos));
    }
 
-   public static boolean isRail(BlockState p_208487_0_) {
-      return p_208487_0_.isIn(BlockTags.RAILS);
+   public static boolean isRail(BlockState state) {
+      return state.isIn(BlockTags.RAILS);
    }
 
    protected AbstractRailBlock(boolean p_i48444_1_, Block.Properties p_i48444_2_) {
@@ -41,7 +41,7 @@ public abstract class AbstractRailBlock extends Block {
    }
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-      return func_220064_c(worldIn, pos.down());
+      return hasSolidSideOnTop(worldIn, pos.down());
    }
 
    public void onBlockAdded(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
@@ -59,24 +59,24 @@ public abstract class AbstractRailBlock extends Block {
          RailShape railshape = state.get(this.getShapeProperty());
          boolean flag = false;
          BlockPos blockpos = pos.down();
-         if (!func_220064_c(worldIn, blockpos)) {
+         if (!hasSolidSideOnTop(worldIn, blockpos)) {
             flag = true;
          }
 
          BlockPos blockpos1 = pos.east();
-         if (railshape == RailShape.ASCENDING_EAST && !func_220064_c(worldIn, blockpos1)) {
+         if (railshape == RailShape.ASCENDING_EAST && !hasSolidSideOnTop(worldIn, blockpos1)) {
             flag = true;
          } else {
             BlockPos blockpos2 = pos.west();
-            if (railshape == RailShape.ASCENDING_WEST && !func_220064_c(worldIn, blockpos2)) {
+            if (railshape == RailShape.ASCENDING_WEST && !hasSolidSideOnTop(worldIn, blockpos2)) {
                flag = true;
             } else {
                BlockPos blockpos3 = pos.north();
-               if (railshape == RailShape.ASCENDING_NORTH && !func_220064_c(worldIn, blockpos3)) {
+               if (railshape == RailShape.ASCENDING_NORTH && !hasSolidSideOnTop(worldIn, blockpos3)) {
                   flag = true;
                } else {
                   BlockPos blockpos4 = pos.south();
-                  if (railshape == RailShape.ASCENDING_SOUTH && !func_220064_c(worldIn, blockpos4)) {
+                  if (railshape == RailShape.ASCENDING_SOUTH && !hasSolidSideOnTop(worldIn, blockpos4)) {
                      flag = true;
                   }
                }
@@ -99,12 +99,12 @@ public abstract class AbstractRailBlock extends Block {
    protected void updateState(BlockState state, World worldIn, BlockPos pos, Block blockIn) {
    }
 
-   protected BlockState getUpdatedState(World p_208489_1_, BlockPos p_208489_2_, BlockState p_208489_3_, boolean placing) {
-      if (p_208489_1_.isRemote) {
-         return p_208489_3_;
+   protected BlockState getUpdatedState(World worldIn, BlockPos pos, BlockState state, boolean placing) {
+      if (worldIn.isRemote) {
+         return state;
       } else {
-         RailShape railshape = p_208489_3_.get(this.getShapeProperty());
-         return (new RailState(p_208489_1_, p_208489_2_, p_208489_3_)).func_226941_a_(p_208489_1_.isBlockPowered(p_208489_2_), placing, railshape).getNewState();
+         RailShape railshape = state.get(this.getShapeProperty());
+         return (new RailState(worldIn, pos, state)).func_226941_a_(worldIn.isBlockPowered(pos), placing, railshape).getNewState();
       }
    }
 

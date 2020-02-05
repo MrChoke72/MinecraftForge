@@ -16,12 +16,12 @@ import net.minecraft.world.storage.loot.LootParameter;
 import net.minecraft.world.storage.loot.LootParameters;
 
 public class EntityHasProperty implements ILootCondition {
-   private final EntityPredicate field_216001_a;
+   private final EntityPredicate predicate;
    private final LootContext.EntityTarget target;
 
-   private EntityHasProperty(EntityPredicate p_i51196_1_, LootContext.EntityTarget p_i51196_2_) {
-      this.field_216001_a = p_i51196_1_;
-      this.target = p_i51196_2_;
+   private EntityHasProperty(EntityPredicate predicateIn, LootContext.EntityTarget targetIn) {
+      this.predicate = predicateIn;
+      this.target = targetIn;
    }
 
    public Set<LootParameter<?>> getRequiredParameters() {
@@ -31,16 +31,16 @@ public class EntityHasProperty implements ILootCondition {
    public boolean test(LootContext p_test_1_) {
       Entity entity = p_test_1_.get(this.target.getParameter());
       BlockPos blockpos = p_test_1_.get(LootParameters.POSITION);
-      return this.field_216001_a.func_217993_a(p_test_1_.getWorld(), blockpos != null ? new Vec3d(blockpos) : null, entity);
+      return this.predicate.func_217993_a(p_test_1_.getWorld(), blockpos != null ? new Vec3d(blockpos) : null, entity);
    }
 
-   public static ILootCondition.IBuilder func_215998_a(LootContext.EntityTarget p_215998_0_) {
-      return func_215999_a(p_215998_0_, EntityPredicate.Builder.create());
+   public static ILootCondition.IBuilder builder(LootContext.EntityTarget targetIn) {
+      return builder(targetIn, EntityPredicate.Builder.create());
    }
 
-   public static ILootCondition.IBuilder func_215999_a(LootContext.EntityTarget p_215999_0_, EntityPredicate.Builder p_215999_1_) {
+   public static ILootCondition.IBuilder builder(LootContext.EntityTarget targetIn, EntityPredicate.Builder predicateBuilderIn) {
       return () -> {
-         return new EntityHasProperty(p_215999_1_.build(), p_215999_0_);
+         return new EntityHasProperty(predicateBuilderIn.build(), targetIn);
       };
    }
 
@@ -50,7 +50,7 @@ public class EntityHasProperty implements ILootCondition {
       }
 
       public void serialize(JsonObject json, EntityHasProperty value, JsonSerializationContext context) {
-         json.add("predicate", value.field_216001_a.serialize());
+         json.add("predicate", value.predicate.serialize());
          json.add("entity", context.serialize(value.target));
       }
 

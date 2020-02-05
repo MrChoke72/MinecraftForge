@@ -64,8 +64,8 @@ public class FallingDustParticle extends SpriteTexturedParticle {
    public static class Factory implements IParticleFactory<BlockParticleData> {
       private final IAnimatedSprite spriteSet;
 
-      public Factory(IAnimatedSprite p_i51109_1_) {
-         this.spriteSet = p_i51109_1_;
+      public Factory(IAnimatedSprite spriteSetIn) {
+         this.spriteSet = spriteSetIn;
       }
 
       @Nullable

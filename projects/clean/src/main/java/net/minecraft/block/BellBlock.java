@@ -121,7 +121,7 @@ public class BellBlock extends ContainerBlock {
             dir = world.getBlockState(pos).get(HORIZONTAL_FACING);
          }
 
-         ((BellTileEntity)tileentity).func_213939_a(dir);
+         ((BellTileEntity)tileentity).ring(dir);
          world.playSound((PlayerEntity)null, pos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0F, 1.0F);
          return true;
       } else {
@@ -171,13 +171,13 @@ public class BellBlock extends ContainerBlock {
             return blockstate;
          }
       } else {
-         boolean flag = direction$axis == Direction.Axis.X && world.getBlockState(blockpos.west()).func_224755_d(world, blockpos.west(), Direction.EAST) && world.getBlockState(blockpos.east()).func_224755_d(world, blockpos.east(), Direction.WEST) || direction$axis == Direction.Axis.Z && world.getBlockState(blockpos.north()).func_224755_d(world, blockpos.north(), Direction.SOUTH) && world.getBlockState(blockpos.south()).func_224755_d(world, blockpos.south(), Direction.NORTH);
+         boolean flag = direction$axis == Direction.Axis.X && world.getBlockState(blockpos.west()).isSolidSide(world, blockpos.west(), Direction.EAST) && world.getBlockState(blockpos.east()).isSolidSide(world, blockpos.east(), Direction.WEST) || direction$axis == Direction.Axis.Z && world.getBlockState(blockpos.north()).isSolidSide(world, blockpos.north(), Direction.SOUTH) && world.getBlockState(blockpos.south()).isSolidSide(world, blockpos.south(), Direction.NORTH);
          BlockState blockstate1 = this.getDefaultState().with(HORIZONTAL_FACING, direction.getOpposite()).with(field_220134_b, flag ? BellAttachment.DOUBLE_WALL : BellAttachment.SINGLE_WALL);
          if (blockstate1.isValidPosition(context.getWorld(), context.getPos())) {
             return blockstate1;
          }
 
-         boolean flag1 = world.getBlockState(blockpos.down()).func_224755_d(world, blockpos.down(), Direction.UP);
+         boolean flag1 = world.getBlockState(blockpos.down()).isSolidSide(world, blockpos.down(), Direction.UP);
          blockstate1 = blockstate1.with(field_220134_b, flag1 ? BellAttachment.FLOOR : BellAttachment.CEILING);
          if (blockstate1.isValidPosition(context.getWorld(), context.getPos())) {
             return blockstate1;
@@ -194,11 +194,11 @@ public class BellBlock extends ContainerBlock {
          return Blocks.AIR.getDefaultState();
       } else {
          if (facing.getAxis() == stateIn.get(HORIZONTAL_FACING).getAxis()) {
-            if (bellattachment == BellAttachment.DOUBLE_WALL && !facingState.func_224755_d(worldIn, facingPos, facing)) {
+            if (bellattachment == BellAttachment.DOUBLE_WALL && !facingState.isSolidSide(worldIn, facingPos, facing)) {
                return stateIn.with(field_220134_b, BellAttachment.SINGLE_WALL).with(HORIZONTAL_FACING, facing.getOpposite());
             }
 
-            if (bellattachment == BellAttachment.SINGLE_WALL && direction.getOpposite() == facing && facingState.func_224755_d(worldIn, facingPos, stateIn.get(HORIZONTAL_FACING))) {
+            if (bellattachment == BellAttachment.SINGLE_WALL && direction.getOpposite() == facing && facingState.isSolidSide(worldIn, facingPos, stateIn.get(HORIZONTAL_FACING))) {
                return stateIn.with(field_220134_b, BellAttachment.DOUBLE_WALL);
             }
          }

@@ -27,7 +27,7 @@ public class FlyingPathNavigator extends PathNavigator {
       return this.entity.getPositionVec();
    }
 
-   public Path getPathToEntityLiving(Entity entityIn, int keepDist) {
+   public Path getPathToEntity(Entity entityIn, int keepDist) {
       return this.getPathToPos(new BlockPos(entityIn), keepDist);
    }
 
@@ -47,7 +47,7 @@ public class FlyingPathNavigator extends PathNavigator {
             }
          }
 
-         DebugPacketSender.func_218803_a(this.world, this.entity, this.currentPath, this.maxDistanceToWaypoint);
+         DebugPacketSender.sendPath(this.world, this.entity, this.currentPath, this.maxDistanceToWaypoint);
          if (!this.noPath()) {
             Vec3d vec3d1 = this.currentPath.getPosition(this.entity);
             this.entity.getMoveHelper().setMoveTo(vec3d1.x, vec3d1.y, vec3d1.z, this.speed);
@@ -130,6 +130,6 @@ public class FlyingPathNavigator extends PathNavigator {
    }
 
    public boolean canEntityStandOnPos(BlockPos pos) {
-      return this.world.getBlockState(pos).isUpSideFilled(this.world, pos, this.entity);
+      return this.world.getBlockState(pos).isTopSolid(this.world, pos, this.entity);
    }
 }

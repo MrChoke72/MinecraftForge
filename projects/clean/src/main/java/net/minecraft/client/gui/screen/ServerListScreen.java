@@ -50,11 +50,11 @@ public class ServerListScreen extends Screen {
       this.ipEdit.setMaxStringLength(128);
       this.ipEdit.setFocused2(true);
       this.ipEdit.setText(this.minecraft.gameSettings.lastServer);
-      this.ipEdit.func_212954_a((p_213024_1_) -> {
+      this.ipEdit.setResponder((p_213024_1_) -> {
          this.func_195168_i();
       });
       this.children.add(this.ipEdit);
-      this.func_212928_a(this.ipEdit);
+      this.setFocusedDefault(this.ipEdit);
       this.func_195168_i();
    }
 

@@ -35,7 +35,7 @@ public class MinecartTickableSound extends TickableSound {
          this.x = (float)this.minecart.getPosX();
          this.y = (float)this.minecart.getPosY();
          this.z = (float)this.minecart.getPosZ();
-         float f = MathHelper.sqrt(Entity.func_213296_b(this.minecart.getMotion()));
+         float f = MathHelper.sqrt(Entity.horizontalMag(this.minecart.getMotion()));
          if ((double)f >= 0.01D) {
             this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);
             this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0F, 0.5F), 0.0F, 0.7F);

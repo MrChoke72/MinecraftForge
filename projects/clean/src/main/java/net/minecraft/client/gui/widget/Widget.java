@@ -88,7 +88,7 @@ public abstract class Widget extends AbstractGui implements IRenderable, IGuiEve
       if (this.active && this.isHovered() && Util.milliTime() > this.nextNarration) {
          String s = this.getNarrationMessage();
          if (!s.isEmpty()) {
-            NarratorChatListener.INSTANCE.func_216864_a(s);
+            NarratorChatListener.INSTANCE.say(s);
             this.nextNarration = Long.MAX_VALUE;
          }
       }

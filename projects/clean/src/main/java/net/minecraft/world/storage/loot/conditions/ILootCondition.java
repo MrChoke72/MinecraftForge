@@ -40,8 +40,8 @@ public interface ILootCondition extends IParameterized, Predicate<LootContext> {
          return Inverted.builder(this);
       }
 
-      default Alternative.Builder alternative(ILootCondition.IBuilder p_216297_1_) {
-         return Alternative.builder(this, p_216297_1_);
+      default Alternative.Builder alternative(ILootCondition.IBuilder builderIn) {
+         return Alternative.builder(this, builderIn);
       }
    }
 }

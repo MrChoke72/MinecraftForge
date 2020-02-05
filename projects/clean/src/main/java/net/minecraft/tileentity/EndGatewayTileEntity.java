@@ -178,7 +178,7 @@ public class EndGatewayTileEntity extends EndPortalTileEntity implements ITickab
       if (this.exitPortal == null) {
          this.exitPortal = new BlockPos(vec3d1.x + 0.5D, 75.0D, vec3d1.z + 0.5D);
          LOGGER.debug("Failed to find suitable block, settling on {}", (Object)this.exitPortal);
-         Feature.END_ISLAND.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG).place(p_227015_1_, p_227015_1_.getChunkProvider().getChunkGenerator(), new Random(this.exitPortal.toLong()), this.exitPortal);
+         Feature.END_ISLAND.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).place(p_227015_1_, p_227015_1_.getChunkProvider().getChunkGenerator(), new Random(this.exitPortal.toLong()), this.exitPortal);
       } else {
          LOGGER.debug("Found block at {}", (Object)this.exitPortal);
       }
@@ -199,7 +199,7 @@ public class EndGatewayTileEntity extends EndPortalTileEntity implements ITickab
                for(int k = 255; k > (blockpos == null ? 0 : blockpos.getY()); --k) {
                   BlockPos blockpos1 = new BlockPos(posIn.getX() + i, k, posIn.getZ() + j);
                   BlockState blockstate = worldIn.getBlockState(blockpos1);
-                  if (blockstate.func_224756_o(worldIn, blockpos1) && (allowBedrock || blockstate.getBlock() != Blocks.BEDROCK)) {
+                  if (blockstate.isCollisionShapeOpaque(worldIn, blockpos1) && (allowBedrock || blockstate.getBlock() != Blocks.BEDROCK)) {
                      blockpos = blockpos1;
                      break;
                   }
@@ -228,7 +228,7 @@ public class EndGatewayTileEntity extends EndPortalTileEntity implements ITickab
          BlockState blockstate = chunkIn.getBlockState(blockpos3);
          BlockPos blockpos4 = blockpos3.up();
          BlockPos blockpos5 = blockpos3.up(2);
-         if (blockstate.getBlock() == Blocks.END_STONE && !chunkIn.getBlockState(blockpos4).func_224756_o(chunkIn, blockpos4) && !chunkIn.getBlockState(blockpos5).func_224756_o(chunkIn, blockpos5)) {
+         if (blockstate.getBlock() == Blocks.END_STONE && !chunkIn.getBlockState(blockpos4).isCollisionShapeOpaque(chunkIn, blockpos4) && !chunkIn.getBlockState(blockpos5).isCollisionShapeOpaque(chunkIn, blockpos5)) {
             double d1 = blockpos3.distanceSq(0.0D, 0.0D, 0.0D, true);
             if (blockpos2 == null || d1 < d0) {
                blockpos2 = blockpos3;
@@ -241,7 +241,7 @@ public class EndGatewayTileEntity extends EndPortalTileEntity implements ITickab
    }
 
    private void func_227016_a_(ServerWorld p_227016_1_, BlockPos p_227016_2_) {
-      Feature.END_GATEWAY.func_225566_b_(EndGatewayConfig.func_214702_a(this.getPos(), false)).place(p_227016_1_, p_227016_1_.getChunkProvider().getChunkGenerator(), new Random(), p_227016_2_);
+      Feature.END_GATEWAY.withConfiguration(EndGatewayConfig.func_214702_a(this.getPos(), false)).place(p_227016_1_, p_227016_1_.getChunkProvider().getChunkGenerator(), new Random(), p_227016_2_);
    }
 
    @OnlyIn(Dist.CLIENT)

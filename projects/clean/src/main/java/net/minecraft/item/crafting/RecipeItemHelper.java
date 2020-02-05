@@ -18,9 +18,9 @@ import net.minecraft.util.registry.Registry;
 public class RecipeItemHelper {
    public final Int2IntMap itemToCount = new Int2IntOpenHashMap();
 
-   public void accountPlainStack(ItemStack p_195932_1_) {
-      if (!p_195932_1_.isDamaged() && !p_195932_1_.isEnchanted() && !p_195932_1_.hasDisplayName()) {
-         this.accountStack(p_195932_1_);
+   public void accountPlainStack(ItemStack stack) {
+      if (!stack.isDamaged() && !stack.isEnchanted() && !stack.hasDisplayName()) {
+         this.accountStack(stack);
       }
 
    }
@@ -29,10 +29,10 @@ public class RecipeItemHelper {
       this.func_221264_a(stack, 64);
    }
 
-   public void func_221264_a(ItemStack p_221264_1_, int p_221264_2_) {
-      if (!p_221264_1_.isEmpty()) {
-         int i = pack(p_221264_1_);
-         int j = Math.min(p_221264_2_, p_221264_1_.getCount());
+   public void func_221264_a(ItemStack stack, int minCount) {
+      if (!stack.isEmpty()) {
+         int i = pack(stack);
+         int j = Math.min(minCount, stack.getCount());
          this.increment(i, j);
       }
 

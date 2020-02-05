@@ -115,7 +115,6 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerPlayerEntity extends PlayerEntity implements IContainerListener {
    private static final Logger LOGGER = LogManager.getLogger();
-
    private String language = "en_US";
    public ServerPlayNetHandler connection;
    public final MinecraftServer server;
@@ -164,11 +163,11 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       this.func_205734_a(worldIn);
    }
 
-   private void func_205734_a(ServerWorld p_205734_1_) {
-      BlockPos blockpos = p_205734_1_.getSpawnPoint();
-      if (p_205734_1_.dimension.hasSkyLight() && p_205734_1_.getWorldInfo().getGameType() != GameType.ADVENTURE) {
-         int i = Math.max(0, this.server.getSpawnRadius(p_205734_1_));
-         int j = MathHelper.floor(p_205734_1_.getWorldBorder().getClosestDistance((double)blockpos.getX(), (double)blockpos.getZ()));
+   private void func_205734_a(ServerWorld worldIn) {
+      BlockPos blockpos = worldIn.getSpawnPoint();
+      if (worldIn.dimension.hasSkyLight() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE) {
+         int i = Math.max(0, this.server.getSpawnRadius(worldIn));
+         int j = MathHelper.floor(worldIn.getWorldBorder().getClosestDistance((double)blockpos.getX(), (double)blockpos.getZ()));
          if (j < i) {
             i = j;
          }
@@ -187,10 +186,10 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
             int i2 = (k1 + j1 * l1) % i1;
             int j2 = i2 % (i * 2 + 1);
             int k2 = i2 / (i * 2 + 1);
-            BlockPos blockpos1 = p_205734_1_.getDimension().findSpawn(blockpos.getX() + j2 - i, blockpos.getZ() + k2 - i, false);
+            BlockPos blockpos1 = worldIn.getDimension().findSpawn(blockpos.getX() + j2 - i, blockpos.getZ() + k2 - i, false);
             if (blockpos1 != null) {
                this.moveToBlockPosAndAngles(blockpos1, 0.0F, 0.0F);
-               if (p_205734_1_.isEntityNoCollide(this)) {
+               if (worldIn.isEntityNoCollide(this)) {
                   break;
                }
             }
@@ -198,7 +197,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       } else {
          this.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
 
-         while(!p_205734_1_.isEntityNoCollide(this) && this.getPosY() < 255.0D) {
+         while(!worldIn.isEntityNoCollide(this) && this.getPosY() < 255.0D) {
             this.setPosition(this.getPosX(), this.getPosY() + 1.0D, this.getPosZ());
          }
       }
@@ -249,6 +248,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       if (this.isSleeping()) {
          this.wakeUp();
       }
+
    }
 
    public void writeAdditional(CompoundNBT compound) {
@@ -296,8 +296,8 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       this.lastExperience = -1;
    }
 
-   public void func_195399_b(int p_195399_1_) {
-      this.experienceLevel = p_195399_1_;
+   public void setExperienceLevel(int level) {
+      this.experienceLevel = level;
       this.lastExperience = -1;
    }
 
@@ -595,7 +595,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
          this.dimension = destination;
          ServerWorld serverworld1 = this.server.getWorld(destination);
          WorldInfo worldinfo = serverworld1.getWorldInfo();
-         this.connection.sendPacket(new SRespawnPacket(destination, WorldInfo.func_227498_c_(worldinfo.getSeed()), worldinfo.getGenerator(), this.interactionManager.getGameType()));
+         this.connection.sendPacket(new SRespawnPacket(destination, WorldInfo.byHashing(worldinfo.getSeed()), worldinfo.getGenerator(), this.interactionManager.getGameType()));
          this.connection.sendPacket(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));
          PlayerList playerlist = this.server.getPlayerList();
          playerlist.updatePermissionLevel(this);
@@ -656,9 +656,9 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
 
             this.setLocationAndAngles((double)i, (double)j, (double)k, f1, 0.0F);
             this.setMotion(Vec3d.ZERO);
-         } else if (!serverworld1.getDefaultTeleporter().func_222268_a(this, f2)) {
+         } else if (!serverworld1.getDefaultTeleporter().placeInPortal(this, f2)) {
             serverworld1.getDefaultTeleporter().makePortal(this);
-            serverworld1.getDefaultTeleporter().func_222268_a(this, f2);
+            serverworld1.getDefaultTeleporter().placeInPortal(this, f2);
          }
 
          serverworld.getProfiler().endSection();
@@ -778,7 +778,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
    }
 
    public void handleFalling(double y, boolean onGroundIn) {
-      BlockPos blockpos = this.func_226268_ag_();
+      BlockPos blockpos = this.getOnPosition();
       if (this.world.isBlockLoaded(blockpos)) {
          BlockState blockstate = this.world.getBlockState(blockpos);
          super.updateFallState(y, onGroundIn, blockstate, blockpos);
@@ -819,8 +819,8 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       }
    }
 
-   public void func_213818_a(int p_213818_1_, MerchantOffers p_213818_2_, int p_213818_3_, int p_213818_4_, boolean p_213818_5_, boolean p_213818_6_) {
-      this.connection.sendPacket(new SMerchantOffersPacket(p_213818_1_, p_213818_2_, p_213818_3_, p_213818_4_, p_213818_5_, p_213818_6_));
+   public void openMerchantContainer(int containerId, MerchantOffers offers, int level, int xp, boolean p_213818_5_, boolean p_213818_6_) {
+      this.connection.sendPacket(new SMerchantOffersPacket(containerId, offers, level, xp, p_213818_5_, p_213818_6_));
    }
 
    public void openHorseInventory(AbstractHorseEntity horse, IInventory inventoryIn) {
@@ -1028,8 +1028,8 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       CriteriaTriggers.EFFECTS_CHANGED.trigger(this);
    }
 
-   protected void onChangedPotionEffect(EffectInstance id, boolean p_70695_2_) {
-      super.onChangedPotionEffect(id, p_70695_2_);
+   protected void onChangedPotionEffect(EffectInstance id, boolean reapply) {
+      super.onChangedPotionEffect(id, reapply);
       this.connection.sendPacket(new SPlayEntityEffectPacket(this.getEntityId(), id));
       CriteriaTriggers.EFFECTS_CHANGED.trigger(this);
    }
@@ -1048,7 +1048,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       this.connection.setPlayerLocation(x, y, z, this.rotationYaw, this.rotationPitch);
    }
 
-   public void func_225653_b_(double p_225653_1_, double p_225653_3_, double p_225653_5_) {
+   public void moveForced(double p_225653_1_, double p_225653_3_, double p_225653_5_) {
       this.connection.setPlayerLocation(p_225653_1_, p_225653_3_, p_225653_5_, this.rotationYaw, this.rotationPitch);
       this.connection.captureCurrentPosition();
    }
@@ -1237,7 +1237,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
          ServerWorld serverworld = this.getServerWorld();
          this.dimension = p_200619_1_.dimension.getType();
          WorldInfo worldinfo = p_200619_1_.getWorldInfo();
-         this.connection.sendPacket(new SRespawnPacket(this.dimension, WorldInfo.func_227498_c_(worldinfo.getSeed()), worldinfo.getGenerator(), this.interactionManager.getGameType()));
+         this.connection.sendPacket(new SRespawnPacket(this.dimension, WorldInfo.byHashing(worldinfo.getSeed()), worldinfo.getGenerator(), this.interactionManager.getGameType()));
          this.connection.sendPacket(new SServerDifficultyPacket(worldinfo.getDifficulty(), worldinfo.isDifficultyLocked()));
          this.server.getPlayerList().updatePermissionLevel(this);
          serverworld.removePlayer(this);
@@ -1274,7 +1274,7 @@ public class ServerPlayerEntity extends PlayerEntity implements IContainerListen
       this.managedSectionPos = sectionPosIn;
    }
 
-   public void func_213823_a(SoundEvent p_213823_1_, SoundCategory p_213823_2_, float p_213823_3_, float p_213823_4_) {
+   public void playSound(SoundEvent p_213823_1_, SoundCategory p_213823_2_, float p_213823_3_, float p_213823_4_) {
       this.connection.sendPacket(new SPlaySoundEffectPacket(p_213823_1_, p_213823_2_, this.getPosX(), this.getPosY(), this.getPosZ(), p_213823_3_, p_213823_4_));
    }
 

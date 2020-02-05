@@ -21,8 +21,8 @@ public class DimensionType implements IDynamicSerializable {
    private final String suffix;
    private final String directory;
    private final BiFunction<World, DimensionType, ? extends Dimension> factory;
-   private final boolean field_218273_h;
-   private final IBiomeMagnifier field_227175_i_;
+   private final boolean hasSkyLight;
+   private final IBiomeMagnifier magnifier;
 
    private static DimensionType register(String key, DimensionType type) {
       return Registry.register(Registry.DIMENSION_TYPE, type.id, key, type);
@@ -33,11 +33,11 @@ public class DimensionType implements IDynamicSerializable {
       this.suffix = p_i225789_2_;
       this.directory = p_i225789_3_;
       this.factory = p_i225789_4_;
-      this.field_218273_h = p_i225789_5_;
-      this.field_227175_i_ = p_i225789_6_;
+      this.hasSkyLight = p_i225789_5_;
+      this.magnifier = p_i225789_6_;
    }
 
-   public static DimensionType func_218271_a(Dynamic<?> p_218271_0_) {
+   public static DimensionType deserialize(Dynamic<?> p_218271_0_) {
       return Registry.DIMENSION_TYPE.getOrDefault(new ResourceLocation(p_218271_0_.asString("")));
    }
 
@@ -80,12 +80,12 @@ public class DimensionType implements IDynamicSerializable {
       return Registry.DIMENSION_TYPE.getKey(dim);
    }
 
-   public boolean func_218272_d() {
-      return this.field_218273_h;
+   public boolean hasSkyLight() {
+      return this.hasSkyLight;
    }
 
-   public IBiomeMagnifier func_227176_e_() {
-      return this.field_227175_i_;
+   public IBiomeMagnifier getMagnifier() {
+      return this.magnifier;
    }
 
    public <T> T serialize(DynamicOps<T> p_218175_1_) {

@@ -26,65 +26,65 @@ public abstract class ArmorLayer<T extends LivingEntity, M extends BipedModel<T>
    protected final A modelArmor;
    private static final Map<String, ResourceLocation> ARMOR_TEXTURE_RES_MAP = Maps.newHashMap();
 
-   protected ArmorLayer(IEntityRenderer<T, M> p_i50951_1_, A p_i50951_2_, A p_i50951_3_) {
-      super(p_i50951_1_);
-      this.modelLeggings = p_i50951_2_;
-      this.modelArmor = p_i50951_3_;
+   protected ArmorLayer(IEntityRenderer<T, M> entityRendererIn, A modelLeggingsIn, A modelArmorIn) {
+      super(entityRendererIn);
+      this.modelLeggings = modelLeggingsIn;
+      this.modelArmor = modelArmorIn;
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, T p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      this.func_229129_a_(p_225628_1_, p_225628_2_, p_225628_4_, p_225628_5_, p_225628_6_, p_225628_7_, p_225628_8_, p_225628_9_, p_225628_10_, EquipmentSlotType.CHEST, p_225628_3_);
-      this.func_229129_a_(p_225628_1_, p_225628_2_, p_225628_4_, p_225628_5_, p_225628_6_, p_225628_7_, p_225628_8_, p_225628_9_, p_225628_10_, EquipmentSlotType.LEGS, p_225628_3_);
-      this.func_229129_a_(p_225628_1_, p_225628_2_, p_225628_4_, p_225628_5_, p_225628_6_, p_225628_7_, p_225628_8_, p_225628_9_, p_225628_10_, EquipmentSlotType.FEET, p_225628_3_);
-      this.func_229129_a_(p_225628_1_, p_225628_2_, p_225628_4_, p_225628_5_, p_225628_6_, p_225628_7_, p_225628_8_, p_225628_9_, p_225628_10_, EquipmentSlotType.HEAD, p_225628_3_);
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.renderArmorPart(matrixStackIn, bufferIn, entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, EquipmentSlotType.CHEST, packedLightIn);
+      this.renderArmorPart(matrixStackIn, bufferIn, entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, EquipmentSlotType.LEGS, packedLightIn);
+      this.renderArmorPart(matrixStackIn, bufferIn, entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, EquipmentSlotType.FEET, packedLightIn);
+      this.renderArmorPart(matrixStackIn, bufferIn, entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, EquipmentSlotType.HEAD, packedLightIn);
    }
 
-   private void func_229129_a_(MatrixStack p_229129_1_, IRenderTypeBuffer p_229129_2_, T p_229129_3_, float p_229129_4_, float p_229129_5_, float p_229129_6_, float p_229129_7_, float p_229129_8_, float p_229129_9_, EquipmentSlotType p_229129_10_, int p_229129_11_) {
-      ItemStack itemstack = p_229129_3_.getItemStackFromSlot(p_229129_10_);
+   private void renderArmorPart(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, T entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, EquipmentSlotType slotIn, int packedLightIn) {
+      ItemStack itemstack = entityLivingBaseIn.getItemStackFromSlot(slotIn);
       if (itemstack.getItem() instanceof ArmorItem) {
          ArmorItem armoritem = (ArmorItem)itemstack.getItem();
-         if (armoritem.getEquipmentSlot() == p_229129_10_) {
-            A a = this.func_215337_a(p_229129_10_);
-            ((BipedModel)this.getEntityModel()).func_217148_a(a);
-            a.setLivingAnimations(p_229129_3_, p_229129_4_, p_229129_5_, p_229129_6_);
-            this.setModelSlotVisible(a, p_229129_10_);
-            a.func_225597_a_(p_229129_3_, p_229129_4_, p_229129_5_, p_229129_7_, p_229129_8_, p_229129_9_);
-            boolean flag = this.isLegSlot(p_229129_10_);
+         if (armoritem.getEquipmentSlot() == slotIn) {
+            A a = this.getModelFromSlot(slotIn);
+            ((BipedModel)this.getEntityModel()).setModelAttributes(a);
+            a.setLivingAnimations(entityLivingBaseIn, limbSwing, limbSwingAmount, partialTicks);
+            this.setModelSlotVisible(a, slotIn);
+            a.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            boolean flag = this.isLegSlot(slotIn);
             boolean flag1 = itemstack.hasEffect();
             if (armoritem instanceof DyeableArmorItem) {
                int i = ((DyeableArmorItem)armoritem).getColor(itemstack);
                float f = (float)(i >> 16 & 255) / 255.0F;
                float f1 = (float)(i >> 8 & 255) / 255.0F;
                float f2 = (float)(i & 255) / 255.0F;
-               this.func_229128_a_(p_229129_1_, p_229129_2_, p_229129_11_, armoritem, flag1, a, flag, f, f1, f2, (String)null);
-               this.func_229128_a_(p_229129_1_, p_229129_2_, p_229129_11_, armoritem, flag1, a, flag, 1.0F, 1.0F, 1.0F, "overlay");
+               this.renderModel(matrixStackIn, bufferIn, packedLightIn, armoritem, flag1, a, flag, f, f1, f2, (String)null);
+               this.renderModel(matrixStackIn, bufferIn, packedLightIn, armoritem, flag1, a, flag, 1.0F, 1.0F, 1.0F, "overlay");
             } else {
-               this.func_229128_a_(p_229129_1_, p_229129_2_, p_229129_11_, armoritem, flag1, a, flag, 1.0F, 1.0F, 1.0F, (String)null);
+               this.renderModel(matrixStackIn, bufferIn, packedLightIn, armoritem, flag1, a, flag, 1.0F, 1.0F, 1.0F, (String)null);
             }
 
          }
       }
    }
 
-   private void func_229128_a_(MatrixStack p_229128_1_, IRenderTypeBuffer p_229128_2_, int p_229128_3_, ArmorItem p_229128_4_, boolean p_229128_5_, A p_229128_6_, boolean p_229128_7_, float p_229128_8_, float p_229128_9_, float p_229128_10_, @Nullable String p_229128_11_) {
-      IVertexBuilder ivertexbuilder = ItemRenderer.func_229113_a_(p_229128_2_, RenderType.func_228640_c_(this.getArmorResource(p_229128_4_, p_229128_7_, p_229128_11_)), false, p_229128_5_);
-      p_229128_6_.func_225598_a_(p_229128_1_, ivertexbuilder, p_229128_3_, OverlayTexture.field_229196_a_, p_229128_8_, p_229128_9_, p_229128_10_, 1.0F);
+   private void renderModel(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, ArmorItem armorItemIn, boolean glintIn, A modelIn, boolean legSlotIn, float red, float green, float blue, @Nullable String overlayIn) {
+      IVertexBuilder ivertexbuilder = ItemRenderer.getBuffer(bufferIn, RenderType.entityCutoutNoCull(this.getArmorResource(armorItemIn, legSlotIn, overlayIn)), false, glintIn);
+      modelIn.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_LIGHT, red, green, blue, 1.0F);
    }
 
-   public A func_215337_a(EquipmentSlotType p_215337_1_) {
-      return (A)(this.isLegSlot(p_215337_1_) ? this.modelLeggings : this.modelArmor);
+   public A getModelFromSlot(EquipmentSlotType slotIn) {
+      return (A)(this.isLegSlot(slotIn) ? this.modelLeggings : this.modelArmor);
    }
 
    private boolean isLegSlot(EquipmentSlotType slotIn) {
       return slotIn == EquipmentSlotType.LEGS;
    }
 
-   private ResourceLocation getArmorResource(ArmorItem armor, boolean p_177178_2_, @Nullable String p_177178_3_) {
-      String s = "textures/models/armor/" + armor.getArmorMaterial().getName() + "_layer_" + (p_177178_2_ ? 2 : 1) + (p_177178_3_ == null ? "" : "_" + p_177178_3_) + ".png";
+   private ResourceLocation getArmorResource(ArmorItem armor, boolean legSlotIn, @Nullable String suffixOverlayIn) {
+      String s = "textures/models/armor/" + armor.getArmorMaterial().getName() + "_layer_" + (legSlotIn ? 2 : 1) + (suffixOverlayIn == null ? "" : "_" + suffixOverlayIn) + ".png";
       return ARMOR_TEXTURE_RES_MAP.computeIfAbsent(s, ResourceLocation::new);
    }
 
-   protected abstract void setModelSlotVisible(A p_188359_1_, EquipmentSlotType slotIn);
+   protected abstract void setModelSlotVisible(A modelIn, EquipmentSlotType slotIn);
 
    protected abstract void setModelVisible(A model);
 }

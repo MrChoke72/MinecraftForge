@@ -34,7 +34,7 @@ public class ScheduleCommand {
    public static void register(CommandDispatcher<CommandSource> p_218909_0_) {
       p_218909_0_.register(Commands.literal("schedule").requires((p_229815_0_) -> {
          return p_229815_0_.hasPermissionLevel(2);
-      }).then(Commands.literal("function").then(Commands.argument("function", FunctionArgument.func_200021_a()).suggests(FunctionCommand.FUNCTION_SUGGESTER).then(Commands.argument("time", TimeArgument.func_218091_a()).executes((p_229823_0_) -> {
+      }).then(Commands.literal("function").then(Commands.argument("function", FunctionArgument.function()).suggests(FunctionCommand.FUNCTION_SUGGESTER).then(Commands.argument("time", TimeArgument.func_218091_a()).executes((p_229823_0_) -> {
          return func_229816_a_(p_229823_0_.getSource(), FunctionArgument.func_218110_b(p_229823_0_, "function"), IntegerArgumentType.getInteger(p_229823_0_, "time"), true);
       }).then(Commands.literal("append").executes((p_229822_0_) -> {
          return func_229816_a_(p_229822_0_.getSource(), FunctionArgument.func_218110_b(p_229822_0_, "function"), IntegerArgumentType.getInteger(p_229822_0_, "time"), false);

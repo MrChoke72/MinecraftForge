@@ -66,7 +66,7 @@ public class RemoteClientPlayerEntity extends AbstractClientPlayerEntity {
       this.updateArmSwingProgress();
       float f1;
       if (this.onGround && !(this.getHealth() <= 0.0F)) {
-         f1 = Math.min(0.1F, MathHelper.sqrt(func_213296_b(this.getMotion())));
+         f1 = Math.min(0.1F, MathHelper.sqrt(horizontalMag(this.getMotion())));
       } else {
          f1 = 0.0F;
       }

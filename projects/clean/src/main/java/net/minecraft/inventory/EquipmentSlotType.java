@@ -46,14 +46,14 @@ public enum EquipmentSlotType {
       throw new IllegalArgumentException("Invalid slot '" + targetName + "'");
    }
 
-   public static EquipmentSlotType func_220318_a(EquipmentSlotType.Group p_220318_0_, int p_220318_1_) {
+   public static EquipmentSlotType fromSlotTypeAndIndex(EquipmentSlotType.Group slotTypeIn, int slotIndexIn) {
       for(EquipmentSlotType equipmentslottype : values()) {
-         if (equipmentslottype.getSlotType() == p_220318_0_ && equipmentslottype.getIndex() == p_220318_1_) {
+         if (equipmentslottype.getSlotType() == slotTypeIn && equipmentslottype.getIndex() == slotIndexIn) {
             return equipmentslottype;
          }
       }
 
-      throw new IllegalArgumentException("Invalid slot '" + p_220318_0_ + "': " + p_220318_1_);
+      throw new IllegalArgumentException("Invalid slot '" + slotTypeIn + "': " + slotIndexIn);
    }
 
    public static enum Group {

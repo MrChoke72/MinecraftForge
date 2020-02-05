@@ -155,7 +155,7 @@ public class ShaderGroup implements AutoCloseable {
                      }
 
                      p_152764_1_.bindTexture(resourcelocation);
-                     Texture lvt_20_2_ = p_152764_1_.func_229267_b_(resourcelocation);
+                     Texture lvt_20_2_ = p_152764_1_.getTexture(resourcelocation);
                      int lvt_21_1_ = JSONUtils.getInt(jsonobject1, "width");
                      int lvt_22_1_ = JSONUtils.getInt(jsonobject1, "height");
                      boolean lvt_23_1_ = JSONUtils.getBoolean(jsonobject1, "bilinear");
@@ -289,7 +289,7 @@ public class ShaderGroup implements AutoCloseable {
       }
 
       for(Framebuffer framebuffer : this.listFramebuffers) {
-         framebuffer.func_216491_a(width, height, Minecraft.IS_RUNNING_ON_MAC);
+         framebuffer.resize(width, height, Minecraft.IS_RUNNING_ON_MAC);
       }
 
    }

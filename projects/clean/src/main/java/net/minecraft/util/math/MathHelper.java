@@ -90,11 +90,11 @@ public class MathHelper {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static long func_226163_a_(long p_226163_0_, long p_226163_2_, long p_226163_4_) {
-      if (p_226163_0_ < p_226163_2_) {
-         return p_226163_2_;
+   public static long clamp(long num, long min, long max) {
+      if (num < min) {
+         return min;
       } else {
-         return p_226163_0_ > p_226163_4_ ? p_226163_4_ : p_226163_0_;
+         return num > max ? max : num;
       }
    }
 
@@ -122,20 +122,20 @@ public class MathHelper {
       }
    }
 
-   public static double absMax(double p_76132_0_, double p_76132_2_) {
-      if (p_76132_0_ < 0.0D) {
-         p_76132_0_ = -p_76132_0_;
+   public static double absMax(double x, double y) {
+      if (x < 0.0D) {
+         x = -x;
       }
 
-      if (p_76132_2_ < 0.0D) {
-         p_76132_2_ = -p_76132_2_;
+      if (y < 0.0D) {
+         y = -y;
       }
 
-      return p_76132_0_ > p_76132_2_ ? p_76132_0_ : p_76132_2_;
+      return x > y ? x : y;
    }
 
-   public static int intFloorDiv(int p_76137_0_, int p_76137_1_) {
-      return Math.floorDiv(p_76137_0_, p_76137_1_);
+   public static int intFloorDiv(int x, int y) {
+      return Math.floorDiv(x, y);
    }
 
    public static int nextInt(Random random, int minimum, int maximum) {
@@ -165,12 +165,12 @@ public class MathHelper {
       return Math.abs(y - x) < 1.0E-5F;
    }
 
-   public static boolean epsilonEquals(double p_219806_0_, double p_219806_2_) {
-      return Math.abs(p_219806_2_ - p_219806_0_) < (double)1.0E-5F;
+   public static boolean epsilonEquals(double x, double y) {
+      return Math.abs(y - x) < (double)1.0E-5F;
    }
 
-   public static int normalizeAngle(int p_180184_0_, int p_180184_1_) {
-      return Math.floorMod(p_180184_0_, p_180184_1_);
+   public static int normalizeAngle(int x, int y) {
+      return Math.floorMod(x, y);
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -322,8 +322,8 @@ public class MathHelper {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static float func_226164_h_(float p_226164_0_) {
-      return p_226164_0_ - (float)floor(p_226164_0_);
+   public static float frac(float number) {
+      return number - (float)floor(number);
    }
 
    public static double frac(double number) {
@@ -404,31 +404,31 @@ public class MathHelper {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static float func_226165_i_(float p_226165_0_) {
-      float f = 0.5F * p_226165_0_;
-      int i = Float.floatToIntBits(p_226165_0_);
+   public static float fastInvSqrt(float number) {
+      float f = 0.5F * number;
+      int i = Float.floatToIntBits(number);
       i = 1597463007 - (i >> 1);
-      p_226165_0_ = Float.intBitsToFloat(i);
-      p_226165_0_ = p_226165_0_ * (1.5F - f * p_226165_0_ * p_226165_0_);
-      return p_226165_0_;
+      number = Float.intBitsToFloat(i);
+      number = number * (1.5F - f * number * number);
+      return number;
    }
 
-   public static double fastInvSqrt(double p_181161_0_) {
-      double d0 = 0.5D * p_181161_0_;
-      long i = Double.doubleToRawLongBits(p_181161_0_);
+   public static double fastInvSqrt(double number) {
+      double d0 = 0.5D * number;
+      long i = Double.doubleToRawLongBits(number);
       i = 6910469410427058090L - (i >> 1);
-      p_181161_0_ = Double.longBitsToDouble(i);
-      p_181161_0_ = p_181161_0_ * (1.5D - d0 * p_181161_0_ * p_181161_0_);
-      return p_181161_0_;
+      number = Double.longBitsToDouble(i);
+      number = number * (1.5D - d0 * number * number);
+      return number;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static float func_226166_j_(float p_226166_0_) {
-      int i = Float.floatToIntBits(p_226166_0_);
+   public static float fastInvCubeRoot(float number) {
+      int i = Float.floatToIntBits(number);
       i = 1419967116 - i / 3;
       float f = Float.intBitsToFloat(i);
-      f = 0.6666667F * f + 1.0F / (3.0F * f * f * p_226166_0_);
-      f = 0.6666667F * f + 1.0F / (3.0F * f * f * p_226166_0_);
+      f = 0.6666667F * f + 1.0F / (3.0F * f * f * number);
+      f = 0.6666667F * f + 1.0F / (3.0F * f * f * number);
       return f;
    }
 
@@ -528,21 +528,21 @@ public class MathHelper {
       return p_219801_0_ * p_219801_0_ * p_219801_0_ * (p_219801_0_ * (p_219801_0_ * 6.0D - 15.0D) + 10.0D);
    }
 
-   public static int signum(double p_219802_0_) {
-      if (p_219802_0_ == 0.0D) {
+   public static int signum(double x) {
+      if (x == 0.0D) {
          return 0;
       } else {
-         return p_219802_0_ > 0.0D ? 1 : -1;
+         return x > 0.0D ? 1 : -1;
       }
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static float func_219805_h(float p_219805_0_, float p_219805_1_, float p_219805_2_) {
+   public static float interpolateAngle(float p_219805_0_, float p_219805_1_, float p_219805_2_) {
       return p_219805_1_ + p_219805_0_ * wrapDegrees(p_219805_2_ - p_219805_1_);
    }
 
    @Deprecated
-   public static float func_226167_j_(float p_226167_0_, float p_226167_1_, float p_226167_2_) {
+   public static float rotLerp(float p_226167_0_, float p_226167_1_, float p_226167_2_) {
       float f;
       for(f = p_226167_1_ - p_226167_0_; f < -180.0F; f += 360.0F) {
          ;
@@ -557,7 +557,7 @@ public class MathHelper {
 
    @Deprecated
    @OnlyIn(Dist.CLIENT)
-   public static float func_226168_l_(double p_226168_0_) {
+   public static float rotWrap(double p_226168_0_) {
       while(p_226168_0_ >= 180.0D) {
          p_226168_0_ -= 360.0D;
       }

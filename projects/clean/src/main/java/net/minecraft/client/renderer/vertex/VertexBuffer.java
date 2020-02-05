@@ -28,32 +28,32 @@ public class VertexBuffer implements AutoCloseable {
       });
    }
 
-   public void func_227875_a_(BufferBuilder p_227875_1_) {
+   public void upload(BufferBuilder bufferIn) {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            this.func_227880_c_(p_227875_1_);
+            this.uploadRaw(bufferIn);
          });
       } else {
-         this.func_227880_c_(p_227875_1_);
+         this.uploadRaw(bufferIn);
       }
 
    }
 
-   public CompletableFuture<Void> func_227878_b_(BufferBuilder p_227878_1_) {
+   public CompletableFuture<Void> uploadLater(BufferBuilder bufferIn) {
       if (!RenderSystem.isOnRenderThread()) {
          return CompletableFuture.runAsync(() -> {
-            this.func_227880_c_(p_227878_1_);
+            this.uploadRaw(bufferIn);
          }, (p_227877_0_) -> {
             RenderSystem.recordRenderCall(p_227877_0_::run);
          });
       } else {
-         this.func_227880_c_(p_227878_1_);
+         this.uploadRaw(bufferIn);
          return CompletableFuture.completedFuture((Void)null);
       }
    }
 
-   private void func_227880_c_(BufferBuilder p_227880_1_) {
-      Pair<BufferBuilder.DrawState, ByteBuffer> pair = p_227880_1_.func_227832_f_();
+   private void uploadRaw(BufferBuilder bufferIn) {
+      Pair<BufferBuilder.DrawState, ByteBuffer> pair = bufferIn.getAndResetData();
       if (this.glBufferId != -1) {
          ByteBuffer bytebuffer = pair.getSecond();
          this.count = bytebuffer.remaining() / this.vertexFormat.getSize();
@@ -63,11 +63,11 @@ public class VertexBuffer implements AutoCloseable {
       }
    }
 
-   public void func_227874_a_(Matrix4f p_227874_1_, int p_227874_2_) {
+   public void draw(Matrix4f matrixIn, int modeIn) {
       RenderSystem.pushMatrix();
       RenderSystem.loadIdentity();
-      RenderSystem.multMatrix(p_227874_1_);
-      RenderSystem.drawArrays(p_227874_2_, 0, this.count);
+      RenderSystem.multMatrix(matrixIn);
+      RenderSystem.drawArrays(modeIn, 0, this.count);
       RenderSystem.popMatrix();
    }
 

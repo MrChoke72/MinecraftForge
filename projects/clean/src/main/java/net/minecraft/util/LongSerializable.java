@@ -10,7 +10,7 @@ public final class LongSerializable implements IDynamicSerializable {
       this.value = p_i51540_1_;
    }
 
-   public long getValue() {
+   public long get() {
       return this.value;
    }
 

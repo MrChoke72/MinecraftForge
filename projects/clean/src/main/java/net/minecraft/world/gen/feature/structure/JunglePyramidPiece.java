@@ -50,7 +50,7 @@ public class JunglePyramidPiece extends ScatteredStructurePiece {
    }
 
    public boolean func_225577_a_(IWorld p_225577_1_, ChunkGenerator<?> p_225577_2_, Random p_225577_3_, MutableBoundingBox p_225577_4_, ChunkPos p_225577_5_) {
-      if (!this.func_202580_a(p_225577_1_, p_225577_4_, 0)) {
+      if (!this.isInsideBounds(p_225577_1_, p_225577_4_, 0)) {
          return false;
       } else {
          this.fillWithRandomizedBlocks(p_225577_1_, p_225577_4_, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, p_225577_3_, MOSS_STONE_SELECTOR);

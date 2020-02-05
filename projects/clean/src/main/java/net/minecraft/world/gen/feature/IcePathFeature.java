@@ -36,7 +36,7 @@ public class IcePathFeature extends Feature<FeatureRadiusConfig> {
                   for(int k1 = pos.getY() - 1; k1 <= pos.getY() + 1; ++k1) {
                      BlockPos blockpos = new BlockPos(k, k1, l);
                      Block block = worldIn.getBlockState(blockpos).getBlock();
-                     if (func_227250_b_(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+                     if (isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
                         worldIn.setBlockState(blockpos, this.block.getDefaultState(), 2);
                      }
                   }

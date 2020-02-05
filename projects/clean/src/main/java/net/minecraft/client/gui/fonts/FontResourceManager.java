@@ -2,7 +2,6 @@ package net.minecraft.client.gui.fonts;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -16,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Stream;
@@ -44,10 +42,9 @@ import org.apache.logging.log4j.Logger;
 public class FontResourceManager implements AutoCloseable {
    private static final Logger LOGGER = LogManager.getLogger();
    private final Map<ResourceLocation, FontRenderer> fontRenderers = Maps.newHashMap();
-   private final Set<IGlyphProvider> field_216888_c = Sets.newHashSet();
    private final TextureManager textureManager;
    private boolean forceUnicodeFont;
-   private final IFutureReloadListener field_216889_f = new ReloadListener<Map<ResourceLocation, List<IGlyphProvider>>>() {
+   private final IFutureReloadListener reloadListener = new ReloadListener<Map<ResourceLocation, List<IGlyphProvider>>>() {
       protected Map<ResourceLocation, List<IGlyphProvider>> prepare(IResourceManager resourceManagerIn, IProfiler profilerIn) {
          profilerIn.startTick();
          Gson gson = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
@@ -107,7 +104,7 @@ public class FontResourceManager implements AutoCloseable {
             for(char c0 = 0; c0 < '\uffff'; ++c0) {
                if (c0 != ' ') {
                   for(IGlyphProvider iglyphprovider : Lists.reverse(list)) {
-                     if (iglyphprovider.func_212248_a(c0) != null) {
+                     if (iglyphprovider.getGlyphInfo(c0) != null) {
                         break;
                      }
                   }
@@ -132,7 +129,6 @@ public class FontResourceManager implements AutoCloseable {
                return new FontRenderer(FontResourceManager.this.textureManager, new Font(FontResourceManager.this.textureManager, p_215273_1_));
             }).setGlyphProviders(list);
          });
-         splashList.values().forEach(FontResourceManager.this.field_216888_c::addAll);
          profilerIn.endSection();
          profilerIn.endTick();
       }
@@ -156,7 +152,7 @@ public class FontResourceManager implements AutoCloseable {
       });
    }
 
-   public void func_216883_a(boolean p_216883_1_, Executor p_216883_2_, Executor p_216883_3_) {
+   public void setForceUnicodeFont(boolean p_216883_1_, Executor p_216883_2_, Executor p_216883_3_) {
       if (p_216883_1_ != this.forceUnicodeFont) {
          this.forceUnicodeFont = p_216883_1_;
          IResourceManager iresourcemanager = Minecraft.getInstance().getResourceManager();
@@ -165,16 +161,15 @@ public class FontResourceManager implements AutoCloseable {
                return CompletableFuture.completedFuture(backgroundResult);
             }
          };
-         this.field_216889_f.reload(ifuturereloadlistener$istage, iresourcemanager, EmptyProfiler.INSTANCE, EmptyProfiler.INSTANCE, p_216883_2_, p_216883_3_);
+         this.reloadListener.reload(ifuturereloadlistener$istage, iresourcemanager, EmptyProfiler.INSTANCE, EmptyProfiler.INSTANCE, p_216883_2_, p_216883_3_);
       }
    }
 
-   public IFutureReloadListener func_216884_a() {
-      return this.field_216889_f;
+   public IFutureReloadListener getReloadListener() {
+      return this.reloadListener;
    }
 
    public void close() {
       this.fontRenderers.values().forEach(FontRenderer::close);
-      this.field_216888_c.forEach(IGlyphProvider::close);
    }
 }

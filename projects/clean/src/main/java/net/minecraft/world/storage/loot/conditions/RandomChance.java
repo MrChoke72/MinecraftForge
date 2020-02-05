@@ -18,9 +18,9 @@ public class RandomChance implements ILootCondition {
       return p_test_1_.getRandom().nextFloat() < this.chance;
    }
 
-   public static ILootCondition.IBuilder builder(float p_216004_0_) {
+   public static ILootCondition.IBuilder builder(float chanceIn) {
       return () -> {
-         return new RandomChance(p_216004_0_);
+         return new RandomChance(chanceIn);
       };
    }
 

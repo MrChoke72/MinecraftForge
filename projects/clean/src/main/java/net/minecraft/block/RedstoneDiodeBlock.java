@@ -30,19 +30,19 @@ public abstract class RedstoneDiodeBlock extends HorizontalBlock {
    }
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-      return func_220064_c(worldIn, pos.down());
+      return hasSolidSideOnTop(worldIn, pos.down());
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!this.isLocked(p_225534_2_, p_225534_3_, p_225534_1_)) {
-         boolean flag = p_225534_1_.get(POWERED);
-         boolean flag1 = this.shouldBePowered(p_225534_2_, p_225534_3_, p_225534_1_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!this.isLocked(worldIn, pos, state)) {
+         boolean flag = state.get(POWERED);
+         boolean flag1 = this.shouldBePowered(worldIn, pos, state);
          if (flag && !flag1) {
-            p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(POWERED, Boolean.valueOf(false)), 2);
+            worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
          } else if (!flag) {
-            p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(POWERED, Boolean.valueOf(true)), 2);
+            worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
             if (!flag1) {
-               p_225534_2_.getPendingBlockTicks().scheduleTick(p_225534_3_, this, this.getDelay(p_225534_1_), TickPriority.VERY_HIGH);
+               worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.getDelay(state), TickPriority.VERY_HIGH);
             }
          }
 

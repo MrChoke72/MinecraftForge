@@ -52,7 +52,7 @@ public enum ModelRotation implements IModelTransform {
       this.quartersY = MathHelper.abs(y / 90);
    }
 
-   public TransformationMatrix func_225615_b_() {
+   public TransformationMatrix getRotation() {
       return new TransformationMatrix((Vector3f)null, this.matrix, (Vector3f)null, (Quaternion)null);
    }
 

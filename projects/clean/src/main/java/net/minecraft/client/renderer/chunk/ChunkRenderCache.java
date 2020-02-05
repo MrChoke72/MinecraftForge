@@ -103,8 +103,8 @@ public class ChunkRenderCache implements ILightReader {
       return this.fluidStates[this.getIndex(pos)];
    }
 
-   public WorldLightManager getLightMgr() {
-      return this.world.getLightMgr();
+   public WorldLightManager getLightManager() {
+      return this.world.getLightManager();
    }
 
    @Nullable
@@ -119,7 +119,7 @@ public class ChunkRenderCache implements ILightReader {
       return this.chunks[i][j].getTileEntity(pos, creationType);
    }
 
-   public int func_225525_a_(BlockPos p_225525_1_, ColorResolver p_225525_2_) {
-      return this.world.func_225525_a_(p_225525_1_, p_225525_2_);
+   public int getBlockColor(BlockPos blockPosIn, ColorResolver colorResolverIn) {
+      return this.world.getBlockColor(blockPosIn, colorResolverIn);
    }
 }

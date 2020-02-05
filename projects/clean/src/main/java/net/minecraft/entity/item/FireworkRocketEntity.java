@@ -136,7 +136,7 @@ public class FireworkRocketEntity extends Entity implements IRendersAsItem, IPro
       }
 
       Vec3d vec3d2 = this.getMotion();
-      RayTraceResult raytraceresult = ProjectileHelper.func_221267_a(this, this.getBoundingBox().expand(vec3d2).grow(1.0D), (p_213890_0_) -> {
+      RayTraceResult raytraceresult = ProjectileHelper.rayTrace(this, this.getBoundingBox().expand(vec3d2).grow(1.0D), (p_213890_0_) -> {
          return !p_213890_0_.isSpectator() && p_213890_0_.isAlive() && p_213890_0_.canBeCollidedWith();
       }, RayTraceContext.BlockMode.COLLIDER, true);
       if (!this.noClip) {
@@ -144,7 +144,7 @@ public class FireworkRocketEntity extends Entity implements IRendersAsItem, IPro
          this.isAirBorne = true;
       }
 
-      float f = MathHelper.sqrt(func_213296_b(vec3d2));
+      float f = MathHelper.sqrt(horizontalMag(vec3d2));
       this.rotationYaw = (float)(MathHelper.atan2(vec3d2.x, vec3d2.z) * (double)(180F / (float)Math.PI));
 
       for(this.rotationPitch = (float)(MathHelper.atan2(vec3d2.y, (double)f) * (double)(180F / (float)Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
@@ -234,7 +234,7 @@ public class FireworkRocketEntity extends Entity implements IRendersAsItem, IPro
                boolean flag = false;
 
                for(int i = 0; i < 2; ++i) {
-                  Vec3d vec3d1 = new Vec3d(livingentity.getPosX(), livingentity.func_226283_e_(0.5D * (double)i), livingentity.getPosZ());
+                  Vec3d vec3d1 = new Vec3d(livingentity.getPosX(), livingentity.getPosYHeight(0.5D * (double)i), livingentity.getPosZ());
                   RayTraceResult raytraceresult = this.world.rayTraceBlocks(new RayTraceContext(vec3d, vec3d1, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this));
                   if (raytraceresult.getType() == RayTraceResult.Type.MISS) {
                      flag = true;

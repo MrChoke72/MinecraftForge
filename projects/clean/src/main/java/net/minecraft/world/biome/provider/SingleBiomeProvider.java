@@ -17,7 +17,7 @@ public class SingleBiomeProvider extends BiomeProvider {
       this.biome = settings.getBiome();
    }
 
-   public Biome func_225526_b_(int p_225526_1_, int p_225526_2_, int p_225526_3_) {
+   public Biome getNoiseBiome(int x, int y, int z) {
       return this.biome;
    }
 

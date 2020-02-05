@@ -23,10 +23,10 @@ public class ActiveRenderInfo {
    private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
    private final Vector3f look = new Vector3f(0.0F, 0.0F, 1.0F);
    private final Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
-   private final Vector3f field_216796_h = new Vector3f(1.0F, 0.0F, 0.0F);
+   private final Vector3f left = new Vector3f(1.0F, 0.0F, 0.0F);
    private float pitch;
    private float yaw;
-   private final Quaternion field_227994_k_ = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+   private final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
    private boolean thirdPerson;
    private boolean thirdPersonReverse;
    private float height;
@@ -85,24 +85,24 @@ public class ActiveRenderInfo {
    }
 
    protected void movePosition(double distanceOffset, double verticalOffset, double horizontalOffset) {
-      double d0 = (double)this.look.getX() * distanceOffset + (double)this.up.getX() * verticalOffset + (double)this.field_216796_h.getX() * horizontalOffset;
-      double d1 = (double)this.look.getY() * distanceOffset + (double)this.up.getY() * verticalOffset + (double)this.field_216796_h.getY() * horizontalOffset;
-      double d2 = (double)this.look.getZ() * distanceOffset + (double)this.up.getZ() * verticalOffset + (double)this.field_216796_h.getZ() * horizontalOffset;
+      double d0 = (double)this.look.getX() * distanceOffset + (double)this.up.getX() * verticalOffset + (double)this.left.getX() * horizontalOffset;
+      double d1 = (double)this.look.getY() * distanceOffset + (double)this.up.getY() * verticalOffset + (double)this.left.getY() * horizontalOffset;
+      double d2 = (double)this.look.getZ() * distanceOffset + (double)this.up.getZ() * verticalOffset + (double)this.left.getZ() * horizontalOffset;
       this.setPostion(new Vec3d(this.pos.x + d0, this.pos.y + d1, this.pos.z + d2));
    }
 
    protected void setDirection(float pitchIn, float yawIn) {
       this.pitch = yawIn;
       this.yaw = pitchIn;
-      this.field_227994_k_.func_227066_a_(0.0F, 0.0F, 0.0F, 1.0F);
-      this.field_227994_k_.multiply(Vector3f.field_229181_d_.func_229187_a_(-pitchIn));
-      this.field_227994_k_.multiply(Vector3f.field_229179_b_.func_229187_a_(yawIn));
+      this.rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
+      this.rotation.multiply(Vector3f.YP.rotationDegrees(-pitchIn));
+      this.rotation.multiply(Vector3f.XP.rotationDegrees(yawIn));
       this.look.set(0.0F, 0.0F, 1.0F);
-      this.look.func_214905_a(this.field_227994_k_);
+      this.look.transform(this.rotation);
       this.up.set(0.0F, 1.0F, 0.0F);
-      this.up.func_214905_a(this.field_227994_k_);
-      this.field_216796_h.set(1.0F, 0.0F, 0.0F);
-      this.field_216796_h.func_214905_a(this.field_227994_k_);
+      this.up.transform(this.rotation);
+      this.left.set(1.0F, 0.0F, 0.0F);
+      this.left.transform(this.rotation);
    }
 
    protected void setPosition(double x, double y, double z) {
@@ -130,8 +130,8 @@ public class ActiveRenderInfo {
       return this.yaw;
    }
 
-   public Quaternion func_227995_f_() {
-      return this.field_227994_k_;
+   public Quaternion getRotation() {
+      return this.rotation;
    }
 
    public Entity getRenderViewEntity() {
@@ -151,15 +151,15 @@ public class ActiveRenderInfo {
          return Fluids.EMPTY.getDefaultState();
       } else {
          IFluidState ifluidstate = this.world.getFluidState(this.blockPos);
-         return !ifluidstate.isEmpty() && this.pos.y >= (double)((float)this.blockPos.getY() + ifluidstate.func_215679_a(this.world, this.blockPos)) ? Fluids.EMPTY.getDefaultState() : ifluidstate;
+         return !ifluidstate.isEmpty() && this.pos.y >= (double)((float)this.blockPos.getY() + ifluidstate.getActualHeight(this.world, this.blockPos)) ? Fluids.EMPTY.getDefaultState() : ifluidstate;
       }
    }
 
-   public final Vector3f func_227996_l_() {
+   public final Vector3f getViewVector() {
       return this.look;
    }
 
-   public final Vector3f func_227997_m_() {
+   public final Vector3f getUpVector() {
       return this.up;
    }
 

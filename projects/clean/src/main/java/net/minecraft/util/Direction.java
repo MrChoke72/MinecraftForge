@@ -54,7 +54,7 @@ public enum Direction implements IStringSerializable {
    })).toArray((p_199791_0_) -> {
       return new Direction[p_199791_0_];
    });
-   private static final Long2ObjectMap<Direction> field_218387_r = Arrays.stream(VALUES).collect(Collectors.toMap((p_218385_0_) -> {
+   private static final Long2ObjectMap<Direction> BY_LONG = Arrays.stream(VALUES).collect(Collectors.toMap((p_218385_0_) -> {
       return (new BlockPos(p_218385_0_.getDirectionVec())).toLong();
    }, (p_218384_0_) -> {
       return p_218384_0_;
@@ -108,32 +108,32 @@ public enum Direction implements IStringSerializable {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static Direction func_229385_a_(Matrix4f p_229385_0_, Direction p_229385_1_) {
-      Vec3i vec3i = p_229385_1_.getDirectionVec();
+   public static Direction rotateFace(Matrix4f matrixIn, Direction directionIn) {
+      Vec3i vec3i = directionIn.getDirectionVec();
       Vector4f vector4f = new Vector4f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), 0.0F);
-      vector4f.func_229372_a_(p_229385_0_);
+      vector4f.transform(matrixIn);
       return getFacingFromVector(vector4f.getX(), vector4f.getY(), vector4f.getZ());
    }
 
    @OnlyIn(Dist.CLIENT)
-   public Quaternion func_229384_a_() {
-      Quaternion quaternion = Vector3f.field_229179_b_.func_229187_a_(90.0F);
+   public Quaternion getRotation() {
+      Quaternion quaternion = Vector3f.XP.rotationDegrees(90.0F);
       switch(this) {
       case DOWN:
-         return Vector3f.field_229179_b_.func_229187_a_(180.0F);
+         return Vector3f.XP.rotationDegrees(180.0F);
       case UP:
-         return Quaternion.field_227060_a_.func_227068_g_();
+         return Quaternion.ONE.copy();
       case NORTH:
-         quaternion.multiply(Vector3f.field_229183_f_.func_229187_a_(180.0F));
+         quaternion.multiply(Vector3f.ZP.rotationDegrees(180.0F));
          return quaternion;
       case SOUTH:
          return quaternion;
       case WEST:
-         quaternion.multiply(Vector3f.field_229183_f_.func_229187_a_(90.0F));
+         quaternion.multiply(Vector3f.ZP.rotationDegrees(90.0F));
          return quaternion;
       case EAST:
       default:
-         quaternion.multiply(Vector3f.field_229183_f_.func_229187_a_(-90.0F));
+         quaternion.multiply(Vector3f.ZP.rotationDegrees(-90.0F));
          return quaternion;
       }
    }
@@ -197,7 +197,7 @@ public enum Direction implements IStringSerializable {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public Vector3f func_229386_k_() {
+   public Vector3f toVector3f() {
       return new Vector3f((float)this.getXOffset(), (float)this.getYOffset(), (float)this.getZOffset());
    }
 
@@ -223,8 +223,8 @@ public enum Direction implements IStringSerializable {
    }
 
    @Nullable
-   public static Direction func_218383_a(int p_218383_0_, int p_218383_1_, int p_218383_2_) {
-      return field_218387_r.get(BlockPos.pack(p_218383_0_, p_218383_1_, p_218383_2_));
+   public static Direction byLong(int x, int y, int z) {
+      return BY_LONG.get(BlockPos.pack(x, y, z));
    }
 
    public static Direction fromAngle(double angle) {
@@ -351,8 +351,8 @@ public enum Direction implements IStringSerializable {
          return this.name;
       }
 
-      public static Direction.Axis random(Random p_218393_0_) {
-         return values()[p_218393_0_.nextInt(values().length)];
+      public static Direction.Axis random(Random randomIn) {
+         return values()[randomIn.nextInt(values().length)];
       }
 
       public boolean test(@Nullable Direction p_test_1_) {

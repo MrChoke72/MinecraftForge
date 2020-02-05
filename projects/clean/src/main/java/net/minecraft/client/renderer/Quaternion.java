@@ -5,17 +5,17 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public final class Quaternion {
-   public static final Quaternion field_227060_a_ = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
-   private float field_227061_b_;
-   private float field_227062_c_;
-   private float field_227063_d_;
-   private float field_227064_e_;
+   public static final Quaternion ONE = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+   private float x;
+   private float y;
+   private float z;
+   private float w;
 
    public Quaternion(float x, float y, float z, float w) {
-      this.field_227061_b_ = x;
-      this.field_227062_c_ = y;
-      this.field_227063_d_ = z;
-      this.field_227064_e_ = w;
+      this.x = x;
+      this.y = y;
+      this.z = z;
+      this.w = w;
    }
 
    public Quaternion(Vector3f axis, float angle, boolean degrees) {
@@ -23,11 +23,11 @@ public final class Quaternion {
          angle *= ((float)Math.PI / 180F);
       }
 
-      float f = func_214903_b(angle / 2.0F);
-      this.field_227061_b_ = axis.getX() * f;
-      this.field_227062_c_ = axis.getY() * f;
-      this.field_227063_d_ = axis.getZ() * f;
-      this.field_227064_e_ = func_214904_a(angle / 2.0F);
+      float f = sin(angle / 2.0F);
+      this.x = axis.getX() * f;
+      this.y = axis.getY() * f;
+      this.z = axis.getZ() * f;
+      this.w = cos(angle / 2.0F);
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -38,23 +38,23 @@ public final class Quaternion {
          zAngle *= ((float)Math.PI / 180F);
       }
 
-      float f = func_214903_b(0.5F * xAngle);
-      float f1 = func_214904_a(0.5F * xAngle);
-      float f2 = func_214903_b(0.5F * yAngle);
-      float f3 = func_214904_a(0.5F * yAngle);
-      float f4 = func_214903_b(0.5F * zAngle);
-      float f5 = func_214904_a(0.5F * zAngle);
-      this.field_227061_b_ = f * f3 * f5 + f1 * f2 * f4;
-      this.field_227062_c_ = f1 * f2 * f5 - f * f3 * f4;
-      this.field_227063_d_ = f * f2 * f5 + f1 * f3 * f4;
-      this.field_227064_e_ = f1 * f3 * f5 - f * f2 * f4;
+      float f = sin(0.5F * xAngle);
+      float f1 = cos(0.5F * xAngle);
+      float f2 = sin(0.5F * yAngle);
+      float f3 = cos(0.5F * yAngle);
+      float f4 = sin(0.5F * zAngle);
+      float f5 = cos(0.5F * zAngle);
+      this.x = f * f3 * f5 + f1 * f2 * f4;
+      this.y = f1 * f2 * f5 - f * f3 * f4;
+      this.z = f * f2 * f5 + f1 * f3 * f4;
+      this.w = f1 * f3 * f5 - f * f2 * f4;
    }
 
    public Quaternion(Quaternion quaternionIn) {
-      this.field_227061_b_ = quaternionIn.field_227061_b_;
-      this.field_227062_c_ = quaternionIn.field_227062_c_;
-      this.field_227063_d_ = quaternionIn.field_227063_d_;
-      this.field_227064_e_ = quaternionIn.field_227064_e_;
+      this.x = quaternionIn.x;
+      this.y = quaternionIn.y;
+      this.z = quaternionIn.z;
+      this.w = quaternionIn.w;
    }
 
    public boolean equals(Object p_equals_1_) {
@@ -62,14 +62,14 @@ public final class Quaternion {
          return true;
       } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
          Quaternion quaternion = (Quaternion)p_equals_1_;
-         if (Float.compare(quaternion.field_227061_b_, this.field_227061_b_) != 0) {
+         if (Float.compare(quaternion.x, this.x) != 0) {
             return false;
-         } else if (Float.compare(quaternion.field_227062_c_, this.field_227062_c_) != 0) {
+         } else if (Float.compare(quaternion.y, this.y) != 0) {
             return false;
-         } else if (Float.compare(quaternion.field_227063_d_, this.field_227063_d_) != 0) {
+         } else if (Float.compare(quaternion.z, this.z) != 0) {
             return false;
          } else {
-            return Float.compare(quaternion.field_227064_e_, this.field_227064_e_) == 0;
+            return Float.compare(quaternion.w, this.w) == 0;
          }
       } else {
          return false;
@@ -77,10 +77,10 @@ public final class Quaternion {
    }
 
    public int hashCode() {
-      int i = Float.floatToIntBits(this.field_227061_b_);
-      i = 31 * i + Float.floatToIntBits(this.field_227062_c_);
-      i = 31 * i + Float.floatToIntBits(this.field_227063_d_);
-      i = 31 * i + Float.floatToIntBits(this.field_227064_e_);
+      int i = Float.floatToIntBits(this.x);
+      i = 31 * i + Float.floatToIntBits(this.y);
+      i = 31 * i + Float.floatToIntBits(this.z);
+      i = 31 * i + Float.floatToIntBits(this.w);
       return i;
    }
 
@@ -94,19 +94,19 @@ public final class Quaternion {
    }
 
    public float getX() {
-      return this.field_227061_b_;
+      return this.x;
    }
 
    public float getY() {
-      return this.field_227062_c_;
+      return this.y;
    }
 
    public float getZ() {
-      return this.field_227063_d_;
+      return this.z;
    }
 
    public float getW() {
-      return this.field_227064_e_;
+      return this.w;
    }
 
    public void multiply(Quaternion quaternionIn) {
@@ -118,62 +118,62 @@ public final class Quaternion {
       float f5 = quaternionIn.getY();
       float f6 = quaternionIn.getZ();
       float f7 = quaternionIn.getW();
-      this.field_227061_b_ = f3 * f4 + f * f7 + f1 * f6 - f2 * f5;
-      this.field_227062_c_ = f3 * f5 - f * f6 + f1 * f7 + f2 * f4;
-      this.field_227063_d_ = f3 * f6 + f * f5 - f1 * f4 + f2 * f7;
-      this.field_227064_e_ = f3 * f7 - f * f4 - f1 * f5 - f2 * f6;
+      this.x = f3 * f4 + f * f7 + f1 * f6 - f2 * f5;
+      this.y = f3 * f5 - f * f6 + f1 * f7 + f2 * f4;
+      this.z = f3 * f6 + f * f5 - f1 * f4 + f2 * f7;
+      this.w = f3 * f7 - f * f4 - f1 * f5 - f2 * f6;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_227065_a_(float p_227065_1_) {
-      this.field_227061_b_ *= p_227065_1_;
-      this.field_227062_c_ *= p_227065_1_;
-      this.field_227063_d_ *= p_227065_1_;
-      this.field_227064_e_ *= p_227065_1_;
+   public void multiply(float valueIn) {
+      this.x *= valueIn;
+      this.y *= valueIn;
+      this.z *= valueIn;
+      this.w *= valueIn;
    }
 
    public void conjugate() {
-      this.field_227061_b_ = -this.field_227061_b_;
-      this.field_227062_c_ = -this.field_227062_c_;
-      this.field_227063_d_ = -this.field_227063_d_;
+      this.x = -this.x;
+      this.y = -this.y;
+      this.z = -this.z;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_227066_a_(float p_227066_1_, float p_227066_2_, float p_227066_3_, float p_227066_4_) {
-      this.field_227061_b_ = p_227066_1_;
-      this.field_227062_c_ = p_227066_2_;
-      this.field_227063_d_ = p_227066_3_;
-      this.field_227064_e_ = p_227066_4_;
+   public void set(float p_227066_1_, float p_227066_2_, float p_227066_3_, float p_227066_4_) {
+      this.x = p_227066_1_;
+      this.y = p_227066_2_;
+      this.z = p_227066_3_;
+      this.w = p_227066_4_;
    }
 
-   private static float func_214904_a(float p_214904_0_) {
+   private static float cos(float p_214904_0_) {
       return (float)Math.cos((double)p_214904_0_);
    }
 
-   private static float func_214903_b(float p_214903_0_) {
+   private static float sin(float p_214903_0_) {
       return (float)Math.sin((double)p_214903_0_);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_227067_f_() {
+   public void normalize() {
       float f = this.getX() * this.getX() + this.getY() * this.getY() + this.getZ() * this.getZ() + this.getW() * this.getW();
       if (f > 1.0E-6F) {
-         float f1 = MathHelper.func_226165_i_(f);
-         this.field_227061_b_ *= f1;
-         this.field_227062_c_ *= f1;
-         this.field_227063_d_ *= f1;
-         this.field_227064_e_ *= f1;
+         float f1 = MathHelper.fastInvSqrt(f);
+         this.x *= f1;
+         this.y *= f1;
+         this.z *= f1;
+         this.w *= f1;
       } else {
-         this.field_227061_b_ = 0.0F;
-         this.field_227062_c_ = 0.0F;
-         this.field_227063_d_ = 0.0F;
-         this.field_227064_e_ = 0.0F;
+         this.x = 0.0F;
+         this.y = 0.0F;
+         this.z = 0.0F;
+         this.w = 0.0F;
       }
 
    }
 
    @OnlyIn(Dist.CLIENT)
-   public Quaternion func_227068_g_() {
+   public Quaternion copy() {
       return new Quaternion(this);
    }
 }

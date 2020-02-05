@@ -76,7 +76,7 @@ public class Template {
                   compoundnbt.remove("y");
                   compoundnbt.remove("z");
                   list1.add(new Template.BlockInfo(blockpos4, blockstate, compoundnbt));
-               } else if (!blockstate.isOpaqueCube(worldIn, blockpos3) && !blockstate.func_224756_o(worldIn, blockpos3)) {
+               } else if (!blockstate.isOpaqueCube(worldIn, blockpos3) && !blockstate.isCollisionShapeOpaque(worldIn, blockpos3)) {
                   list2.add(new Template.BlockInfo(blockpos4, blockstate, (CompoundNBT)null));
                } else {
                   list.add(new Template.BlockInfo(blockpos4, blockstate, (CompoundNBT)null));
@@ -149,7 +149,7 @@ public class Template {
    }
 
    public static BlockPos transformedBlockPos(PlacementSettings placementIn, BlockPos pos) {
-      return getTransformedPos(pos, placementIn.getMirror(), placementIn.getRotation(), placementIn.func_207664_d());
+      return getTransformedPos(pos, placementIn.getMirror(), placementIn.getRotation(), placementIn.getCenterOffset());
    }
 
    public void addBlocksToWorldChunk(IWorld worldIn, BlockPos pos, PlacementSettings placementIn) {
@@ -177,7 +177,7 @@ public class Template {
             int i1 = Integer.MIN_VALUE;
             int j1 = Integer.MIN_VALUE;
 
-            for(Template.BlockInfo template$blockinfo : func_215387_a(worldIn, pos, placementIn, list)) {
+            for(Template.BlockInfo template$blockinfo : processBlockInfos(worldIn, pos, placementIn, list)) {
                BlockPos blockpos = template$blockinfo.pos;
                if (mutableboundingbox == null || mutableboundingbox.isVecInside(blockpos)) {
                   IFluidState ifluidstate = placementIn.func_204763_l() ? worldIn.getFluidState(blockpos) : null;
@@ -233,7 +233,7 @@ public class Template {
                   for(int k1 = 0; k1 < adirection.length && !ifluidstate2.isSource(); ++k1) {
                      BlockPos blockpos1 = blockpos3.offset(adirection[k1]);
                      IFluidState ifluidstate1 = worldIn.getFluidState(blockpos1);
-                     if (ifluidstate1.func_215679_a(worldIn, blockpos1) > ifluidstate2.func_215679_a(worldIn, blockpos3) || ifluidstate1.isSource() && !ifluidstate2.isSource()) {
+                     if (ifluidstate1.getActualHeight(worldIn, blockpos1) > ifluidstate2.getActualHeight(worldIn, blockpos3) || ifluidstate1.isSource() && !ifluidstate2.isSource()) {
                         ifluidstate2 = ifluidstate1;
                         blockpos3 = blockpos1;
                      }
@@ -288,7 +288,7 @@ public class Template {
             }
 
             if (!placementIn.getIgnoreEntities()) {
-               this.func_207668_a(worldIn, pos, placementIn.getMirror(), placementIn.getRotation(), placementIn.func_207664_d(), mutableboundingbox);
+               this.addEntitiesToWorld(worldIn, pos, placementIn.getMirror(), placementIn.getRotation(), placementIn.getCenterOffset(), mutableboundingbox);
             }
 
             return true;
@@ -298,33 +298,33 @@ public class Template {
       }
    }
 
-   public static void func_222857_a(IWorld p_222857_0_, int p_222857_1_, VoxelShapePart p_222857_2_, int p_222857_3_, int p_222857_4_, int p_222857_5_) {
-      p_222857_2_.forEachFace((p_222856_5_, p_222856_6_, p_222856_7_, p_222856_8_) -> {
-         BlockPos blockpos = new BlockPos(p_222857_3_ + p_222856_6_, p_222857_4_ + p_222856_7_, p_222857_5_ + p_222856_8_);
+   public static void func_222857_a(IWorld worldIn, int p_222857_1_, VoxelShapePart voxelShapePartIn, int xIn, int yIn, int zIn) {
+      voxelShapePartIn.forEachFace((p_222856_5_, p_222856_6_, p_222856_7_, p_222856_8_) -> {
+         BlockPos blockpos = new BlockPos(xIn + p_222856_6_, yIn + p_222856_7_, zIn + p_222856_8_);
          BlockPos blockpos1 = blockpos.offset(p_222856_5_);
-         BlockState blockstate = p_222857_0_.getBlockState(blockpos);
-         BlockState blockstate1 = p_222857_0_.getBlockState(blockpos1);
-         BlockState blockstate2 = blockstate.updatePostPlacement(p_222856_5_, blockstate1, p_222857_0_, blockpos, blockpos1);
+         BlockState blockstate = worldIn.getBlockState(blockpos);
+         BlockState blockstate1 = worldIn.getBlockState(blockpos1);
+         BlockState blockstate2 = blockstate.updatePostPlacement(p_222856_5_, blockstate1, worldIn, blockpos, blockpos1);
          if (blockstate != blockstate2) {
-            p_222857_0_.setBlockState(blockpos, blockstate2, p_222857_1_ & -2 | 16);
+            worldIn.setBlockState(blockpos, blockstate2, p_222857_1_ & -2 | 16);
          }
 
-         BlockState blockstate3 = blockstate1.updatePostPlacement(p_222856_5_.getOpposite(), blockstate2, p_222857_0_, blockpos1, blockpos);
+         BlockState blockstate3 = blockstate1.updatePostPlacement(p_222856_5_.getOpposite(), blockstate2, worldIn, blockpos1, blockpos);
          if (blockstate1 != blockstate3) {
-            p_222857_0_.setBlockState(blockpos1, blockstate3, p_222857_1_ & -2 | 16);
+            worldIn.setBlockState(blockpos1, blockstate3, p_222857_1_ & -2 | 16);
          }
 
       });
    }
 
-   public static List<Template.BlockInfo> func_215387_a(IWorld p_215387_0_, BlockPos p_215387_1_, PlacementSettings p_215387_2_, List<Template.BlockInfo> p_215387_3_) {
+   public static List<Template.BlockInfo> processBlockInfos(IWorld worldIn, BlockPos offsetPos, PlacementSettings placementSettingsIn, List<Template.BlockInfo> blockInfos) {
       List<Template.BlockInfo> list = Lists.newArrayList();
 
-      for(Template.BlockInfo template$blockinfo : p_215387_3_) {
-         BlockPos blockpos = transformedBlockPos(p_215387_2_, template$blockinfo.pos).add(p_215387_1_);
+      for(Template.BlockInfo template$blockinfo : blockInfos) {
+         BlockPos blockpos = transformedBlockPos(placementSettingsIn, template$blockinfo.pos).add(offsetPos);
          Template.BlockInfo template$blockinfo1 = new Template.BlockInfo(blockpos, template$blockinfo.state, template$blockinfo.nbt);
 
-         for(Iterator<StructureProcessor> iterator = p_215387_2_.getProcessors().iterator(); template$blockinfo1 != null && iterator.hasNext(); template$blockinfo1 = iterator.next().process(p_215387_0_, p_215387_1_, template$blockinfo, template$blockinfo1, p_215387_2_)) {
+         for(Iterator<StructureProcessor> iterator = placementSettingsIn.getProcessors().iterator(); template$blockinfo1 != null && iterator.hasNext(); template$blockinfo1 = iterator.next().process(worldIn, offsetPos, template$blockinfo, template$blockinfo1, placementSettingsIn)) {
             ;
          }
 
@@ -336,34 +336,34 @@ public class Template {
       return list;
    }
 
-   private void func_207668_a(IWorld p_207668_1_, BlockPos p_207668_2_, Mirror p_207668_3_, Rotation p_207668_4_, BlockPos p_207668_5_, @Nullable MutableBoundingBox p_207668_6_) {
+   private void addEntitiesToWorld(IWorld worldIn, BlockPos offsetPos, Mirror mirrorIn, Rotation rotationIn, BlockPos centerOffset, @Nullable MutableBoundingBox boundsIn) {
       for(Template.EntityInfo template$entityinfo : this.entities) {
-         BlockPos blockpos = getTransformedPos(template$entityinfo.blockPos, p_207668_3_, p_207668_4_, p_207668_5_).add(p_207668_2_);
-         if (p_207668_6_ == null || p_207668_6_.isVecInside(blockpos)) {
+         BlockPos blockpos = getTransformedPos(template$entityinfo.blockPos, mirrorIn, rotationIn, centerOffset).add(offsetPos);
+         if (boundsIn == null || boundsIn.isVecInside(blockpos)) {
             CompoundNBT compoundnbt = template$entityinfo.nbt;
-            Vec3d vec3d = getTransformedPos(template$entityinfo.pos, p_207668_3_, p_207668_4_, p_207668_5_);
-            Vec3d vec3d1 = vec3d.add((double)p_207668_2_.getX(), (double)p_207668_2_.getY(), (double)p_207668_2_.getZ());
+            Vec3d vec3d = getTransformedPos(template$entityinfo.pos, mirrorIn, rotationIn, centerOffset);
+            Vec3d vec3d1 = vec3d.add((double)offsetPos.getX(), (double)offsetPos.getY(), (double)offsetPos.getZ());
             ListNBT listnbt = new ListNBT();
-            listnbt.add(DoubleNBT.func_229684_a_(vec3d1.x));
-            listnbt.add(DoubleNBT.func_229684_a_(vec3d1.y));
-            listnbt.add(DoubleNBT.func_229684_a_(vec3d1.z));
+            listnbt.add(DoubleNBT.valueOf(vec3d1.x));
+            listnbt.add(DoubleNBT.valueOf(vec3d1.y));
+            listnbt.add(DoubleNBT.valueOf(vec3d1.z));
             compoundnbt.put("Pos", listnbt);
             compoundnbt.remove("UUIDMost");
             compoundnbt.remove("UUIDLeast");
-            func_215382_a(p_207668_1_, compoundnbt).ifPresent((p_215383_4_) -> {
-               float f = p_215383_4_.getMirroredYaw(p_207668_3_);
-               f = f + (p_215383_4_.rotationYaw - p_215383_4_.getRotatedYaw(p_207668_4_));
+            loadEntity(worldIn, compoundnbt).ifPresent((p_215383_4_) -> {
+               float f = p_215383_4_.getMirroredYaw(mirrorIn);
+               f = f + (p_215383_4_.rotationYaw - p_215383_4_.getRotatedYaw(rotationIn));
                p_215383_4_.setLocationAndAngles(vec3d1.x, vec3d1.y, vec3d1.z, f, p_215383_4_.rotationPitch);
-               p_207668_1_.addEntity(p_215383_4_);
+               worldIn.addEntity(p_215383_4_);
             });
          }
       }
 
    }
 
-   private static Optional<Entity> func_215382_a(IWorld p_215382_0_, CompoundNBT p_215382_1_) {
+   private static Optional<Entity> loadEntity(IWorld worldIn, CompoundNBT nbt) {
       try {
-         return EntityType.loadEntityUnchecked(p_215382_1_, p_215382_0_.getWorld());
+         return EntityType.loadEntityUnchecked(nbt, worldIn.getWorld());
       } catch (Exception var3) {
          return Optional.empty();
       }
@@ -466,9 +466,9 @@ public class Template {
       return blockpos;
    }
 
-   public MutableBoundingBox func_215388_b(PlacementSettings p_215388_1_, BlockPos p_215388_2_) {
+   public MutableBoundingBox getMutableBoundingBox(PlacementSettings p_215388_1_, BlockPos p_215388_2_) {
       Rotation rotation = p_215388_1_.getRotation();
-      BlockPos blockpos = p_215388_1_.func_207664_d();
+      BlockPos blockpos = p_215388_1_.getCenterOffset();
       BlockPos blockpos1 = this.transformedSize(rotation);
       Mirror mirror = p_215388_1_.getMirror();
       int i = blockpos.getX();
@@ -504,16 +504,16 @@ public class Template {
       return mutableboundingbox;
    }
 
-   private void func_215385_a(Rotation p_215385_1_, int p_215385_2_, int p_215385_3_, MutableBoundingBox p_215385_4_, Direction p_215385_5_, Direction p_215385_6_) {
+   private void func_215385_a(Rotation rotationIn, int offsetFront, int p_215385_3_, MutableBoundingBox p_215385_4_, Direction p_215385_5_, Direction p_215385_6_) {
       BlockPos blockpos = BlockPos.ZERO;
-      if (p_215385_1_ != Rotation.CLOCKWISE_90 && p_215385_1_ != Rotation.COUNTERCLOCKWISE_90) {
-         if (p_215385_1_ == Rotation.CLOCKWISE_180) {
-            blockpos = blockpos.offset(p_215385_6_, p_215385_2_);
+      if (rotationIn != Rotation.CLOCKWISE_90 && rotationIn != Rotation.COUNTERCLOCKWISE_90) {
+         if (rotationIn == Rotation.CLOCKWISE_180) {
+            blockpos = blockpos.offset(p_215385_6_, offsetFront);
          } else {
-            blockpos = blockpos.offset(p_215385_5_, p_215385_2_);
+            blockpos = blockpos.offset(p_215385_5_, offsetFront);
          }
       } else {
-         blockpos = blockpos.offset(p_215385_1_.rotate(p_215385_5_), p_215385_3_);
+         blockpos = blockpos.offset(rotationIn.rotate(p_215385_5_), p_215385_3_);
       }
 
       p_215385_4_.offset(blockpos.getX(), 0, blockpos.getZ());
@@ -608,10 +608,10 @@ public class Template {
          ListNBT listnbt2 = compound.getList("palettes", 9);
 
          for(int i = 0; i < listnbt2.size(); ++i) {
-            this.func_204768_a(listnbt2.getList(i), listnbt1);
+            this.readPalletesAndBlocks(listnbt2.getList(i), listnbt1);
          }
       } else {
-         this.func_204768_a(compound.getList("palette", 10), listnbt1);
+         this.readPalletesAndBlocks(compound.getList("palette", 10), listnbt1);
       }
 
       ListNBT listnbt5 = compound.getList("entities", 10);
@@ -630,16 +630,16 @@ public class Template {
 
    }
 
-   private void func_204768_a(ListNBT p_204768_1_, ListNBT p_204768_2_) {
+   private void readPalletesAndBlocks(ListNBT palletesNBT, ListNBT blocksNBT) {
       Template.BasicPalette template$basicpalette = new Template.BasicPalette();
       List<Template.BlockInfo> list = Lists.newArrayList();
 
-      for(int i = 0; i < p_204768_1_.size(); ++i) {
-         template$basicpalette.addMapping(NBTUtil.readBlockState(p_204768_1_.getCompound(i)), i);
+      for(int i = 0; i < palletesNBT.size(); ++i) {
+         template$basicpalette.addMapping(NBTUtil.readBlockState(palletesNBT.getCompound(i)), i);
       }
 
-      for(int j = 0; j < p_204768_2_.size(); ++j) {
-         CompoundNBT compoundnbt = p_204768_2_.getCompound(j);
+      for(int j = 0; j < blocksNBT.size(); ++j) {
+         CompoundNBT compoundnbt = blocksNBT.getCompound(j);
          ListNBT listnbt = compoundnbt.getList("pos", 3);
          BlockPos blockpos = new BlockPos(listnbt.getInt(0), listnbt.getInt(1), listnbt.getInt(2));
          BlockState blockstate = template$basicpalette.stateFor(compoundnbt.getInt("state"));
@@ -663,7 +663,7 @@ public class Template {
       ListNBT listnbt = new ListNBT();
 
       for(int i : values) {
-         listnbt.add(IntNBT.func_229692_a_(i));
+         listnbt.add(IntNBT.valueOf(i));
       }
 
       return listnbt;
@@ -673,7 +673,7 @@ public class Template {
       ListNBT listnbt = new ListNBT();
 
       for(double d0 : values) {
-         listnbt.add(DoubleNBT.func_229684_a_(d0));
+         listnbt.add(DoubleNBT.valueOf(d0));
       }
 
       return listnbt;

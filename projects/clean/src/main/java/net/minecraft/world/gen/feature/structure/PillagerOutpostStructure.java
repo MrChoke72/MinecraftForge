@@ -17,10 +17,10 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
 public class PillagerOutpostStructure extends ScatteredStructure<NoFeatureConfig> {
-   private static final List<Biome.SpawnListEntry> field_214558_a = Lists.newArrayList(new Biome.SpawnListEntry(EntityType.PILLAGER, 1, 1, 1));
+   private static final List<Biome.SpawnListEntry> PILLAGE_OUTPOST_ENEMIES = Lists.newArrayList(new Biome.SpawnListEntry(EntityType.PILLAGER, 1, 1, 1));
 
-   public PillagerOutpostStructure(Function<Dynamic<?>, ? extends NoFeatureConfig> p_i51470_1_) {
-      super(p_i51470_1_);
+   public PillagerOutpostStructure(Function<Dynamic<?>, ? extends NoFeatureConfig> pillageOutpostConfigIn) {
+      super(pillageOutpostConfigIn);
    }
 
    public String getStructureName() {
@@ -32,7 +32,7 @@ public class PillagerOutpostStructure extends ScatteredStructure<NoFeatureConfig
    }
 
    public List<Biome.SpawnListEntry> getSpawnList() {
-      return field_214558_a;
+      return PILLAGE_OUTPOST_ENEMIES;
    }
 
    public boolean func_225558_a_(BiomeManager p_225558_1_, ChunkGenerator<?> p_225558_2_, Random p_225558_3_, int p_225558_4_, int p_225558_5_, Biome p_225558_6_) {
@@ -49,7 +49,7 @@ public class PillagerOutpostStructure extends ScatteredStructure<NoFeatureConfig
          if (p_225558_2_.hasStructure(p_225558_6_, this)) {
             for(int k = p_225558_4_ - 10; k <= p_225558_4_ + 10; ++k) {
                for(int l = p_225558_5_ - 10; l <= p_225558_5_ + 10; ++l) {
-                  if (Feature.VILLAGE.func_225558_a_(p_225558_1_, p_225558_2_, p_225558_3_, k, l, p_225558_1_.func_226836_a_(new BlockPos((k << 4) + 9, 0, (l << 4) + 9)))) {
+                  if (Feature.VILLAGE.func_225558_a_(p_225558_1_, p_225558_2_, p_225558_3_, k, l, p_225558_1_.getBiome(new BlockPos((k << 4) + 9, 0, (l << 4) + 9)))) {
                      return false;
                   }
                }

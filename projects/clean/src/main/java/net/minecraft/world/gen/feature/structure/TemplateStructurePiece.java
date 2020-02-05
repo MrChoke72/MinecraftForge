@@ -21,18 +21,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class TemplateStructurePiece extends StructurePiece {
-   private static final Logger field_214825_d = LogManager.getLogger();
+   private static final Logger LOGGER = LogManager.getLogger();
    protected Template template;
    protected PlacementSettings placeSettings;
    protected BlockPos templatePosition;
 
-   public TemplateStructurePiece(IStructurePieceType p_i51338_1_, int p_i51338_2_) {
-      super(p_i51338_1_, p_i51338_2_);
+   public TemplateStructurePiece(IStructurePieceType structurePieceTypeIn, int componentTypeIn) {
+      super(structurePieceTypeIn, componentTypeIn);
    }
 
-   public TemplateStructurePiece(IStructurePieceType p_i51339_1_, CompoundNBT p_i51339_2_) {
-      super(p_i51339_1_, p_i51339_2_);
-      this.templatePosition = new BlockPos(p_i51339_2_.getInt("TPX"), p_i51339_2_.getInt("TPY"), p_i51339_2_.getInt("TPZ"));
+   public TemplateStructurePiece(IStructurePieceType structurePieceTypeIn, CompoundNBT nbt) {
+      super(structurePieceTypeIn, nbt);
+      this.templatePosition = new BlockPos(nbt.getInt("TPX"), nbt.getInt("TPY"), nbt.getInt("TPZ"));
    }
 
    protected void setup(Template templateIn, BlockPos pos, PlacementSettings settings) {
@@ -40,7 +40,7 @@ public abstract class TemplateStructurePiece extends StructurePiece {
       this.setCoordBaseMode(Direction.NORTH);
       this.templatePosition = pos;
       this.placeSettings = settings;
-      this.boundingBox = templateIn.func_215388_b(settings, pos);
+      this.boundingBox = templateIn.getMutableBoundingBox(settings, pos);
    }
 
    protected void readAdditional(CompoundNBT tagCompound) {
@@ -51,7 +51,7 @@ public abstract class TemplateStructurePiece extends StructurePiece {
 
    public boolean func_225577_a_(IWorld p_225577_1_, ChunkGenerator<?> p_225577_2_, Random p_225577_3_, MutableBoundingBox p_225577_4_, ChunkPos p_225577_5_) {
       this.placeSettings.setBoundingBox(p_225577_4_);
-      this.boundingBox = this.template.func_215388_b(this.placeSettings, this.templatePosition);
+      this.boundingBox = this.template.getMutableBoundingBox(this.placeSettings, this.templatePosition);
       if (this.template.addBlocksToWorld(p_225577_1_, this.templatePosition, this.placeSettings, 2)) {
          for(Template.BlockInfo template$blockinfo : this.template.func_215381_a(this.templatePosition, this.placeSettings, Blocks.STRUCTURE_BLOCK)) {
             if (template$blockinfo.nbt != null) {
@@ -74,10 +74,10 @@ public abstract class TemplateStructurePiece extends StructurePiece {
                   if (blockstate1 != null) {
                      blockstate = blockstate1;
                   } else {
-                     field_214825_d.error("Error while parsing blockstate {} in jigsaw block @ {}", s, template$blockinfo1.pos);
+                     LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", s, template$blockinfo1.pos);
                   }
                } catch (CommandSyntaxException var14) {
-                  field_214825_d.error("Error while parsing blockstate {} in jigsaw block @ {}", s, template$blockinfo1.pos);
+                  LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", s, template$blockinfo1.pos);
                }
 
                p_225577_1_.setBlockState(template$blockinfo1.pos, blockstate, 3);

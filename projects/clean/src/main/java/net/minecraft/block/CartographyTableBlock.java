@@ -21,12 +21,12 @@ public class CartographyTableBlock extends Block {
       super(p_i49987_1_);
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         p_225533_4_.openContainer(p_225533_1_.getContainer(p_225533_2_, p_225533_3_));
-         p_225533_4_.addStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
+         player.openContainer(state.getContainer(worldIn, pos));
+         player.addStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
          return ActionResultType.SUCCESS;
       }
    }

@@ -34,15 +34,15 @@ public class ObserverBlock extends DirectionalBlock {
       return state.rotate(mirrorIn.toRotation(state.get(FACING)));
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_1_.get(POWERED)) {
-         p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(POWERED, Boolean.valueOf(false)), 2);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (state.get(POWERED)) {
+         worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 2);
       } else {
-         p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(POWERED, Boolean.valueOf(true)), 2);
-         p_225534_2_.getPendingBlockTicks().scheduleTick(p_225534_3_, this, 2);
+         worldIn.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 2);
+         worldIn.getPendingBlockTicks().scheduleTick(pos, this, 2);
       }
 
-      this.updateNeighborsInFront(p_225534_2_, p_225534_3_, p_225534_1_);
+      this.updateNeighborsInFront(worldIn, pos, state);
    }
 
    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {

@@ -22,25 +22,25 @@ public class ItemTransformVec3f {
    public final Vector3f scale;
 
    public ItemTransformVec3f(Vector3f rotationIn, Vector3f translationIn, Vector3f scaleIn) {
-      this.rotation = rotationIn.func_229195_e_();
-      this.translation = translationIn.func_229195_e_();
-      this.scale = scaleIn.func_229195_e_();
+      this.rotation = rotationIn.copy();
+      this.translation = translationIn.copy();
+      this.scale = scaleIn.copy();
    }
 
-   public void func_228830_a_(boolean p_228830_1_, MatrixStack p_228830_2_) {
+   public void apply(boolean leftHand, MatrixStack matrixStackIn) {
       if (this != DEFAULT) {
          float f = this.rotation.getX();
          float f1 = this.rotation.getY();
          float f2 = this.rotation.getZ();
-         if (p_228830_1_) {
+         if (leftHand) {
             f1 = -f1;
             f2 = -f2;
          }
 
-         int i = p_228830_1_ ? -1 : 1;
-         p_228830_2_.func_227861_a_((double)((float)i * this.translation.getX()), (double)this.translation.getY(), (double)this.translation.getZ());
-         p_228830_2_.func_227863_a_(new Quaternion(f, f1, f2, true));
-         p_228830_2_.func_227862_a_(this.scale.getX(), this.scale.getY(), this.scale.getZ());
+         int i = leftHand ? -1 : 1;
+         matrixStackIn.translate((double)((float)i * this.translation.getX()), (double)this.translation.getY(), (double)this.translation.getZ());
+         matrixStackIn.rotate(new Quaternion(f, f1, f2, true));
+         matrixStackIn.scale(this.scale.getX(), this.scale.getY(), this.scale.getZ());
       }
    }
 

@@ -11,23 +11,23 @@ public enum EntityClassification {
    WATER_CREATURE("water_creature", 15, true, false),
    MISC("misc", 15, true, false);
 
-   private static final Map<String, EntityClassification> field_220364_f = Arrays.stream(values()).collect(Collectors.toMap(EntityClassification::func_220363_a, (p_220362_0_) -> {
+   private static final Map<String, EntityClassification> VALUES_MAP = Arrays.stream(values()).collect(Collectors.toMap(EntityClassification::getName, (p_220362_0_) -> {
       return p_220362_0_;
    }));
    private final int maxNumberOfCreature;
    private final boolean isPeacefulCreature;
    private final boolean isAnimal;
-   private final String entityTypeName;
+   private final String name;
 
-   private EntityClassification(String p_i50381_3_, int p_i50381_4_, boolean p_i50381_5_, boolean p_i50381_6_) {
-      this.entityTypeName = p_i50381_3_;
-      this.maxNumberOfCreature = p_i50381_4_;
-      this.isPeacefulCreature = p_i50381_5_;
-      this.isAnimal = p_i50381_6_;
+   private EntityClassification(String id, int maxNumberOfCreatureIn, boolean isPeacefulCreatureIn, boolean isAnimalIn) {
+      this.name = id;
+      this.maxNumberOfCreature = maxNumberOfCreatureIn;
+      this.isPeacefulCreature = isPeacefulCreatureIn;
+      this.isAnimal = isAnimalIn;
    }
 
-   public String func_220363_a() {
-      return this.entityTypeName;
+   public String getName() {
+      return this.name;
    }
 
    public int getMaxNumberOfCreature() {

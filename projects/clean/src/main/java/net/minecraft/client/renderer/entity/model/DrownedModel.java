@@ -15,10 +15,10 @@ public class DrownedModel<T extends ZombieEntity> extends ZombieModel<T> {
    public DrownedModel(float p_i48915_1_, float p_i48915_2_, int p_i48915_3_, int p_i48915_4_) {
       super(p_i48915_1_, p_i48915_2_, p_i48915_3_, p_i48915_4_);
       this.bipedRightArm = new ModelRenderer(this, 32, 48);
-      this.bipedRightArm.func_228301_a_(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_i48915_1_);
+      this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_i48915_1_);
       this.bipedRightArm.setRotationPoint(-5.0F, 2.0F + p_i48915_2_, 0.0F);
       this.bipedRightLeg = new ModelRenderer(this, 16, 48);
-      this.bipedRightLeg.func_228301_a_(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_i48915_1_);
+      this.bipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, p_i48915_1_);
       this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F + p_i48915_2_, 0.0F);
    }
 
@@ -41,8 +41,8 @@ public class DrownedModel<T extends ZombieEntity> extends ZombieModel<T> {
       super.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTick);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      super.func_225597_a_(p_225597_1_, p_225597_2_, p_225597_3_, p_225597_4_, p_225597_5_, p_225597_6_);
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
       if (this.leftArmPose == BipedModel.ArmPose.THROW_SPEAR) {
          this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F - (float)Math.PI;
          this.bipedLeftArm.rotateAngleY = 0.0F;
@@ -54,12 +54,12 @@ public class DrownedModel<T extends ZombieEntity> extends ZombieModel<T> {
       }
 
       if (this.swimAnimation > 0.0F) {
-         this.bipedRightArm.rotateAngleX = this.func_205060_a(this.bipedRightArm.rotateAngleX, -2.5132742F, this.swimAnimation) + this.swimAnimation * 0.35F * MathHelper.sin(0.1F * p_225597_4_);
-         this.bipedLeftArm.rotateAngleX = this.func_205060_a(this.bipedLeftArm.rotateAngleX, -2.5132742F, this.swimAnimation) - this.swimAnimation * 0.35F * MathHelper.sin(0.1F * p_225597_4_);
-         this.bipedRightArm.rotateAngleZ = this.func_205060_a(this.bipedRightArm.rotateAngleZ, -0.15F, this.swimAnimation);
-         this.bipedLeftArm.rotateAngleZ = this.func_205060_a(this.bipedLeftArm.rotateAngleZ, 0.15F, this.swimAnimation);
-         this.bipedLeftLeg.rotateAngleX -= this.swimAnimation * 0.55F * MathHelper.sin(0.1F * p_225597_4_);
-         this.bipedRightLeg.rotateAngleX += this.swimAnimation * 0.55F * MathHelper.sin(0.1F * p_225597_4_);
+         this.bipedRightArm.rotateAngleX = this.rotLerpRad(this.bipedRightArm.rotateAngleX, -2.5132742F, this.swimAnimation) + this.swimAnimation * 0.35F * MathHelper.sin(0.1F * ageInTicks);
+         this.bipedLeftArm.rotateAngleX = this.rotLerpRad(this.bipedLeftArm.rotateAngleX, -2.5132742F, this.swimAnimation) - this.swimAnimation * 0.35F * MathHelper.sin(0.1F * ageInTicks);
+         this.bipedRightArm.rotateAngleZ = this.rotLerpRad(this.bipedRightArm.rotateAngleZ, -0.15F, this.swimAnimation);
+         this.bipedLeftArm.rotateAngleZ = this.rotLerpRad(this.bipedLeftArm.rotateAngleZ, 0.15F, this.swimAnimation);
+         this.bipedLeftLeg.rotateAngleX -= this.swimAnimation * 0.55F * MathHelper.sin(0.1F * ageInTicks);
+         this.bipedRightLeg.rotateAngleX += this.swimAnimation * 0.55F * MathHelper.sin(0.1F * ageInTicks);
          this.bipedHead.rotateAngleX = 0.0F;
       }
 

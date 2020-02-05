@@ -94,21 +94,21 @@ public interface IDispenseItemBehavior {
       DispenserBlock.registerDispenseBehavior(Items.EGG, new ProjectileDispenseBehavior() {
          protected IProjectile getProjectileEntity(World worldIn, IPosition position, ItemStack stackIn) {
             return Util.make(new EggEntity(worldIn, position.getX(), position.getY(), position.getZ()), (p_218408_1_) -> {
-               p_218408_1_.func_213884_b(stackIn);
+               p_218408_1_.setItem(stackIn);
             });
          }
       });
       DispenserBlock.registerDispenseBehavior(Items.SNOWBALL, new ProjectileDispenseBehavior() {
          protected IProjectile getProjectileEntity(World worldIn, IPosition position, ItemStack stackIn) {
             return Util.make(new SnowballEntity(worldIn, position.getX(), position.getY(), position.getZ()), (p_218409_1_) -> {
-               p_218409_1_.func_213884_b(stackIn);
+               p_218409_1_.setItem(stackIn);
             });
          }
       });
       DispenserBlock.registerDispenseBehavior(Items.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior() {
          protected IProjectile getProjectileEntity(World worldIn, IPosition position, ItemStack stackIn) {
             return Util.make(new ExperienceBottleEntity(worldIn, position.getX(), position.getY(), position.getZ()), (p_218410_1_) -> {
-               p_218410_1_.func_213884_b(stackIn);
+               p_218410_1_.setItem(stackIn);
             });
          }
 
@@ -218,7 +218,7 @@ public interface IDispenseItemBehavior {
             double d4 = random.nextGaussian() * 0.05D + (double)direction.getYOffset();
             double d5 = random.nextGaussian() * 0.05D + (double)direction.getZOffset();
             world.addEntity(Util.make(new SmallFireballEntity(world, d0, d1, d2, d3, d4, d5), (p_229425_1_) -> {
-               p_229425_1_.func_213898_b(stack);
+               p_229425_1_.setStack(stack);
             }));
             stack.shrink(1);
             return stack;
@@ -291,7 +291,7 @@ public interface IDispenseItemBehavior {
             this.successful = true;
             BlockPos blockpos = source.getBlockPos().offset(source.getBlockState().get(DispenserBlock.FACING));
             BlockState blockstate = world.getBlockState(blockpos);
-            if (FlintAndSteelItem.func_219996_a(blockstate, world, blockpos)) {
+            if (FlintAndSteelItem.canSetFire(blockstate, world, blockpos)) {
                world.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
             } else if (FlintAndSteelItem.isUnlitCampfire(blockstate)) {
                world.setBlockState(blockpos, blockstate.with(BlockStateProperties.LIT, Boolean.valueOf(true)));
@@ -416,7 +416,7 @@ public interface IDispenseItemBehavior {
             if (block.isIn(BlockTags.field_226151_aa_) && blockstate.get(BeehiveBlock.field_226873_c_) >= 5) {
                ((BeehiveBlock)blockstate.getBlock()).func_226877_a_(iworld.getWorld(), blockstate, blockpos, (PlayerEntity)null, BeehiveTileEntity.State.BEE_RELEASED);
                this.successful = true;
-               return this.func_229424_a_(source, stack, new ItemStack(Items.field_226638_pX_));
+               return this.func_229424_a_(source, stack, new ItemStack(Items.HONEY_BOTTLE));
             } else if (iworld.getFluidState(blockpos).isTagged(FluidTags.WATER)) {
                this.successful = true;
                return this.func_229424_a_(source, stack, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), Potions.WATER));

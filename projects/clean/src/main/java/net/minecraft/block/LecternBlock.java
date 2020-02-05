@@ -59,7 +59,7 @@ public class LecternBlock extends ContainerBlock {
       return field_220161_f;
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 
@@ -146,14 +146,14 @@ public class LecternBlock extends ContainerBlock {
       worldIn.notifyNeighborsOfStateChange(pos.down(), state.getBlock());
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      setPowered(p_225534_2_, p_225534_3_, p_225534_1_, false);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      setPowered(worldIn, pos, state, false);
    }
 
    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
       if (state.getBlock() != newState.getBlock()) {
          if (state.get(HAS_BOOK)) {
-            this.func_220150_d(state, worldIn, pos);
+            this.dropBook(state, worldIn, pos);
          }
 
          if (state.get(POWERED)) {
@@ -164,7 +164,7 @@ public class LecternBlock extends ContainerBlock {
       }
    }
 
-   private void func_220150_d(BlockState p_220150_1_, World p_220150_2_, BlockPos p_220150_3_) {
+   private void dropBook(BlockState p_220150_1_, World p_220150_2_, BlockPos p_220150_3_) {
       TileEntity tileentity = p_220150_2_.getTileEntity(p_220150_3_);
       if (tileentity instanceof LecternTileEntity) {
          LecternTileEntity lecterntileentity = (LecternTileEntity)tileentity;
@@ -207,15 +207,15 @@ public class LecternBlock extends ContainerBlock {
       return 0;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_1_.get(HAS_BOOK)) {
-         if (!p_225533_2_.isRemote) {
-            this.func_220152_a(p_225533_2_, p_225533_3_, p_225533_4_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (state.get(HAS_BOOK)) {
+         if (!worldIn.isRemote) {
+            this.openContainer(worldIn, pos, player);
          }
 
          return ActionResultType.SUCCESS;
       } else {
-         ItemStack itemstack = p_225533_4_.getHeldItem(p_225533_5_);
+         ItemStack itemstack = player.getHeldItem(handIn);
          return !itemstack.isEmpty() && !itemstack.getItem().isIn(ItemTags.field_226160_P_) ? ActionResultType.CONSUME : ActionResultType.PASS;
       }
    }
@@ -225,7 +225,7 @@ public class LecternBlock extends ContainerBlock {
       return !state.get(HAS_BOOK) ? null : super.getContainer(state, worldIn, pos);
    }
 
-   private void func_220152_a(World p_220152_1_, BlockPos p_220152_2_, PlayerEntity p_220152_3_) {
+   private void openContainer(World p_220152_1_, BlockPos p_220152_2_, PlayerEntity p_220152_3_) {
       TileEntity tileentity = p_220152_1_.getTileEntity(p_220152_2_);
       if (tileentity instanceof LecternTileEntity) {
          p_220152_3_.openContainer((LecternTileEntity)tileentity);

@@ -9,92 +9,97 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class OutlineLayerBuffer implements IRenderTypeBuffer {
-   private final IRenderTypeBuffer.Impl field_228465_a_;
-   private final IRenderTypeBuffer.Impl field_228466_b_ = IRenderTypeBuffer.func_228455_a_(new BufferBuilder(256));
-   private int field_228467_c_ = 255;
-   private int field_228468_d_ = 255;
-   private int field_228469_e_ = 255;
-   private int field_228470_f_ = 255;
+   private final IRenderTypeBuffer.Impl buffer;
+   private final IRenderTypeBuffer.Impl outlineBuffer = IRenderTypeBuffer.getImpl(new BufferBuilder(256));
+   private int red = 255;
+   private int green = 255;
+   private int blue = 255;
+   private int alpha = 255;
 
-   public OutlineLayerBuffer(IRenderTypeBuffer.Impl p_i225970_1_) {
-      this.field_228465_a_ = p_i225970_1_;
+   public OutlineLayerBuffer(IRenderTypeBuffer.Impl bufferIn) {
+      this.buffer = bufferIn;
    }
 
    public IVertexBuilder getBuffer(RenderType p_getBuffer_1_) {
-      IVertexBuilder ivertexbuilder = this.field_228465_a_.getBuffer(p_getBuffer_1_);
-      Optional<RenderType> optional = p_getBuffer_1_.func_225612_r_();
-      if (optional.isPresent()) {
-         IVertexBuilder ivertexbuilder1 = this.field_228466_b_.getBuffer(optional.get());
-         OutlineLayerBuffer.ColoredOutline outlinelayerbuffer$coloredoutline = new OutlineLayerBuffer.ColoredOutline(ivertexbuilder1, this.field_228467_c_, this.field_228468_d_, this.field_228469_e_, this.field_228470_f_);
-         return VertexBuilderUtils.func_227915_a_(outlinelayerbuffer$coloredoutline, ivertexbuilder);
+      if (p_getBuffer_1_.func_230041_s_()) {
+         IVertexBuilder ivertexbuilder2 = this.outlineBuffer.getBuffer(p_getBuffer_1_);
+         return new OutlineLayerBuffer.ColoredOutline(ivertexbuilder2, this.red, this.green, this.blue, this.alpha);
       } else {
-         return ivertexbuilder;
+         IVertexBuilder ivertexbuilder = this.buffer.getBuffer(p_getBuffer_1_);
+         Optional<RenderType> optional = p_getBuffer_1_.getOutline();
+         if (optional.isPresent()) {
+            IVertexBuilder ivertexbuilder1 = this.outlineBuffer.getBuffer(optional.get());
+            OutlineLayerBuffer.ColoredOutline outlinelayerbuffer$coloredoutline = new OutlineLayerBuffer.ColoredOutline(ivertexbuilder1, this.red, this.green, this.blue, this.alpha);
+            return VertexBuilderUtils.newDelegate(outlinelayerbuffer$coloredoutline, ivertexbuilder);
+         } else {
+            return ivertexbuilder;
+         }
       }
    }
 
-   public void func_228472_a_(int p_228472_1_, int p_228472_2_, int p_228472_3_, int p_228472_4_) {
-      this.field_228467_c_ = p_228472_1_;
-      this.field_228468_d_ = p_228472_2_;
-      this.field_228469_e_ = p_228472_3_;
-      this.field_228470_f_ = p_228472_4_;
+   public void setColor(int redIn, int greenIn, int blueIn, int alphaIn) {
+      this.red = redIn;
+      this.green = greenIn;
+      this.blue = blueIn;
+      this.alpha = alphaIn;
    }
 
-   public void func_228471_a_() {
-      this.field_228466_b_.func_228461_a_();
+   public void finish() {
+      this.outlineBuffer.finish();
    }
 
    @OnlyIn(Dist.CLIENT)
    static class ColoredOutline extends DefaultColorVertexBuilder {
-      private final IVertexBuilder field_228473_g_;
-      private double field_228474_h_;
-      private double field_228475_i_;
-      private double field_228476_j_;
-      private float field_228477_k_;
-      private float field_228478_l_;
+      private final IVertexBuilder coloredBuffer;
+      private double x;
+      private double y;
+      private double z;
+      private float u;
+      private float v;
 
-      private ColoredOutline(IVertexBuilder p_i225971_1_, int p_i225971_2_, int p_i225971_3_, int p_i225971_4_, int p_i225971_5_) {
-         this.field_228473_g_ = p_i225971_1_;
-         super.func_225611_b_(p_i225971_2_, p_i225971_3_, p_i225971_4_, p_i225971_5_);
+      private ColoredOutline(IVertexBuilder bufferIn, int red, int green, int blue, int alpha) {
+         this.coloredBuffer = bufferIn;
+         super.setDefaultColor(red, green, blue, alpha);
       }
 
-      public void func_225611_b_(int p_225611_1_, int p_225611_2_, int p_225611_3_, int p_225611_4_) {
+      public void setDefaultColor(int red, int green, int blue, int alpha) {
       }
 
-      public IVertexBuilder func_225582_a_(double p_225582_1_, double p_225582_3_, double p_225582_5_) {
-         this.field_228474_h_ = p_225582_1_;
-         this.field_228475_i_ = p_225582_3_;
-         this.field_228476_j_ = p_225582_5_;
+      public IVertexBuilder pos(double x, double y, double z) {
+         this.x = x;
+         this.y = y;
+         this.z = z;
          return this;
       }
 
-      public IVertexBuilder func_225586_a_(int p_225586_1_, int p_225586_2_, int p_225586_3_, int p_225586_4_) {
+      public IVertexBuilder color(int red, int green, int blue, int alpha) {
          return this;
       }
 
-      public IVertexBuilder func_225583_a_(float p_225583_1_, float p_225583_2_) {
-         this.field_228477_k_ = p_225583_1_;
-         this.field_228478_l_ = p_225583_2_;
+      public IVertexBuilder tex(float u, float v) {
+         this.u = u;
+         this.v = v;
          return this;
       }
 
-      public IVertexBuilder func_225585_a_(int p_225585_1_, int p_225585_2_) {
+      public IVertexBuilder overlay(int u, int v) {
          return this;
       }
 
-      public IVertexBuilder func_225587_b_(int p_225587_1_, int p_225587_2_) {
+      public IVertexBuilder lightmap(int u, int v) {
          return this;
       }
 
-      public IVertexBuilder func_225584_a_(float p_225584_1_, float p_225584_2_, float p_225584_3_) {
+      public IVertexBuilder normal(float x, float y, float z) {
          return this;
       }
 
-      public void func_225588_a_(float p_225588_1_, float p_225588_2_, float p_225588_3_, float p_225588_4_, float p_225588_5_, float p_225588_6_, float p_225588_7_, float p_225588_8_, float p_225588_9_, int p_225588_10_, int p_225588_11_, float p_225588_12_, float p_225588_13_, float p_225588_14_) {
-         this.field_228473_g_.func_225582_a_((double)p_225588_1_, (double)p_225588_2_, (double)p_225588_3_).func_225586_a_(this.field_227855_b_, this.field_227856_c_, this.field_227857_d_, this.field_227858_e_).func_225583_a_(p_225588_8_, p_225588_9_).endVertex();
+      public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float texU, float texV, int overlayUV, int lightmapUV, float normalX, float normalY, float normalZ) {
+         this.coloredBuffer.pos((double)x, (double)y, (double)z).color(this.defaultRed, this.defaultGreen, this.defaultBlue, this.defaultAlpha).tex(texU, texV).endVertex();
       }
 
       public void endVertex() {
-         this.field_228473_g_.func_225582_a_(this.field_228474_h_, this.field_228475_i_, this.field_228476_j_).func_225586_a_(this.field_227855_b_, this.field_227856_c_, this.field_227857_d_, this.field_227858_e_).func_225583_a_(this.field_228477_k_, this.field_228478_l_).endVertex();
+         this.coloredBuffer.pos(this.x, this.y, this.z).color(this.defaultRed, this.defaultGreen, this.defaultBlue, this.defaultAlpha).tex(this.u, this.v).endVertex();
       }
    }
 }

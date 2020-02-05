@@ -6,5 +6,5 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public interface IHasHead {
-   ModelRenderer func_205072_a();
+   ModelRenderer getModelHead();
 }

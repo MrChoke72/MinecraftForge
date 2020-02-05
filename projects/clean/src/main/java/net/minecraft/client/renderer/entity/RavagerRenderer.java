@@ -10,8 +10,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class RavagerRenderer extends MobRenderer<RavagerEntity, RavagerModel> {
    private static final ResourceLocation field_217778_a = new ResourceLocation("textures/entity/illager/ravager.png");
 
-   public RavagerRenderer(EntityRendererManager p_i50958_1_) {
-      super(p_i50958_1_, new RavagerModel(), 1.1F);
+   public RavagerRenderer(EntityRendererManager renderManagerIn) {
+      super(renderManagerIn, new RavagerModel(), 1.1F);
    }
 
    public ResourceLocation getEntityTexture(RavagerEntity entity) {

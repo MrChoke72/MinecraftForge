@@ -10,18 +10,18 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public final class VirtualScreen implements AutoCloseable {
    private final Minecraft mc;
-   private final MonitorHandler field_217627_b;
+   private final MonitorHandler monitorHandler;
 
    public VirtualScreen(Minecraft mcIn) {
       this.mc = mcIn;
-      this.field_217627_b = new MonitorHandler(Monitor::new);
+      this.monitorHandler = new MonitorHandler(Monitor::new);
    }
 
-   public MainWindow create(ScreenSize p_217626_1_, @Nullable String p_217626_2_, String p_217626_3_) {
-      return new MainWindow(this.mc, this.field_217627_b, p_217626_1_, p_217626_2_, p_217626_3_);
+   public MainWindow create(ScreenSize screenSizeIn, @Nullable String videoModeName, String titleIn) {
+      return new MainWindow(this.mc, this.monitorHandler, screenSizeIn, videoModeName, titleIn);
    }
 
    public void close() {
-      this.field_217627_b.func_216514_a();
+      this.monitorHandler.close();
    }
 }

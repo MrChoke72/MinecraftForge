@@ -26,16 +26,16 @@ public class ScaffoldingBlock extends Block implements IWaterLoggable {
    private static final VoxelShape field_220123_f = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D);
    private static final VoxelShape field_220124_g = VoxelShapes.fullCube().withOffset(0.0D, -1.0D, 0.0D);
    public static final IntegerProperty field_220118_a = BlockStateProperties.DISTANCE_0_7;
-   public static final BooleanProperty field_220119_b = BlockStateProperties.WATERLOGGED;
+   public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
    public static final BooleanProperty field_220120_c = BlockStateProperties.BOTTOM;
 
    protected ScaffoldingBlock(Block.Properties p_i49976_1_) {
       super(p_i49976_1_);
-      this.setDefaultState(this.stateContainer.getBaseState().with(field_220118_a, Integer.valueOf(7)).with(field_220119_b, Boolean.valueOf(false)).with(field_220120_c, Boolean.valueOf(false)));
+      this.setDefaultState(this.stateContainer.getBaseState().with(field_220118_a, Integer.valueOf(7)).with(WATERLOGGED, Boolean.valueOf(false)).with(field_220120_c, Boolean.valueOf(false)));
    }
 
    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-      builder.add(field_220118_a, field_220119_b, field_220120_c);
+      builder.add(field_220118_a, WATERLOGGED, field_220120_c);
    }
 
    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
@@ -58,7 +58,7 @@ public class ScaffoldingBlock extends Block implements IWaterLoggable {
       BlockPos blockpos = context.getPos();
       World world = context.getWorld();
       int i = func_220117_a(world, blockpos);
-      return this.getDefaultState().with(field_220119_b, Boolean.valueOf(world.getFluidState(blockpos).getFluid() == Fluids.WATER)).with(field_220118_a, Integer.valueOf(i)).with(field_220120_c, Boolean.valueOf(this.func_220116_a(world, blockpos, i)));
+      return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(world.getFluidState(blockpos).getFluid() == Fluids.WATER)).with(field_220118_a, Integer.valueOf(i)).with(field_220120_c, Boolean.valueOf(this.func_220116_a(world, blockpos, i)));
    }
 
    public void onBlockAdded(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
@@ -69,7 +69,7 @@ public class ScaffoldingBlock extends Block implements IWaterLoggable {
    }
 
    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-      if (stateIn.get(field_220119_b)) {
+      if (stateIn.get(WATERLOGGED)) {
          worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
       }
 
@@ -80,17 +80,17 @@ public class ScaffoldingBlock extends Block implements IWaterLoggable {
       return stateIn;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      int i = func_220117_a(p_225534_2_, p_225534_3_);
-      BlockState blockstate = p_225534_1_.with(field_220118_a, Integer.valueOf(i)).with(field_220120_c, Boolean.valueOf(this.func_220116_a(p_225534_2_, p_225534_3_, i)));
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      int i = func_220117_a(worldIn, pos);
+      BlockState blockstate = state.with(field_220118_a, Integer.valueOf(i)).with(field_220120_c, Boolean.valueOf(this.func_220116_a(worldIn, pos, i)));
       if (blockstate.get(field_220118_a) == 7) {
-         if (p_225534_1_.get(field_220118_a) == 7) {
-            p_225534_2_.addEntity(new FallingBlockEntity(p_225534_2_, (double)p_225534_3_.getX() + 0.5D, (double)p_225534_3_.getY(), (double)p_225534_3_.getZ() + 0.5D, blockstate.with(field_220119_b, Boolean.valueOf(false))));
+         if (state.get(field_220118_a) == 7) {
+            worldIn.addEntity(new FallingBlockEntity(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, blockstate.with(WATERLOGGED, Boolean.valueOf(false))));
          } else {
-            p_225534_2_.destroyBlock(p_225534_3_, true);
+            worldIn.destroyBlock(pos, true);
          }
-      } else if (p_225534_1_ != blockstate) {
-         p_225534_2_.setBlockState(p_225534_3_, blockstate, 3);
+      } else if (state != blockstate) {
+         worldIn.setBlockState(pos, blockstate, 3);
       }
 
    }
@@ -108,7 +108,7 @@ public class ScaffoldingBlock extends Block implements IWaterLoggable {
    }
 
    public IFluidState getFluidState(BlockState state) {
-      return state.get(field_220119_b) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+      return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
    }
 
    private boolean func_220116_a(IBlockReader p_220116_1_, BlockPos p_220116_2_, int p_220116_3_) {
@@ -121,7 +121,7 @@ public class ScaffoldingBlock extends Block implements IWaterLoggable {
       int i = 7;
       if (blockstate.getBlock() == Blocks.SCAFFOLDING) {
          i = blockstate.get(field_220118_a);
-      } else if (blockstate.func_224755_d(p_220117_0_, blockpos$mutable, Direction.UP)) {
+      } else if (blockstate.isSolidSide(p_220117_0_, blockpos$mutable, Direction.UP)) {
          return 0;
       }
 

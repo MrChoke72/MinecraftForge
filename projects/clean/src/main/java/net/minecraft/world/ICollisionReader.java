@@ -25,7 +25,7 @@ public interface ICollisionReader extends IBlockReader {
    WorldBorder getWorldBorder();
 
    @Nullable
-   IBlockReader func_225522_c_(int p_225522_1_, int p_225522_2_);
+   IBlockReader getBlockReader(int p_225522_1_, int p_225522_2_);
 
    default boolean checkNoEntityCollision(@Nullable Entity entityIn, VoxelShape shape) {
       return true;
@@ -41,29 +41,28 @@ public interface ICollisionReader extends IBlockReader {
    }
 
    default boolean func_226664_a_(AxisAlignedBB p_226664_1_) {
-      return this.isEntityNoCollide((Entity)null, p_226664_1_, Collections.emptySet());
+      return this.func_226662_a_((Entity)null, p_226664_1_, Collections.emptySet());
    }
 
-   default boolean isEntityNoCollide(Entity entity) {
-      return this.isEntityNoCollide(entity, entity.getBoundingBox(), Collections.emptySet());
+   //AH REFACTOR METHOD NAME
+   default boolean isEntityNoCollide(Entity p_226669_1_) {
+      return this.func_226662_a_(p_226669_1_, p_226669_1_.getBoundingBox(), Collections.emptySet());
    }
 
-   //AH CHANGE REFACTOR
-   default boolean isCollisionBoxesEmpty(Entity entityIn, AxisAlignedBB aabb) {
-   //default boolean func_226665_a__(Entity p_226665_1_, AxisAlignedBB p_226665_2_) {
-      return this.isEntityNoCollide(entityIn, aabb, Collections.emptySet());
+   default boolean isCollisionBoxesEmpty(Entity p_226665_1_, AxisAlignedBB p_226665_2_) {
+      return this.func_226662_a_(p_226665_1_, p_226665_2_, Collections.emptySet());
    }
 
-   default boolean isEntityNoCollide(@Nullable Entity entity, AxisAlignedBB boundingBox, Set<Entity> ignoreSet) {
-      return this.func_226667_c_(entity, boundingBox, ignoreSet).allMatch(VoxelShape::isEmpty);
+   default boolean func_226662_a_(@Nullable Entity p_226662_1_, AxisAlignedBB p_226662_2_, Set<Entity> p_226662_3_) {
+      return this.func_226667_c_(p_226662_1_, p_226662_2_, p_226662_3_).allMatch(VoxelShape::isEmpty);
    }
 
    default Stream<VoxelShape> getEmptyCollisionShapes(@Nullable Entity entityIn, AxisAlignedBB aabb, Set<Entity> entitiesToIgnore) {
       return Stream.empty();
    }
 
-   default Stream<VoxelShape> func_226667_c_(@Nullable Entity p_226667_1_, AxisAlignedBB p_226667_2_, Set<Entity> ignoreSet) {
-      return Streams.concat(this.func_226666_b_(p_226667_1_, p_226667_2_), this.getEmptyCollisionShapes(p_226667_1_, p_226667_2_, ignoreSet));
+   default Stream<VoxelShape> func_226667_c_(@Nullable Entity p_226667_1_, AxisAlignedBB p_226667_2_, Set<Entity> p_226667_3_) {
+      return Streams.concat(this.func_226666_b_(p_226667_1_, p_226667_2_), this.getEmptyCollisionShapes(p_226667_1_, p_226667_2_, p_226667_3_));
    }
 
    default Stream<VoxelShape> func_226666_b_(@Nullable final Entity p_226666_1_, AxisAlignedBB p_226666_2_) {
@@ -101,15 +100,15 @@ public interface ICollisionReader extends IBlockReader {
                int j2 = cubecoordinateiterator.getX();
                int k2 = cubecoordinateiterator.getY();
                int l2 = cubecoordinateiterator.getZ();
-               int k1 = cubecoordinateiterator.func_223473_e();
+               int k1 = cubecoordinateiterator.numBoundariesTouched();
                if (k1 != 3) {
                   int l1 = j2 >> 4;
                   int i2 = l2 >> 4;
-                  IBlockReader iblockreader = ICollisionReader.this.func_225522_c_(l1, i2);
+                  IBlockReader iblockreader = ICollisionReader.this.getBlockReader(l1, i2);
                   if (iblockreader != null) {
                      blockpos$mutable.setPos(j2, k2, l2);
                      BlockState blockstate = iblockreader.getBlockState(blockpos$mutable);
-                     if ((k1 != 1 || blockstate.func_215704_f()) && (k1 != 2 || blockstate.getBlock() == Blocks.MOVING_PISTON)) {
+                     if ((k1 != 1 || blockstate.isCollisionShapeLargerThanFullBlock()) && (k1 != 2 || blockstate.getBlock() == Blocks.MOVING_PISTON)) {
                         VoxelShape voxelshape2 = blockstate.getCollisionShape(ICollisionReader.this, blockpos$mutable, iselectioncontext);
                         voxelshape3 = voxelshape2.withOffset((double)j2, (double)k2, (double)l2);
                         if (VoxelShapes.compare(voxelshape, voxelshape3, IBooleanFunction.AND)) {

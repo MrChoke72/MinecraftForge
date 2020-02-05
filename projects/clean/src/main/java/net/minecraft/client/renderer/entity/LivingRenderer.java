@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -32,10 +33,10 @@ public abstract class LivingRenderer<T extends LivingEntity, M extends EntityMod
    protected M entityModel;
    protected final List<LayerRenderer<T, M>> layerRenderers = Lists.newArrayList();
 
-   public LivingRenderer(EntityRendererManager p_i50965_1_, M p_i50965_2_, float p_i50965_3_) {
-      super(p_i50965_1_);
-      this.entityModel = p_i50965_2_;
-      this.shadowSize = p_i50965_3_;
+   public LivingRenderer(EntityRendererManager rendererManager, M entityModelIn, float shadowSizeIn) {
+      super(rendererManager);
+      this.entityModel = entityModelIn;
+      this.shadowSize = shadowSizeIn;
    }
 
    public final boolean addLayer(LayerRenderer<T, M> layer) {
@@ -46,17 +47,17 @@ public abstract class LivingRenderer<T extends LivingEntity, M extends EntityMod
       return this.entityModel;
    }
 
-   public void func_225623_a_(T p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      p_225623_4_.func_227860_a_();
-      this.entityModel.swingProgress = this.getSwingProgress(p_225623_1_, p_225623_3_);
-      this.entityModel.isSitting = p_225623_1_.isPassenger();
-      this.entityModel.isChild = p_225623_1_.isChild();
-      float f = MathHelper.func_219805_h(p_225623_3_, p_225623_1_.prevRenderYawOffset, p_225623_1_.renderYawOffset);
-      float f1 = MathHelper.func_219805_h(p_225623_3_, p_225623_1_.prevRotationYawHead, p_225623_1_.rotationYawHead);
+   public void render(T entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      matrixStackIn.push();
+      this.entityModel.swingProgress = this.getSwingProgress(entityIn, partialTicks);
+      this.entityModel.isSitting = entityIn.isPassenger();
+      this.entityModel.isChild = entityIn.isChild();
+      float f = MathHelper.interpolateAngle(partialTicks, entityIn.prevRenderYawOffset, entityIn.renderYawOffset);
+      float f1 = MathHelper.interpolateAngle(partialTicks, entityIn.prevRotationYawHead, entityIn.rotationYawHead);
       float f2 = f1 - f;
-      if (p_225623_1_.isPassenger() && p_225623_1_.getRidingEntity() instanceof LivingEntity) {
-         LivingEntity livingentity = (LivingEntity)p_225623_1_.getRidingEntity();
-         f = MathHelper.func_219805_h(p_225623_3_, livingentity.prevRenderYawOffset, livingentity.renderYawOffset);
+      if (entityIn.isPassenger() && entityIn.getRidingEntity() instanceof LivingEntity) {
+         LivingEntity livingentity = (LivingEntity)entityIn.getRidingEntity();
+         f = MathHelper.interpolateAngle(partialTicks, livingentity.prevRenderYawOffset, livingentity.renderYawOffset);
          f2 = f1 - f;
          float f3 = MathHelper.wrapDegrees(f2);
          if (f3 < -85.0F) {
@@ -75,26 +76,26 @@ public abstract class LivingRenderer<T extends LivingEntity, M extends EntityMod
          f2 = f1 - f;
       }
 
-      float f6 = MathHelper.lerp(p_225623_3_, p_225623_1_.prevRotationPitch, p_225623_1_.rotationPitch);
-      if (p_225623_1_.getPose() == Pose.SLEEPING) {
-         Direction direction = p_225623_1_.getBedDirection();
+      float f6 = MathHelper.lerp(partialTicks, entityIn.prevRotationPitch, entityIn.rotationPitch);
+      if (entityIn.getPose() == Pose.SLEEPING) {
+         Direction direction = entityIn.getBedDirection();
          if (direction != null) {
-            float f4 = p_225623_1_.getEyeHeight(Pose.STANDING) - 0.1F;
-            p_225623_4_.func_227861_a_((double)((float)(-direction.getXOffset()) * f4), 0.0D, (double)((float)(-direction.getZOffset()) * f4));
+            float f4 = entityIn.getEyeHeight(Pose.STANDING) - 0.1F;
+            matrixStackIn.translate((double)((float)(-direction.getXOffset()) * f4), 0.0D, (double)((float)(-direction.getZOffset()) * f4));
          }
       }
 
-      float f7 = this.handleRotationFloat(p_225623_1_, p_225623_3_);
-      this.func_225621_a_(p_225623_1_, p_225623_4_, f7, f, p_225623_3_);
-      p_225623_4_.func_227862_a_(-1.0F, -1.0F, 1.0F);
-      this.func_225620_a_(p_225623_1_, p_225623_4_, p_225623_3_);
-      p_225623_4_.func_227861_a_(0.0D, (double)-1.501F, 0.0D);
+      float f7 = this.handleRotationFloat(entityIn, partialTicks);
+      this.applyRotations(entityIn, matrixStackIn, f7, f, partialTicks);
+      matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
+      this.preRenderCallback(entityIn, matrixStackIn, partialTicks);
+      matrixStackIn.translate(0.0D, (double)-1.501F, 0.0D);
       float f8 = 0.0F;
       float f5 = 0.0F;
-      if (!p_225623_1_.isPassenger() && p_225623_1_.isAlive()) {
-         f8 = MathHelper.lerp(p_225623_3_, p_225623_1_.prevLimbSwingAmount, p_225623_1_.limbSwingAmount);
-         f5 = p_225623_1_.limbSwing - p_225623_1_.limbSwingAmount * (1.0F - p_225623_3_);
-         if (p_225623_1_.isChild()) {
+      if (!entityIn.isPassenger() && entityIn.isAlive()) {
+         f8 = MathHelper.lerp(partialTicks, entityIn.prevLimbSwingAmount, entityIn.limbSwingAmount);
+         f5 = entityIn.limbSwing - entityIn.limbSwingAmount * (1.0F - partialTicks);
+         if (entityIn.isChild()) {
             f5 *= 3.0F;
          }
 
@@ -103,47 +104,49 @@ public abstract class LivingRenderer<T extends LivingEntity, M extends EntityMod
          }
       }
 
-      this.entityModel.setLivingAnimations(p_225623_1_, f5, f8, p_225623_3_);
-      boolean flag = p_225623_1_.func_225510_bt_();
-      boolean flag1 = this.func_225622_a_(p_225623_1_, false);
-      boolean flag2 = !flag1 && !p_225623_1_.isInvisibleToPlayer(Minecraft.getInstance().player);
-      this.entityModel.func_225597_a_(p_225623_1_, f5, f8, f7, f2, f6);
-      ResourceLocation resourcelocation = this.getEntityTexture(p_225623_1_);
-      RenderType rendertype;
-      if (flag2) {
-         rendertype = RenderType.func_228644_e_(resourcelocation);
-      } else if (flag1) {
-         rendertype = this.entityModel.func_228282_a_(resourcelocation);
-      } else {
-         rendertype = RenderType.func_228654_j_(resourcelocation);
+      this.entityModel.setLivingAnimations(entityIn, f5, f8, partialTicks);
+      this.entityModel.render(entityIn, f5, f8, f7, f2, f6);
+      boolean flag = this.isVisible(entityIn);
+      boolean flag1 = !flag && !entityIn.isInvisibleToPlayer(Minecraft.getInstance().player);
+      RenderType rendertype = this.func_230042_a_(entityIn, flag, flag1);
+      if (rendertype != null) {
+         IVertexBuilder ivertexbuilder = bufferIn.getBuffer(rendertype);
+         int i = getPackedOverlay(entityIn, this.getOverlayProgress(entityIn, partialTicks));
+         this.entityModel.render(matrixStackIn, ivertexbuilder, packedLightIn, i, 1.0F, 1.0F, 1.0F, flag1 ? 0.15F : 1.0F);
       }
 
-      if (flag1 || flag2 || flag) {
-         IVertexBuilder ivertexbuilder = p_225623_5_.getBuffer(rendertype);
-         int i = func_229117_c_(p_225623_1_, this.func_225625_b_(p_225623_1_, p_225623_3_));
-         this.entityModel.func_225598_a_(p_225623_4_, ivertexbuilder, p_225623_6_, i, 1.0F, 1.0F, 1.0F, flag2 ? 0.15F : 1.0F);
-      }
-
-      if (!p_225623_1_.isSpectator()) {
+      if (!entityIn.isSpectator()) {
          for(LayerRenderer<T, M> layerrenderer : this.layerRenderers) {
-            layerrenderer.func_225628_a_(p_225623_4_, p_225623_5_, p_225623_6_, p_225623_1_, f5, f8, p_225623_3_, f7, f2, f6);
+            layerrenderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, f5, f8, partialTicks, f7, f2, f6);
          }
       }
 
-      p_225623_4_.func_227865_b_();
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      matrixStackIn.pop();
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
-   public static int func_229117_c_(LivingEntity p_229117_0_, float p_229117_1_) {
-      return OverlayTexture.func_229201_a_(OverlayTexture.func_229199_a_(p_229117_1_), OverlayTexture.func_229202_a_(p_229117_0_.hurtTime > 0 || p_229117_0_.deathTime > 0));
+   @Nullable
+   protected RenderType func_230042_a_(T p_230042_1_, boolean p_230042_2_, boolean p_230042_3_) {
+      ResourceLocation resourcelocation = this.getEntityTexture(p_230042_1_);
+      if (p_230042_3_) {
+         return RenderType.entityTranslucent(resourcelocation);
+      } else if (p_230042_2_) {
+         return this.entityModel.getRenderType(resourcelocation);
+      } else {
+         return p_230042_1_.isGlowing() ? RenderType.outline(resourcelocation) : null;
+      }
    }
 
-   protected boolean func_225622_a_(T p_225622_1_, boolean p_225622_2_) {
-      return !p_225622_1_.isInvisible() || p_225622_2_;
+   public static int getPackedOverlay(LivingEntity livingEntityIn, float uIn) {
+      return OverlayTexture.packLight(OverlayTexture.lightToInt(uIn), OverlayTexture.getV(livingEntityIn.hurtTime > 0 || livingEntityIn.deathTime > 0));
    }
 
-   private static float func_217765_a(Direction p_217765_0_) {
-      switch(p_217765_0_) {
+   protected boolean isVisible(T livingEntityIn) {
+      return !livingEntityIn.isInvisible();
+   }
+
+   private static float getFacingAngle(Direction facingIn) {
+      switch(facingIn) {
       case SOUTH:
          return 90.0F;
       case WEST:
@@ -157,34 +160,34 @@ public abstract class LivingRenderer<T extends LivingEntity, M extends EntityMod
       }
    }
 
-   protected void func_225621_a_(T p_225621_1_, MatrixStack p_225621_2_, float p_225621_3_, float p_225621_4_, float p_225621_5_) {
-      Pose pose = p_225621_1_.getPose();
+   protected void applyRotations(T entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
+      Pose pose = entityLiving.getPose();
       if (pose != Pose.SLEEPING) {
-         p_225621_2_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(180.0F - p_225621_4_));
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180.0F - rotationYaw));
       }
 
-      if (p_225621_1_.deathTime > 0) {
-         float f = ((float)p_225621_1_.deathTime + p_225621_5_ - 1.0F) / 20.0F * 1.6F;
+      if (entityLiving.deathTime > 0) {
+         float f = ((float)entityLiving.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
          f = MathHelper.sqrt(f);
          if (f > 1.0F) {
             f = 1.0F;
          }
 
-         p_225621_2_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(f * this.getDeathMaxRotation(p_225621_1_)));
-      } else if (p_225621_1_.isSpinAttacking()) {
-         p_225621_2_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(-90.0F - p_225621_1_.rotationPitch));
-         p_225621_2_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(((float)p_225621_1_.ticksExisted + p_225621_5_) * -75.0F));
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(f * this.getDeathMaxRotation(entityLiving)));
+      } else if (entityLiving.isSpinAttacking()) {
+         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-90.0F - entityLiving.rotationPitch));
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(((float)entityLiving.ticksExisted + partialTicks) * -75.0F));
       } else if (pose == Pose.SLEEPING) {
-         Direction direction = p_225621_1_.getBedDirection();
-         float f1 = direction != null ? func_217765_a(direction) : p_225621_4_;
-         p_225621_2_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f1));
-         p_225621_2_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(this.getDeathMaxRotation(p_225621_1_)));
-         p_225621_2_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(270.0F));
-      } else if (p_225621_1_.hasCustomName() || p_225621_1_ instanceof PlayerEntity) {
-         String s = TextFormatting.getTextWithoutFormattingCodes(p_225621_1_.getName().getString());
-         if (("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(p_225621_1_ instanceof PlayerEntity) || ((PlayerEntity)p_225621_1_).isWearing(PlayerModelPart.CAPE))) {
-            p_225621_2_.func_227861_a_(0.0D, (double)(p_225621_1_.getHeight() + 0.1F), 0.0D);
-            p_225621_2_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(180.0F));
+         Direction direction = entityLiving.getBedDirection();
+         float f1 = direction != null ? getFacingAngle(direction) : rotationYaw;
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(f1));
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(this.getDeathMaxRotation(entityLiving)));
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(270.0F));
+      } else if (entityLiving.hasCustomName() || entityLiving instanceof PlayerEntity) {
+         String s = TextFormatting.getTextWithoutFormattingCodes(entityLiving.getName().getString());
+         if (("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof PlayerEntity) || ((PlayerEntity)entityLiving).isWearing(PlayerModelPart.CAPE))) {
+            matrixStackIn.translate(0.0D, (double)(entityLiving.getHeight() + 0.1F), 0.0D);
+            matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(180.0F));
          }
       }
 
@@ -202,16 +205,16 @@ public abstract class LivingRenderer<T extends LivingEntity, M extends EntityMod
       return 90.0F;
    }
 
-   protected float func_225625_b_(T p_225625_1_, float p_225625_2_) {
+   protected float getOverlayProgress(T livingEntityIn, float partialTicks) {
       return 0.0F;
    }
 
-   protected void func_225620_a_(T p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
+   protected void preRenderCallback(T entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
    }
 
    protected boolean canRenderName(T entity) {
-      double d0 = this.renderManager.func_229099_b_(entity);
-      float f = entity.func_226273_bm_() ? 32.0F : 64.0F;
+      double d0 = this.renderManager.squareDistanceTo(entity);
+      float f = entity.isDiscrete() ? 32.0F : 64.0F;
       if (d0 >= (double)(f * f)) {
          return false;
       } else {

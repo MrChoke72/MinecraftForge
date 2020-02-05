@@ -45,10 +45,10 @@ public class LootContext {
       return this.parameters.containsKey(parameter);
    }
 
-   public void func_216034_a(ResourceLocation p_216034_1_, Consumer<ItemStack> p_216034_2_) {
-      LootContext.IDynamicDropProvider lootcontext$idynamicdropprovider = this.field_216037_g.get(p_216034_1_);
+   public void generateDynamicDrop(ResourceLocation name, Consumer<ItemStack> consumer) {
+      LootContext.IDynamicDropProvider lootcontext$idynamicdropprovider = this.field_216037_g.get(name);
       if (lootcontext$idynamicdropprovider != null) {
-         lootcontext$idynamicdropprovider.add(this, p_216034_2_);
+         lootcontext$idynamicdropprovider.add(this, consumer);
       }
 
    }
@@ -96,7 +96,7 @@ public class LootContext {
 
    public static class Builder {
       private final ServerWorld world;
-      private final Map<LootParameter<?>, Object> field_216025_b = Maps.newIdentityHashMap();
+      private final Map<LootParameter<?>, Object> lootParameters = Maps.newIdentityHashMap();
       private final Map<ResourceLocation, LootContext.IDynamicDropProvider> field_216026_c = Maps.newHashMap();
       private Random rand;
       private float luck;
@@ -134,15 +134,15 @@ public class LootContext {
       }
 
       public <T> LootContext.Builder withParameter(LootParameter<T> parameter, T value) {
-         this.field_216025_b.put(parameter, value);
+         this.lootParameters.put(parameter, value);
          return this;
       }
 
       public <T> LootContext.Builder withNullableParameter(LootParameter<T> parameter, @Nullable T value) {
          if (value == null) {
-            this.field_216025_b.remove(parameter);
+            this.lootParameters.remove(parameter);
          } else {
-            this.field_216025_b.put(parameter, value);
+            this.lootParameters.put(parameter, value);
          }
 
          return this;
@@ -162,7 +162,7 @@ public class LootContext {
       }
 
       public <T> T assertPresent(LootParameter<T> parameter) {
-         T t = (T)this.field_216025_b.get(parameter);
+         T t = (T)this.lootParameters.get(parameter);
          if (t == null) {
             throw new IllegalArgumentException("No parameter " + parameter);
          } else {
@@ -172,15 +172,15 @@ public class LootContext {
 
       @Nullable
       public <T> T get(LootParameter<T> parameter) {
-         return (T)this.field_216025_b.get(parameter);
+         return (T)this.lootParameters.get(parameter);
       }
 
       public LootContext build(LootParameterSet parameterSet) {
-         Set<LootParameter<?>> set = Sets.difference(this.field_216025_b.keySet(), parameterSet.getAllParameters());
+         Set<LootParameter<?>> set = Sets.difference(this.lootParameters.keySet(), parameterSet.getAllParameters());
          if (!set.isEmpty()) {
             throw new IllegalArgumentException("Parameters not allowed in this parameter set: " + set);
          } else {
-            Set<LootParameter<?>> set1 = Sets.difference(parameterSet.getRequiredParameters(), this.field_216025_b.keySet());
+            Set<LootParameter<?>> set1 = Sets.difference(parameterSet.getRequiredParameters(), this.lootParameters.keySet());
             if (!set1.isEmpty()) {
                throw new IllegalArgumentException("Missing required parameters: " + set1);
             } else {
@@ -190,7 +190,7 @@ public class LootContext {
                }
 
                MinecraftServer minecraftserver = this.world.getServer();
-               return new LootContext(random, this.luck, this.world, minecraftserver.getLootTableManager()::getLootTableFromLocation, minecraftserver.func_229736_aP_()::func_227517_a_, this.field_216025_b, this.field_216026_c);
+               return new LootContext(random, this.luck, this.world, minecraftserver.getLootTableManager()::getLootTableFromLocation, minecraftserver.func_229736_aP_()::func_227517_a_, this.lootParameters, this.field_216026_c);
             }
          }
       }

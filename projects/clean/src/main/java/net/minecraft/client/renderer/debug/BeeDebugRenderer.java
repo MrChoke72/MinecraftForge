@@ -36,7 +36,7 @@ public class BeeDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.field_228958_a_ = p_i226027_1_;
    }
 
-   public void func_217675_a() {
+   public void clear() {
       this.field_228959_b_.clear();
       this.field_228960_c_.clear();
       this.field_228961_d_ = null;
@@ -50,7 +50,7 @@ public class BeeDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.field_228960_c_.put(p_228964_1_.field_228998_a_, p_228964_1_);
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       RenderSystem.pushMatrix();
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
@@ -178,7 +178,7 @@ public class BeeDebugRenderer implements DebugRenderer.IDebugRenderer {
    private static void func_228969_a_(BlockPos p_228969_0_, float p_228969_1_, float p_228969_2_, float p_228969_3_, float p_228969_4_, float p_228969_5_) {
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
-      DebugRenderer.func_217736_a(p_228969_0_, p_228969_1_, p_228969_2_, p_228969_3_, p_228969_4_, p_228969_5_);
+      DebugRenderer.renderBox(p_228969_0_, p_228969_1_, p_228969_2_, p_228969_3_, p_228969_4_, p_228969_5_);
    }
 
    private void func_228967_a_(BeeDebugRenderer.Hive p_228967_1_, Collection<UUID> p_228967_2_) {
@@ -249,7 +249,7 @@ public class BeeDebugRenderer implements DebugRenderer.IDebugRenderer {
       double d2 = (double)p_228976_1_.getX() + 0.5D;
       double d3 = (double)p_228976_1_.getY() + 1.3D + (double)p_228976_2_ * 0.2D;
       double d4 = (double)p_228976_1_.getZ() + 0.5D;
-      DebugRenderer.func_217734_a(p_228976_0_, d2, d3, d4, p_228976_3_, 0.02F, true, 0.0F, true);
+      DebugRenderer.renderText(p_228976_0_, d2, d3, d4, p_228976_3_, 0.02F, true, 0.0F, true);
    }
 
    private static void func_228974_a_(IPosition p_228974_0_, int p_228974_1_, String p_228974_2_, int p_228974_3_, float p_228974_4_) {
@@ -260,7 +260,7 @@ public class BeeDebugRenderer implements DebugRenderer.IDebugRenderer {
       double d3 = p_228974_0_.getY() + 2.4D + (double)p_228974_1_ * 0.25D;
       double d4 = (double)blockpos.getZ() + 0.5D;
       float f = 0.5F;
-      DebugRenderer.func_217734_a(p_228974_2_, d2, d3, d4, p_228974_3_, p_228974_4_, false, 0.5F, true);
+      DebugRenderer.renderText(p_228974_2_, d2, d3, d4, p_228974_3_, p_228974_4_, false, 0.5F, true);
    }
 
    private ActiveRenderInfo func_228995_g_() {
@@ -309,7 +309,7 @@ public class BeeDebugRenderer implements DebugRenderer.IDebugRenderer {
    }
 
    private void func_228997_i_() {
-      DebugRenderer.func_217728_a(this.field_228958_a_.getRenderViewEntity(), 8).ifPresent((p_228963_1_) -> {
+      DebugRenderer.getTargetEntity(this.field_228958_a_.getRenderViewEntity(), 8).ifPresent((p_228963_1_) -> {
          this.field_228961_d_ = p_228963_1_.getUniqueID();
       });
    }

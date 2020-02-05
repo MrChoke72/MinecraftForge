@@ -26,7 +26,7 @@ public class Foods {
    public static final Food ENCHANTED_GOLDEN_APPLE = (new Food.Builder()).hunger(4).saturation(1.2F).effect(new EffectInstance(Effects.REGENERATION, 400, 1), 1.0F).effect(new EffectInstance(Effects.RESISTANCE, 6000, 0), 1.0F).effect(new EffectInstance(Effects.FIRE_RESISTANCE, 6000, 0), 1.0F).effect(new EffectInstance(Effects.ABSORPTION, 2400, 3), 1.0F).setAlwaysEdible().build();
    public static final Food GOLDEN_APPLE = (new Food.Builder()).hunger(4).saturation(1.2F).effect(new EffectInstance(Effects.REGENERATION, 100, 1), 1.0F).effect(new EffectInstance(Effects.ABSORPTION, 2400, 0), 1.0F).setAlwaysEdible().build();
    public static final Food GOLDEN_CARROT = (new Food.Builder()).hunger(6).saturation(1.2F).build();
-   public static final Food field_226604_w_ = (new Food.Builder()).hunger(6).saturation(0.1F).build();
+   public static final Food HONEY = (new Food.Builder()).hunger(6).saturation(0.1F).build();
    public static final Food MELON_SLICE = (new Food.Builder()).hunger(2).saturation(0.3F).build();
    public static final Food MUSHROOM_STEW = buildStew(6);
    public static final Food MUTTON = (new Food.Builder()).hunger(2).saturation(0.3F).meat().build();
@@ -44,7 +44,7 @@ public class Foods {
    public static final Food SWEET_BERRIES = (new Food.Builder()).hunger(2).saturation(0.1F).build();
    public static final Food TROPICAL_FISH = (new Food.Builder()).hunger(1).saturation(0.1F).build();
 
-   private static Food buildStew(int p_221412_0_) {
-      return (new Food.Builder()).hunger(p_221412_0_).saturation(0.6F).build();
+   private static Food buildStew(int hunger) {
+      return (new Food.Builder()).hunger(hunger).saturation(0.6F).build();
    }
 }

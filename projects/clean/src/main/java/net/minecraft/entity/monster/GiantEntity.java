@@ -9,8 +9,8 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 public class GiantEntity extends MonsterEntity {
-   public GiantEntity(EntityType<? extends GiantEntity> p_i50205_1_, World p_i50205_2_) {
-      super(p_i50205_1_, p_i50205_2_);
+   public GiantEntity(EntityType<? extends GiantEntity> type, World worldIn) {
+      super(type, worldIn);
    }
 
    protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {

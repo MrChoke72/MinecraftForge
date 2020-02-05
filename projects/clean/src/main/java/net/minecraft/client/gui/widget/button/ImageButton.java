@@ -15,27 +15,27 @@ public class ImageButton extends Button {
    private final int field_212935_e;
    private final int field_212936_f;
 
-   public ImageButton(int p_i51134_1_, int p_i51134_2_, int p_i51134_3_, int p_i51134_4_, int p_i51134_5_, int p_i51134_6_, int p_i51134_7_, ResourceLocation p_i51134_8_, Button.IPressable p_i51134_9_) {
-      this(p_i51134_1_, p_i51134_2_, p_i51134_3_, p_i51134_4_, p_i51134_5_, p_i51134_6_, p_i51134_7_, p_i51134_8_, 256, 256, p_i51134_9_);
+   public ImageButton(int xIn, int yIn, int widthIn, int heightIn, int xTexStartIn, int yTexStartIn, int yDiffTextIn, ResourceLocation resourceLocationIn, Button.IPressable onPressIn) {
+      this(xIn, yIn, widthIn, heightIn, xTexStartIn, yTexStartIn, yDiffTextIn, resourceLocationIn, 256, 256, onPressIn);
    }
 
-   public ImageButton(int p_i51135_1_, int p_i51135_2_, int p_i51135_3_, int p_i51135_4_, int p_i51135_5_, int p_i51135_6_, int p_i51135_7_, ResourceLocation p_i51135_8_, int p_i51135_9_, int p_i51135_10_, Button.IPressable p_i51135_11_) {
-      this(p_i51135_1_, p_i51135_2_, p_i51135_3_, p_i51135_4_, p_i51135_5_, p_i51135_6_, p_i51135_7_, p_i51135_8_, p_i51135_9_, p_i51135_10_, p_i51135_11_, "");
+   public ImageButton(int xIn, int yIn, int widthIn, int heightIn, int xTexStartIn, int yTexStartIn, int yDiffTextIn, ResourceLocation resourceLocationIn, int p_i51135_9_, int p_i51135_10_, Button.IPressable onPressIn) {
+      this(xIn, yIn, widthIn, heightIn, xTexStartIn, yTexStartIn, yDiffTextIn, resourceLocationIn, p_i51135_9_, p_i51135_10_, onPressIn, "");
    }
 
-   public ImageButton(int p_i51136_1_, int p_i51136_2_, int p_i51136_3_, int p_i51136_4_, int p_i51136_5_, int p_i51136_6_, int p_i51136_7_, ResourceLocation p_i51136_8_, int p_i51136_9_, int p_i51136_10_, Button.IPressable p_i51136_11_, String p_i51136_12_) {
-      super(p_i51136_1_, p_i51136_2_, p_i51136_3_, p_i51136_4_, p_i51136_12_, p_i51136_11_);
+   public ImageButton(int xIn, int yIn, int widthIn, int heightIn, int xTexStartIn, int yTexStartIn, int yDiffTextIn, ResourceLocation resourceLocationIn, int p_i51136_9_, int p_i51136_10_, Button.IPressable onPressIn, String textIn) {
+      super(xIn, yIn, widthIn, heightIn, textIn, onPressIn);
       this.field_212935_e = p_i51136_9_;
       this.field_212936_f = p_i51136_10_;
-      this.xTexStart = p_i51136_5_;
-      this.yTexStart = p_i51136_6_;
-      this.yDiffText = p_i51136_7_;
-      this.resourceLocation = p_i51136_8_;
+      this.xTexStart = xTexStartIn;
+      this.yTexStart = yTexStartIn;
+      this.yDiffText = yDiffTextIn;
+      this.resourceLocation = resourceLocationIn;
    }
 
-   public void setPosition(int p_191746_1_, int p_191746_2_) {
-      this.x = p_191746_1_;
-      this.y = p_191746_2_;
+   public void setPosition(int xIn, int yIn) {
+      this.x = xIn;
+      this.y = yIn;
    }
 
    public void renderButton(int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) {

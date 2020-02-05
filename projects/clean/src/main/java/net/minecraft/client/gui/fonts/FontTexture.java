@@ -23,9 +23,9 @@ public class FontTexture extends Texture implements Closeable {
       this.textureLocation = resourceLocationIn;
       this.colored = coloredIn;
       this.entry = new FontTexture.Entry(0, 0, 256, 256);
-      TextureUtil.func_225682_a_(coloredIn ? NativeImage.PixelFormatGLCode.RGBA : NativeImage.PixelFormatGLCode.INTENSITY, this.getGlTextureId(), 256, 256);
-      this.field_228158_e_ = RenderType.func_228658_l_(resourceLocationIn);
-      this.field_228159_f_ = RenderType.func_228660_m_(resourceLocationIn);
+      TextureUtil.prepareImage(coloredIn ? NativeImage.PixelFormatGLCode.RGBA : NativeImage.PixelFormatGLCode.INTENSITY, this.getGlTextureId(), 256, 256);
+      this.field_228158_e_ = RenderType.text(resourceLocationIn);
+      this.field_228159_f_ = RenderType.textSeeThrough(resourceLocationIn);
    }
 
    public void loadTexture(IResourceManager manager) {
@@ -42,7 +42,7 @@ public class FontTexture extends Texture implements Closeable {
       } else {
          FontTexture.Entry fonttexture$entry = this.entry.func_211224_a(glyphInfoIn);
          if (fonttexture$entry != null) {
-            this.func_229148_d_();
+            this.bindTexture();
             glyphInfoIn.uploadGlyph(fonttexture$entry.xOffset, fonttexture$entry.yOffset);
             float f = 256.0F;
             float f1 = 256.0F;

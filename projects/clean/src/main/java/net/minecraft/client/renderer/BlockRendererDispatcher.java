@@ -27,12 +27,12 @@ public class BlockRendererDispatcher implements IResourceManagerReloadListener {
    private final BlockModelRenderer blockModelRenderer;
    private final FluidBlockRenderer fluidRenderer;
    private final Random random = new Random();
-   private final BlockColors field_228790_e_;
+   private final BlockColors blockColors;
 
-   public BlockRendererDispatcher(BlockModelShapes p_i46577_1_, BlockColors p_i46577_2_) {
-      this.blockModelShapes = p_i46577_1_;
-      this.field_228790_e_ = p_i46577_2_;
-      this.blockModelRenderer = new BlockModelRenderer(this.field_228790_e_);
+   public BlockRendererDispatcher(BlockModelShapes shapes, BlockColors colors) {
+      this.blockModelShapes = shapes;
+      this.blockColors = colors;
+      this.blockModelRenderer = new BlockModelRenderer(this.blockColors);
       this.fluidRenderer = new FluidBlockRenderer();
    }
 
@@ -40,33 +40,33 @@ public class BlockRendererDispatcher implements IResourceManagerReloadListener {
       return this.blockModelShapes;
    }
 
-   public void func_228792_a_(BlockState p_228792_1_, BlockPos p_228792_2_, ILightReader p_228792_3_, MatrixStack p_228792_4_, IVertexBuilder p_228792_5_) {
-      if (p_228792_1_.getRenderType() == BlockRenderType.MODEL) {
-         IBakedModel ibakedmodel = this.blockModelShapes.getModel(p_228792_1_);
-         long i = p_228792_1_.getPositionRandom(p_228792_2_);
-         this.blockModelRenderer.func_228802_a_(p_228792_3_, ibakedmodel, p_228792_1_, p_228792_2_, p_228792_4_, p_228792_5_, true, this.random, i, OverlayTexture.field_229196_a_);
+   public void renderBlockDamage(BlockState blockStateIn, BlockPos posIn, ILightReader lightReaderIn, MatrixStack matrixStackIn, IVertexBuilder vertexBuilderIn) {
+      if (blockStateIn.getRenderType() == BlockRenderType.MODEL) {
+         IBakedModel ibakedmodel = this.blockModelShapes.getModel(blockStateIn);
+         long i = blockStateIn.getPositionRandom(posIn);
+         this.blockModelRenderer.renderModel(lightReaderIn, ibakedmodel, blockStateIn, posIn, matrixStackIn, vertexBuilderIn, true, this.random, i, OverlayTexture.DEFAULT_LIGHT);
       }
    }
 
-   public boolean func_228793_a_(BlockState p_228793_1_, BlockPos p_228793_2_, ILightReader p_228793_3_, MatrixStack p_228793_4_, IVertexBuilder p_228793_5_, boolean p_228793_6_, Random p_228793_7_) {
+   public boolean renderModel(BlockState blockStateIn, BlockPos posIn, ILightReader lightReaderIn, MatrixStack matrixStackIn, IVertexBuilder vertexBuilderIn, boolean checkSides, Random rand) {
       try {
-         BlockRenderType blockrendertype = p_228793_1_.getRenderType();
-         return blockrendertype != BlockRenderType.MODEL ? false : this.blockModelRenderer.func_228802_a_(p_228793_3_, this.getModelForState(p_228793_1_), p_228793_1_, p_228793_2_, p_228793_4_, p_228793_5_, p_228793_6_, p_228793_7_, p_228793_1_.getPositionRandom(p_228793_2_), OverlayTexture.field_229196_a_);
+         BlockRenderType blockrendertype = blockStateIn.getRenderType();
+         return blockrendertype != BlockRenderType.MODEL ? false : this.blockModelRenderer.renderModel(lightReaderIn, this.getModelForState(blockStateIn), blockStateIn, posIn, matrixStackIn, vertexBuilderIn, checkSides, rand, blockStateIn.getPositionRandom(posIn), OverlayTexture.DEFAULT_LIGHT);
       } catch (Throwable throwable) {
          CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating block in world");
          CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being tesselated");
-         CrashReportCategory.addBlockInfo(crashreportcategory, p_228793_2_, p_228793_1_);
+         CrashReportCategory.addBlockInfo(crashreportcategory, posIn, blockStateIn);
          throw new ReportedException(crashreport);
       }
    }
 
-   public boolean func_228794_a_(BlockPos p_228794_1_, ILightReader p_228794_2_, IVertexBuilder p_228794_3_, IFluidState p_228794_4_) {
+   public boolean renderFluid(BlockPos posIn, ILightReader lightReaderIn, IVertexBuilder vertexBuilderIn, IFluidState fluidStateIn) {
       try {
-         return this.fluidRenderer.func_228796_a_(p_228794_2_, p_228794_1_, p_228794_3_, p_228794_4_);
+         return this.fluidRenderer.render(lightReaderIn, posIn, vertexBuilderIn, fluidStateIn);
       } catch (Throwable throwable) {
          CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating liquid in world");
          CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being tesselated");
-         CrashReportCategory.addBlockInfo(crashreportcategory, p_228794_1_, (BlockState)null);
+         CrashReportCategory.addBlockInfo(crashreportcategory, posIn, (BlockState)null);
          throw new ReportedException(crashreport);
       }
    }
@@ -79,20 +79,20 @@ public class BlockRendererDispatcher implements IResourceManagerReloadListener {
       return this.blockModelShapes.getModel(state);
    }
 
-   public void func_228791_a_(BlockState p_228791_1_, MatrixStack p_228791_2_, IRenderTypeBuffer p_228791_3_, int p_228791_4_, int p_228791_5_) {
-      BlockRenderType blockrendertype = p_228791_1_.getRenderType();
+   public void renderBlock(BlockState blockStateIn, MatrixStack matrixStackIn, IRenderTypeBuffer bufferTypeIn, int combinedLightIn, int combinedOverlayIn) {
+      BlockRenderType blockrendertype = blockStateIn.getRenderType();
       if (blockrendertype != BlockRenderType.INVISIBLE) {
          switch(blockrendertype) {
          case MODEL:
-            IBakedModel ibakedmodel = this.getModelForState(p_228791_1_);
-            int i = this.field_228790_e_.func_228054_a_(p_228791_1_, (ILightReader)null, (BlockPos)null, 0);
+            IBakedModel ibakedmodel = this.getModelForState(blockStateIn);
+            int i = this.blockColors.getColor(blockStateIn, (ILightReader)null, (BlockPos)null, 0);
             float f = (float)(i >> 16 & 255) / 255.0F;
             float f1 = (float)(i >> 8 & 255) / 255.0F;
             float f2 = (float)(i & 255) / 255.0F;
-            this.blockModelRenderer.func_228804_a_(p_228791_2_.func_227866_c_(), p_228791_3_.getBuffer(RenderTypeLookup.func_228394_b_(p_228791_1_)), p_228791_1_, ibakedmodel, f, f1, f2, p_228791_4_, p_228791_5_);
+            this.blockModelRenderer.renderModelBrightnessColor(matrixStackIn.getLast(), bufferTypeIn.getBuffer(RenderTypeLookup.getRenderType(blockStateIn)), blockStateIn, ibakedmodel, f, f1, f2, combinedLightIn, combinedOverlayIn);
             break;
          case ENTITYBLOCK_ANIMATED:
-            ItemStackTileEntityRenderer.instance.func_228364_a_(new ItemStack(p_228791_1_.getBlock()), p_228791_2_, p_228791_3_, p_228791_4_, p_228791_5_);
+            ItemStackTileEntityRenderer.instance.render(new ItemStack(blockStateIn.getBlock()), matrixStackIn, bufferTypeIn, combinedLightIn, combinedOverlayIn);
          }
 
       }

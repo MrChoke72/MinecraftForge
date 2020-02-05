@@ -17,9 +17,9 @@ public class SaplingBlock extends BushBlock implements IGrowable {
    protected static final VoxelShape SHAPE = Block.makeCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 12.0D, 14.0D);
    private final Tree tree;
 
-   protected SaplingBlock(Tree p_i48337_1_, Block.Properties properties) {
+   protected SaplingBlock(Tree treeIn, Block.Properties properties) {
       super(properties);
-      this.tree = p_i48337_1_;
+      this.tree = treeIn;
       this.setDefaultState(this.stateContainer.getBaseState().with(STAGE, Integer.valueOf(0)));
    }
 
@@ -27,10 +27,10 @@ public class SaplingBlock extends BushBlock implements IGrowable {
       return SHAPE;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      super.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
-      if (p_225534_2_.getLight(p_225534_3_.up()) >= 9 && p_225534_4_.nextInt(7) == 0) {
-         this.func_226942_a_(p_225534_2_, p_225534_3_, p_225534_1_, p_225534_4_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      super.tick(state, worldIn, pos, rand);
+      if (worldIn.getLight(pos.up()) >= 9 && rand.nextInt(7) == 0) {
+         this.func_226942_a_(worldIn, pos, state, rand);
       }
 
    }
@@ -52,7 +52,7 @@ public class SaplingBlock extends BushBlock implements IGrowable {
       return (double)worldIn.rand.nextFloat() < 0.45D;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       this.func_226942_a_(p_225535_1_, p_225535_3_, p_225535_4_, p_225535_2_);
    }
 

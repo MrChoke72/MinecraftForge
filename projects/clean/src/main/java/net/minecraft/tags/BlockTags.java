@@ -67,10 +67,6 @@ public class BlockTags {
    public static final Tag<Block> field_226153_ac_ = makeWrapperTag("bee_growables");
    public static final Tag<Block> field_226154_ad_ = makeWrapperTag("portals");
 
-   //AH ADD ****
-   public static final Tag<Block> FENCE_GATES = makeWrapperTag("fence_gates");
-   //AH ADD END ****
-
    public static void setCollection(TagCollection<Block> collectionIn) {
       collection = collectionIn;
       ++generation;

@@ -65,7 +65,7 @@ public class PistonHeadBlock extends DirectionalBlock {
       }
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 

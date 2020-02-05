@@ -80,10 +80,6 @@ public class ArmorStandEntity extends LivingEntity {
       this.setPosition(posX, posY, posZ);
    }
 
-   public boolean func_225510_bt_() {
-      return !this.hasMarker() && super.func_225510_bt_();
-   }
-
    public void recalculateSize() {
       double d0 = this.getPosX();
       double d1 = this.getPosY();
@@ -171,8 +167,8 @@ public class ArmorStandEntity extends LivingEntity {
       }
    }
 
-   public boolean func_213365_e(ItemStack p_213365_1_) {
-      EquipmentSlotType equipmentslottype = MobEntity.getSlotForItemStack(p_213365_1_);
+   public boolean canPickUpItem(ItemStack itemstackIn) {
+      EquipmentSlotType equipmentslottype = MobEntity.getSlotForItemStack(itemstackIn);
       return this.getItemStackFromSlot(equipmentslottype).isEmpty() && !this.isDisabled(equipmentslottype);
    }
 
@@ -417,7 +413,7 @@ public class ArmorStandEntity extends LivingEntity {
                return false;
             } else {
                boolean flag = source.getImmediateSource() instanceof AbstractArrowEntity;
-               boolean flag1 = flag && ((AbstractArrowEntity)source.getImmediateSource()).func_213874_s() > 0;
+               boolean flag1 = flag && ((AbstractArrowEntity)source.getImmediateSource()).getPierceLevel() > 0;
                boolean flag2 = "player".equals(source.getDamageType());
                if (!flag2 && !flag) {
                   return false;
@@ -476,7 +472,7 @@ public class ArmorStandEntity extends LivingEntity {
 
    private void playParticles() {
       if (this.world instanceof ServerWorld) {
-         ((ServerWorld)this.world).spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.getDefaultState()), this.getPosX(), this.func_226283_e_(0.6666666666666666D), this.getPosZ(), 10, (double)(this.getWidth() / 4.0F), (double)(this.getHeight() / 4.0F), (double)(this.getWidth() / 4.0F), 0.05D);
+         ((ServerWorld)this.world).spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.getDefaultState()), this.getPosX(), this.getPosYHeight(0.6666666666666666D), this.getPosZ(), 10, (double)(this.getWidth() / 4.0F), (double)(this.getHeight() / 4.0F), (double)(this.getWidth() / 4.0F), 0.05D);
       }
 
    }
@@ -715,6 +711,10 @@ public class ArmorStandEntity extends LivingEntity {
 
    public boolean canBeCollidedWith() {
       return super.canBeCollidedWith() && !this.hasMarker();
+   }
+
+   public boolean hitByEntity(Entity entityIn) {
+      return entityIn instanceof PlayerEntity && !this.world.isBlockModifiable((PlayerEntity)entityIn, new BlockPos(this));
    }
 
    public HandSide getPrimaryHand() {

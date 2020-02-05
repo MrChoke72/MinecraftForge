@@ -36,7 +36,7 @@ public class FindHidingPlaceTask extends Task<LivingEntity> {
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, LivingEntity owner) {
-      Optional<BlockPos> optional = worldIn.getPoiMgr().poiOptByDistFiltPos((poiType) -> {
+      Optional<BlockPos> optional = worldIn.getPointOfInterestManager().poiOptByDistFiltPos((poiType) -> {
          return poiType == PointOfInterestType.HOME;
       }, (pos) -> {
          return true;
@@ -54,7 +54,7 @@ public class FindHidingPlaceTask extends Task<LivingEntity> {
       Brain<?> brain = entityIn.getBrain();
       Optional<BlockPos> optional = this.hidePlacePos;
       if (!optional.isPresent()) {
-         optional = worldIn.getPoiMgr().getRandomPoiPos((poiType) -> {
+         optional = worldIn.getPointOfInterestManager().getRandomPoiPos((poiType) -> {
             return poiType == PointOfInterestType.HOME;
          }, (pos) -> {
             return true;

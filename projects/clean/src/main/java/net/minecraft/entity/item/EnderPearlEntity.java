@@ -42,7 +42,7 @@ public class EnderPearlEntity extends ProjectileItemEntity {
       super(EntityType.ENDER_PEARL, x, y, z, worldIn);
    }
 
-   protected Item func_213885_i() {
+   protected Item getDefaultItem() {
       return Items.ENDER_PEARL;
    }
 

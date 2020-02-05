@@ -31,7 +31,7 @@ public class LlamaSpitEntity extends Entity implements IProjectile {
    public LlamaSpitEntity(World worldIn, LlamaEntity p_i47273_2_) {
       this(EntityType.LLAMA_SPIT, worldIn);
       this.owner = p_i47273_2_;
-      this.setPosition(p_i47273_2_.getPosX() - (double)(p_i47273_2_.getWidth() + 1.0F) * 0.5D * (double)MathHelper.sin(p_i47273_2_.renderYawOffset * ((float)Math.PI / 180F)), p_i47273_2_.getPosYPlusEyeHeight() - (double)0.1F, p_i47273_2_.getPosZ() + (double)(p_i47273_2_.getWidth() + 1.0F) * 0.5D * (double)MathHelper.cos(p_i47273_2_.renderYawOffset * ((float)Math.PI / 180F)));
+      this.setPosition(p_i47273_2_.getPosX() - (double)(p_i47273_2_.getWidth() + 1.0F) * 0.5D * (double)MathHelper.sin(p_i47273_2_.renderYawOffset * ((float)Math.PI / 180F)), p_i47273_2_.getPosYEye() - (double)0.1F, p_i47273_2_.getPosZ() + (double)(p_i47273_2_.getWidth() + 1.0F) * 0.5D * (double)MathHelper.cos(p_i47273_2_.renderYawOffset * ((float)Math.PI / 180F)));
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -54,7 +54,7 @@ public class LlamaSpitEntity extends Entity implements IProjectile {
       }
 
       Vec3d vec3d = this.getMotion();
-      RayTraceResult raytraceresult = ProjectileHelper.func_221267_a(this, this.getBoundingBox().expand(vec3d).grow(1.0D), (p_213879_1_) -> {
+      RayTraceResult raytraceresult = ProjectileHelper.rayTrace(this, this.getBoundingBox().expand(vec3d).grow(1.0D), (p_213879_1_) -> {
          return !p_213879_1_.isSpectator() && p_213879_1_ != this.owner;
       }, RayTraceContext.BlockMode.OUTLINE, true);
       if (raytraceresult != null) {
@@ -64,7 +64,7 @@ public class LlamaSpitEntity extends Entity implements IProjectile {
       double d0 = this.getPosX() + vec3d.x;
       double d1 = this.getPosY() + vec3d.y;
       double d2 = this.getPosZ() + vec3d.z;
-      float f = MathHelper.sqrt(func_213296_b(vec3d));
+      float f = MathHelper.sqrt(horizontalMag(vec3d));
       this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * (double)(180F / (float)Math.PI));
 
       for(this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * (double)(180F / (float)Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
@@ -118,7 +118,7 @@ public class LlamaSpitEntity extends Entity implements IProjectile {
    public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
       Vec3d vec3d = (new Vec3d(x, y, z)).normalize().add(this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy, this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy, this.rand.nextGaussian() * (double)0.0075F * (double)inaccuracy).scale((double)velocity);
       this.setMotion(vec3d);
-      float f = MathHelper.sqrt(func_213296_b(vec3d));
+      float f = MathHelper.sqrt(horizontalMag(vec3d));
       this.rotationYaw = (float)(MathHelper.atan2(vec3d.x, z) * (double)(180F / (float)Math.PI));
       this.rotationPitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * (double)(180F / (float)Math.PI));
       this.prevRotationYaw = this.rotationYaw;

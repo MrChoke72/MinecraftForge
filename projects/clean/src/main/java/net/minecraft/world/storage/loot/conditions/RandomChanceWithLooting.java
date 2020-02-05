@@ -27,14 +27,14 @@ public class RandomChanceWithLooting implements ILootCondition {
       return ImmutableSet.of(LootParameters.KILLER_ENTITY);
    }
 
-   public boolean test(LootContext lootContext) {
-      Entity entity = lootContext.get(LootParameters.KILLER_ENTITY);
+   public boolean test(LootContext p_test_1_) {
+      Entity entity = p_test_1_.get(LootParameters.KILLER_ENTITY);
       int i = 0;
       if (entity instanceof LivingEntity) {
          i = EnchantmentHelper.getLootingModifier((LivingEntity)entity);
       }
 
-      return lootContext.getRandom().nextFloat() < this.chance + (float)i * this.lootingMultiplier;
+      return p_test_1_.getRandom().nextFloat() < this.chance + (float)i * this.lootingMultiplier;
    }
 
    public static ILootCondition.IBuilder builder(float chanceIn, float lootingMultiplierIn) {

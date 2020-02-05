@@ -31,7 +31,7 @@ public class TagLootEntry extends StandaloneLootEntry {
    }
 
    private boolean func_216179_a(LootContext p_216179_1_, Consumer<ILootGenerator> p_216179_2_) {
-      if (!this.func_216141_a(p_216179_1_)) {
+      if (!this.test(p_216179_1_)) {
          return false;
       } else {
          for(final Item item : this.field_216180_c.getAllElements()) {

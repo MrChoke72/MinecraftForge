@@ -23,7 +23,7 @@ public class GrassBlock extends SpreadableSnowyDirtBlock implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       BlockPos blockpos = p_225535_3_.up();
       BlockState blockstate = Blocks.GRASS.getDefaultState();
 
@@ -35,7 +35,7 @@ public class GrassBlock extends SpreadableSnowyDirtBlock implements IGrowable {
             if (j >= i / 16) {
                BlockState blockstate2 = p_225535_1_.getBlockState(blockpos1);
                if (blockstate2.getBlock() == blockstate.getBlock() && p_225535_2_.nextInt(10) == 0) {
-                  ((IGrowable)blockstate.getBlock()).func_225535_a_(p_225535_1_, p_225535_2_, blockpos1, blockstate2);
+                  ((IGrowable)blockstate.getBlock()).grow(p_225535_1_, p_225535_2_, blockpos1, blockstate2);
                }
 
                if (!blockstate2.isAir()) {
@@ -44,7 +44,7 @@ public class GrassBlock extends SpreadableSnowyDirtBlock implements IGrowable {
 
                BlockState blockstate1;
                if (p_225535_2_.nextInt(8) == 0) {
-                  List<ConfiguredFeature<?, ?>> list = p_225535_1_.func_226691_t_(blockpos1).getFlowers();
+                  List<ConfiguredFeature<?, ?>> list = p_225535_1_.getBiome(blockpos1).getFlowers();
                   if (list.isEmpty()) {
                      break;
                   }
@@ -62,7 +62,7 @@ public class GrassBlock extends SpreadableSnowyDirtBlock implements IGrowable {
             }
 
             blockpos1 = blockpos1.add(p_225535_2_.nextInt(3) - 1, (p_225535_2_.nextInt(3) - 1) * p_225535_2_.nextInt(3) / 2, p_225535_2_.nextInt(3) - 1);
-            if (p_225535_1_.getBlockState(blockpos1.down()).getBlock() != this || p_225535_1_.getBlockState(blockpos1).func_224756_o(p_225535_1_, blockpos1)) {
+            if (p_225535_1_.getBlockState(blockpos1.down()).getBlock() != this || p_225535_1_.getBlockState(blockpos1).isCollisionShapeOpaque(p_225535_1_, blockpos1)) {
                break;
             }
 

@@ -157,10 +157,10 @@ public abstract class SlotGui extends FocusableGui implements IRenderable {
          RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
          float f = 32.0F;
          bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-         bufferbuilder.func_225582_a_((double)this.x0, (double)this.y1, 0.0D).func_225583_a_((float)this.x0 / 32.0F, (float)(this.y1 + (int)this.yo) / 32.0F).func_225586_a_(32, 32, 32, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x1, (double)this.y1, 0.0D).func_225583_a_((float)this.x1 / 32.0F, (float)(this.y1 + (int)this.yo) / 32.0F).func_225586_a_(32, 32, 32, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x1, (double)this.y0, 0.0D).func_225583_a_((float)this.x1 / 32.0F, (float)(this.y0 + (int)this.yo) / 32.0F).func_225586_a_(32, 32, 32, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x0, (double)this.y0, 0.0D).func_225583_a_((float)this.x0 / 32.0F, (float)(this.y0 + (int)this.yo) / 32.0F).func_225586_a_(32, 32, 32, 255).endVertex();
+         bufferbuilder.pos((double)this.x0, (double)this.y1, 0.0D).tex((float)this.x0 / 32.0F, (float)(this.y1 + (int)this.yo) / 32.0F).color(32, 32, 32, 255).endVertex();
+         bufferbuilder.pos((double)this.x1, (double)this.y1, 0.0D).tex((float)this.x1 / 32.0F, (float)(this.y1 + (int)this.yo) / 32.0F).color(32, 32, 32, 255).endVertex();
+         bufferbuilder.pos((double)this.x1, (double)this.y0, 0.0D).tex((float)this.x1 / 32.0F, (float)(this.y0 + (int)this.yo) / 32.0F).color(32, 32, 32, 255).endVertex();
+         bufferbuilder.pos((double)this.x0, (double)this.y0, 0.0D).tex((float)this.x0 / 32.0F, (float)(this.y0 + (int)this.yo) / 32.0F).color(32, 32, 32, 255).endVertex();
          tessellator.draw();
          int k = this.x0 + this.width / 2 - this.getRowWidth() / 2 + 2;
          int l = this.y0 + 4 - (int)this.yo;
@@ -179,16 +179,16 @@ public abstract class SlotGui extends FocusableGui implements IRenderable {
          RenderSystem.disableTexture();
          int i1 = 4;
          bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-         bufferbuilder.func_225582_a_((double)this.x0, (double)(this.y0 + 4), 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(0, 0, 0, 0).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x1, (double)(this.y0 + 4), 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(0, 0, 0, 0).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x1, (double)this.y0, 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x0, (double)this.y0, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)this.x0, (double)(this.y0 + 4), 0.0D).tex(0.0F, 1.0F).color(0, 0, 0, 0).endVertex();
+         bufferbuilder.pos((double)this.x1, (double)(this.y0 + 4), 0.0D).tex(1.0F, 1.0F).color(0, 0, 0, 0).endVertex();
+         bufferbuilder.pos((double)this.x1, (double)this.y0, 0.0D).tex(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)this.x0, (double)this.y0, 0.0D).tex(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
          tessellator.draw();
          bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-         bufferbuilder.func_225582_a_((double)this.x0, (double)this.y1, 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x1, (double)this.y1, 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x1, (double)(this.y1 - 4), 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(0, 0, 0, 0).endVertex();
-         bufferbuilder.func_225582_a_((double)this.x0, (double)(this.y1 - 4), 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(0, 0, 0, 0).endVertex();
+         bufferbuilder.pos((double)this.x0, (double)this.y1, 0.0D).tex(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)this.x1, (double)this.y1, 0.0D).tex(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)this.x1, (double)(this.y1 - 4), 0.0D).tex(1.0F, 0.0F).color(0, 0, 0, 0).endVertex();
+         bufferbuilder.pos((double)this.x0, (double)(this.y1 - 4), 0.0D).tex(0.0F, 0.0F).color(0, 0, 0, 0).endVertex();
          tessellator.draw();
          int j1 = this.getMaxScroll();
          if (j1 > 0) {
@@ -200,22 +200,22 @@ public abstract class SlotGui extends FocusableGui implements IRenderable {
             }
 
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bufferbuilder.func_225582_a_((double)i, (double)this.y1, 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)j, (double)this.y1, 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)j, (double)this.y0, 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)i, (double)this.y0, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(0, 0, 0, 255).endVertex();
+            bufferbuilder.pos((double)i, (double)this.y1, 0.0D).tex(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+            bufferbuilder.pos((double)j, (double)this.y1, 0.0D).tex(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+            bufferbuilder.pos((double)j, (double)this.y0, 0.0D).tex(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
+            bufferbuilder.pos((double)i, (double)this.y0, 0.0D).tex(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
             tessellator.draw();
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bufferbuilder.func_225582_a_((double)i, (double)(l1 + k1), 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(128, 128, 128, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)j, (double)(l1 + k1), 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(128, 128, 128, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)j, (double)l1, 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(128, 128, 128, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)i, (double)l1, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(128, 128, 128, 255).endVertex();
+            bufferbuilder.pos((double)i, (double)(l1 + k1), 0.0D).tex(0.0F, 1.0F).color(128, 128, 128, 255).endVertex();
+            bufferbuilder.pos((double)j, (double)(l1 + k1), 0.0D).tex(1.0F, 1.0F).color(128, 128, 128, 255).endVertex();
+            bufferbuilder.pos((double)j, (double)l1, 0.0D).tex(1.0F, 0.0F).color(128, 128, 128, 255).endVertex();
+            bufferbuilder.pos((double)i, (double)l1, 0.0D).tex(0.0F, 0.0F).color(128, 128, 128, 255).endVertex();
             tessellator.draw();
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bufferbuilder.func_225582_a_((double)i, (double)(l1 + k1 - 1), 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(192, 192, 192, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)(j - 1), (double)(l1 + k1 - 1), 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(192, 192, 192, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)(j - 1), (double)l1, 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(192, 192, 192, 255).endVertex();
-            bufferbuilder.func_225582_a_((double)i, (double)l1, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(192, 192, 192, 255).endVertex();
+            bufferbuilder.pos((double)i, (double)(l1 + k1 - 1), 0.0D).tex(0.0F, 1.0F).color(192, 192, 192, 255).endVertex();
+            bufferbuilder.pos((double)(j - 1), (double)(l1 + k1 - 1), 0.0D).tex(1.0F, 1.0F).color(192, 192, 192, 255).endVertex();
+            bufferbuilder.pos((double)(j - 1), (double)l1, 0.0D).tex(1.0F, 0.0F).color(192, 192, 192, 255).endVertex();
+            bufferbuilder.pos((double)i, (double)l1, 0.0D).tex(0.0F, 0.0F).color(192, 192, 192, 255).endVertex();
             tessellator.draw();
          }
 
@@ -351,17 +351,17 @@ public abstract class SlotGui extends FocusableGui implements IRenderable {
             float f = this.isFocused() ? 1.0F : 0.5F;
             RenderSystem.color4f(f, f, f, 1.0F);
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-            bufferbuilder.func_225582_a_((double)i1, (double)(k + l + 2), 0.0D).endVertex();
-            bufferbuilder.func_225582_a_((double)j1, (double)(k + l + 2), 0.0D).endVertex();
-            bufferbuilder.func_225582_a_((double)j1, (double)(k - 2), 0.0D).endVertex();
-            bufferbuilder.func_225582_a_((double)i1, (double)(k - 2), 0.0D).endVertex();
+            bufferbuilder.pos((double)i1, (double)(k + l + 2), 0.0D).endVertex();
+            bufferbuilder.pos((double)j1, (double)(k + l + 2), 0.0D).endVertex();
+            bufferbuilder.pos((double)j1, (double)(k - 2), 0.0D).endVertex();
+            bufferbuilder.pos((double)i1, (double)(k - 2), 0.0D).endVertex();
             tessellator.draw();
             RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-            bufferbuilder.func_225582_a_((double)(i1 + 1), (double)(k + l + 1), 0.0D).endVertex();
-            bufferbuilder.func_225582_a_((double)(j1 - 1), (double)(k + l + 1), 0.0D).endVertex();
-            bufferbuilder.func_225582_a_((double)(j1 - 1), (double)(k - 1), 0.0D).endVertex();
-            bufferbuilder.func_225582_a_((double)(i1 + 1), (double)(k - 1), 0.0D).endVertex();
+            bufferbuilder.pos((double)(i1 + 1), (double)(k + l + 1), 0.0D).endVertex();
+            bufferbuilder.pos((double)(j1 - 1), (double)(k + l + 1), 0.0D).endVertex();
+            bufferbuilder.pos((double)(j1 - 1), (double)(k - 1), 0.0D).endVertex();
+            bufferbuilder.pos((double)(i1 + 1), (double)(k - 1), 0.0D).endVertex();
             tessellator.draw();
             RenderSystem.enableTexture();
          }
@@ -386,10 +386,10 @@ public abstract class SlotGui extends FocusableGui implements IRenderable {
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       float f = 32.0F;
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_((double)this.x0, (double)p_renderHoleBackground_2_, 0.0D).func_225583_a_(0.0F, (float)p_renderHoleBackground_2_ / 32.0F).func_225586_a_(64, 64, 64, p_renderHoleBackground_4_).endVertex();
-      bufferbuilder.func_225582_a_((double)(this.x0 + this.width), (double)p_renderHoleBackground_2_, 0.0D).func_225583_a_((float)this.width / 32.0F, (float)p_renderHoleBackground_2_ / 32.0F).func_225586_a_(64, 64, 64, p_renderHoleBackground_4_).endVertex();
-      bufferbuilder.func_225582_a_((double)(this.x0 + this.width), (double)p_renderHoleBackground_1_, 0.0D).func_225583_a_((float)this.width / 32.0F, (float)p_renderHoleBackground_1_ / 32.0F).func_225586_a_(64, 64, 64, p_renderHoleBackground_3_).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x0, (double)p_renderHoleBackground_1_, 0.0D).func_225583_a_(0.0F, (float)p_renderHoleBackground_1_ / 32.0F).func_225586_a_(64, 64, 64, p_renderHoleBackground_3_).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)p_renderHoleBackground_2_, 0.0D).tex(0.0F, (float)p_renderHoleBackground_2_ / 32.0F).color(64, 64, 64, p_renderHoleBackground_4_).endVertex();
+      bufferbuilder.pos((double)(this.x0 + this.width), (double)p_renderHoleBackground_2_, 0.0D).tex((float)this.width / 32.0F, (float)p_renderHoleBackground_2_ / 32.0F).color(64, 64, 64, p_renderHoleBackground_4_).endVertex();
+      bufferbuilder.pos((double)(this.x0 + this.width), (double)p_renderHoleBackground_1_, 0.0D).tex((float)this.width / 32.0F, (float)p_renderHoleBackground_1_ / 32.0F).color(64, 64, 64, p_renderHoleBackground_3_).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)p_renderHoleBackground_1_, 0.0D).tex(0.0F, (float)p_renderHoleBackground_1_ / 32.0F).color(64, 64, 64, p_renderHoleBackground_3_).endVertex();
       tessellator.draw();
    }
 

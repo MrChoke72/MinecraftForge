@@ -64,11 +64,11 @@ public class MinecraftGame implements RunningGame {
       this.sessionListener = p_setSessionEventListener_1_;
    }
 
-   public void func_216814_a() {
+   public void startGameSession() {
       this.sessionListener.onStartGameSession(this.getCurrentSession());
    }
 
-   public void func_216815_b() {
+   public void leaveGameSession() {
       this.sessionListener.onLeaveGameSession(this.getCurrentSession());
    }
 

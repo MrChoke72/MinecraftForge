@@ -103,7 +103,7 @@ public class RabbitEntity extends AnimalEntity {
       super.jump();
       double d0 = this.moveController.getSpeed();
       if (d0 > 0.0D) {
-         double d1 = func_213296_b(this.getMotion());
+         double d1 = horizontalMag(this.getMotion());
          if (d1 < 0.01D) {
             this.moveRelative(0.1F, new Vec3d(0.0D, 0.0D, 1.0D));
          }
@@ -290,7 +290,7 @@ public class RabbitEntity extends AnimalEntity {
 
    public RabbitEntity createChild(AgeableEntity ageable) {
       RabbitEntity rabbitentity = EntityType.RABBIT.create(this.world);
-      int i = this.func_213610_a(this.world);
+      int i = this.getRandomRabbitType(this.world);
       if (this.rand.nextInt(20) != 0) {
          if (ageable instanceof RabbitEntity && this.rand.nextBoolean()) {
             i = ((RabbitEntity)ageable).getRabbitType();
@@ -328,7 +328,7 @@ public class RabbitEntity extends AnimalEntity {
 
    @Nullable
    public ILivingEntityData onInitialSpawn(IWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-      int i = this.func_213610_a(worldIn);
+      int i = this.getRandomRabbitType(worldIn);
       if (spawnDataIn instanceof RabbitEntity.RabbitData) {
          i = ((RabbitEntity.RabbitData)spawnDataIn).typeData;
       } else {
@@ -339,8 +339,8 @@ public class RabbitEntity extends AnimalEntity {
       return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
    }
 
-   private int func_213610_a(IWorld p_213610_1_) {
-      Biome biome = p_213610_1_.func_226691_t_(new BlockPos(this));
+   private int getRandomRabbitType(IWorld p_213610_1_) {
+      Biome biome = p_213610_1_.getBiome(new BlockPos(this));
       int i = this.rand.nextInt(100);
       if (biome.getPrecipitation() == Biome.RainType.SNOW) {
          return i < 80 ? 1 : 3;
@@ -351,9 +351,9 @@ public class RabbitEntity extends AnimalEntity {
       }
    }
 
-   public static boolean func_223321_c(EntityType<RabbitEntity> p_223321_0_, IWorld p_223321_1_, SpawnReason p_223321_2_, BlockPos p_223321_3_, Random p_223321_4_) {
+   public static boolean func_223321_c(EntityType<RabbitEntity> p_223321_0_, IWorld p_223321_1_, SpawnReason reason, BlockPos p_223321_3_, Random p_223321_4_) {
       Block block = p_223321_1_.getBlockState(p_223321_3_.down()).getBlock();
-      return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && p_223321_1_.func_226659_b_(p_223321_3_, 0) > 8;
+      return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && p_223321_1_.getLightSubtracted(p_223321_3_, 0) > 8;
    }
 
    private boolean isCarrotEaten() {

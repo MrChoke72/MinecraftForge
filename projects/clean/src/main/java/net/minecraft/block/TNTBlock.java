@@ -67,26 +67,26 @@ public class TNTBlock extends Block {
       explode(p_196534_0_, worldIn, (LivingEntity)null);
    }
 
-   private static void explode(World p_196535_0_, BlockPos p_196535_1_, @Nullable LivingEntity p_196535_2_) {
-      if (!p_196535_0_.isRemote) {
-         TNTEntity tntentity = new TNTEntity(p_196535_0_, (double)p_196535_1_.getX() + 0.5D, (double)p_196535_1_.getY(), (double)p_196535_1_.getZ() + 0.5D, p_196535_2_);
-         p_196535_0_.addEntity(tntentity);
-         p_196535_0_.playSound((PlayerEntity)null, tntentity.getPosX(), tntentity.getPosY(), tntentity.getPosZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+   private static void explode(World worldIn, BlockPos pos, @Nullable LivingEntity entityIn) {
+      if (!worldIn.isRemote) {
+         TNTEntity tntentity = new TNTEntity(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, entityIn);
+         worldIn.addEntity(tntentity);
+         worldIn.playSound((PlayerEntity)null, tntentity.getPosX(), tntentity.getPosY(), tntentity.getPosZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
       }
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      ItemStack itemstack = p_225533_4_.getHeldItem(p_225533_5_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      ItemStack itemstack = player.getHeldItem(handIn);
       Item item = itemstack.getItem();
       if (item != Items.FLINT_AND_STEEL && item != Items.FIRE_CHARGE) {
-         return super.func_225533_a_(p_225533_1_, p_225533_2_, p_225533_3_, p_225533_4_, p_225533_5_, p_225533_6_);
+         return super.onBlockActivated(state, worldIn, pos, player, handIn, p_225533_6_);
       } else {
-         explode(p_225533_2_, p_225533_3_, p_225533_4_);
-         p_225533_2_.setBlockState(p_225533_3_, Blocks.AIR.getDefaultState(), 11);
-         if (!p_225533_4_.isCreative()) {
+         explode(worldIn, pos, player);
+         worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
+         if (!player.isCreative()) {
             if (item == Items.FLINT_AND_STEEL) {
-               itemstack.damageItem(1, p_225533_4_, (p_220287_1_) -> {
-                  p_220287_1_.sendBreakAnimation(p_225533_5_);
+               itemstack.damageItem(1, player, (p_220287_1_) -> {
+                  p_220287_1_.sendBreakAnimation(handIn);
                });
             } else {
                itemstack.shrink(1);

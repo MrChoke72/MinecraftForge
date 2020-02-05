@@ -181,7 +181,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       this.func_226453_u_(compound.getInt("Anger"));
       this.field_226363_bC_ = compound.getInt("TicksSincePollination");
       this.field_226364_bD_ = compound.getInt("CannotEnterHiveTicks");
-      this.field_226365_bE_ = compound.getInt("NumCropsGrownSincePollination");
+      this.field_226365_bE_ = compound.getInt("CropsGrownSincePollination");
       String s = compound.getString("HurtBy");
       if (!s.isEmpty()) {
          this.field_226376_by_ = UUID.fromString(s);
@@ -200,7 +200,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       if (flag) {
          this.applyEnchantments(this, entityIn);
          if (entityIn instanceof LivingEntity) {
-            ((LivingEntity)entityIn).func_226300_q_(((LivingEntity)entityIn).func_226297_df_() + 1);
+            ((LivingEntity)entityIn).setBeeStingCount(((LivingEntity)entityIn).getBeeStingCount() + 1);
             int i = 0;
             if (this.world.getDifficulty() == Difficulty.NORMAL) {
                i = 10;
@@ -225,7 +225,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       super.tick();
       if (this.func_226411_eD_() && this.func_226419_eM_() < 10 && this.rand.nextFloat() < 0.05F) {
          for(int i = 0; i < this.rand.nextInt(2) + 1; ++i) {
-            this.func_226397_a_(this.world, this.getPosX() - (double)0.3F, this.getPosX() + (double)0.3F, this.getPosZ() - (double)0.3F, this.getPosZ() + (double)0.3F, this.func_226283_e_(0.5D), ParticleTypes.field_229430_aj_);
+            this.func_226397_a_(this.world, this.getPosX() - (double)0.3F, this.getPosX() + (double)0.3F, this.getPosZ() - (double)0.3F, this.getPosZ() + (double)0.3F, this.getPosYHeight(0.5D), ParticleTypes.FALLING_NECTAR);
          }
       }
 
@@ -281,7 +281,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
 
    private boolean func_226415_eI_() {
       if (this.field_226364_bD_ <= 0 && !this.field_226370_bJ_.func_226503_k_() && !this.func_226412_eE_()) {
-         boolean flag = this.func_226414_eH_() || this.world.isRaining() || this.world.func_226690_K_() || this.func_226411_eD_();
+         boolean flag = this.func_226414_eH_() || this.world.isRaining() || this.world.isNightTime() || this.func_226411_eD_();
          return flag && !this.func_226417_eK_();
       } else {
          return false;
@@ -374,8 +374,8 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       this.dataManager.set(field_226375_bx_, p_226453_1_);
    }
 
-   private boolean func_226435_i_(BlockPos pos) {
-      TileEntity tileentity = this.world.getTileEntity(pos);
+   private boolean func_226435_i_(BlockPos p_226435_1_) {
+      TileEntity tileentity = this.world.getTileEntity(p_226435_1_);
       if (tileentity instanceof BeehiveTileEntity) {
          return !((BeehiveTileEntity)tileentity).func_226970_h_();
       } else {
@@ -392,8 +392,8 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
       return this.field_226369_bI_;
    }
 
-   protected void func_213387_K() {
-      super.func_213387_K();
+   protected void sendDebugPackets() {
+      super.sendDebugPackets();
       DebugPacketSender.func_229749_a_(this);
    }
 
@@ -543,14 +543,14 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
    }
 
    public BeeEntity createChild(AgeableEntity ageable) {
-      return EntityType.field_226289_e_.create(this.world);
+      return EntityType.BEE.create(this.world);
    }
 
    protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
       return this.isChild() ? sizeIn.height * 0.5F : sizeIn.height * 0.5F;
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 
@@ -1031,7 +1031,7 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
                         flag1 = false;
                      }
 
-                     BeeEntity.this.getLookController().func_220679_a(vec3d.getX(), vec3d.getY(), vec3d.getZ());
+                     BeeEntity.this.getLookController().setLookPosition(vec3d.getX(), vec3d.getY(), vec3d.getZ());
                   }
 
                   if (flag1) {
@@ -1126,12 +1126,12 @@ public class BeeEntity extends AnimalEntity implements IFlyingAnimal {
 
       private List<BlockPos> func_226489_j_() {
          BlockPos blockpos = new BlockPos(BeeEntity.this);
-         PointOfInterestManager pointofinterestmanager = ((ServerWorld)BeeEntity.this.world).getPoiMgr();
-         Stream<PointOfInterest> stream = pointofinterestmanager.poiStreamByDistFiltPos((poiType) -> {
-            return poiType == PointOfInterestType.BEEHIVE || poiType == PointOfInterestType.BEE_NEST;
+         PointOfInterestManager pointofinterestmanager = ((ServerWorld)BeeEntity.this.world).getPointOfInterestManager();
+         Stream<PointOfInterest> stream = pointofinterestmanager.poiStreamByDistFiltPos((p_226486_0_) -> {
+            return p_226486_0_ == PointOfInterestType.BEEHIVE || p_226486_0_ == PointOfInterestType.BEE_NEST;
          }, blockpos, 20, PointOfInterestManager.Status.ANY);
-         return stream.map(PointOfInterest::getPos).filter((pos) -> {
-            return BeeEntity.this.func_226435_i_(pos);
+         return stream.map(PointOfInterest::getPos).filter((p_226487_1_) -> {
+            return BeeEntity.this.func_226435_i_(p_226487_1_);
          }).sorted(Comparator.comparingDouble((p_226488_1_) -> {
             return p_226488_1_.distanceSq(blockpos);
          })).collect(Collectors.toList());

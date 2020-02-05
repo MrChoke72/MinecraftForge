@@ -36,7 +36,7 @@ public class WorldSelectionScreen extends Screen {
    protected void init() {
       this.minecraft.keyboardListener.enableRepeatEvents(true);
       this.field_212352_g = new TextFieldWidget(this.font, this.width / 2 - 100, 22, 200, 20, this.field_212352_g, I18n.format("selectWorld.search"));
-      this.field_212352_g.func_212954_a((p_214329_1_) -> {
+      this.field_212352_g.setResponder((p_214329_1_) -> {
          this.selectionList.func_212330_a(() -> {
             return p_214329_1_;
          }, false);
@@ -65,7 +65,7 @@ public class WorldSelectionScreen extends Screen {
          this.minecraft.displayGuiScreen(this.prevScreen);
       }));
       this.func_214324_a(false);
-      this.func_212928_a(this.field_212352_g);
+      this.setFocusedDefault(this.field_212352_g);
    }
 
    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {

@@ -65,7 +65,7 @@ public class CampfireTileEntity extends TileEntity implements IClearable, ITicka
                BlockPos blockpos = this.getPos();
                InventoryHelper.spawnItemStack(this.world, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), itemstack1);
                this.inventory.set(i, ItemStack.EMPTY);
-               this.func_213981_s();
+               this.inventoryChanged();
             }
          }
       }
@@ -79,7 +79,7 @@ public class CampfireTileEntity extends TileEntity implements IClearable, ITicka
          Random random = world.rand;
          if (random.nextFloat() < 0.11F) {
             for(int i = 0; i < random.nextInt(2) + 2; ++i) {
-               CampfireBlock.func_220098_a(world, blockpos, this.getBlockState().get(CampfireBlock.SIGNAL_FIRE), false);
+               CampfireBlock.spawnSmokeParticles(world, blockpos, this.getBlockState().get(CampfireBlock.SIGNAL_FIRE), false);
             }
          }
 
@@ -155,7 +155,7 @@ public class CampfireTileEntity extends TileEntity implements IClearable, ITicka
             this.cookingTotalTimes[i] = cookTime;
             this.cookingTimes[i] = 0;
             this.inventory.set(i, itemStackIn.split(1));
-            this.func_213981_s();
+            this.inventoryChanged();
             return true;
          }
       }
@@ -163,7 +163,7 @@ public class CampfireTileEntity extends TileEntity implements IClearable, ITicka
       return false;
    }
 
-   private void func_213981_s() {
+   private void inventoryChanged() {
       this.markDirty();
       this.getWorld().notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), 3);
    }
@@ -172,11 +172,11 @@ public class CampfireTileEntity extends TileEntity implements IClearable, ITicka
       this.inventory.clear();
    }
 
-   public void func_213986_d() {
+   public void dropAllItems() {
       if (!this.getWorld().isRemote) {
          InventoryHelper.dropItems(this.getWorld(), this.getPos(), this.getInventory());
       }
 
-      this.func_213981_s();
+      this.inventoryChanged();
    }
 }

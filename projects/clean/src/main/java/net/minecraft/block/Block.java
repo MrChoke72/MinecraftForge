@@ -94,13 +94,13 @@ public class Block implements IItemProvider {
    protected final Material material;
    protected final MaterialColor materialColor;
    private final float slipperiness;
-   private final float field_226886_f_;
-   private final float field_226887_g_;
+   private final float speedFactor;
+   private final float jumpFactor;
    protected final StateContainer<Block, BlockState> stateContainer;
    private BlockState defaultState;
    protected final boolean blocksMovement;
    private final boolean variableOpacity;
-   private final boolean field_226888_j_;
+   private final boolean isSolid;
    @Nullable
    private ResourceLocation lootTable;
    @Nullable
@@ -151,7 +151,7 @@ public class Block implements IItemProvider {
 
    @Deprecated
    public boolean canEntitySpawn(BlockState state, IBlockReader worldIn, BlockPos pos, EntityType<?> type) {
-      return state.func_224755_d(worldIn, pos, Direction.UP) && this.lightValue < 14;
+      return state.isSolidSide(worldIn, pos, Direction.UP) && this.lightValue < 14;
    }
 
    @Deprecated
@@ -247,11 +247,11 @@ public class Block implements IItemProvider {
       this.blockHardness = properties.hardness;
       this.ticksRandomly = properties.ticksRandomly;
       this.slipperiness = properties.slipperiness;
-      this.field_226886_f_ = properties.field_226893_j_;
-      this.field_226887_g_ = properties.field_226894_k_;
+      this.speedFactor = properties.speedFactor;
+      this.jumpFactor = properties.jumpFactor;
       this.variableOpacity = properties.variableOpacity;
       this.lootTable = properties.lootTable;
-      this.field_226888_j_ = properties.field_226895_m_;
+      this.isSolid = properties.isSolid;
       this.stateContainer = builder.create(BlockState::new);
       this.setDefaultState(this.stateContainer.getBaseState());
    }
@@ -262,29 +262,29 @@ public class Block implements IItemProvider {
 
    @Deprecated
    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
-      return state.getMaterial().isOpaque() && state.func_224756_o(worldIn, pos) && !state.canProvidePower();
+      return state.getMaterial().isOpaque() && state.isCollisionShapeOpaque(worldIn, pos) && !state.canProvidePower();
    }
 
    @Deprecated
-   public boolean func_229869_c_(BlockState p_229869_1_, IBlockReader p_229869_2_, BlockPos p_229869_3_) {
-      return this.material.blocksMovement() && p_229869_1_.func_224756_o(p_229869_2_, p_229869_3_);
+   public boolean causesSuffocation(BlockState state, IBlockReader worldIn, BlockPos pos) {
+      return this.material.blocksMovement() && state.isCollisionShapeOpaque(worldIn, pos);
    }
 
    @Deprecated
    @OnlyIn(Dist.CLIENT)
-   public boolean func_229870_f_(BlockState p_229870_1_, IBlockReader p_229870_2_, BlockPos p_229870_3_) {
-      return p_229870_1_.func_229980_m_(p_229870_2_, p_229870_3_);
+   public boolean isViewBlocking(BlockState p_229870_1_, IBlockReader p_229870_2_, BlockPos p_229870_3_) {
+      return p_229870_1_.isSuffocating(p_229870_2_, p_229870_3_);
    }
 
    @Deprecated
    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
       switch(type) {
       case LAND:
-         return !state.func_224756_o(worldIn, pos);
+         return !state.isCollisionShapeOpaque(worldIn, pos);
       case WATER:
          return worldIn.getFluidState(pos).isTagged(FluidTags.WATER);
       case AIR:
-         return !state.func_224756_o(worldIn, pos);
+         return !state.isCollisionShapeOpaque(worldIn, pos);
       default:
          return false;
       }
@@ -301,7 +301,7 @@ public class Block implements IItemProvider {
    }
 
    @Deprecated
-   public boolean func_225541_a_(BlockState p_225541_1_, Fluid p_225541_2_) {
+   public boolean isReplaceable(BlockState p_225541_1_, Fluid p_225541_2_) {
       return this.material.isReplaceable() || !this.material.isSolid();
    }
 
@@ -325,7 +325,7 @@ public class Block implements IItemProvider {
 
    @Deprecated
    @OnlyIn(Dist.CLIENT)
-   public boolean func_225543_m_(BlockState p_225543_1_) {
+   public boolean isEmissiveRendering(BlockState p_225543_1_) {
       return false;
    }
 
@@ -342,8 +342,8 @@ public class Block implements IItemProvider {
          if (b0 != 127) {
             return b0 != 0;
          } else {
-            VoxelShape voxelshape = adjacentState.func_215702_a(blockState, blockAccess, pos);
-            VoxelShape voxelshape1 = blockstate.func_215702_a(blockState, blockpos, pos.getOpposite());
+            VoxelShape voxelshape = adjacentState.getFaceOcclusionShape(blockState, blockAccess, pos);
+            VoxelShape voxelshape1 = blockstate.getFaceOcclusionShape(blockState, blockpos, pos.getOpposite());
             boolean flag = VoxelShapes.compare(voxelshape, voxelshape1, IBooleanFunction.ONLY_FIRST);
             if (object2bytelinkedopenhashmap.size() == 2048) {
                object2bytelinkedopenhashmap.removeLastByte();
@@ -359,7 +359,7 @@ public class Block implements IItemProvider {
 
    @Deprecated
    public final boolean isSolid(BlockState state) {
-      return this.field_226888_j_;
+      return this.isSolid;
    }
 
    @Deprecated
@@ -388,12 +388,12 @@ public class Block implements IItemProvider {
       return VoxelShapes.empty();
    }
 
-   public static boolean func_220064_c(IBlockReader worldIn, BlockPos pos) {
+   public static boolean hasSolidSideOnTop(IBlockReader worldIn, BlockPos pos) {
       BlockState blockstate = worldIn.getBlockState(pos);
       return !blockstate.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(blockstate.getCollisionShape(worldIn, pos).project(Direction.UP), field_220083_b, IBooleanFunction.ONLY_SECOND);
    }
 
-   public static boolean func_220055_a(IWorldReader worldIn, BlockPos pos, Direction directionIn) {
+   public static boolean hasEnoughSolidSide(IWorldReader worldIn, BlockPos pos, Direction directionIn) {
       BlockState blockstate = worldIn.getBlockState(pos);
       return !blockstate.isIn(BlockTags.LEAVES) && !VoxelShapes.compare(blockstate.getCollisionShape(worldIn, pos).project(directionIn), field_220084_c, IBooleanFunction.ONLY_SECOND);
    }
@@ -430,17 +430,17 @@ public class Block implements IItemProvider {
    }
 
    @Deprecated
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return false;
    }
 
    @Deprecated
-   public void func_225542_b_(BlockState p_225542_1_, ServerWorld p_225542_2_, BlockPos p_225542_3_, Random p_225542_4_) {
-      this.func_225534_a_(p_225542_1_, p_225542_2_, p_225542_3_, p_225542_4_);
+   public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
+      this.tick(state, worldIn, pos, random);
    }
 
    @Deprecated
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -590,7 +590,7 @@ public class Block implements IItemProvider {
    }
 
    @Deprecated
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
       return ActionResultType.PASS;
    }
 
@@ -663,12 +663,12 @@ public class Block implements IItemProvider {
 
    @Deprecated
    @OnlyIn(Dist.CLIENT)
-   public float func_220080_a(BlockState state, IBlockReader worldIn, BlockPos pos) {
-      return state.func_224756_o(worldIn, pos) ? 0.2F : 1.0F;
+   public float getAmbientOcclusionLightValue(BlockState state, IBlockReader worldIn, BlockPos pos) {
+      return state.isCollisionShapeOpaque(worldIn, pos) ? 0.2F : 1.0F;
    }
 
    public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance) {
-      entityIn.func_225503_b_(fallDistance, 1.0F);
+      entityIn.onLivingFall(fallDistance, 1.0F);
    }
 
    public void onLanded(IBlockReader worldIn, Entity entityIn) {
@@ -692,12 +692,12 @@ public class Block implements IItemProvider {
       return this.slipperiness;
    }
 
-   public float func_226891_m_() {
-      return this.field_226886_f_;
+   public float getSpeedFactor() {
+      return this.speedFactor;
    }
 
-   public float func_226892_n_() {
-      return this.field_226887_g_;
+   public float getJumpFactor() {
+      return this.jumpFactor;
    }
 
    @Deprecated
@@ -800,10 +800,10 @@ public class Block implements IItemProvider {
       private float hardness;
       private boolean ticksRandomly;
       private float slipperiness = 0.6F;
-      private float field_226893_j_ = 1.0F;
-      private float field_226894_k_ = 1.0F;
+      private float speedFactor = 1.0F;
+      private float jumpFactor = 1.0F;
       private ResourceLocation lootTable;
-      private boolean field_226895_m_ = true;
+      private boolean isSolid = true;
       private boolean variableOpacity;
 
       private Properties(Material materialIn, MaterialColor mapColorIn) {
@@ -834,20 +834,20 @@ public class Block implements IItemProvider {
          block$properties.mapColor = blockIn.materialColor;
          block$properties.soundType = blockIn.soundType;
          block$properties.slipperiness = blockIn.getSlipperiness();
-         block$properties.field_226893_j_ = blockIn.func_226891_m_();
+         block$properties.speedFactor = blockIn.getSpeedFactor();
          block$properties.variableOpacity = blockIn.variableOpacity;
-         block$properties.field_226895_m_ = blockIn.field_226888_j_;
+         block$properties.isSolid = blockIn.isSolid;
          return block$properties;
       }
 
       public Block.Properties doesNotBlockMovement() {
          this.blocksMovement = false;
-         this.field_226895_m_ = false;
+         this.isSolid = false;
          return this;
       }
 
-      public Block.Properties func_226896_b_() {
-         this.field_226895_m_ = false;
+      public Block.Properties notSolid() {
+         this.isSolid = false;
          return this;
       }
 
@@ -856,13 +856,13 @@ public class Block implements IItemProvider {
          return this;
       }
 
-      public Block.Properties func_226897_b_(float p_226897_1_) {
-         this.field_226893_j_ = p_226897_1_;
+      public Block.Properties speedFactor(float factor) {
+         this.speedFactor = factor;
          return this;
       }
 
-      public Block.Properties func_226898_c_(float p_226898_1_) {
-         this.field_226894_k_ = p_226898_1_;
+      public Block.Properties jumpFactor(float factor) {
+         this.jumpFactor = factor;
          return this;
       }
 

@@ -140,7 +140,7 @@ public class HopperMinecartEntity extends ContainerMinecartEntity implements IHo
       return this.transferTicker > 0;
    }
 
-   public Container func_213968_a(int p_213968_1_, PlayerInventory p_213968_2_) {
-      return new HopperContainer(p_213968_1_, p_213968_2_, this);
+   public Container createContainer(int id, PlayerInventory playerInventoryIn) {
+      return new HopperContainer(id, playerInventoryIn, this);
    }
 }

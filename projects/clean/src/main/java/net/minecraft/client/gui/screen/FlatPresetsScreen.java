@@ -159,7 +159,7 @@ public class FlatPresetsScreen extends Screen {
       public void setSelected(@Nullable FlatPresetsScreen.SlotList.PresetEntry p_setSelected_1_) {
          super.setSelected(p_setSelected_1_);
          if (p_setSelected_1_ != null) {
-            NarratorChatListener.INSTANCE.func_216864_a((new TranslationTextComponent("narrator.select", (FlatPresetsScreen.FLAT_WORLD_PRESETS.get(this.children().indexOf(p_setSelected_1_))).name)).getString());
+            NarratorChatListener.INSTANCE.say((new TranslationTextComponent("narrator.select", (FlatPresetsScreen.FLAT_WORLD_PRESETS.get(this.children().indexOf(p_setSelected_1_))).name)).getString());
          }
 
       }

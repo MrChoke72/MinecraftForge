@@ -5,10 +5,10 @@ import net.minecraft.util.FastRandom;
 public enum FuzzedBiomeMagnifier implements IBiomeMagnifier {
    INSTANCE;
 
-   public Biome func_225532_a_(long p_225532_1_, int p_225532_3_, int p_225532_4_, int p_225532_5_, BiomeManager.IBiomeReader p_225532_6_) {
-      int i = p_225532_3_ - 2;
-      int j = p_225532_4_ - 2;
-      int k = p_225532_5_ - 2;
+   public Biome getBiome(long seed, int x, int y, int z, BiomeManager.IBiomeReader biomeReader) {
+      int i = x - 2;
+      int j = y - 2;
+      int k = z - 2;
       int l = i >> 2;
       int i1 = j >> 2;
       int j1 = k >> 2;
@@ -27,7 +27,7 @@ public enum FuzzedBiomeMagnifier implements IBiomeMagnifier {
          double d3 = flag ? d0 : d0 - 1.0D;
          double d4 = flag1 ? d1 : d1 - 1.0D;
          double d5 = flag2 ? d2 : d2 - 1.0D;
-         adouble[k1] = func_226845_a_(p_225532_1_, l1, i2, j2, d3, d4, d5);
+         adouble[k1] = func_226845_a_(seed, l1, i2, j2, d3, d4, d5);
       }
 
       int k2 = 0;
@@ -43,7 +43,7 @@ public enum FuzzedBiomeMagnifier implements IBiomeMagnifier {
       int i3 = (k2 & 4) == 0 ? l : l + 1;
       int j3 = (k2 & 2) == 0 ? i1 : i1 + 1;
       int k3 = (k2 & 1) == 0 ? j1 : j1 + 1;
-      return p_225532_6_.func_225526_b_(i3, j3, k3);
+      return biomeReader.getNoiseBiome(i3, j3, k3);
    }
 
    private static double func_226845_a_(long p_226845_0_, int p_226845_2_, int p_226845_3_, int p_226845_4_, double p_226845_5_, double p_226845_7_, double p_226845_9_) {

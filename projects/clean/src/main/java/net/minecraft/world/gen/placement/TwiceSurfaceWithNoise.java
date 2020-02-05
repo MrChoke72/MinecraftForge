@@ -19,7 +19,7 @@ public class TwiceSurfaceWithNoise extends Placement<NoiseDependant> {
    }
 
    public Stream<BlockPos> getPositions(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generatorIn, Random random, NoiseDependant configIn, BlockPos pos) {
-      double d0 = Biome.INFO_NOISE.func_215464_a((double)pos.getX() / 200.0D, (double)pos.getZ() / 200.0D, false);
+      double d0 = Biome.INFO_NOISE.noiseAt((double)pos.getX() / 200.0D, (double)pos.getZ() / 200.0D, false);
       int i = d0 < configIn.noiseLevel ? configIn.belowNoise : configIn.aboveNoise;
       return IntStream.range(0, i).mapToObj((p_227450_3_) -> {
          int j = random.nextInt(16) + pos.getX();

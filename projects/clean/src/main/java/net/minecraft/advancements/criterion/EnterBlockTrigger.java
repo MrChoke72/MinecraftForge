@@ -21,9 +21,9 @@ public class EnterBlockTrigger extends AbstractCriterionTrigger<EnterBlockTrigge
 
    public EnterBlockTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
       Block block = func_226550_a_(json);
-      StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.func_227186_a_(json.get("state"));
+      StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.deserializeProperties(json.get("state"));
       if (block != null) {
-         statepropertiespredicate.func_227183_a_(block.getStateContainer(), (p_226548_1_) -> {
+         statepropertiespredicate.forEachNotPresent(block.getStateContainer(), (p_226548_1_) -> {
             throw new JsonSyntaxException("Block " + block + " has no property " + p_226548_1_);
          });
       }
@@ -60,7 +60,7 @@ public class EnterBlockTrigger extends AbstractCriterionTrigger<EnterBlockTrigge
       }
 
       public static EnterBlockTrigger.Instance forBlock(Block p_203920_0_) {
-         return new EnterBlockTrigger.Instance(p_203920_0_, StatePropertiesPredicate.field_227178_a_);
+         return new EnterBlockTrigger.Instance(p_203920_0_, StatePropertiesPredicate.EMPTY);
       }
 
       public JsonElement serialize() {
@@ -69,7 +69,7 @@ public class EnterBlockTrigger extends AbstractCriterionTrigger<EnterBlockTrigge
             jsonobject.addProperty("block", Registry.BLOCK.getKey(this.block).toString());
          }
 
-         jsonobject.add("state", this.properties.func_227180_a_());
+         jsonobject.add("state", this.properties.toJsonElement());
          return jsonobject;
       }
 
@@ -77,7 +77,7 @@ public class EnterBlockTrigger extends AbstractCriterionTrigger<EnterBlockTrigge
          if (this.block != null && state.getBlock() != this.block) {
             return false;
          } else {
-            return this.properties.func_227181_a_(state);
+            return this.properties.matches(state);
          }
       }
    }

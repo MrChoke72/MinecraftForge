@@ -24,8 +24,8 @@ public class HugeTreeFeatureConfig extends BaseTreeFeatureConfig {
    }
 
    public static <T> HugeTreeFeatureConfig func_227277_a_(Dynamic<T> p_227277_0_) {
-      BaseTreeFeatureConfig basetreefeatureconfig = BaseTreeFeatureConfig.func_227376_b_(p_227277_0_);
-      return new HugeTreeFeatureConfig(basetreefeatureconfig.field_227368_m_, basetreefeatureconfig.field_227369_n_, basetreefeatureconfig.field_227370_o_, basetreefeatureconfig.field_227371_p_, p_227277_0_.get("height_interval").asInt(0), p_227277_0_.get("crown_height").asInt(0));
+      BaseTreeFeatureConfig basetreefeatureconfig = BaseTreeFeatureConfig.deserialize(p_227277_0_);
+      return new HugeTreeFeatureConfig(basetreefeatureconfig.trunkProvider, basetreefeatureconfig.leavesProvider, basetreefeatureconfig.decorators, basetreefeatureconfig.baseHeight, p_227277_0_.get("height_interval").asInt(0), p_227277_0_.get("crown_height").asInt(0));
    }
 
    public static class Builder extends BaseTreeFeatureConfig.Builder {
@@ -43,8 +43,8 @@ public class HugeTreeFeatureConfig extends BaseTreeFeatureConfig {
          return this;
       }
 
-      public HugeTreeFeatureConfig.Builder func_225569_d_(int p_225569_1_) {
-         this.field_227279_d_ = p_225569_1_;
+      public HugeTreeFeatureConfig.Builder baseHeight(int baseHeightIn) {
+         this.field_227279_d_ = baseHeightIn;
          return this;
       }
 
@@ -58,8 +58,8 @@ public class HugeTreeFeatureConfig extends BaseTreeFeatureConfig {
          return this;
       }
 
-      public HugeTreeFeatureConfig func_225568_b_() {
-         return new HugeTreeFeatureConfig(this.field_227377_a_, this.field_227378_b_, this.field_227278_c_, this.field_227279_d_, this.field_227280_e_, this.field_227281_f_);
+      public HugeTreeFeatureConfig build() {
+         return new HugeTreeFeatureConfig(this.trunkProvider, this.leavesProvider, this.field_227278_c_, this.field_227279_d_, this.field_227280_e_, this.field_227281_f_);
       }
    }
 }

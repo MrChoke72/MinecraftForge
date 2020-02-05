@@ -6,11 +6,11 @@ public enum ActionResultType {
    PASS,
    FAIL;
 
-   public boolean func_226246_a_() {
+   public boolean isSuccessOrConsume() {
       return this == SUCCESS || this == CONSUME;
    }
 
-   public boolean func_226247_b_() {
+   public boolean isSuccess() {
       return this == SUCCESS;
    }
 }

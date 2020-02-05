@@ -21,11 +21,11 @@ public class FallbackResourceManager implements IResourceManager {
    private static final Logger LOGGER = LogManager.getLogger();
    public final List<IResourcePack> resourcePacks = Lists.newArrayList();
    private final ResourcePackType type;
-   private final String field_230027_d;
+   private final String namespace;
 
    public FallbackResourceManager(ResourcePackType p_i226096_1_, String p_i226096_2_) {
       this.type = p_i226096_1_;
-      this.field_230027_d = p_i226096_2_;
+      this.namespace = p_i226096_2_;
    }
 
    public void addResourcePack(IResourcePack resourcePack) {
@@ -33,7 +33,7 @@ public class FallbackResourceManager implements IResourceManager {
    }
 
    public Set<String> getResourceNamespaces() {
-      return ImmutableSet.of(this.field_230027_d);
+      return ImmutableSet.of(this.namespace);
    }
 
    public IResource getResource(ResourceLocation resourceLocationIn) throws IOException {
@@ -113,7 +113,7 @@ public class FallbackResourceManager implements IResourceManager {
       List<ResourceLocation> list = Lists.newArrayList();
 
       for(IResourcePack iresourcepack : this.resourcePacks) {
-         list.addAll(iresourcepack.func_225637_a_(this.type, this.field_230027_d, pathIn, Integer.MAX_VALUE, filter));
+         list.addAll(iresourcepack.getAllResourceLocations(this.type, this.namespace, pathIn, Integer.MAX_VALUE, filter));
       }
 
       Collections.sort(list);

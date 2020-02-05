@@ -9,9 +9,9 @@ public class RegionPingResult extends ValueObject {
    private final String regionName;
    private final int ping;
 
-   public RegionPingResult(String p_i51641_1_, int p_i51641_2_) {
-      this.regionName = p_i51641_1_;
-      this.ping = p_i51641_2_;
+   public RegionPingResult(String entityRendererIn, int mcIn) {
+      this.regionName = entityRendererIn;
+      this.ping = mcIn;
    }
 
    public int ping() {

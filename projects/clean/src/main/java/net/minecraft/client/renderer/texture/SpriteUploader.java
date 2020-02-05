@@ -11,28 +11,28 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public abstract class SpriteUploader extends ReloadListener<AtlasTexture.SheetData> implements AutoCloseable {
    private final AtlasTexture textureAtlas;
-   private final String field_229298_b_;
+   private final String prefix;
 
-   public SpriteUploader(TextureManager p_i50905_1_, ResourceLocation atlasTextureLocation, String p_i50905_3_) {
-      this.field_229298_b_ = p_i50905_3_;
+   public SpriteUploader(TextureManager textureManagerIn, ResourceLocation atlasTextureLocation, String prefixIn) {
+      this.prefix = prefixIn;
       this.textureAtlas = new AtlasTexture(atlasTextureLocation);
-      p_i50905_1_.func_229263_a_(this.textureAtlas.func_229223_g_(), this.textureAtlas);
+      textureManagerIn.loadTexture(this.textureAtlas.getBasePath(), this.textureAtlas);
    }
 
-   protected abstract Stream<ResourceLocation> func_225640_a_();
+   protected abstract Stream<ResourceLocation> getResourceLocations();
 
-   protected TextureAtlasSprite getSprite(ResourceLocation p_215282_1_) {
-      return this.textureAtlas.getSprite(this.func_229299_b_(p_215282_1_));
+   protected TextureAtlasSprite getSprite(ResourceLocation locationIn) {
+      return this.textureAtlas.getSprite(this.resolveLocation(locationIn));
    }
 
-   private ResourceLocation func_229299_b_(ResourceLocation p_229299_1_) {
-      return new ResourceLocation(p_229299_1_.getNamespace(), this.field_229298_b_ + "/" + p_229299_1_.getPath());
+   private ResourceLocation resolveLocation(ResourceLocation locationIn) {
+      return new ResourceLocation(locationIn.getNamespace(), this.prefix + "/" + locationIn.getPath());
    }
 
    protected AtlasTexture.SheetData prepare(IResourceManager resourceManagerIn, IProfiler profilerIn) {
       profilerIn.startTick();
       profilerIn.startSection("stitching");
-      AtlasTexture.SheetData atlastexture$sheetdata = this.textureAtlas.func_229220_a_(resourceManagerIn, this.func_225640_a_().map(this::func_229299_b_), profilerIn, 0);
+      AtlasTexture.SheetData atlastexture$sheetdata = this.textureAtlas.stitch(resourceManagerIn, this.getResourceLocations().map(this::resolveLocation), profilerIn, 0);
       profilerIn.endSection();
       profilerIn.endTick();
       return atlastexture$sheetdata;

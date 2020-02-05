@@ -109,7 +109,7 @@ public class SeaPickleBlock extends BushBlock implements IGrowable, IWaterLoggab
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       if (!this.isInBadEnvironment(p_225535_4_) && p_225535_1_.getBlockState(p_225535_3_.down()).isIn(BlockTags.CORAL_BLOCKS)) {
          int i = 5;
          int j = 1;

@@ -13,7 +13,7 @@ public class OreBlock extends Block {
       super(properties);
    }
 
-   protected int func_220281_a(Random p_220281_1_) {
+   protected int getExperience(Random p_220281_1_) {
       if (this == Blocks.COAL_ORE) {
          return MathHelper.nextInt(p_220281_1_, 0, 2);
       } else if (this == Blocks.DIAMOND_ORE) {
@@ -30,7 +30,7 @@ public class OreBlock extends Block {
    public void spawnAdditionalDrops(BlockState state, World worldIn, BlockPos pos, ItemStack stack) {
       super.spawnAdditionalDrops(state, worldIn, pos, stack);
       if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-         int i = this.func_220281_a(worldIn.rand);
+         int i = this.getExperience(worldIn.rand);
          if (i > 0) {
             this.dropXpOnBlockBreak(worldIn, pos, i);
          }

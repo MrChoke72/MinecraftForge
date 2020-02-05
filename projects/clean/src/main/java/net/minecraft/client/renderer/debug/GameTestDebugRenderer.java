@@ -19,11 +19,11 @@ public class GameTestDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.field_229020_a_.put(p_229022_1_, new GameTestDebugRenderer.Marker(p_229022_2_, p_229022_3_, Util.milliTime() + (long)p_229022_4_));
    }
 
-   public void func_217675_a() {
+   public void clear() {
       this.field_229020_a_.clear();
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       long i = Util.milliTime();
       this.field_229020_a_.entrySet().removeIf((p_229021_2_) -> {
          return i > (p_229021_2_.getValue()).field_229026_c_;
@@ -37,12 +37,12 @@ public class GameTestDebugRenderer implements DebugRenderer.IDebugRenderer {
       RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
       RenderSystem.color4f(0.0F, 1.0F, 0.0F, 0.75F);
       RenderSystem.disableTexture();
-      DebugRenderer.func_217736_a(p_229023_1_, 0.02F, p_229023_2_.func_229027_a_(), p_229023_2_.func_229028_b_(), p_229023_2_.func_229029_c_(), p_229023_2_.func_229030_d_());
+      DebugRenderer.renderBox(p_229023_1_, 0.02F, p_229023_2_.func_229027_a_(), p_229023_2_.func_229028_b_(), p_229023_2_.func_229029_c_(), p_229023_2_.func_229030_d_());
       if (!p_229023_2_.field_229025_b_.isEmpty()) {
          double d0 = (double)p_229023_1_.getX() + 0.5D;
          double d1 = (double)p_229023_1_.getY() + 1.2D;
          double d2 = (double)p_229023_1_.getZ() + 0.5D;
-         DebugRenderer.func_217734_a(p_229023_2_.field_229025_b_, d0, d1, d2, -1, 0.01F, true, 0.0F, true);
+         DebugRenderer.renderText(p_229023_2_.field_229025_b_, d0, d1, d2, -1, 0.01F, true, 0.0F, true);
       }
 
       RenderSystem.enableTexture();

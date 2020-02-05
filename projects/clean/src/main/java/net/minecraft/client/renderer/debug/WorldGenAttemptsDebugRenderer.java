@@ -31,7 +31,7 @@ public class WorldGenAttemptsDebugRenderer implements DebugRenderer.IDebugRender
       this.blues.add(blue);
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       RenderSystem.pushMatrix();
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
@@ -44,7 +44,7 @@ public class WorldGenAttemptsDebugRenderer implements DebugRenderer.IDebugRender
          BlockPos blockpos = this.locations.get(i);
          Float f = this.sizes.get(i);
          float f1 = f / 2.0F;
-         WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)((float)blockpos.getX() + 0.5F - f1) - p_225619_3_, (double)((float)blockpos.getY() + 0.5F - f1) - p_225619_5_, (double)((float)blockpos.getZ() + 0.5F - f1) - p_225619_7_, (double)((float)blockpos.getX() + 0.5F + f1) - p_225619_3_, (double)((float)blockpos.getY() + 0.5F + f1) - p_225619_5_, (double)((float)blockpos.getZ() + 0.5F + f1) - p_225619_7_, this.reds.get(i), this.greens.get(i), this.blues.get(i), this.alphas.get(i));
+         WorldRenderer.addChainedFilledBoxVertices(bufferbuilder, (double)((float)blockpos.getX() + 0.5F - f1) - camX, (double)((float)blockpos.getY() + 0.5F - f1) - camY, (double)((float)blockpos.getZ() + 0.5F - f1) - camZ, (double)((float)blockpos.getX() + 0.5F + f1) - camX, (double)((float)blockpos.getY() + 0.5F + f1) - camY, (double)((float)blockpos.getZ() + 0.5F + f1) - camZ, this.reds.get(i), this.greens.get(i), this.blues.get(i), this.alphas.get(i));
       }
 
       tessellator.draw();

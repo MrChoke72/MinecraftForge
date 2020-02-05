@@ -85,6 +85,8 @@ public class WorldInfo {
    private int wanderingTraderSpawnDelay;
    private int wanderingTraderSpawnChance;
    private UUID wanderingTraderId;
+   private Set<String> field_230141_X_ = Sets.newLinkedHashSet();
+   private boolean field_230142_Y_;
    private final GameRules gameRules = new GameRules();
    private final TimerCallbackManager<MinecraftServer> scheduledEvents = new TimerCallbackManager<>(TimerCallbackSerializers.field_216342_a);
 
@@ -96,6 +98,13 @@ public class WorldInfo {
 
    public WorldInfo(CompoundNBT nbt, DataFixer dataFixer, int dataVersionIn, @Nullable CompoundNBT playerDataIn) {
       this.fixer = dataFixer;
+      ListNBT listnbt = nbt.getList("ServerBrands", 8);
+
+      for(int i = 0; i < listnbt.size(); ++i) {
+         this.field_230141_X_.add(listnbt.getString(i));
+      }
+
+      this.field_230142_Y_ = nbt.getBoolean("WasModded");
       if (nbt.contains("Version", 10)) {
          CompoundNBT compoundnbt = nbt.getCompound("Version");
          this.versionName = compoundnbt.getString("Name");
@@ -112,12 +121,12 @@ public class WorldInfo {
          } else if (this.generator == WorldType.CUSTOMIZED) {
             this.legacyCustomOptions = nbt.getString("generatorOptions");
          } else if (this.generator.isVersioned()) {
-            int i = 0;
+            int j = 0;
             if (nbt.contains("generatorVersion", 99)) {
-               i = nbt.getInt("generatorVersion");
+               j = nbt.getInt("generatorVersion");
             }
 
-            this.generator = this.generator.getWorldTypeForGeneratorVersion(i);
+            this.generator = this.generator.getWorldTypeForGeneratorVersion(j);
          }
 
          this.setGeneratorOptions(nbt.getCompound("generatorOptions"));
@@ -229,16 +238,16 @@ public class WorldInfo {
 
       if (nbt.contains("DataPacks", 10)) {
          CompoundNBT compoundnbt2 = nbt.getCompound("DataPacks");
-         ListNBT listnbt = compoundnbt2.getList("Disabled", 8);
+         ListNBT listnbt1 = compoundnbt2.getList("Disabled", 8);
 
-         for(int k = 0; k < listnbt.size(); ++k) {
-            this.disabledDataPacks.add(listnbt.getString(k));
+         for(int l = 0; l < listnbt1.size(); ++l) {
+            this.disabledDataPacks.add(listnbt1.getString(l));
          }
 
-         ListNBT listnbt1 = compoundnbt2.getList("Enabled", 8);
+         ListNBT listnbt2 = compoundnbt2.getList("Enabled", 8);
 
-         for(int j = 0; j < listnbt1.size(); ++j) {
-            this.enabledDataPacks.add(listnbt1.getString(j));
+         for(int k = 0; k < listnbt2.size(); ++k) {
+            this.enabledDataPacks.add(listnbt2.getString(k));
          }
       }
 
@@ -295,6 +304,10 @@ public class WorldInfo {
    }
 
    private void updateTagCompound(CompoundNBT nbt, CompoundNBT playerNbt) {
+      ListNBT listnbt = new ListNBT();
+      this.field_230141_X_.stream().map(StringNBT::valueOf).forEach(listnbt::add);
+      nbt.put("ServerBrands", listnbt);
+      nbt.putBoolean("WasModded", this.field_230142_Y_);
       CompoundNBT compoundnbt = new CompoundNBT();
       compoundnbt.putString("Name", SharedConstants.getVersion().getName());
       compoundnbt.putInt("Id", SharedConstants.getVersion().getWorldVersion());
@@ -358,20 +371,20 @@ public class WorldInfo {
       }
 
       CompoundNBT compoundnbt2 = new CompoundNBT();
-      ListNBT listnbt = new ListNBT();
-
-      for(String s : this.enabledDataPacks) {
-         listnbt.add(StringNBT.func_229705_a_(s));
-      }
-
-      compoundnbt2.put("Enabled", listnbt);
       ListNBT listnbt1 = new ListNBT();
 
-      for(String s1 : this.disabledDataPacks) {
-         listnbt1.add(StringNBT.func_229705_a_(s1));
+      for(String s : this.enabledDataPacks) {
+         listnbt1.add(StringNBT.valueOf(s));
       }
 
-      compoundnbt2.put("Disabled", listnbt1);
+      compoundnbt2.put("Enabled", listnbt1);
+      ListNBT listnbt2 = new ListNBT();
+
+      for(String s1 : this.disabledDataPacks) {
+         listnbt2.add(StringNBT.valueOf(s1));
+      }
+
+      compoundnbt2.put("Disabled", listnbt2);
       nbt.put("DataPacks", compoundnbt2);
       if (this.customBossEvents != null) {
          nbt.put("CustomBossEvents", this.customBossEvents);
@@ -390,7 +403,7 @@ public class WorldInfo {
       return this.randomSeed;
    }
 
-   public static long func_227498_c_(long p_227498_0_) {
+   public static long byHashing(long p_227498_0_) {
       return Hashing.sha256().hashLong(p_227498_0_).asLong();
    }
 
@@ -418,7 +431,7 @@ public class WorldInfo {
       if (!this.playerDataFixed && this.playerData != null) {
          if (this.dataVersion < SharedConstants.getVersion().getWorldVersion()) {
             if (this.fixer == null) {
-               throw (NullPointerException)Util.func_229757_c_(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
+               throw (NullPointerException)Util.spinlockIfDevMode(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
             }
 
             this.playerData = NBTUtil.update(this.fixer, DefaultTypeReferences.PLAYER, this.playerData, this.dataVersion);
@@ -694,6 +707,12 @@ public class WorldInfo {
       category.addDetail("Level time", () -> {
          return String.format("%d game time, %d day time", this.gameTime, this.dayTime);
       });
+      category.addDetail("Known server brands", () -> {
+         return String.join(", ", this.field_230141_X_);
+      });
+      category.addDetail("Level was modded", () -> {
+         return Boolean.toString(this.field_230142_Y_);
+      });
       category.addDetail("Level storage version", () -> {
          String s = "Unknown?";
 
@@ -778,5 +797,10 @@ public class WorldInfo {
 
    public void setWanderingTraderId(UUID p_215761_1_) {
       this.wanderingTraderId = p_215761_1_;
+   }
+
+   public void func_230145_a_(String p_230145_1_, boolean p_230145_2_) {
+      this.field_230141_X_.add(p_230145_1_);
+      this.field_230142_Y_ |= p_230145_2_;
    }
 }

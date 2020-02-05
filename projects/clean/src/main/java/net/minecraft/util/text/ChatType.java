@@ -31,7 +31,7 @@ public enum ChatType {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_218690_b() {
+   public boolean getInterrupts() {
       return this.field_218691_e;
    }
 }

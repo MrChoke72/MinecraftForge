@@ -37,7 +37,7 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 public final class MainWindow implements AutoCloseable {
    private static final Logger LOGGER = LogManager.getLogger();
    private final GLFWErrorCallback loggingErrorCallback = GLFWErrorCallback.create(this::logGlError);
-   private final IWindowEventListener field_227797_c_;
+   private final IWindowEventListener mc;
    private final MonitorHandler monitorHandler;
    private final long handle;
    private int prevWindowX;
@@ -61,13 +61,13 @@ public final class MainWindow implements AutoCloseable {
    private int framerateLimit;
    private boolean vsync;
 
-   public MainWindow(IWindowEventListener p_i51170_1_, MonitorHandler p_i51170_2_, ScreenSize p_i51170_3_, @Nullable String p_i51170_4_, String p_i51170_5_) {
+   public MainWindow(IWindowEventListener p_i51170_1_, MonitorHandler p_i51170_2_, ScreenSize p_i51170_3_, @Nullable String videoModeName, String titleIn) {
       RenderSystem.assertThread(RenderSystem::isInInitPhase);
       this.monitorHandler = p_i51170_2_;
-      this.func_227803_u_();
-      this.func_227799_a_("Pre startup");
-      this.field_227797_c_ = p_i51170_1_;
-      Optional<VideoMode> optional = VideoMode.parseFromSettings(p_i51170_4_);
+      this.setThrowExceptionOnGlError();
+      this.setRenderPhase("Pre startup");
+      this.mc = p_i51170_1_;
+      Optional<VideoMode> optional = VideoMode.parseFromSettings(videoModeName);
       if (optional.isPresent()) {
          this.videoMode = optional;
       } else if (p_i51170_3_.fullscreenWidth.isPresent() && p_i51170_3_.fullscreenHeight.isPresent()) {
@@ -77,7 +77,7 @@ public final class MainWindow implements AutoCloseable {
       }
 
       this.lastFullscreen = this.fullscreen = p_i51170_3_.fullscreen;
-      Monitor monitor = p_i51170_2_.func_216512_a(GLFW.glfwGetPrimaryMonitor());
+      Monitor monitor = p_i51170_2_.getMonitor(GLFW.glfwGetPrimaryMonitor());
       this.prevWindowWidth = this.width = p_i51170_3_.width > 0 ? p_i51170_3_.width : 1;
       this.prevWindowHeight = this.height = p_i51170_3_.height > 0 ? p_i51170_3_.height : 1;
       GLFW.glfwDefaultWindowHints();
@@ -86,7 +86,7 @@ public final class MainWindow implements AutoCloseable {
       GLFW.glfwWindowHint(139266, 2);
       GLFW.glfwWindowHint(139267, 0);
       GLFW.glfwWindowHint(139272, 0);
-      this.handle = GLFW.glfwCreateWindow(this.width, this.height, p_i51170_5_, this.fullscreen && monitor != null ? monitor.getMonitorPointer() : 0L, 0L);
+      this.handle = GLFW.glfwCreateWindow(this.width, this.height, titleIn, this.fullscreen && monitor != null ? monitor.getMonitorPointer() : 0L, 0L);
       if (monitor != null) {
          VideoMode videomode = monitor.getVideoModeOrDefault(this.fullscreen ? this.videoMode : Optional.empty());
          this.prevWindowX = this.windowX = monitor.getVirtualPosX() + videomode.getWidth() / 2 - this.width / 2;
@@ -109,12 +109,12 @@ public final class MainWindow implements AutoCloseable {
       GLFW.glfwSetWindowFocusCallback(this.handle, this::onWindowFocusUpdate);
    }
 
-   public int func_227798_a_() {
+   public int getRefreshRate() {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
       return GLX._getRefreshRate(this);
    }
 
-   public boolean func_227800_b_() {
+   public boolean shouldClose() {
       return GLX._shouldClose(this);
    }
 
@@ -184,7 +184,7 @@ public final class MainWindow implements AutoCloseable {
 
       ByteBuffer bytebuffer1;
       try {
-         bytebuffer = TextureUtil.func_225684_a_(p_198111_1_);
+         bytebuffer = TextureUtil.readToBuffer(p_198111_1_);
          bytebuffer.rewind();
          bytebuffer1 = STBImage.stbi_load_from_memory(bytebuffer, p_198111_2_, p_198111_3_, p_198111_4_, 0);
       } finally {
@@ -197,11 +197,11 @@ public final class MainWindow implements AutoCloseable {
       return bytebuffer1;
    }
 
-   public void func_227799_a_(String p_227799_1_) {
-      this.renderPhase = p_227799_1_;
+   public void setRenderPhase(String renderPhaseIn) {
+      this.renderPhase = renderPhaseIn;
    }
 
-   private void func_227803_u_() {
+   private void setThrowExceptionOnGlError() {
       RenderSystem.assertThread(RenderSystem::isInInitPhase);
       GLFW.glfwSetErrorCallback(MainWindow::throwExceptionForGlError);
    }
@@ -221,7 +221,7 @@ public final class MainWindow implements AutoCloseable {
       LOGGER.error("{}: {}", error, s);
    }
 
-   public void func_227801_c_() {
+   public void setLogOnGlError() {
       GLFWErrorCallback glfwerrorcallback = GLFW.glfwSetErrorCallback(this.loggingErrorCallback);
       if (glfwerrorcallback != null) {
          glfwerrorcallback.free();
@@ -256,7 +256,7 @@ public final class MainWindow implements AutoCloseable {
             this.framebufferWidth = framebufferWidth;
             this.framebufferHeight = framebufferHeight;
             if (this.getFramebufferWidth() != i || this.getFramebufferHeight() != j) {
-               this.field_227797_c_.updateWindowSize();
+               this.mc.updateWindowSize();
             }
 
          }
@@ -279,7 +279,7 @@ public final class MainWindow implements AutoCloseable {
 
    private void onWindowFocusUpdate(long windowPointer, boolean hasFocus) {
       if (windowPointer == this.handle) {
-         this.field_227797_c_.setGameFocused(hasFocus);
+         this.mc.setGameFocused(hasFocus);
       }
 
    }
@@ -292,7 +292,7 @@ public final class MainWindow implements AutoCloseable {
       return this.framerateLimit;
    }
 
-   public void func_227802_e_() {
+   public void flipFrame() {
       RenderSystem.flipFrame(this.handle);
       if (this.fullscreen != this.lastFullscreen) {
          this.lastFullscreen = this.fullscreen;
@@ -305,9 +305,9 @@ public final class MainWindow implements AutoCloseable {
       return this.videoMode;
    }
 
-   public void func_224797_a(Optional<VideoMode> p_224797_1_) {
-      boolean flag = !p_224797_1_.equals(this.videoMode);
-      this.videoMode = p_224797_1_;
+   public void setVideoMode(Optional<VideoMode> fullscreenModeIn) {
+      boolean flag = !fullscreenModeIn.equals(this.videoMode);
+      this.videoMode = fullscreenModeIn;
       if (flag) {
          this.videoModeChanged = true;
       }
@@ -318,7 +318,7 @@ public final class MainWindow implements AutoCloseable {
       if (this.fullscreen && this.videoModeChanged) {
          this.videoModeChanged = false;
          this.updateVideoMode();
-         this.field_227797_c_.updateWindowSize();
+         this.mc.updateWindowSize();
       }
 
    }
@@ -327,7 +327,7 @@ public final class MainWindow implements AutoCloseable {
       RenderSystem.assertThread(RenderSystem::isInInitPhase);
       boolean flag = GLFW.glfwGetWindowMonitor(this.handle) != 0L;
       if (this.fullscreen) {
-         Monitor monitor = this.monitorHandler.func_216515_a(this);
+         Monitor monitor = this.monitorHandler.getMonitor(this);
          if (monitor == null) {
             LOGGER.warn("Failed to find suitable monitor for fullscreen mode");
             this.fullscreen = false;
@@ -365,9 +365,9 @@ public final class MainWindow implements AutoCloseable {
 
       try {
          this.updateVideoMode();
-         this.field_227797_c_.updateWindowSize();
+         this.mc.updateWindowSize();
          this.setVsync(vsyncEnabled);
-         this.func_227802_e_();
+         this.flipFrame();
       } catch (Exception exception) {
          LOGGER.error("Couldn't toggle fullscreen", (Throwable)exception);
       }
@@ -393,6 +393,10 @@ public final class MainWindow implements AutoCloseable {
       this.scaledWidth = (double)this.framebufferWidth / scaleFactor > (double)i ? i + 1 : i;
       int j = (int)((double)this.framebufferHeight / scaleFactor);
       this.scaledHeight = (double)this.framebufferHeight / scaleFactor > (double)j ? j + 1 : j;
+   }
+
+   public void func_230148_b_(String p_230148_1_) {
+      GLFW.glfwSetWindowTitle(this.handle, p_230148_1_);
    }
 
    public long getHandle() {
@@ -440,18 +444,18 @@ public final class MainWindow implements AutoCloseable {
    }
 
    @Nullable
-   public Monitor func_224796_s() {
-      return this.monitorHandler.func_216515_a(this);
+   public Monitor getMonitor() {
+      return this.monitorHandler.getMonitor(this);
    }
 
-   public void func_224798_d(boolean p_224798_1_) {
-      InputMappings.func_224791_a(this.handle, p_224798_1_);
+   public void setRawMouseInput(boolean valueIn) {
+      InputMappings.setRawMouseInput(this.handle, valueIn);
    }
 
    @OnlyIn(Dist.CLIENT)
    public static class GlException extends UndeclaredException {
-      private GlException(String p_i225902_1_) {
-         super(p_i225902_1_);
+      private GlException(String messageIn) {
+         super(messageIn);
       }
    }
 }

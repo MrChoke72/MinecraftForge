@@ -24,9 +24,9 @@ public class ChainedChunkStatusListener implements IChunkStatusListener {
       });
    }
 
-   public void statusChanged(ChunkPos p_219508_1_, @Nullable ChunkStatus p_219508_2_) {
+   public void statusChanged(ChunkPos chunkPosition, @Nullable ChunkStatus newStatus) {
       this.executor.enqueue(() -> {
-         this.delegate.statusChanged(p_219508_1_, p_219508_2_);
+         this.delegate.statusChanged(chunkPosition, newStatus);
       });
    }
 

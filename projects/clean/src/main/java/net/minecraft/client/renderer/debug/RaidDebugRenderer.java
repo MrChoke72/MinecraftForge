@@ -23,7 +23,7 @@ public class RaidDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.field_222909_b = p_222906_1_;
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       BlockPos blockpos = this.func_222904_c().getBlockPos();
 
       for(BlockPos blockpos1 : this.field_222909_b) {
@@ -35,7 +35,7 @@ public class RaidDebugRenderer implements DebugRenderer.IDebugRenderer {
    }
 
    private static void func_222903_a(BlockPos p_222903_0_) {
-      DebugRenderer.func_217735_a(p_222903_0_.add(-0.5D, -0.5D, -0.5D), p_222903_0_.add(1.5D, 1.5D, 1.5D), 1.0F, 0.0F, 0.0F, 0.15F);
+      DebugRenderer.renderBox(p_222903_0_.add(-0.5D, -0.5D, -0.5D), p_222903_0_.add(1.5D, 1.5D, 1.5D), 1.0F, 0.0F, 0.0F, 0.15F);
       int i = -65536;
       func_222905_a("Raid center", p_222903_0_, -65536);
    }
@@ -44,7 +44,7 @@ public class RaidDebugRenderer implements DebugRenderer.IDebugRenderer {
       double d0 = (double)p_222905_1_.getX() + 0.5D;
       double d1 = (double)p_222905_1_.getY() + 1.3D;
       double d2 = (double)p_222905_1_.getZ() + 0.5D;
-      DebugRenderer.func_217734_a(p_222905_0_, d0, d1, d2, p_222905_2_, 0.04F, true, 0.0F, true);
+      DebugRenderer.renderText(p_222905_0_, d0, d1, d2, p_222905_2_, 0.04F, true, 0.0F, true);
    }
 
    private ActiveRenderInfo func_222904_c() {

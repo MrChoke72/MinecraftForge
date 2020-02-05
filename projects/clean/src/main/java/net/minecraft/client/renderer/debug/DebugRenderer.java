@@ -64,24 +64,24 @@ public class DebugRenderer {
       this.field_229018_q_ = new GameTestDebugRenderer();
    }
 
-   public void func_217737_a() {
-      this.pathfinding.func_217675_a();
-      this.water.func_217675_a();
-      this.chunkBorder.func_217675_a();
-      this.heightMap.func_217675_a();
-      this.collisionBox.func_217675_a();
-      this.neighborsUpdate.func_217675_a();
-      this.cave.func_217675_a();
-      this.structure.func_217675_a();
-      this.light.func_217675_a();
-      this.worldGenAttempts.func_217675_a();
-      this.solidFace.func_217675_a();
-      this.field_217740_l.func_217675_a();
-      this.field_217741_m.func_217675_a();
-      this.field_229017_n_.func_217675_a();
-      this.field_222927_n.func_217675_a();
-      this.field_217742_n.func_217675_a();
-      this.field_229018_q_.func_217675_a();
+   public void clear() {
+      this.pathfinding.clear();
+      this.water.clear();
+      this.chunkBorder.clear();
+      this.heightMap.clear();
+      this.collisionBox.clear();
+      this.neighborsUpdate.clear();
+      this.cave.clear();
+      this.structure.clear();
+      this.light.clear();
+      this.worldGenAttempts.clear();
+      this.solidFace.clear();
+      this.field_217740_l.clear();
+      this.field_217741_m.clear();
+      this.field_229017_n_.clear();
+      this.field_222927_n.clear();
+      this.field_217742_n.clear();
+      this.field_229018_q_.clear();
    }
 
    public boolean toggleChunkBorders() {
@@ -89,27 +89,27 @@ public class DebugRenderer {
       return this.chunkBorderEnabled;
    }
 
-   public void func_229019_a_(MatrixStack p_229019_1_, IRenderTypeBuffer.Impl p_229019_2_, double p_229019_3_, double p_229019_5_, double p_229019_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, double camX, double camY, double camZ) {
       if (this.chunkBorderEnabled && !Minecraft.getInstance().isReducedDebug()) {
-         this.chunkBorder.func_225619_a_(p_229019_1_, p_229019_2_, p_229019_3_, p_229019_5_, p_229019_7_);
+         this.chunkBorder.render(matrixStackIn, bufferIn, camX, camY, camZ);
       }
 
-      this.field_229018_q_.func_225619_a_(p_229019_1_, p_229019_2_, p_229019_3_, p_229019_5_, p_229019_7_);
+      this.field_229018_q_.render(matrixStackIn, bufferIn, camX, camY, camZ);
    }
 
-   public static Optional<Entity> func_217728_a(@Nullable Entity p_217728_0_, int p_217728_1_) {
-      if (p_217728_0_ == null) {
+   public static Optional<Entity> getTargetEntity(@Nullable Entity entityIn, int distance) {
+      if (entityIn == null) {
          return Optional.empty();
       } else {
-         Vec3d vec3d = p_217728_0_.getEyePosition(1.0F);
-         Vec3d vec3d1 = p_217728_0_.getLook(1.0F).scale((double)p_217728_1_);
+         Vec3d vec3d = entityIn.getEyePosition(1.0F);
+         Vec3d vec3d1 = entityIn.getLook(1.0F).scale((double)distance);
          Vec3d vec3d2 = vec3d.add(vec3d1);
-         AxisAlignedBB axisalignedbb = p_217728_0_.getBoundingBox().expand(vec3d1).grow(1.0D);
-         int i = p_217728_1_ * p_217728_1_;
+         AxisAlignedBB axisalignedbb = entityIn.getBoundingBox().expand(vec3d1).grow(1.0D);
+         int i = distance * distance;
          Predicate<Entity> predicate = (p_217727_0_) -> {
             return !p_217727_0_.isSpectator() && p_217727_0_.canBeCollidedWith();
          };
-         EntityRayTraceResult entityraytraceresult = ProjectileHelper.func_221273_a(p_217728_0_, vec3d, vec3d2, axisalignedbb, predicate, (double)i);
+         EntityRayTraceResult entityraytraceresult = ProjectileHelper.rayTraceEntities(entityIn, vec3d, vec3d2, axisalignedbb, predicate, (double)i);
          if (entityraytraceresult == null) {
             return Optional.empty();
          } else {
@@ -118,29 +118,29 @@ public class DebugRenderer {
       }
    }
 
-   public static void func_217735_a(BlockPos p_217735_0_, BlockPos p_217735_1_, float p_217735_2_, float p_217735_3_, float p_217735_4_, float p_217735_5_) {
+   public static void renderBox(BlockPos p_217735_0_, BlockPos p_217735_1_, float p_217735_2_, float p_217735_3_, float p_217735_4_, float p_217735_5_) {
       ActiveRenderInfo activerenderinfo = Minecraft.getInstance().gameRenderer.getActiveRenderInfo();
       if (activerenderinfo.isValid()) {
-         Vec3d vec3d = activerenderinfo.getProjectedView().func_216371_e();
+         Vec3d vec3d = activerenderinfo.getProjectedView().inverse();
          AxisAlignedBB axisalignedbb = (new AxisAlignedBB(p_217735_0_, p_217735_1_)).offset(vec3d);
-         func_217730_a(axisalignedbb, p_217735_2_, p_217735_3_, p_217735_4_, p_217735_5_);
+         renderBox(axisalignedbb, p_217735_2_, p_217735_3_, p_217735_4_, p_217735_5_);
       }
    }
 
-   public static void func_217736_a(BlockPos p_217736_0_, float p_217736_1_, float p_217736_2_, float p_217736_3_, float p_217736_4_, float p_217736_5_) {
+   public static void renderBox(BlockPos p_217736_0_, float p_217736_1_, float p_217736_2_, float p_217736_3_, float p_217736_4_, float p_217736_5_) {
       ActiveRenderInfo activerenderinfo = Minecraft.getInstance().gameRenderer.getActiveRenderInfo();
       if (activerenderinfo.isValid()) {
-         Vec3d vec3d = activerenderinfo.getProjectedView().func_216371_e();
+         Vec3d vec3d = activerenderinfo.getProjectedView().inverse();
          AxisAlignedBB axisalignedbb = (new AxisAlignedBB(p_217736_0_)).offset(vec3d).grow((double)p_217736_1_);
-         func_217730_a(axisalignedbb, p_217736_2_, p_217736_3_, p_217736_4_, p_217736_5_);
+         renderBox(axisalignedbb, p_217736_2_, p_217736_3_, p_217736_4_, p_217736_5_);
       }
    }
 
-   public static void func_217730_a(AxisAlignedBB p_217730_0_, float p_217730_1_, float p_217730_2_, float p_217730_3_, float p_217730_4_) {
-      func_217733_a(p_217730_0_.minX, p_217730_0_.minY, p_217730_0_.minZ, p_217730_0_.maxX, p_217730_0_.maxY, p_217730_0_.maxZ, p_217730_1_, p_217730_2_, p_217730_3_, p_217730_4_);
+   public static void renderBox(AxisAlignedBB p_217730_0_, float p_217730_1_, float p_217730_2_, float p_217730_3_, float p_217730_4_) {
+      renderBox(p_217730_0_.minX, p_217730_0_.minY, p_217730_0_.minZ, p_217730_0_.maxX, p_217730_0_.maxY, p_217730_0_.maxZ, p_217730_1_, p_217730_2_, p_217730_3_, p_217730_4_);
    }
 
-   public static void func_217733_a(double p_217733_0_, double p_217733_2_, double p_217733_4_, double p_217733_6_, double p_217733_8_, double p_217733_10_, float p_217733_12_, float p_217733_13_, float p_217733_14_, float p_217733_15_) {
+   public static void renderBox(double p_217733_0_, double p_217733_2_, double p_217733_4_, double p_217733_6_, double p_217733_8_, double p_217733_10_, float p_217733_12_, float p_217733_13_, float p_217733_14_, float p_217733_15_) {
       Tessellator tessellator = Tessellator.getInstance();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
@@ -148,19 +148,19 @@ public class DebugRenderer {
       tessellator.draw();
    }
 
-   public static void func_217731_a(String p_217731_0_, int p_217731_1_, int p_217731_2_, int p_217731_3_, int p_217731_4_) {
-      func_217732_a(p_217731_0_, (double)p_217731_1_ + 0.5D, (double)p_217731_2_ + 0.5D, (double)p_217731_3_ + 0.5D, p_217731_4_);
+   public static void renderText(String p_217731_0_, int p_217731_1_, int p_217731_2_, int p_217731_3_, int p_217731_4_) {
+      renderText(p_217731_0_, (double)p_217731_1_ + 0.5D, (double)p_217731_2_ + 0.5D, (double)p_217731_3_ + 0.5D, p_217731_4_);
    }
 
-   public static void func_217732_a(String p_217732_0_, double p_217732_1_, double p_217732_3_, double p_217732_5_, int p_217732_7_) {
-      func_217729_a(p_217732_0_, p_217732_1_, p_217732_3_, p_217732_5_, p_217732_7_, 0.02F);
+   public static void renderText(String p_217732_0_, double p_217732_1_, double p_217732_3_, double p_217732_5_, int p_217732_7_) {
+      renderText(p_217732_0_, p_217732_1_, p_217732_3_, p_217732_5_, p_217732_7_, 0.02F);
    }
 
-   public static void func_217729_a(String p_217729_0_, double p_217729_1_, double p_217729_3_, double p_217729_5_, int p_217729_7_, float p_217729_8_) {
-      func_217734_a(p_217729_0_, p_217729_1_, p_217729_3_, p_217729_5_, p_217729_7_, p_217729_8_, true, 0.0F, false);
+   public static void renderText(String p_217729_0_, double p_217729_1_, double p_217729_3_, double p_217729_5_, int p_217729_7_, float p_217729_8_) {
+      renderText(p_217729_0_, p_217729_1_, p_217729_3_, p_217729_5_, p_217729_7_, p_217729_8_, true, 0.0F, false);
    }
 
-   public static void func_217734_a(String p_217734_0_, double p_217734_1_, double p_217734_3_, double p_217734_5_, int p_217734_7_, float p_217734_8_, boolean p_217734_9_, float p_217734_10_, boolean p_217734_11_) {
+   public static void renderText(String textIn, double p_217734_1_, double p_217734_3_, double p_217734_5_, int colorIn, float p_217734_8_, boolean p_217734_9_, float p_217734_10_, boolean p_217734_11_) {
       Minecraft minecraft = Minecraft.getInstance();
       ActiveRenderInfo activerenderinfo = minecraft.gameRenderer.getActiveRenderInfo();
       if (activerenderinfo.isValid() && minecraft.getRenderManager().options != null) {
@@ -171,7 +171,7 @@ public class DebugRenderer {
          RenderSystem.pushMatrix();
          RenderSystem.translatef((float)(p_217734_1_ - d0), (float)(p_217734_3_ - d1) + 0.07F, (float)(p_217734_5_ - d2));
          RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-         RenderSystem.multMatrix(new Matrix4f(activerenderinfo.func_227995_f_()));
+         RenderSystem.multMatrix(new Matrix4f(activerenderinfo.getRotation()));
          RenderSystem.scalef(p_217734_8_, -p_217734_8_, p_217734_8_);
          RenderSystem.enableTexture();
          if (p_217734_11_) {
@@ -182,12 +182,12 @@ public class DebugRenderer {
 
          RenderSystem.depthMask(true);
          RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
-         float f = p_217734_9_ ? (float)(-fontrenderer.getStringWidth(p_217734_0_)) / 2.0F : 0.0F;
+         float f = p_217734_9_ ? (float)(-fontrenderer.getStringWidth(textIn)) / 2.0F : 0.0F;
          f = f - p_217734_10_ / p_217734_8_;
          RenderSystem.enableAlphaTest();
-         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.func_228455_a_(Tessellator.getInstance().getBuffer());
-         fontrenderer.func_228079_a_(p_217734_0_, f, 0.0F, p_217734_7_, false, TransformationMatrix.func_227983_a_().func_227988_c_(), irendertypebuffer$impl, p_217734_11_, 0, 15728880);
-         irendertypebuffer$impl.func_228461_a_();
+         IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+         fontrenderer.renderString(textIn, f, 0.0F, colorIn, false, TransformationMatrix.identity().getMatrix(), irendertypebuffer$impl, p_217734_11_, 0, 15728880);
+         irendertypebuffer$impl.finish();
          RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
          RenderSystem.enableDepthTest();
          RenderSystem.popMatrix();
@@ -196,9 +196,9 @@ public class DebugRenderer {
 
    @OnlyIn(Dist.CLIENT)
    public interface IDebugRenderer {
-      void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_);
+      void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ);
 
-      default void func_217675_a() {
+      default void clear() {
       }
    }
 }

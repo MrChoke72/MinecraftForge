@@ -59,9 +59,9 @@ public class SoundEventAccessor implements ISoundEventAccessor<Sound> {
       return this.subtitle;
    }
 
-   public void func_217867_a(SoundEngine p_217867_1_) {
+   public void enqueuePreload(SoundEngine engine) {
       for(ISoundEventAccessor<Sound> isoundeventaccessor : this.accessorList) {
-         isoundeventaccessor.func_217867_a(p_217867_1_);
+         isoundeventaccessor.enqueuePreload(engine);
       }
 
    }

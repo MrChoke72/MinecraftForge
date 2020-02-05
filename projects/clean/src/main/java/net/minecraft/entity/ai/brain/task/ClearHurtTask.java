@@ -11,7 +11,7 @@ public class ClearHurtTask extends Task<VillagerEntity> {
    }
 
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
-      boolean flag = PanicTask.hasHurtByMem(entityIn) || PanicTask.hasNearestHostileMem(entityIn) || func_220394_a(entityIn);
+      boolean flag = PanicTask.hasBeenHurt(entityIn) || PanicTask.hostileNearby(entityIn) || func_220394_a(entityIn);
       if (!flag) {
          entityIn.getBrain().removeMemory(MemoryModuleType.HURT_BY);
          entityIn.getBrain().removeMemory(MemoryModuleType.HURT_BY_ENTITY);

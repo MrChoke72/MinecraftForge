@@ -19,8 +19,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class BarrelTileEntity extends LockableLootTileEntity {
-   private NonNullList<ItemStack> field_213966_a = NonNullList.withSize(27, ItemStack.EMPTY);
-   private int field_213967_b;
+   private NonNullList<ItemStack> barrelContents = NonNullList.withSize(27, ItemStack.EMPTY);
+   private int numPlayersUsing;
 
    private BarrelTileEntity(TileEntityType<?> p_i49963_1_) {
       super(p_i49963_1_);
@@ -33,7 +33,7 @@ public class BarrelTileEntity extends LockableLootTileEntity {
    public CompoundNBT write(CompoundNBT compound) {
       super.write(compound);
       if (!this.checkLootAndWrite(compound)) {
-         ItemStackHelper.saveAllItems(compound, this.field_213966_a);
+         ItemStackHelper.saveAllItems(compound, this.barrelContents);
       }
 
       return compound;
@@ -41,9 +41,9 @@ public class BarrelTileEntity extends LockableLootTileEntity {
 
    public void read(CompoundNBT compound) {
       super.read(compound);
-      this.field_213966_a = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+      this.barrelContents = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
       if (!this.checkLootAndRead(compound)) {
-         ItemStackHelper.loadAllItems(compound, this.field_213966_a);
+         ItemStackHelper.loadAllItems(compound, this.barrelContents);
       }
 
    }
@@ -53,11 +53,11 @@ public class BarrelTileEntity extends LockableLootTileEntity {
    }
 
    protected NonNullList<ItemStack> getItems() {
-      return this.field_213966_a;
+      return this.barrelContents;
    }
 
    protected void setItems(NonNullList<ItemStack> itemsIn) {
-      this.field_213966_a = itemsIn;
+      this.barrelContents = itemsIn;
    }
 
    protected ITextComponent getDefaultName() {
@@ -70,34 +70,34 @@ public class BarrelTileEntity extends LockableLootTileEntity {
 
    public void openInventory(PlayerEntity player) {
       if (!player.isSpectator()) {
-         if (this.field_213967_b < 0) {
-            this.field_213967_b = 0;
+         if (this.numPlayersUsing < 0) {
+            this.numPlayersUsing = 0;
          }
 
-         ++this.field_213967_b;
+         ++this.numPlayersUsing;
          BlockState blockstate = this.getBlockState();
          boolean flag = blockstate.get(BarrelBlock.PROPERTY_OPEN);
          if (!flag) {
-            this.func_213965_a(blockstate, SoundEvents.BLOCK_BARREL_OPEN);
-            this.func_213963_a(blockstate, true);
+            this.playSound(blockstate, SoundEvents.BLOCK_BARREL_OPEN);
+            this.setOpenProperty(blockstate, true);
          }
 
-         this.func_213964_r();
+         this.scheduleTick();
       }
 
    }
 
-   private void func_213964_r() {
+   private void scheduleTick() {
       this.world.getPendingBlockTicks().scheduleTick(this.getPos(), this.getBlockState().getBlock(), 5);
    }
 
-   public void func_213962_h() {
+   public void barrelTick() {
       int i = this.pos.getX();
       int j = this.pos.getY();
       int k = this.pos.getZ();
-      this.field_213967_b = ChestTileEntity.func_213976_a(this.world, this, i, j, k);
-      if (this.field_213967_b > 0) {
-         this.func_213964_r();
+      this.numPlayersUsing = ChestTileEntity.calculatePlayersUsing(this.world, this, i, j, k);
+      if (this.numPlayersUsing > 0) {
+         this.scheduleTick();
       } else {
          BlockState blockstate = this.getBlockState();
          if (blockstate.getBlock() != Blocks.BARREL) {
@@ -107,8 +107,8 @@ public class BarrelTileEntity extends LockableLootTileEntity {
 
          boolean flag = blockstate.get(BarrelBlock.PROPERTY_OPEN);
          if (flag) {
-            this.func_213965_a(blockstate, SoundEvents.BLOCK_BARREL_CLOSE);
-            this.func_213963_a(blockstate, false);
+            this.playSound(blockstate, SoundEvents.BLOCK_BARREL_CLOSE);
+            this.setOpenProperty(blockstate, false);
          }
       }
 
@@ -116,16 +116,16 @@ public class BarrelTileEntity extends LockableLootTileEntity {
 
    public void closeInventory(PlayerEntity player) {
       if (!player.isSpectator()) {
-         --this.field_213967_b;
+         --this.numPlayersUsing;
       }
 
    }
 
-   private void func_213963_a(BlockState p_213963_1_, boolean p_213963_2_) {
+   private void setOpenProperty(BlockState p_213963_1_, boolean p_213963_2_) {
       this.world.setBlockState(this.getPos(), p_213963_1_.with(BarrelBlock.PROPERTY_OPEN, Boolean.valueOf(p_213963_2_)), 3);
    }
 
-   private void func_213965_a(BlockState p_213965_1_, SoundEvent p_213965_2_) {
+   private void playSound(BlockState p_213965_1_, SoundEvent p_213965_2_) {
       Vec3i vec3i = p_213965_1_.get(BarrelBlock.PROPERTY_FACING).getDirectionVec();
       double d0 = (double)this.pos.getX() + 0.5D + (double)vec3i.getX() / 2.0D;
       double d1 = (double)this.pos.getY() + 0.5D + (double)vec3i.getY() / 2.0D;

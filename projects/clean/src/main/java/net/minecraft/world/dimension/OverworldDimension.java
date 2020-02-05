@@ -173,7 +173,7 @@ public class OverworldDimension extends Dimension {
    @Nullable
    public BlockPos findSpawn(int posX, int posZ, boolean checkValid) {
       BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(posX, 0, posZ);
-      Biome biome = this.world.func_226691_t_(blockpos$mutable);
+      Biome biome = this.world.getBiome(blockpos$mutable);
       BlockState blockstate = biome.getSurfaceBuilderConfig().getTop();
       if (checkValid && !blockstate.getBlock().isIn(BlockTags.VALID_SPAWN)) {
          return null;

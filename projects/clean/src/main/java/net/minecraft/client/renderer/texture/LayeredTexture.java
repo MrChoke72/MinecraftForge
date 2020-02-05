@@ -50,10 +50,10 @@ public class LayeredTexture extends Texture {
 
          if (!RenderSystem.isOnRenderThreadOrInit()) {
             RenderSystem.recordRenderCall(() -> {
-               this.func_229167_a_(nativeimage);
+               this.loadImage(nativeimage);
             });
          } else {
-            this.func_229167_a_(nativeimage);
+            this.loadImage(nativeimage);
          }
       } catch (IOException ioexception) {
          LOGGER.error("Couldn't load layered image", (Throwable)ioexception);
@@ -61,8 +61,8 @@ public class LayeredTexture extends Texture {
 
    }
 
-   private void func_229167_a_(NativeImage p_229167_1_) {
-      TextureUtil.func_225680_a_(this.getGlTextureId(), p_229167_1_.getWidth(), p_229167_1_.getHeight());
-      p_229167_1_.uploadTextureSub(0, 0, 0, true);
+   private void loadImage(NativeImage imageIn) {
+      TextureUtil.prepareImage(this.getGlTextureId(), imageIn.getWidth(), imageIn.getHeight());
+      imageIn.uploadTextureSub(0, 0, 0, true);
    }
 }

@@ -16,17 +16,17 @@ public class NetherChunkGenerator extends NoiseChunkGenerator<NetherGenSettings>
       super(p_i48694_1_, p_i48694_2_, 4, 8, 128, p_i48694_3_, false);
    }
 
-   protected void func_222548_a(double[] p_222548_1_, int p_222548_2_, int p_222548_3_) {
+   protected void fillNoiseColumn(double[] noiseColumn, int noiseX, int noiseZ) {
       double d0 = 684.412D;
       double d1 = 2053.236D;
       double d2 = 8.555150000000001D;
       double d3 = 34.2206D;
       int i = -10;
       int j = 3;
-      this.func_222546_a(p_222548_1_, p_222548_2_, p_222548_3_, 684.412D, 2053.236D, 8.555150000000001D, 34.2206D, 3, -10);
+      this.func_222546_a(noiseColumn, noiseX, noiseZ, 684.412D, 2053.236D, 8.555150000000001D, 34.2206D, 3, -10);
    }
 
-   protected double[] func_222549_a(int p_222549_1_, int p_222549_2_) {
+   protected double[] getBiomeNoiseColumn(int noiseX, int noiseZ) {
       return new double[]{0.0D, 0.0D};
    }
 
@@ -35,13 +35,13 @@ public class NetherChunkGenerator extends NoiseChunkGenerator<NetherGenSettings>
    }
 
    private double[] func_222572_j() {
-      double[] adouble = new double[this.func_222550_i()];
+      double[] adouble = new double[this.noiseSizeY()];
 
-      for(int i = 0; i < this.func_222550_i(); ++i) {
-         adouble[i] = Math.cos((double)i * Math.PI * 6.0D / (double)this.func_222550_i()) * 2.0D;
+      for(int i = 0; i < this.noiseSizeY(); ++i) {
+         adouble[i] = Math.cos((double)i * Math.PI * 6.0D / (double)this.noiseSizeY()) * 2.0D;
          double d0 = (double)i;
-         if (i > this.func_222550_i() / 2) {
-            d0 = (double)(this.func_222550_i() - 1 - i);
+         if (i > this.noiseSizeY() / 2) {
+            d0 = (double)(this.noiseSizeY() - 1 - i);
          }
 
          if (d0 < 4.0D) {

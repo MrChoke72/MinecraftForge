@@ -37,7 +37,7 @@ public class SleepAtHomeTask extends Task<LivingEntity> {
             return false;
          } else {
             Optional<LongSerializable> optional = brain.getMemory(MemoryModuleType.LAST_WOKEN);
-            if (optional.isPresent() && worldIn.getGameTime() - optional.get().getValue() < 100L) {
+            if (optional.isPresent() && worldIn.getGameTime() - optional.get().get() < 100L) {
                return false;
             } else {
                BlockState blockstate = worldIn.getBlockState(globalpos.getPos());

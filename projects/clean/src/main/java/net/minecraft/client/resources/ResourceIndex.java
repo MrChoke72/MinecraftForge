@@ -27,8 +27,8 @@ import org.apache.logging.log4j.Logger;
 @OnlyIn(Dist.CLIENT)
 public class ResourceIndex {
    protected static final Logger LOGGER = LogManager.getLogger();
-   private final Map<String, File> field_229271_b_ = Maps.newHashMap();
-   private final Map<ResourceLocation, File> field_229272_c_ = Maps.newHashMap();
+   private final Map<String, File> rootFiles = Maps.newHashMap();
+   private final Map<ResourceLocation, File> namespaceFiles = Maps.newHashMap();
 
    protected ResourceIndex() {
    }
@@ -50,9 +50,9 @@ public class ResourceIndex {
                String s1 = JSONUtils.getString(jsonobject2, "hash");
                File file3 = new File(file1, s1.substring(0, 2) + "/" + s1);
                if (astring.length == 1) {
-                  this.field_229271_b_.put(astring[0], file3);
+                  this.rootFiles.put(astring[0], file3);
                } else {
-                  this.field_229272_c_.put(new ResourceLocation(astring[0], astring[1]), file3);
+                  this.namespaceFiles.put(new ResourceLocation(astring[0], astring[1]), file3);
                }
             }
          }
@@ -68,16 +68,16 @@ public class ResourceIndex {
 
    @Nullable
    public File getFile(ResourceLocation location) {
-      return this.field_229272_c_.get(location);
+      return this.namespaceFiles.get(location);
    }
 
    @Nullable
-   public File func_225638_a_(String p_225638_1_) {
-      return this.field_229271_b_.get(p_225638_1_);
+   public File getFile(String p_225638_1_) {
+      return this.rootFiles.get(p_225638_1_);
    }
 
-   public Collection<ResourceLocation> func_225639_a_(String p_225639_1_, String p_225639_2_, int p_225639_3_, Predicate<String> p_225639_4_) {
-      return this.field_229272_c_.keySet().stream().filter((p_229273_3_) -> {
+   public Collection<ResourceLocation> getFiles(String p_225639_1_, String p_225639_2_, int p_225639_3_, Predicate<String> p_225639_4_) {
+      return this.namespaceFiles.keySet().stream().filter((p_229273_3_) -> {
          String s = p_229273_3_.getPath();
          return p_229273_3_.getNamespace().equals(p_225639_2_) && !s.endsWith(".mcmeta") && s.startsWith(p_225639_1_ + "/") && p_225639_4_.test(s);
       }).collect(Collectors.toList());

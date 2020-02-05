@@ -17,44 +17,44 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ItemModelGenerator {
    public static final List<String> LAYERS = Lists.newArrayList("layer0", "layer1", "layer2", "layer3", "layer4");
 
-   public BlockModel makeItemModel(Function<Material, TextureAtlasSprite> p_209579_1_, BlockModel p_209579_2_) {
+   public BlockModel makeItemModel(Function<Material, TextureAtlasSprite> textureGetter, BlockModel blockModelIn) {
       Map<String, Either<Material, String>> map = Maps.newHashMap();
       List<BlockPart> list = Lists.newArrayList();
 
       for(int i = 0; i < LAYERS.size(); ++i) {
          String s = LAYERS.get(i);
-         if (!p_209579_2_.isTexturePresent(s)) {
+         if (!blockModelIn.isTexturePresent(s)) {
             break;
          }
 
-         Material material = p_209579_2_.func_228816_c_(s);
+         Material material = blockModelIn.resolveTextureName(s);
          map.put(s, Either.left(material));
-         TextureAtlasSprite textureatlassprite = p_209579_1_.apply(material);
+         TextureAtlasSprite textureatlassprite = textureGetter.apply(material);
          list.addAll(this.getBlockParts(i, s, textureatlassprite));
       }
 
-      map.put("particle", p_209579_2_.isTexturePresent("particle") ? Either.left(p_209579_2_.func_228816_c_("particle")) : map.get("layer0"));
-      BlockModel blockmodel = new BlockModel((ResourceLocation)null, list, map, false, false, p_209579_2_.getAllTransforms(), p_209579_2_.getOverrides());
-      blockmodel.name = p_209579_2_.name;
+      map.put("particle", blockModelIn.isTexturePresent("particle") ? Either.left(blockModelIn.resolveTextureName("particle")) : map.get("layer0"));
+      BlockModel blockmodel = new BlockModel((ResourceLocation)null, list, map, false, blockModelIn.func_230176_c_(), blockModelIn.getAllTransforms(), blockModelIn.getOverrides());
+      blockmodel.name = blockModelIn.name;
       return blockmodel;
    }
 
-   private List<BlockPart> getBlockParts(int tintIndex, String p_178394_2_, TextureAtlasSprite p_178394_3_) {
+   private List<BlockPart> getBlockParts(int tintIndex, String textureIn, TextureAtlasSprite spriteIn) {
       Map<Direction, BlockPartFace> map = Maps.newHashMap();
-      map.put(Direction.SOUTH, new BlockPartFace((Direction)null, tintIndex, p_178394_2_, new BlockFaceUV(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
-      map.put(Direction.NORTH, new BlockPartFace((Direction)null, tintIndex, p_178394_2_, new BlockFaceUV(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
+      map.put(Direction.SOUTH, new BlockPartFace((Direction)null, tintIndex, textureIn, new BlockFaceUV(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
+      map.put(Direction.NORTH, new BlockPartFace((Direction)null, tintIndex, textureIn, new BlockFaceUV(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
       List<BlockPart> list = Lists.newArrayList();
       list.add(new BlockPart(new Vector3f(0.0F, 0.0F, 7.5F), new Vector3f(16.0F, 16.0F, 8.5F), map, (BlockPartRotation)null, true));
-      list.addAll(this.getBlockParts(p_178394_3_, p_178394_2_, tintIndex));
+      list.addAll(this.getBlockParts(spriteIn, textureIn, tintIndex));
       return list;
    }
 
-   private List<BlockPart> getBlockParts(TextureAtlasSprite p_178397_1_, String p_178397_2_, int p_178397_3_) {
-      float f = (float)p_178397_1_.getWidth();
-      float f1 = (float)p_178397_1_.getHeight();
+   private List<BlockPart> getBlockParts(TextureAtlasSprite spriteIn, String textureIn, int tintIndexIn) {
+      float f = (float)spriteIn.getWidth();
+      float f1 = (float)spriteIn.getHeight();
       List<BlockPart> list = Lists.newArrayList();
 
-      for(ItemModelGenerator.Span itemmodelgenerator$span : this.getSpans(p_178397_1_)) {
+      for(ItemModelGenerator.Span itemmodelgenerator$span : this.getSpans(spriteIn)) {
          float f2 = 0.0F;
          float f3 = 0.0F;
          float f4 = 0.0F;
@@ -118,7 +118,7 @@ public class ItemModelGenerator {
          f8 = f8 * f11;
          f9 = f9 * f11;
          Map<Direction, BlockPartFace> map = Maps.newHashMap();
-         map.put(itemmodelgenerator$spanfacing.getFacing(), new BlockPartFace((Direction)null, p_178397_3_, p_178397_2_, new BlockFaceUV(new float[]{f6, f8, f7, f9}, 0)));
+         map.put(itemmodelgenerator$spanfacing.getFacing(), new BlockPartFace((Direction)null, tintIndexIn, textureIn, new BlockFaceUV(new float[]{f6, f8, f7, f9}, 0)));
          switch(itemmodelgenerator$spanfacing) {
          case UP:
             list.add(new BlockPart(new Vector3f(f2, f3, 7.5F), new Vector3f(f4, f3, 8.5F), map, (BlockPartRotation)null, true));
@@ -137,19 +137,19 @@ public class ItemModelGenerator {
       return list;
    }
 
-   private List<ItemModelGenerator.Span> getSpans(TextureAtlasSprite p_178393_1_) {
-      int i = p_178393_1_.getWidth();
-      int j = p_178393_1_.getHeight();
+   private List<ItemModelGenerator.Span> getSpans(TextureAtlasSprite spriteIn) {
+      int i = spriteIn.getWidth();
+      int j = spriteIn.getHeight();
       List<ItemModelGenerator.Span> list = Lists.newArrayList();
 
-      for(int k = 0; k < p_178393_1_.getFrameCount(); ++k) {
+      for(int k = 0; k < spriteIn.getFrameCount(); ++k) {
          for(int l = 0; l < j; ++l) {
             for(int i1 = 0; i1 < i; ++i1) {
-               boolean flag = !this.func_199339_a(p_178393_1_, k, i1, l, i, j);
-               this.func_199338_a(ItemModelGenerator.SpanFacing.UP, list, p_178393_1_, k, i1, l, i, j, flag);
-               this.func_199338_a(ItemModelGenerator.SpanFacing.DOWN, list, p_178393_1_, k, i1, l, i, j, flag);
-               this.func_199338_a(ItemModelGenerator.SpanFacing.LEFT, list, p_178393_1_, k, i1, l, i, j, flag);
-               this.func_199338_a(ItemModelGenerator.SpanFacing.RIGHT, list, p_178393_1_, k, i1, l, i, j, flag);
+               boolean flag = !this.isTransparent(spriteIn, k, i1, l, i, j);
+               this.checkTransition(ItemModelGenerator.SpanFacing.UP, list, spriteIn, k, i1, l, i, j, flag);
+               this.checkTransition(ItemModelGenerator.SpanFacing.DOWN, list, spriteIn, k, i1, l, i, j, flag);
+               this.checkTransition(ItemModelGenerator.SpanFacing.LEFT, list, spriteIn, k, i1, l, i, j, flag);
+               this.checkTransition(ItemModelGenerator.SpanFacing.RIGHT, list, spriteIn, k, i1, l, i, j, flag);
             }
          }
       }
@@ -157,20 +157,20 @@ public class ItemModelGenerator {
       return list;
    }
 
-   private void func_199338_a(ItemModelGenerator.SpanFacing p_199338_1_, List<ItemModelGenerator.Span> p_199338_2_, TextureAtlasSprite p_199338_3_, int p_199338_4_, int p_199338_5_, int p_199338_6_, int p_199338_7_, int p_199338_8_, boolean p_199338_9_) {
-      boolean flag = this.func_199339_a(p_199338_3_, p_199338_4_, p_199338_5_ + p_199338_1_.getXOffset(), p_199338_6_ + p_199338_1_.getYOffset(), p_199338_7_, p_199338_8_) && p_199338_9_;
+   private void checkTransition(ItemModelGenerator.SpanFacing spanFacingIn, List<ItemModelGenerator.Span> listSpansIn, TextureAtlasSprite spriteIn, int frameIndex, int pixelX, int pixelY, int spiteWidth, int spriteHeight, boolean p_199338_9_) {
+      boolean flag = this.isTransparent(spriteIn, frameIndex, pixelX + spanFacingIn.getXOffset(), pixelY + spanFacingIn.getYOffset(), spiteWidth, spriteHeight) && p_199338_9_;
       if (flag) {
-         this.createOrExpandSpan(p_199338_2_, p_199338_1_, p_199338_5_, p_199338_6_);
+         this.createOrExpandSpan(listSpansIn, spanFacingIn, pixelX, pixelY);
       }
 
    }
 
-   private void createOrExpandSpan(List<ItemModelGenerator.Span> p_178395_1_, ItemModelGenerator.SpanFacing p_178395_2_, int p_178395_3_, int p_178395_4_) {
+   private void createOrExpandSpan(List<ItemModelGenerator.Span> listSpansIn, ItemModelGenerator.SpanFacing spanFacingIn, int pixelX, int pixelY) {
       ItemModelGenerator.Span itemmodelgenerator$span = null;
 
-      for(ItemModelGenerator.Span itemmodelgenerator$span1 : p_178395_1_) {
-         if (itemmodelgenerator$span1.getFacing() == p_178395_2_) {
-            int i = p_178395_2_.isHorizontal() ? p_178395_4_ : p_178395_3_;
+      for(ItemModelGenerator.Span itemmodelgenerator$span1 : listSpansIn) {
+         if (itemmodelgenerator$span1.getFacing() == spanFacingIn) {
+            int i = spanFacingIn.isHorizontal() ? pixelY : pixelX;
             if (itemmodelgenerator$span1.getAnchor() == i) {
                itemmodelgenerator$span = itemmodelgenerator$span1;
                break;
@@ -178,18 +178,18 @@ public class ItemModelGenerator {
          }
       }
 
-      int j = p_178395_2_.isHorizontal() ? p_178395_4_ : p_178395_3_;
-      int k = p_178395_2_.isHorizontal() ? p_178395_3_ : p_178395_4_;
+      int j = spanFacingIn.isHorizontal() ? pixelY : pixelX;
+      int k = spanFacingIn.isHorizontal() ? pixelX : pixelY;
       if (itemmodelgenerator$span == null) {
-         p_178395_1_.add(new ItemModelGenerator.Span(p_178395_2_, k, j));
+         listSpansIn.add(new ItemModelGenerator.Span(spanFacingIn, k, j));
       } else {
          itemmodelgenerator$span.expand(k);
       }
 
    }
 
-   private boolean func_199339_a(TextureAtlasSprite p_199339_1_, int p_199339_2_, int p_199339_3_, int p_199339_4_, int p_199339_5_, int p_199339_6_) {
-      return p_199339_3_ >= 0 && p_199339_4_ >= 0 && p_199339_3_ < p_199339_5_ && p_199339_4_ < p_199339_6_ ? p_199339_1_.isPixelTransparent(p_199339_2_, p_199339_3_, p_199339_4_) : true;
+   private boolean isTransparent(TextureAtlasSprite spriteIn, int frameIndex, int pixelX, int pixelY, int spiteWidth, int spriteHeight) {
+      return pixelX >= 0 && pixelY >= 0 && pixelX < spiteWidth && pixelY < spriteHeight ? spriteIn.isPixelTransparent(frameIndex, pixelX, pixelY) : true;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -199,18 +199,18 @@ public class ItemModelGenerator {
       private int max;
       private final int anchor;
 
-      public Span(ItemModelGenerator.SpanFacing spanFacingIn, int p_i46216_2_, int p_i46216_3_) {
+      public Span(ItemModelGenerator.SpanFacing spanFacingIn, int minIn, int maxIn) {
          this.spanFacing = spanFacingIn;
-         this.min = p_i46216_2_;
-         this.max = p_i46216_2_;
-         this.anchor = p_i46216_3_;
+         this.min = minIn;
+         this.max = minIn;
+         this.anchor = maxIn;
       }
 
-      public void expand(int p_178382_1_) {
-         if (p_178382_1_ < this.min) {
-            this.min = p_178382_1_;
-         } else if (p_178382_1_ > this.max) {
-            this.max = p_178382_1_;
+      public void expand(int posIn) {
+         if (posIn < this.min) {
+            this.min = posIn;
+         } else if (posIn > this.max) {
+            this.max = posIn;
          }
 
       }
@@ -243,10 +243,10 @@ public class ItemModelGenerator {
       private final int xOffset;
       private final int yOffset;
 
-      private SpanFacing(Direction facing, int p_i46215_4_, int p_i46215_5_) {
+      private SpanFacing(Direction facing, int xOffsetIn, int yOffsetIn) {
          this.facing = facing;
-         this.xOffset = p_i46215_4_;
-         this.yOffset = p_i46215_5_;
+         this.xOffset = xOffsetIn;
+         this.yOffset = yOffsetIn;
       }
 
       public Direction getFacing() {

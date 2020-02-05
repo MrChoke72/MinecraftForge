@@ -66,7 +66,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements IInven
    private static final Predicate<LivingEntity> IS_HORSE_BREEDING = (p_213617_0_) -> {
       return p_213617_0_ instanceof AbstractHorseEntity && ((AbstractHorseEntity)p_213617_0_).isBreeding();
    };
-   private static final EntityPredicate field_213618_bK = (new EntityPredicate()).setDistance(16.0D).allowInvulnerable().allowFriendlyFire().setLineOfSiteRequired().setCustomPredicate(IS_HORSE_BREEDING);
+   private static final EntityPredicate MOMMY_TARGETING = (new EntityPredicate()).setDistance(16.0D).allowInvulnerable().allowFriendlyFire().setLineOfSiteRequired().setCustomPredicate(IS_HORSE_BREEDING);
    protected static final IAttribute JUMP_STRENGTH = (new RangedAttribute((IAttribute)null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
    private static final DataParameter<Byte> STATUS = EntityDataManager.createKey(AbstractHorseEntity.class, DataSerializers.BYTE);
    private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.createKey(AbstractHorseEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
@@ -89,8 +89,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements IInven
    protected boolean canGallop = true;
    protected int gallopTime;
 
-   protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> type, World p_i48563_2_) {
-      super(type, p_i48563_2_);
+   protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> type, World worldIn) {
+      super(type, worldIn);
       this.stepHeight = 1.0F;
       this.initHorseChest();
    }
@@ -217,12 +217,12 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements IInven
 
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
-      if (p_225503_1_ > 1.0F) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
+      if (distance > 1.0F) {
          this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4F, 1.0F);
       }
 
-      int i = this.func_225508_e_(p_225503_1_, p_225503_2_);
+      int i = this.func_225508_e_(distance, damageMultiplier);
       if (i <= 0) {
          return false;
       } else {
@@ -233,7 +233,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements IInven
             }
          }
 
-         this.func_226295_cZ_();
+         this.playFallSound();
          return true;
       }
    }
@@ -424,7 +424,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements IInven
       }
 
       if (this.isChild() && i > 0) {
-         this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.func_226282_d_(1.0D), this.func_226279_cv_() + 0.5D, this.func_226287_g_(1.0D), 0.0D, 0.0D, 0.0D);
+         this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), 0.0D, 0.0D, 0.0D);
          if (!this.world.isRemote) {
             this.addGrowth(i);
          }
@@ -510,9 +510,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements IInven
 
    protected void followMother() {
       if (this.isBreeding() && this.isChild() && !this.isEatingHaystack()) {
-         LivingEntity livingentity = this.world.getClosestEntityWithinAABB(AbstractHorseEntity.class, field_213618_bK, this, this.getPosX(), this.getPosY(), this.getPosZ(), this.getBoundingBox().grow(16.0D));
+         LivingEntity livingentity = this.world.getClosestEntityWithinAABB(AbstractHorseEntity.class, MOMMY_TARGETING, this, this.getPosX(), this.getPosY(), this.getPosZ(), this.getBoundingBox().grow(16.0D));
          if (livingentity != null && this.getDistanceSq(livingentity) > 4.0D) {
-            this.navigator.getPathToEntityLiving(livingentity, 0);
+            this.navigator.getPathToEntity(livingentity, 0);
          }
       }
 
@@ -660,7 +660,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements IInven
             }
 
             if (this.jumpPower > 0.0F && !this.isHorseJumping() && this.onGround) {
-               double d0 = this.getHorseJumpStrength() * (double)this.jumpPower * (double)this.func_226269_ah_();
+               double d0 = this.getHorseJumpStrength() * (double)this.jumpPower * (double)this.getJumpFactor();
                double d1;
                if (this.isPotionActive(Effects.JUMP_BOOST)) {
                   d1 = d0 + (double)((float)(this.getActivePotionEffect(Effects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
@@ -845,7 +845,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements IInven
          double d0 = this.rand.nextGaussian() * 0.02D;
          double d1 = this.rand.nextGaussian() * 0.02D;
          double d2 = this.rand.nextGaussian() * 0.02D;
-         this.world.addParticle(iparticledata, this.func_226282_d_(1.0D), this.func_226279_cv_() + 0.5D, this.func_226287_g_(1.0D), d0, d1, d2);
+         this.world.addParticle(iparticledata, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
       }
 
    }

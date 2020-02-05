@@ -23,9 +23,9 @@ public class WorldGenTickList<T> implements ITickList<T> {
       return false;
    }
 
-   public void func_219497_a(Stream<NextTickListEntry<T>> p_219497_1_) {
+   public void addAll(Stream<NextTickListEntry<T>> p_219497_1_) {
       p_219497_1_.forEach((p_219507_1_) -> {
-         this.tickListProvider.apply(p_219507_1_.position).func_219497_a(Stream.of(p_219507_1_));
+         this.tickListProvider.apply(p_219507_1_.position).addAll(Stream.of(p_219507_1_));
       });
    }
 }

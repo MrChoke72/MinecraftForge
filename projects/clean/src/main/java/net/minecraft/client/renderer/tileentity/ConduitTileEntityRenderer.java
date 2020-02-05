@@ -31,67 +31,67 @@ public class ConduitTileEntityRenderer extends TileEntityRenderer<ConduitTileEnt
 
    public ConduitTileEntityRenderer(TileEntityRendererDispatcher p_i226009_1_) {
       super(p_i226009_1_);
-      this.field_228872_h_.func_228301_a_(-4.0F, -4.0F, 0.0F, 8.0F, 8.0F, 0.0F, 0.01F);
+      this.field_228872_h_.addBox(-4.0F, -4.0F, 0.0F, 8.0F, 8.0F, 0.0F, 0.01F);
       this.field_228873_i_ = new ModelRenderer(64, 32, 0, 0);
-      this.field_228873_i_.func_228300_a_(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F);
+      this.field_228873_i_.addBox(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F);
       this.field_228874_j_ = new ModelRenderer(32, 16, 0, 0);
-      this.field_228874_j_.func_228300_a_(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F);
+      this.field_228874_j_.addBox(-3.0F, -3.0F, -3.0F, 6.0F, 6.0F, 6.0F);
       this.field_228875_k_ = new ModelRenderer(32, 16, 0, 0);
-      this.field_228875_k_.func_228300_a_(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
+      this.field_228875_k_.addBox(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
    }
 
-   public void func_225616_a_(ConduitTileEntity p_225616_1_, float p_225616_2_, MatrixStack p_225616_3_, IRenderTypeBuffer p_225616_4_, int p_225616_5_, int p_225616_6_) {
-      float f = (float)p_225616_1_.ticksExisted + p_225616_2_;
-      if (!p_225616_1_.isActive()) {
-         float f5 = p_225616_1_.getActiveRotation(0.0F);
-         IVertexBuilder ivertexbuilder1 = BASE_TEXTURE.func_229311_a_(p_225616_4_, RenderType::func_228634_a_);
-         p_225616_3_.func_227860_a_();
-         p_225616_3_.func_227861_a_(0.5D, 0.5D, 0.5D);
-         p_225616_3_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f5));
-         this.field_228874_j_.func_228308_a_(p_225616_3_, ivertexbuilder1, p_225616_5_, p_225616_6_);
-         p_225616_3_.func_227865_b_();
+   public void render(ConduitTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+      float f = (float)tileEntityIn.ticksExisted + partialTicks;
+      if (!tileEntityIn.isActive()) {
+         float f5 = tileEntityIn.getActiveRotation(0.0F);
+         IVertexBuilder ivertexbuilder1 = BASE_TEXTURE.getBuffer(bufferIn, RenderType::entitySolid);
+         matrixStackIn.push();
+         matrixStackIn.translate(0.5D, 0.5D, 0.5D);
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(f5));
+         this.field_228874_j_.render(matrixStackIn, ivertexbuilder1, combinedLightIn, combinedOverlayIn);
+         matrixStackIn.pop();
       } else {
-         float f1 = p_225616_1_.getActiveRotation(p_225616_2_) * (180F / (float)Math.PI);
+         float f1 = tileEntityIn.getActiveRotation(partialTicks) * (180F / (float)Math.PI);
          float f2 = MathHelper.sin(f * 0.1F) / 2.0F + 0.5F;
          f2 = f2 * f2 + f2;
-         p_225616_3_.func_227860_a_();
-         p_225616_3_.func_227861_a_(0.5D, (double)(0.3F + f2 * 0.2F), 0.5D);
+         matrixStackIn.push();
+         matrixStackIn.translate(0.5D, (double)(0.3F + f2 * 0.2F), 0.5D);
          Vector3f vector3f = new Vector3f(0.5F, 1.0F, 0.5F);
-         vector3f.func_229194_d_();
-         p_225616_3_.func_227863_a_(new Quaternion(vector3f, f1, true));
-         this.field_228875_k_.func_228308_a_(p_225616_3_, CAGE_TEXTURE.func_229311_a_(p_225616_4_, RenderType::func_228640_c_), p_225616_5_, p_225616_6_);
-         p_225616_3_.func_227865_b_();
-         int i = p_225616_1_.ticksExisted / 66 % 3;
-         p_225616_3_.func_227860_a_();
-         p_225616_3_.func_227861_a_(0.5D, 0.5D, 0.5D);
+         vector3f.normalize();
+         matrixStackIn.rotate(new Quaternion(vector3f, f1, true));
+         this.field_228875_k_.render(matrixStackIn, CAGE_TEXTURE.getBuffer(bufferIn, RenderType::entityCutoutNoCull), combinedLightIn, combinedOverlayIn);
+         matrixStackIn.pop();
+         int i = tileEntityIn.ticksExisted / 66 % 3;
+         matrixStackIn.push();
+         matrixStackIn.translate(0.5D, 0.5D, 0.5D);
          if (i == 1) {
-            p_225616_3_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(90.0F));
+            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90.0F));
          } else if (i == 2) {
-            p_225616_3_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(90.0F));
+            matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(90.0F));
          }
 
-         IVertexBuilder ivertexbuilder = (i == 1 ? VERTICAL_WIND_TEXTURE : WIND_TEXTURE).func_229311_a_(p_225616_4_, RenderType::func_228640_c_);
-         this.field_228873_i_.func_228308_a_(p_225616_3_, ivertexbuilder, p_225616_5_, p_225616_6_);
-         p_225616_3_.func_227865_b_();
-         p_225616_3_.func_227860_a_();
-         p_225616_3_.func_227861_a_(0.5D, 0.5D, 0.5D);
-         p_225616_3_.func_227862_a_(0.875F, 0.875F, 0.875F);
-         p_225616_3_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(180.0F));
-         p_225616_3_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(180.0F));
-         this.field_228873_i_.func_228308_a_(p_225616_3_, ivertexbuilder, p_225616_5_, p_225616_6_);
-         p_225616_3_.func_227865_b_();
-         ActiveRenderInfo activerenderinfo = this.field_228858_b_.renderInfo;
-         p_225616_3_.func_227860_a_();
-         p_225616_3_.func_227861_a_(0.5D, (double)(0.3F + f2 * 0.2F), 0.5D);
-         p_225616_3_.func_227862_a_(0.5F, 0.5F, 0.5F);
+         IVertexBuilder ivertexbuilder = (i == 1 ? VERTICAL_WIND_TEXTURE : WIND_TEXTURE).getBuffer(bufferIn, RenderType::entityCutoutNoCull);
+         this.field_228873_i_.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+         matrixStackIn.pop();
+         matrixStackIn.push();
+         matrixStackIn.translate(0.5D, 0.5D, 0.5D);
+         matrixStackIn.scale(0.875F, 0.875F, 0.875F);
+         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180.0F));
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(180.0F));
+         this.field_228873_i_.render(matrixStackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn);
+         matrixStackIn.pop();
+         ActiveRenderInfo activerenderinfo = this.renderDispatcher.renderInfo;
+         matrixStackIn.push();
+         matrixStackIn.translate(0.5D, (double)(0.3F + f2 * 0.2F), 0.5D);
+         matrixStackIn.scale(0.5F, 0.5F, 0.5F);
          float f3 = -activerenderinfo.getYaw();
-         p_225616_3_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f3));
-         p_225616_3_.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(activerenderinfo.getPitch()));
-         p_225616_3_.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(180.0F));
+         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(f3));
+         matrixStackIn.rotate(Vector3f.XP.rotationDegrees(activerenderinfo.getPitch()));
+         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(180.0F));
          float f4 = 1.3333334F;
-         p_225616_3_.func_227862_a_(1.3333334F, 1.3333334F, 1.3333334F);
-         this.field_228872_h_.func_228308_a_(p_225616_3_, (p_225616_1_.isEyeOpen() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE).func_229311_a_(p_225616_4_, RenderType::func_228640_c_), p_225616_5_, p_225616_6_);
-         p_225616_3_.func_227865_b_();
+         matrixStackIn.scale(1.3333334F, 1.3333334F, 1.3333334F);
+         this.field_228872_h_.render(matrixStackIn, (tileEntityIn.isEyeOpen() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE).getBuffer(bufferIn, RenderType::entityCutoutNoCull), combinedLightIn, combinedOverlayIn);
+         matrixStackIn.pop();
       }
    }
 }

@@ -142,85 +142,85 @@ public class VineBlock extends Block {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      BlockState blockstate = this.func_196545_h(p_225534_1_, p_225534_2_, p_225534_3_);
-      if (blockstate != p_225534_1_) {
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      BlockState blockstate = this.func_196545_h(state, worldIn, pos);
+      if (blockstate != state) {
          if (this.func_196543_i(blockstate)) {
-            p_225534_2_.setBlockState(p_225534_3_, blockstate, 2);
+            worldIn.setBlockState(pos, blockstate, 2);
          } else {
-            spawnDrops(p_225534_1_, p_225534_2_, p_225534_3_);
-            p_225534_2_.removeBlock(p_225534_3_, false);
+            spawnDrops(state, worldIn, pos);
+            worldIn.removeBlock(pos, false);
          }
 
-      } else if (p_225534_2_.rand.nextInt(4) == 0) {
-         Direction direction = Direction.random(p_225534_4_);
-         BlockPos blockpos = p_225534_3_.up();
-         if (direction.getAxis().isHorizontal() && !p_225534_1_.get(getPropertyFor(direction))) {
-            if (this.func_196539_a(p_225534_2_, p_225534_3_)) {
-               BlockPos blockpos4 = p_225534_3_.offset(direction);
-               BlockState blockstate5 = p_225534_2_.getBlockState(blockpos4);
+      } else if (worldIn.rand.nextInt(4) == 0) {
+         Direction direction = Direction.random(rand);
+         BlockPos blockpos = pos.up();
+         if (direction.getAxis().isHorizontal() && !state.get(getPropertyFor(direction))) {
+            if (this.func_196539_a(worldIn, pos)) {
+               BlockPos blockpos4 = pos.offset(direction);
+               BlockState blockstate5 = worldIn.getBlockState(blockpos4);
                if (blockstate5.isAir()) {
                   Direction direction3 = direction.rotateY();
                   Direction direction4 = direction.rotateYCCW();
-                  boolean flag = p_225534_1_.get(getPropertyFor(direction3));
-                  boolean flag1 = p_225534_1_.get(getPropertyFor(direction4));
+                  boolean flag = state.get(getPropertyFor(direction3));
+                  boolean flag1 = state.get(getPropertyFor(direction4));
                   BlockPos blockpos2 = blockpos4.offset(direction3);
                   BlockPos blockpos3 = blockpos4.offset(direction4);
-                  if (flag && canAttachTo(p_225534_2_, blockpos2, direction3)) {
-                     p_225534_2_.setBlockState(blockpos4, this.getDefaultState().with(getPropertyFor(direction3), Boolean.valueOf(true)), 2);
-                  } else if (flag1 && canAttachTo(p_225534_2_, blockpos3, direction4)) {
-                     p_225534_2_.setBlockState(blockpos4, this.getDefaultState().with(getPropertyFor(direction4), Boolean.valueOf(true)), 2);
+                  if (flag && canAttachTo(worldIn, blockpos2, direction3)) {
+                     worldIn.setBlockState(blockpos4, this.getDefaultState().with(getPropertyFor(direction3), Boolean.valueOf(true)), 2);
+                  } else if (flag1 && canAttachTo(worldIn, blockpos3, direction4)) {
+                     worldIn.setBlockState(blockpos4, this.getDefaultState().with(getPropertyFor(direction4), Boolean.valueOf(true)), 2);
                   } else {
                      Direction direction1 = direction.getOpposite();
-                     if (flag && p_225534_2_.isAirBlock(blockpos2) && canAttachTo(p_225534_2_, p_225534_3_.offset(direction3), direction1)) {
-                        p_225534_2_.setBlockState(blockpos2, this.getDefaultState().with(getPropertyFor(direction1), Boolean.valueOf(true)), 2);
-                     } else if (flag1 && p_225534_2_.isAirBlock(blockpos3) && canAttachTo(p_225534_2_, p_225534_3_.offset(direction4), direction1)) {
-                        p_225534_2_.setBlockState(blockpos3, this.getDefaultState().with(getPropertyFor(direction1), Boolean.valueOf(true)), 2);
-                     } else if ((double)p_225534_2_.rand.nextFloat() < 0.05D && canAttachTo(p_225534_2_, blockpos4.up(), Direction.UP)) {
-                        p_225534_2_.setBlockState(blockpos4, this.getDefaultState().with(UP, Boolean.valueOf(true)), 2);
+                     if (flag && worldIn.isAirBlock(blockpos2) && canAttachTo(worldIn, pos.offset(direction3), direction1)) {
+                        worldIn.setBlockState(blockpos2, this.getDefaultState().with(getPropertyFor(direction1), Boolean.valueOf(true)), 2);
+                     } else if (flag1 && worldIn.isAirBlock(blockpos3) && canAttachTo(worldIn, pos.offset(direction4), direction1)) {
+                        worldIn.setBlockState(blockpos3, this.getDefaultState().with(getPropertyFor(direction1), Boolean.valueOf(true)), 2);
+                     } else if ((double)worldIn.rand.nextFloat() < 0.05D && canAttachTo(worldIn, blockpos4.up(), Direction.UP)) {
+                        worldIn.setBlockState(blockpos4, this.getDefaultState().with(UP, Boolean.valueOf(true)), 2);
                      }
                   }
-               } else if (canAttachTo(p_225534_2_, blockpos4, direction)) {
-                  p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(getPropertyFor(direction), Boolean.valueOf(true)), 2);
+               } else if (canAttachTo(worldIn, blockpos4, direction)) {
+                  worldIn.setBlockState(pos, state.with(getPropertyFor(direction), Boolean.valueOf(true)), 2);
                }
 
             }
          } else {
-            if (direction == Direction.UP && p_225534_3_.getY() < 255) {
-               if (this.func_196541_a(p_225534_2_, p_225534_3_, direction)) {
-                  p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(UP, Boolean.valueOf(true)), 2);
+            if (direction == Direction.UP && pos.getY() < 255) {
+               if (this.func_196541_a(worldIn, pos, direction)) {
+                  worldIn.setBlockState(pos, state.with(UP, Boolean.valueOf(true)), 2);
                   return;
                }
 
-               if (p_225534_2_.isAirBlock(blockpos)) {
-                  if (!this.func_196539_a(p_225534_2_, p_225534_3_)) {
+               if (worldIn.isAirBlock(blockpos)) {
+                  if (!this.func_196539_a(worldIn, pos)) {
                      return;
                   }
 
-                  BlockState blockstate4 = p_225534_1_;
+                  BlockState blockstate4 = state;
 
                   for(Direction direction2 : Direction.Plane.HORIZONTAL) {
-                     if (p_225534_4_.nextBoolean() || !canAttachTo(p_225534_2_, blockpos.offset(direction2), Direction.UP)) {
+                     if (rand.nextBoolean() || !canAttachTo(worldIn, blockpos.offset(direction2), Direction.UP)) {
                         blockstate4 = blockstate4.with(getPropertyFor(direction2), Boolean.valueOf(false));
                      }
                   }
 
                   if (this.hasHorizFacing(blockstate4)) {
-                     p_225534_2_.setBlockState(blockpos, blockstate4, 2);
+                     worldIn.setBlockState(blockpos, blockstate4, 2);
                   }
 
                   return;
                }
             }
 
-            if (p_225534_3_.getY() > 0) {
-               BlockPos blockpos1 = p_225534_3_.down();
-               BlockState blockstate1 = p_225534_2_.getBlockState(blockpos1);
+            if (pos.getY() > 0) {
+               BlockPos blockpos1 = pos.down();
+               BlockState blockstate1 = worldIn.getBlockState(blockpos1);
                if (blockstate1.isAir() || blockstate1.getBlock() == this) {
                   BlockState blockstate2 = blockstate1.isAir() ? this.getDefaultState() : blockstate1;
-                  BlockState blockstate3 = this.func_196544_a(p_225534_1_, blockstate2, p_225534_4_);
+                  BlockState blockstate3 = this.func_196544_a(state, blockstate2, rand);
                   if (blockstate2 != blockstate3 && this.hasHorizFacing(blockstate3)) {
-                     p_225534_2_.setBlockState(blockpos1, blockstate3, 2);
+                     worldIn.setBlockState(blockpos1, blockstate3, 2);
                   }
                }
             }
@@ -242,10 +242,8 @@ public class VineBlock extends Block {
       return p_196544_2_;
    }
 
-   //AH CHANGE REFACTOR
-   private boolean hasHorizFacing(BlockState blockState) {
-   //private boolean func_196540_x(BlockState p_196540_1_) {
-      return blockState.get(NORTH) || blockState.get(EAST) || blockState.get(SOUTH) || blockState.get(WEST);
+   private boolean hasHorizFacing(BlockState p_196540_1_) {
+      return p_196540_1_.get(NORTH) || p_196540_1_.get(EAST) || p_196540_1_.get(SOUTH) || p_196540_1_.get(WEST);
    }
 
    private boolean func_196539_a(IBlockReader p_196539_1_, BlockPos p_196539_2_) {

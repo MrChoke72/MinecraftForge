@@ -17,15 +17,13 @@ public class ClimberPathNavigator extends GroundPathNavigator {
       return super.getPathToPos(pos, keepDist);
    }
 
-   //AH CHANGE REFACTOR
-   public Path getPathToEntityLiving(Entity entityIn, int keepDist) {
-   //public Path getPathToEntityLiving(Entity entityIn, int p_75494_2_) {
+   public Path getPathToEntity(Entity entityIn, int keepDist) {
       this.targetPosition = new BlockPos(entityIn);
-      return super.getPathToEntityLiving(entityIn, keepDist);
+      return super.getPathToEntity(entityIn, keepDist);
    }
 
    public boolean tryMoveToEntityLiving(Entity entityIn, double speedIn) {
-      Path path = this.getPathToEntityLiving(entityIn, 0);
+      Path path = this.getPathToEntity(entityIn, 0);
       if (path != null) {
          return this.setPath(path, speedIn);
       } else {

@@ -70,7 +70,7 @@ public class RavagerEntity extends AbstractRaiderEntity {
       this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
    }
 
-   protected void func_213385_F() {
+   protected void updateMovementGoalFlags() {
       boolean flag = !(this.getControllingPassenger() instanceof MobEntity) || this.getControllingPassenger().getType().isContained(EntityTypeTags.RAIDERS);
       boolean flag1 = !(this.getRidingEntity() instanceof BoatEntity);
       this.goalSelector.setFlag(Goal.Flag.MOVE, flag);
@@ -200,18 +200,18 @@ public class RavagerEntity extends AbstractRaiderEntity {
       return this.stunTick <= 0 && this.roarTick <= 0 ? super.canEntityBeSeen(entityIn) : false;
    }
 
-   protected void func_213371_e(LivingEntity p_213371_1_) {
+   protected void constructKnockBackVector(LivingEntity entityIn) {
       if (this.roarTick == 0) {
          if (this.rand.nextDouble() < 0.5D) {
             this.stunTick = 40;
             this.playSound(SoundEvents.ENTITY_RAVAGER_STUNNED, 1.0F, 1.0F);
             this.world.setEntityState(this, (byte)39);
-            p_213371_1_.applyEntityCollision(this);
+            entityIn.applyEntityCollision(this);
          } else {
-            this.launch(p_213371_1_);
+            this.launch(entityIn);
          }
 
-         p_213371_1_.velocityChanged = true;
+         entityIn.velocityChanged = true;
       }
 
    }

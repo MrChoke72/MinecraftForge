@@ -48,8 +48,8 @@ public class FlowingFluidBlock extends Block implements IBucketPickupHandler {
       this.setDefaultState(this.stateContainer.getBaseState().with(LEVEL, Integer.valueOf(0)));
    }
 
-   public void func_225542_b_(BlockState p_225542_1_, ServerWorld p_225542_2_, BlockPos p_225542_3_, Random p_225542_4_) {
-      p_225542_2_.getFluidState(p_225542_3_).randomTick(p_225542_2_, p_225542_3_, p_225542_4_);
+   public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
+      worldIn.getFluidState(pos).randomTick(worldIn, pos, random);
    }
 
    public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos) {
@@ -127,7 +127,7 @@ public class FlowingFluidBlock extends Block implements IBucketPickupHandler {
                return false;
             }
 
-            if (ifluidstate.func_215679_a(worldIn, pos) >= 0.44444445F) {
+            if (ifluidstate.getActualHeight(worldIn, pos) >= 0.44444445F) {
                worldIn.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState());
                this.triggerMixEffects(worldIn, pos);
                return false;

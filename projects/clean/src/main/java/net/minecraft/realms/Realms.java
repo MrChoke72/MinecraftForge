@@ -112,7 +112,7 @@ public class Realms {
    }
 
    public static CompletableFuture<?> downloadResourcePack(String p_downloadResourcePack_0_, String p_downloadResourcePack_1_) {
-      return Minecraft.getInstance().getPackFinder().func_217818_a(p_downloadResourcePack_0_, p_downloadResourcePack_1_);
+      return Minecraft.getInstance().getPackFinder().downloadResourcePack(p_downloadResourcePack_0_, p_downloadResourcePack_1_);
    }
 
    public static void clearResourcePack() {

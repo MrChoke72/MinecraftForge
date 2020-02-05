@@ -12,7 +12,7 @@ public interface IGlyphProvider extends Closeable {
    }
 
    @Nullable
-   default IGlyphInfo func_212248_a(char p_212248_1_) {
+   default IGlyphInfo getGlyphInfo(char character) {
       return null;
    }
 }

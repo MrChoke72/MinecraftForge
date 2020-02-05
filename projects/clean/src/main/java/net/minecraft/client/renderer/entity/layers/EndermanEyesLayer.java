@@ -10,13 +10,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class EndermanEyesLayer<T extends LivingEntity> extends AbstractEyesLayer<T, EndermanModel<T>> {
-   private static final RenderType field_229133_a_ = RenderType.func_228652_i_(new ResourceLocation("textures/entity/enderman/enderman_eyes.png"));
+   private static final RenderType RENDER_TYPE = RenderType.eyes(new ResourceLocation("textures/entity/enderman/enderman_eyes.png"));
 
-   public EndermanEyesLayer(IEntityRenderer<T, EndermanModel<T>> p_i50939_1_) {
-      super(p_i50939_1_);
+   public EndermanEyesLayer(IEntityRenderer<T, EndermanModel<T>> rendererIn) {
+      super(rendererIn);
    }
 
-   public RenderType func_225636_a_() {
-      return field_229133_a_;
+   public RenderType getRenderType() {
+      return RENDER_TYPE;
    }
 }

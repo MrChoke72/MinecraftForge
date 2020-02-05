@@ -178,8 +178,8 @@ public class SoundHandler extends ReloadListener<SoundHandler.Loader> {
       this.sndManager.unload();
    }
 
-   public void tick(boolean p_215290_1_) {
-      this.sndManager.tick(p_215290_1_);
+   public void tick(boolean isGamePaused) {
+      this.sndManager.tick(isGamePaused);
    }
 
    public void resume() {
@@ -265,10 +265,10 @@ public class SoundHandler extends ReloadListener<SoundHandler.Loader> {
                      }
                   }
 
-                  public void func_217867_a(SoundEngine p_217867_1_) {
+                  public void enqueuePreload(SoundEngine engine) {
                      SoundEventAccessor soundeventaccessor1 = Loader.this.field_217948_a.get(resourcelocation);
                      if (soundeventaccessor1 != null) {
-                        soundeventaccessor1.func_217867_a(p_217867_1_);
+                        soundeventaccessor1.enqueuePreload(engine);
                      }
                   }
                };
@@ -287,7 +287,7 @@ public class SoundHandler extends ReloadListener<SoundHandler.Loader> {
 
          for(Entry<ResourceLocation, SoundEventAccessor> entry : this.field_217948_a.entrySet()) {
             p_217946_1_.put(entry.getKey(), entry.getValue());
-            entry.getValue().func_217867_a(p_217946_2_);
+            entry.getValue().enqueuePreload(p_217946_2_);
          }
 
       }

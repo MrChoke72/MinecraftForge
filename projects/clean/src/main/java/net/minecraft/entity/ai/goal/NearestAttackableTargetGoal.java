@@ -63,10 +63,10 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
    protected void findNearestTarget() {
       if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
          this.nearestTarget = this.goalOwner.world.<T>getClosestEntity(this.targetClass, this.targetEntitySelector, this.goalOwner, this.goalOwner.getPosX(),
-                 this.goalOwner.getPosYPlusEyeHeight(), this.goalOwner.getPosZ(), this.getTargetableArea(this.getTargetDistance()));
+                 this.goalOwner.getPosYEye(), this.goalOwner.getPosZ(), this.getTargetableArea(this.getTargetDistance()));
       } else {
          this.nearestTarget = this.goalOwner.world.getClosestPlayer(this.targetEntitySelector, this.goalOwner, this.goalOwner.getPosX(),
-                 this.goalOwner.getPosYPlusEyeHeight(), this.goalOwner.getPosZ());
+                 this.goalOwner.getPosYEye(), this.goalOwner.getPosZ());
       }
 
    }

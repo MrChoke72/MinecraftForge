@@ -11,33 +11,33 @@ public enum PackCompatibility {
    TOO_NEW("new"),
    COMPATIBLE("compatible");
 
-   private final ITextComponent field_198975_d;
-   private final ITextComponent field_198976_e;
+   private final ITextComponent description;
+   private final ITextComponent confirmMessage;
 
-   private PackCompatibility(String p_i47910_3_) {
-      this.field_198975_d = new TranslationTextComponent("resourcePack.incompatible." + p_i47910_3_);
-      this.field_198976_e = new TranslationTextComponent("resourcePack.incompatible.confirm." + p_i47910_3_);
+   private PackCompatibility(String id) {
+      this.description = new TranslationTextComponent("resourcePack.incompatible." + id);
+      this.confirmMessage = new TranslationTextComponent("resourcePack.incompatible.confirm." + id);
    }
 
-   public boolean func_198968_a() {
+   public boolean isCompatible() {
       return this == COMPATIBLE;
    }
 
-   public static PackCompatibility func_198969_a(int p_198969_0_) {
-      if (p_198969_0_ < SharedConstants.getVersion().getPackVersion()) {
+   public static PackCompatibility getCompatibility(int packVersionIn) {
+      if (packVersionIn < SharedConstants.getVersion().getPackVersion()) {
          return TOO_OLD;
       } else {
-         return p_198969_0_ > SharedConstants.getVersion().getPackVersion() ? TOO_NEW : COMPATIBLE;
+         return packVersionIn > SharedConstants.getVersion().getPackVersion() ? TOO_NEW : COMPATIBLE;
       }
    }
 
    @OnlyIn(Dist.CLIENT)
-   public ITextComponent func_198967_b() {
-      return this.field_198975_d;
+   public ITextComponent getDescription() {
+      return this.description;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public ITextComponent func_198971_c() {
-      return this.field_198976_e;
+   public ITextComponent getConfirmMessage() {
+      return this.confirmMessage;
    }
 }

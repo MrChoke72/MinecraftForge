@@ -17,6 +17,8 @@ public interface IBakedModel {
 
    boolean isGui3d();
 
+   boolean func_230044_c_();
+
    boolean isBuiltInRenderer();
 
    TextureAtlasSprite getParticleTexture();

@@ -40,34 +40,34 @@ public class DebugPacketSender {
       func_229753_a_(p_229751_0_, packetbuffer, SCustomPayloadPlayPacket.field_229730_p_);
    }
 
-   public static void func_218802_a(ServerWorld p_218802_0_, ChunkPos p_218802_1_) {
+   public static void sendChuckPos(ServerWorld worldIn, ChunkPos p_218802_1_) {
    }
 
-   public static void func_218799_a(ServerWorld p_218799_0_, BlockPos p_218799_1_) {
+   public static void func_218799_a(ServerWorld worldIn, BlockPos p_218799_1_) {
    }
 
-   public static void func_218805_b(ServerWorld p_218805_0_, BlockPos p_218805_1_) {
+   public static void func_218805_b(ServerWorld worldIn, BlockPos p_218805_1_) {
    }
 
-   public static void func_218801_c(ServerWorld p_218801_0_, BlockPos p_218801_1_) {
+   public static void func_218801_c(ServerWorld worldIn, BlockPos p_218801_1_) {
    }
 
-   public static void func_218803_a(World p_218803_0_, MobEntity p_218803_1_, @Nullable Path p_218803_2_, float p_218803_3_) {
+   public static void sendPath(World worldIn, MobEntity p_218803_1_, @Nullable Path p_218803_2_, float p_218803_3_) {
    }
 
-   public static void func_218806_a(World p_218806_0_, BlockPos p_218806_1_) {
+   public static void func_218806_a(World worldIn, BlockPos p_218806_1_) {
    }
 
-   public static void func_218804_a(IWorld p_218804_0_, StructureStart p_218804_1_) {
+   public static void sendStructureStart(IWorld worldIn, StructureStart p_218804_1_) {
    }
 
-   public static void func_218800_a(World p_218800_0_, MobEntity p_218800_1_, GoalSelector p_218800_2_) {
+   public static void sendGoal(World worldIn, MobEntity p_218800_1_, GoalSelector p_218800_2_) {
    }
 
-   public static void sendRaids(ServerWorld p_222946_0_, Collection<Raid> p_222946_1_) {
+   public static void sendRaids(ServerWorld worldIn, Collection<Raid> p_222946_1_) {
    }
 
-   public static void func_218798_a(LivingEntity p_218798_0_) {
+   public static void sendLivingEntity(LivingEntity p_218798_0_) {
    }
 
    public static void func_229749_a_(BeeEntity p_229749_0_) {

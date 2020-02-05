@@ -18,7 +18,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.server.ServerWorld;
 
 public class BlockPredicate {
-   public static final BlockPredicate field_226231_a_ = new BlockPredicate((Tag<Block>)null, (Block)null, StatePropertiesPredicate.field_227178_a_, NBTPredicate.ANY);
+   public static final BlockPredicate field_226231_a_ = new BlockPredicate((Tag<Block>)null, (Block)null, StatePropertiesPredicate.EMPTY, NBTPredicate.ANY);
    @Nullable
    private final Tag<Block> field_226232_b_;
    @Nullable
@@ -45,7 +45,7 @@ public class BlockPredicate {
             return false;
          } else if (this.field_226233_c_ != null && block != this.field_226233_c_) {
             return false;
-         } else if (!this.field_226234_d_.func_227181_a_(blockstate)) {
+         } else if (!this.field_226234_d_.matches(blockstate)) {
             return false;
          } else {
             if (this.field_226235_e_ != NBTPredicate.ANY) {
@@ -79,7 +79,7 @@ public class BlockPredicate {
             }
          }
 
-         StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.func_227186_a_(jsonobject.get("state"));
+         StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.deserializeProperties(jsonobject.get("state"));
          return new BlockPredicate(tag, block, statepropertiespredicate, nbtpredicate);
       } else {
          return field_226231_a_;
@@ -100,7 +100,7 @@ public class BlockPredicate {
          }
 
          jsonobject.add("nbt", this.field_226235_e_.serialize());
-         jsonobject.add("state", this.field_226234_d_.func_227180_a_());
+         jsonobject.add("state", this.field_226234_d_.toJsonElement());
          return jsonobject;
       }
    }
@@ -110,7 +110,7 @@ public class BlockPredicate {
       private Block field_226239_a_;
       @Nullable
       private Tag<Block> field_226240_b_;
-      private StatePropertiesPredicate field_226241_c_ = StatePropertiesPredicate.field_227178_a_;
+      private StatePropertiesPredicate field_226241_c_ = StatePropertiesPredicate.EMPTY;
       private NBTPredicate field_226242_d_ = NBTPredicate.ANY;
 
       private Builder() {

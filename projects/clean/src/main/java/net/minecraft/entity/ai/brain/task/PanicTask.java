@@ -14,11 +14,11 @@ public class PanicTask extends Task<VillagerEntity> {
    }
 
    protected boolean shouldContinueExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
-      return hasHurtByMem(entityIn) || hasNearestHostileMem(entityIn);
+      return hasBeenHurt(entityIn) || hostileNearby(entityIn);
    }
 
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
-      if (hasHurtByMem(entityIn) || hasNearestHostileMem(entityIn)) {
+      if (hasBeenHurt(entityIn) || hostileNearby(entityIn)) {
          Brain<?> brain = entityIn.getBrain();
          if (!brain.hasActivity(Activity.PANIC)) {
             brain.removeMemory(MemoryModuleType.PATH);
@@ -43,16 +43,16 @@ public class PanicTask extends Task<VillagerEntity> {
 
    protected void updateTask(ServerWorld worldIn, VillagerEntity owner, long gameTime) {
       if (gameTime % 100L == 0L) {
-         owner.checkCreateIronGolem(gameTime, 3);
+         owner.spawnGolems(gameTime, 3);
       }
 
    }
 
-   public static boolean hasNearestHostileMem(LivingEntity entity) {
-      return entity.getBrain().hasMemory(MemoryModuleType.NEAREST_HOSTILE);
+   public static boolean hostileNearby(LivingEntity p_220513_0_) {
+      return p_220513_0_.getBrain().hasMemory(MemoryModuleType.NEAREST_HOSTILE);
    }
 
-   public static boolean hasHurtByMem(LivingEntity entity) {
-      return entity.getBrain().hasMemory(MemoryModuleType.HURT_BY);
+   public static boolean hasBeenHurt(LivingEntity p_220512_0_) {
+      return p_220512_0_.getBrain().hasMemory(MemoryModuleType.HURT_BY);
    }
 }

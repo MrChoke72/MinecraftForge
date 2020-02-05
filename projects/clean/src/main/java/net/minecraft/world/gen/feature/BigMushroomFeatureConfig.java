@@ -27,8 +27,8 @@ public class BigMushroomFeatureConfig implements IFeatureConfig {
    }
 
    public static <T> BigMushroomFeatureConfig deserialize(Dynamic<T> p_222853_0_) {
-      BlockStateProviderType<?> blockstateprovidertype = Registry.field_229387_t_.getOrDefault(new ResourceLocation(p_222853_0_.get("cap_provider").get("type").asString().orElseThrow(RuntimeException::new)));
-      BlockStateProviderType<?> blockstateprovidertype1 = Registry.field_229387_t_.getOrDefault(new ResourceLocation(p_222853_0_.get("stem_provider").get("type").asString().orElseThrow(RuntimeException::new)));
+      BlockStateProviderType<?> blockstateprovidertype = Registry.BLOCK_STATE_PROVIDER_TYPE.getOrDefault(new ResourceLocation(p_222853_0_.get("cap_provider").get("type").asString().orElseThrow(RuntimeException::new)));
+      BlockStateProviderType<?> blockstateprovidertype1 = Registry.BLOCK_STATE_PROVIDER_TYPE.getOrDefault(new ResourceLocation(p_222853_0_.get("stem_provider").get("type").asString().orElseThrow(RuntimeException::new)));
       return new BigMushroomFeatureConfig(blockstateprovidertype.func_227399_a_(p_222853_0_.get("cap_provider").orElseEmptyMap()), blockstateprovidertype1.func_227399_a_(p_222853_0_.get("stem_provider").orElseEmptyMap()), p_222853_0_.get("foliage_radius").asInt(2));
    }
 }

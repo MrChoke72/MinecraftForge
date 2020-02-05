@@ -11,28 +11,28 @@ public enum ChatVisibility {
    SYSTEM(1, "options.chat.visibility.system"),
    HIDDEN(2, "options.chat.visibility.hidden");
 
-   private static final ChatVisibility[] field_221255_d = Arrays.stream(values()).sorted(Comparator.comparingInt(ChatVisibility::func_221254_a)).toArray((p_221253_0_) -> {
+   private static final ChatVisibility[] field_221255_d = Arrays.stream(values()).sorted(Comparator.comparingInt(ChatVisibility::getId)).toArray((p_221253_0_) -> {
       return new ChatVisibility[p_221253_0_];
    });
-   private final int field_221256_e;
-   private final String field_221257_f;
+   private final int id;
+   private final String resourceKey;
 
    private ChatVisibility(int p_i50176_3_, String p_i50176_4_) {
-      this.field_221256_e = p_i50176_3_;
-      this.field_221257_f = p_i50176_4_;
+      this.id = p_i50176_3_;
+      this.resourceKey = p_i50176_4_;
    }
 
-   public int func_221254_a() {
-      return this.field_221256_e;
-   }
-
-   @OnlyIn(Dist.CLIENT)
-   public String func_221251_b() {
-      return this.field_221257_f;
+   public int getId() {
+      return this.id;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static ChatVisibility func_221252_a(int p_221252_0_) {
+   public String getResourceKey() {
+      return this.resourceKey;
+   }
+
+   @OnlyIn(Dist.CLIENT)
+   public static ChatVisibility getValue(int p_221252_0_) {
       return field_221255_d[MathHelper.normalizeAngle(p_221252_0_, field_221255_d.length)];
    }
 }

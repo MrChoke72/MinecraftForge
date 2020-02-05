@@ -191,7 +191,7 @@ public class WitchEntity extends AbstractRaiderEntity implements IRangedAttackMo
       if (!this.isDrinkingPotion()) {
          Vec3d vec3d = target.getMotion();
          double d0 = target.getPosX() + vec3d.x - this.getPosX();
-         double d1 = target.getPosYPlusEyeHeight() - (double)1.1F - this.getPosY();
+         double d1 = target.getPosYEye() - (double)1.1F - this.getPosY();
          double d2 = target.getPosZ() + vec3d.z - this.getPosZ();
          float f = MathHelper.sqrt(d0 * d0 + d2 * d2);
          Potion potion = Potions.HARMING;

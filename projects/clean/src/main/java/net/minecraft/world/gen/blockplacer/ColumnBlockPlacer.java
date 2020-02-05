@@ -36,6 +36,6 @@ public class ColumnBlockPlacer extends BlockPlacer {
    }
 
    public <T> T serialize(DynamicOps<T> p_218175_1_) {
-      return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(ImmutableMap.of(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.field_229388_u_.getKey(this.field_227258_a_).toString()), p_218175_1_.createString("min_size"), p_218175_1_.createInt(this.field_227265_b_), p_218175_1_.createString("extra_size"), p_218175_1_.createInt(this.field_227266_c_))))).getValue();
+      return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(ImmutableMap.of(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.BLOCK_PLACER_TYPE.getKey(this.field_227258_a_).toString()), p_218175_1_.createString("min_size"), p_218175_1_.createInt(this.field_227265_b_), p_218175_1_.createString("extra_size"), p_218175_1_.createInt(this.field_227266_c_))))).getValue();
    }
 }

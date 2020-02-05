@@ -144,10 +144,10 @@ public class TagCollection<T> {
       p_219779_1_.forEach((p_223505_1_, p_223505_2_) -> {
          Tag tag = map.put(p_223505_1_, p_223505_2_.build(p_223505_1_));
       });
-      this.func_223507_b(map);
+      this.toImmutable(map);
    }
 
-   protected void func_223507_b(Map<ResourceLocation, Tag<T>> p_223507_1_) {
+   protected void toImmutable(Map<ResourceLocation, Tag<T>> p_223507_1_) {
       this.tagMap = ImmutableMap.copyOf(p_223507_1_);
    }
 

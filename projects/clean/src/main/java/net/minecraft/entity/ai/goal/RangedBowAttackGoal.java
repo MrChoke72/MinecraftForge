@@ -27,8 +27,8 @@ public class RangedBowAttackGoal<T extends MonsterEntity & IRangedAttackMob> ext
       this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
    }
 
-   public void setAttackCooldown(int p_189428_1_) {
-      this.attackCooldown = p_189428_1_;
+   public void setAttackCooldown(int attackCooldownIn) {
+      this.attackCooldown = attackCooldownIn;
    }
 
    public boolean shouldExecute() {

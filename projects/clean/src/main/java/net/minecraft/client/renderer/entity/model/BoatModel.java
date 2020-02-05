@@ -22,15 +22,15 @@ public class BoatModel extends SegmentedModel<BoatEntity> {
       int k = 20;
       int l = 4;
       int i1 = 28;
-      amodelrenderer[0].func_228301_a_(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
+      amodelrenderer[0].addBox(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
       amodelrenderer[0].setRotationPoint(0.0F, 3.0F, 1.0F);
-      amodelrenderer[1].func_228301_a_(-13.0F, -7.0F, -1.0F, 18.0F, 6.0F, 2.0F, 0.0F);
+      amodelrenderer[1].addBox(-13.0F, -7.0F, -1.0F, 18.0F, 6.0F, 2.0F, 0.0F);
       amodelrenderer[1].setRotationPoint(-15.0F, 4.0F, 4.0F);
-      amodelrenderer[2].func_228301_a_(-8.0F, -7.0F, -1.0F, 16.0F, 6.0F, 2.0F, 0.0F);
+      amodelrenderer[2].addBox(-8.0F, -7.0F, -1.0F, 16.0F, 6.0F, 2.0F, 0.0F);
       amodelrenderer[2].setRotationPoint(15.0F, 4.0F, 0.0F);
-      amodelrenderer[3].func_228301_a_(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F, 0.0F);
+      amodelrenderer[3].addBox(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F, 0.0F);
       amodelrenderer[3].setRotationPoint(0.0F, 4.0F, -9.0F);
-      amodelrenderer[4].func_228301_a_(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F, 0.0F);
+      amodelrenderer[4].addBox(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F, 0.0F);
       amodelrenderer[4].setRotationPoint(0.0F, 4.0F, 9.0F);
       amodelrenderer[0].rotateAngleX = ((float)Math.PI / 2F);
       amodelrenderer[1].rotateAngleY = ((float)Math.PI * 1.5F);
@@ -44,7 +44,7 @@ public class BoatModel extends SegmentedModel<BoatEntity> {
       this.paddles[0].rotateAngleZ = 0.19634955F;
       this.paddles[1].rotateAngleZ = 0.19634955F;
       this.noWater = (new ModelRenderer(this, 0, 0)).setTextureSize(128, 64);
-      this.noWater.func_228301_a_(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
+      this.noWater.addBox(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
       this.noWater.setRotationPoint(0.0F, -3.0F, 1.0F);
       this.noWater.rotateAngleX = ((float)Math.PI / 2F);
       Builder<ModelRenderer> builder = ImmutableList.builder();
@@ -53,12 +53,12 @@ public class BoatModel extends SegmentedModel<BoatEntity> {
       this.field_228243_f_ = builder.build();
    }
 
-   public void func_225597_a_(BoatEntity p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      this.func_228244_a_(p_225597_1_, 0, p_225597_2_);
-      this.func_228244_a_(p_225597_1_, 1, p_225597_2_);
+   public void render(BoatEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      this.func_228244_a_(entityIn, 0, limbSwing);
+      this.func_228244_a_(entityIn, 1, limbSwing);
    }
 
-   public ImmutableList<ModelRenderer> func_225601_a_() {
+   public ImmutableList<ModelRenderer> getParts() {
       return this.field_228243_f_;
    }
 
@@ -72,8 +72,8 @@ public class BoatModel extends SegmentedModel<BoatEntity> {
       int j = 7;
       int k = 6;
       float f = -5.0F;
-      modelrenderer.func_228300_a_(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F);
-      modelrenderer.func_228300_a_(p_187056_1_ ? -1.001F : 0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F);
+      modelrenderer.addBox(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F);
+      modelrenderer.addBox(p_187056_1_ ? -1.001F : 0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F);
       return modelrenderer;
    }
 

@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
@@ -290,13 +291,17 @@ public class DedicatedServer extends MinecraftServer implements IServer {
    public CrashReport addServerInfoToCrashReport(CrashReport report) {
       report = super.addServerInfoToCrashReport(report);
       report.getCategory().addDetail("Is Modded", () -> {
-         String s = this.getServerModName();
-         return !"vanilla".equals(s) ? "Definitely; Server brand changed to '" + s + "'" : "Unknown (can't tell)";
+         return this.func_230045_q_().orElse("Unknown (can't tell)");
       });
       report.getCategory().addDetail("Type", () -> {
          return "Dedicated Server (map_server.txt)";
       });
       return report;
+   }
+
+   public Optional<String> func_230045_q_() {
+      String s = this.getServerModName();
+      return !"vanilla".equals(s) ? Optional.of("Definitely; Server brand changed to '" + s + "'") : Optional.empty();
    }
 
    public void systemExitNow() {
@@ -418,7 +423,7 @@ public class DedicatedServer extends MinecraftServer implements IServer {
       return this.getServerProperties().opPermissionLevel;
    }
 
-   public int func_223707_k() {
+   public int getFunctionLevel() {
       return this.getServerProperties().field_225395_K;
    }
 
@@ -539,7 +544,7 @@ public class DedicatedServer extends MinecraftServer implements IServer {
       Util.shutdownServerExecutor();
    }
 
-   public boolean func_213199_b(GameProfile p_213199_1_) {
+   public boolean isServerOwner(GameProfile profileIn) {
       return false;
    }
 }

@@ -25,7 +25,7 @@ public class BossOverlayGui extends AbstractGui {
 
    public void render() {
       if (!this.mapBossInfos.isEmpty()) {
-         int i = this.client.func_228018_at_().getScaledWidth();
+         int i = this.client.getMainWindow().getScaledWidth();
          int j = 12;
 
          for(ClientBossInfo clientbossinfo : this.mapBossInfos.values()) {
@@ -39,7 +39,7 @@ public class BossOverlayGui extends AbstractGui {
             int j1 = j - 9;
             this.client.fontRenderer.drawStringWithShadow(s, (float)i1, (float)j1, 16777215);
             j += 10 + 9;
-            if (j >= this.client.func_228018_at_().getScaledHeight() / 3) {
+            if (j >= this.client.getMainWindow().getScaledHeight() / 3) {
                break;
             }
          }

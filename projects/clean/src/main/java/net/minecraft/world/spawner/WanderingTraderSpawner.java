@@ -44,22 +44,24 @@ public class WanderingTraderSpawner {
    }
 
    public void tick() {
-      if (--this.field_221248_c <= 0) {
-         this.field_221248_c = 1200;
-         WorldInfo worldinfo = this.world.getWorldInfo();
-         this.field_221249_d -= 1200;
-         worldinfo.setWanderingTraderSpawnDelay(this.field_221249_d);
-         if (this.field_221249_d <= 0) {
-            this.field_221249_d = 24000;
-            if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-               int i = this.field_221250_e;
-               this.field_221250_e = MathHelper.clamp(this.field_221250_e + 25, 25, 75);
-               worldinfo.setWanderingTraderSpawnChance(this.field_221250_e);
-               if (this.random.nextInt(100) <= i) {
-                  if (this.func_221245_b()) {
-                     this.field_221250_e = 25;
-                  }
+      if (this.world.getGameRules().getBoolean(GameRules.field_230128_E_)) {
+         if (--this.field_221248_c <= 0) {
+            this.field_221248_c = 1200;
+            WorldInfo worldinfo = this.world.getWorldInfo();
+            this.field_221249_d -= 1200;
+            worldinfo.setWanderingTraderSpawnDelay(this.field_221249_d);
+            if (this.field_221249_d <= 0) {
+               this.field_221249_d = 24000;
+               if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+                  int i = this.field_221250_e;
+                  this.field_221250_e = MathHelper.clamp(this.field_221250_e + 25, 25, 75);
+                  worldinfo.setWanderingTraderSpawnChance(this.field_221250_e);
+                  if (this.random.nextInt(100) <= i) {
+                     if (this.func_221245_b()) {
+                        this.field_221250_e = 25;
+                     }
 
+                  }
                }
             }
          }
@@ -75,14 +77,14 @@ public class WanderingTraderSpawner {
       } else {
          BlockPos blockpos = playerentity.getPosition();
          int i = 48;
-         PointOfInterestManager pointofinterestmanager = this.world.getPoiMgr();
+         PointOfInterestManager pointofinterestmanager = this.world.getPointOfInterestManager();
          Optional<BlockPos> optional = pointofinterestmanager.poiOptByDistFiltPos(PointOfInterestType.MEETING.getPoiTypePred(), (p_221241_0_) -> {
             return true;
          }, blockpos, 48, PointOfInterestManager.Status.ANY);
          BlockPos blockpos1 = optional.orElse(blockpos);
          BlockPos blockpos2 = this.func_221244_a(blockpos1, 48);
          if (blockpos2 != null && this.func_226559_a_(blockpos2)) {
-            if (this.world.func_226691_t_(blockpos2) == Biomes.THE_VOID) {
+            if (this.world.getBiome(blockpos2) == Biomes.THE_VOID) {
                return false;
             }
 
@@ -93,8 +95,8 @@ public class WanderingTraderSpawner {
                }
 
                this.world.getWorldInfo().setWanderingTraderId(wanderingtraderentity.getUniqueID());
-               wanderingtraderentity.func_213728_s(48000);
-               wanderingtraderentity.func_213726_g(blockpos1);
+               wanderingtraderentity.setDespawnDelay(48000);
+               wanderingtraderentity.setWanderTarget(blockpos1);
                wanderingtraderentity.setHomePosAndDistance(blockpos1, 16);
                return true;
             }

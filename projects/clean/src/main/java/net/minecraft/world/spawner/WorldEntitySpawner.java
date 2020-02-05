@@ -39,16 +39,16 @@ import org.apache.logging.log4j.Logger;
 public final class WorldEntitySpawner {
    private static final Logger LOGGER = LogManager.getLogger();
 
-   public static void spawnEntities(EntityClassification entClassifaction, ServerWorld world, Chunk chunk, BlockPos pos) {
-      ChunkGenerator<?> chunkgenerator = world.getChunkProvider().getChunkGenerator();
+   public static void func_226701_a_(EntityClassification p_226701_0_, ServerWorld p_226701_1_, Chunk p_226701_2_, BlockPos p_226701_3_) {
+      ChunkGenerator<?> chunkgenerator = p_226701_1_.getChunkProvider().getChunkGenerator();
       int i = 0;
-      BlockPos blockpos = getRandomHeight(world, chunk);
+      BlockPos blockpos = getRandomHeight(p_226701_1_, p_226701_2_);
       int j = blockpos.getX();
       int k = blockpos.getY();
       int l = blockpos.getZ();
       if (k >= 1) {
-         BlockState blockstate = chunk.getBlockState(blockpos);
-         if (!blockstate.isNormalCube(chunk, blockpos)) {
+         BlockState blockstate = p_226701_2_.getBlockState(blockpos);
+         if (!blockstate.isNormalCube(p_226701_2_, blockpos)) {
             BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
             int i1 = 0;
 
@@ -66,33 +66,33 @@ public final class WorldEntitySpawner {
                   label115: {
                      if (k2 < i2) {
                         label123: {
-                           j1 += world.rand.nextInt(6) - world.rand.nextInt(6);
-                           k1 += world.rand.nextInt(6) - world.rand.nextInt(6);
+                           j1 += p_226701_1_.rand.nextInt(6) - p_226701_1_.rand.nextInt(6);
+                           k1 += p_226701_1_.rand.nextInt(6) - p_226701_1_.rand.nextInt(6);
                            blockpos$mutable.setPos(j1, k, k1);
                            float f = (float)j1 + 0.5F;
                            float f1 = (float)k1 + 0.5F;
-                           PlayerEntity playerentity = world.getClosestPlayer((double)f, (double)f1, -1.0D);
+                           PlayerEntity playerentity = p_226701_1_.getClosestPlayer((double)f, (double)f1, -1.0D);
                            if (playerentity == null) {
                               break label115;
                            }
 
                            double d0 = playerentity.getDistanceSq((double)f, (double)k, (double)f1);
-                           if (d0 <= 576.0D || pos.withinDistance(new Vec3d((double)f, (double)k, (double)f1), 24.0D)) {
+                           if (d0 <= 576.0D || p_226701_3_.withinDistance(new Vec3d((double)f, (double)k, (double)f1), 24.0D)) {
                               break label115;
                            }
 
                            ChunkPos chunkpos = new ChunkPos(blockpos$mutable);
-                           if (!Objects.equals(chunkpos, chunk.getPos()) && !world.getChunkProvider().isChunkLoaded(chunkpos)) {
+                           if (!Objects.equals(chunkpos, p_226701_2_.getPos()) && !p_226701_1_.getChunkProvider().isChunkLoaded(chunkpos)) {
                               break label115;
                            }
 
                            if (biome$spawnlistentry == null) {
-                              biome$spawnlistentry = func_222264_a(chunkgenerator, entClassifaction, world.rand, blockpos$mutable);
+                              biome$spawnlistentry = func_222264_a(chunkgenerator, p_226701_0_, p_226701_1_.rand, blockpos$mutable);
                               if (biome$spawnlistentry == null) {
                                  break label123;
                               }
 
-                              i2 = biome$spawnlistentry.minGroupCount + world.rand.nextInt(1 + biome$spawnlistentry.maxGroupCount - biome$spawnlistentry.minGroupCount);
+                              i2 = biome$spawnlistentry.minGroupCount + p_226701_1_.rand.nextInt(1 + biome$spawnlistentry.maxGroupCount - biome$spawnlistentry.minGroupCount);
                            }
 
                            if (biome$spawnlistentry.entityType.getClassification() == EntityClassification.MISC || !biome$spawnlistentry.entityType.func_225437_d() && d0 > 16384.0D) {
@@ -100,18 +100,18 @@ public final class WorldEntitySpawner {
                            }
 
                            EntityType<?> entitytype = biome$spawnlistentry.entityType;
-                           if (!entitytype.isSummonable() || !func_222261_a(chunkgenerator, entClassifaction, biome$spawnlistentry, blockpos$mutable)) {
+                           if (!entitytype.isSummonable() || !func_222261_a(chunkgenerator, p_226701_0_, biome$spawnlistentry, blockpos$mutable)) {
                               break label115;
                            }
 
                            EntitySpawnPlacementRegistry.PlacementType entityspawnplacementregistry$placementtype = EntitySpawnPlacementRegistry.getPlacementType(entitytype);
-                           if (!canCreatureTypeSpawnAtLocation(entityspawnplacementregistry$placementtype, world, blockpos$mutable, entitytype) || !EntitySpawnPlacementRegistry.func_223515_a(entitytype, world, SpawnReason.NATURAL, blockpos$mutable, world.rand) || !world.func_226664_a_(entitytype.func_220328_a((double)f, (double)k, (double)f1))) {
+                           if (!canCreatureTypeSpawnAtLocation(entityspawnplacementregistry$placementtype, p_226701_1_, blockpos$mutable, entitytype) || !EntitySpawnPlacementRegistry.func_223515_a(entitytype, p_226701_1_, SpawnReason.NATURAL, blockpos$mutable, p_226701_1_.rand) || !p_226701_1_.func_226664_a_(entitytype.func_220328_a((double)f, (double)k, (double)f1))) {
                               break label115;
                            }
 
                            MobEntity mobentity;
                            try {
-                              Entity entity = entitytype.create(world);
+                              Entity entity = entitytype.create(p_226701_1_);
                               if (!(entity instanceof MobEntity)) {
                                  throw new IllegalStateException("Trying to spawn a non-mob: " + Registry.ENTITY_TYPE.getKey(entitytype));
                               }
@@ -122,20 +122,20 @@ public final class WorldEntitySpawner {
                               return;
                            }
 
-                           mobentity.setLocationAndAngles((double)f, (double)k, (double)f1, world.rand.nextFloat() * 360.0F, 0.0F);
-                           if (d0 > 16384.0D && mobentity.canDespawn(d0) || !mobentity.canSpawn(world, SpawnReason.NATURAL) || !mobentity.isNotColliding(world)) {
+                           mobentity.setLocationAndAngles((double)f, (double)k, (double)f1, p_226701_1_.rand.nextFloat() * 360.0F, 0.0F);
+                           if (d0 > 16384.0D && mobentity.canDespawn(d0) || !mobentity.canSpawn(p_226701_1_, SpawnReason.NATURAL) || !mobentity.isNotColliding(p_226701_1_)) {
                               break label115;
                            }
 
-                           ilivingentitydata = mobentity.onInitialSpawn(world, world.getDifficultyForLocation(new BlockPos(mobentity)), SpawnReason.NATURAL, ilivingentitydata, (CompoundNBT)null);
+                           ilivingentitydata = mobentity.onInitialSpawn(p_226701_1_, p_226701_1_.getDifficultyForLocation(new BlockPos(mobentity)), SpawnReason.NATURAL, ilivingentitydata, (CompoundNBT)null);
                            ++i;
                            ++j2;
-                           world.addEntity(mobentity);
+                           p_226701_1_.addEntity(mobentity);
                            if (i >= mobentity.getMaxSpawnedInChunk()) {
                               return;
                            }
 
-                           if (!mobentity.func_204209_c(j2)) {
+                           if (!mobentity.isMaxGroupSize(j2)) {
                               break label115;
                            }
                         }
@@ -154,34 +154,34 @@ public final class WorldEntitySpawner {
    }
 
    @Nullable
-   private static Biome.SpawnListEntry func_222264_a(ChunkGenerator<?> chunkGenerator, EntityClassification entityClassification, Random rand, BlockPos pos) {
-      List<Biome.SpawnListEntry> list = chunkGenerator.getPossibleCreatures(entityClassification, pos);
-      return list.isEmpty() ? null : WeightedRandom.getRandomItem(rand, list);
+   private static Biome.SpawnListEntry func_222264_a(ChunkGenerator<?> p_222264_0_, EntityClassification p_222264_1_, Random p_222264_2_, BlockPos p_222264_3_) {
+      List<Biome.SpawnListEntry> list = p_222264_0_.getPossibleCreatures(p_222264_1_, p_222264_3_);
+      return list.isEmpty() ? null : WeightedRandom.getRandomItem(p_222264_2_, list);
    }
 
-   private static boolean func_222261_a(ChunkGenerator<?> chunkGenerator, EntityClassification entityClassification, Biome.SpawnListEntry spawnListEntry, BlockPos pos) {
-      List<Biome.SpawnListEntry> list = chunkGenerator.getPossibleCreatures(entityClassification, pos);
-      return list.isEmpty() ? false : list.contains(spawnListEntry);
+   private static boolean func_222261_a(ChunkGenerator<?> p_222261_0_, EntityClassification p_222261_1_, Biome.SpawnListEntry p_222261_2_, BlockPos p_222261_3_) {
+      List<Biome.SpawnListEntry> list = p_222261_0_.getPossibleCreatures(p_222261_1_, p_222261_3_);
+      return list.isEmpty() ? false : list.contains(p_222261_2_);
    }
 
-   private static BlockPos getRandomHeight(World p_222262_0_, Chunk p_222262_1_) {
+   private static BlockPos getRandomHeight(World worldIn, Chunk p_222262_1_) {
       ChunkPos chunkpos = p_222262_1_.getPos();
-      int i = chunkpos.getXStart() + p_222262_0_.rand.nextInt(16);
-      int j = chunkpos.getZStart() + p_222262_0_.rand.nextInt(16);
+      int i = chunkpos.getXStart() + worldIn.rand.nextInt(16);
+      int j = chunkpos.getZStart() + worldIn.rand.nextInt(16);
       int k = p_222262_1_.getTopBlockY(Heightmap.Type.WORLD_SURFACE, i, j) + 1;
-      int l = p_222262_0_.rand.nextInt(k + 1);
+      int l = worldIn.rand.nextInt(k + 1);
       return new BlockPos(i, l, j);
    }
 
-   public static boolean isSpawnableSpace(IBlockReader p_222266_0_, BlockPos p_222266_1_, BlockState p_222266_2_, IFluidState p_222266_3_) {
-      if (p_222266_2_.func_224756_o(p_222266_0_, p_222266_1_)) {
+   public static boolean isSpawnableSpace(IBlockReader worldIn, BlockPos pos, BlockState state, IFluidState fluidStateIn) {
+      if (state.isCollisionShapeOpaque(worldIn, pos)) {
          return false;
-      } else if (p_222266_2_.canProvidePower()) {
+      } else if (state.canProvidePower()) {
          return false;
-      } else if (!p_222266_3_.isEmpty()) {
+      } else if (!fluidStateIn.isEmpty()) {
          return false;
       } else {
-         return !p_222266_2_.isIn(BlockTags.RAILS);
+         return !state.isIn(BlockTags.RAILS);
       }
    }
 
@@ -269,9 +269,9 @@ public final class WorldEntitySpawner {
       }
    }
 
-   private static BlockPos getTopSolidOrLiquidBlock(IWorldReader p_208498_0_, @Nullable EntityType<?> p_208498_1_, int p_208498_2_, int p_208498_3_) {
-      BlockPos blockpos = new BlockPos(p_208498_2_, p_208498_0_.getHeight(EntitySpawnPlacementRegistry.func_209342_b(p_208498_1_), p_208498_2_, p_208498_3_), p_208498_3_);
+   private static BlockPos getTopSolidOrLiquidBlock(IWorldReader worldIn, @Nullable EntityType<?> p_208498_1_, int x, int z) {
+      BlockPos blockpos = new BlockPos(x, worldIn.getHeight(EntitySpawnPlacementRegistry.func_209342_b(p_208498_1_), x, z), z);
       BlockPos blockpos1 = blockpos.down();
-      return p_208498_0_.getBlockState(blockpos1).allowsMovement(p_208498_0_, blockpos1, PathType.LAND) ? blockpos1 : blockpos;
+      return worldIn.getBlockState(blockpos1).allowsMovement(worldIn, blockpos1, PathType.LAND) ? blockpos1 : blockpos;
    }
 }

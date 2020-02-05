@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class RandomPositionGenerator {
    @Nullable
-   public static Vec3d findRandomPos(CreatureEntity entitycreatureIn, int xz, int y) {
+   public static Vec3d findRandomTarget(CreatureEntity entitycreatureIn, int xz, int y) {
       return getRandomPosition(entitycreatureIn, xz, y, 0, (Vec3d)null, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
 
@@ -25,7 +25,7 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   public static Vec3d findLandPos(CreatureEntity creature, int maxXZ, int maxY) {
+   public static Vec3d getLandPos(CreatureEntity creature, int maxXZ, int maxY) {
       return findLandPosWeight(creature, maxXZ, maxY, creature::getBlockPathWeight);
    }
 
@@ -40,13 +40,13 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   public static Vec3d findRandomTargetToward(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
-      Vec3d dirTowardVec = targetVec3.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
-      return getRandomPosition(entitycreatureIn, xz, y, 0, dirTowardVec, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
+   public static Vec3d findRandomTargetBlockTowards(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
+      Vec3d vec3d = targetVec3.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
+      return getRandomPosition(entitycreatureIn, xz, y, 0, vec3d, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
 
    @Nullable
-   public static Vec3d findRandomTargetTowardScaled(CreatureEntity entitycreatureIn, int maxXZ, int maxY, Vec3d targetVec3, double maxTowardAngle) {
+   public static Vec3d findRandomTargetTowardsScaled(CreatureEntity entitycreatureIn, int maxXZ, int maxY, Vec3d targetVec3, double maxTowardAngle) {
       Vec3d dirTowardVec = targetVec3.subtract(entitycreatureIn.getPosX(), entitycreatureIn.getPosY(), entitycreatureIn.getPosZ());
       return getRandomPosition(entitycreatureIn, maxXZ, maxY, 0, dirTowardVec, true, maxTowardAngle, entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
@@ -58,15 +58,15 @@ public class RandomPositionGenerator {
    }
 
    @Nullable
-   public static Vec3d findRandomTargetAwayFrom(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
-      Vec3d dirTowardVec = entitycreatureIn.getPositionVec().subtract(targetVec3);
-      return getRandomPosition(entitycreatureIn, xz, y, 0, dirTowardVec, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
+   public static Vec3d findRandomTargetBlockAwayFrom(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
+      Vec3d vec3d = entitycreatureIn.getPositionVec().subtract(targetVec3);
+      return getRandomPosition(entitycreatureIn, xz, y, 0, vec3d, true, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, false, 0, 0, true);
    }
 
    @Nullable
-   public static Vec3d findLandTargetPosAwayFrom(CreatureEntity entitycreatureIn, int xz, int y, Vec3d targetVec3) {
-      Vec3d dirTowardVec = entitycreatureIn.getPositionVec().subtract(targetVec3);
-      return getRandomPosition(entitycreatureIn, xz, y, 0, dirTowardVec, false, (double)((float)Math.PI / 2F), entitycreatureIn::getBlockPathWeight, true, 0, 0, true);
+   public static Vec3d findLandTargetPosAwayFrom(CreatureEntity p_223548_0_, int p_223548_1_, int p_223548_2_, Vec3d p_223548_3_) {
+      Vec3d vec3d = p_223548_0_.getPositionVec().subtract(p_223548_3_);
+      return getRandomPosition(p_223548_0_, p_223548_1_, p_223548_2_, 0, vec3d, false, (double)((float)Math.PI / 2F), p_223548_0_::getBlockPathWeight, true, 0, 0, true);
    }
 
    @Nullable

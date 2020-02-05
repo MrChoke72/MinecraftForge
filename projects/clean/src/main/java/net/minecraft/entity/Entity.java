@@ -217,7 +217,7 @@ public abstract class Entity implements INameable, ICommandSource {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_226263_P_() {
+   public int getTeamColor() {
       Team team = this.getTeam();
       return team != null && team.getColor().getColor() != null ? team.getColor().getColor() : 16777215;
    }
@@ -237,7 +237,7 @@ public abstract class Entity implements INameable, ICommandSource {
 
    }
 
-   public void func_213312_b(double p_213312_1_, double p_213312_3_, double p_213312_5_) {
+   public void setPacketCoordinates(double p_213312_1_, double p_213312_3_, double p_213312_5_) {
       this.serverPosX = SEntityPacket.func_218743_a(p_213312_1_);
       this.serverPosY = SEntityPacket.func_218743_a(p_213312_3_);
       this.serverPosZ = SEntityPacket.func_218743_a(p_213312_5_);
@@ -308,8 +308,8 @@ public abstract class Entity implements INameable, ICommandSource {
       this.removed = true;
    }
 
-   protected void setPose(Pose p_213301_1_) {
-      this.dataManager.set(POSE, p_213301_1_);
+   protected void setPose(Pose poseIn) {
+      this.dataManager.set(POSE, poseIn);
    }
 
    public Pose getPose() {
@@ -322,13 +322,13 @@ public abstract class Entity implements INameable, ICommandSource {
    }
 
    public void setPosition(double x, double y, double z) {
-      this.func_226288_n_(x, y, z);
+      this.setRawPosition(x, y, z);
       float f = this.size.width / 2.0F;
       float f1 = this.size.height;
       this.setBoundingBox(new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f));
    }
 
-   protected void func_226264_Z_() {
+   protected void recenterBoundingBox() {
       this.setPosition(this.posX, this.posY, this.posZ);
    }
 
@@ -350,7 +350,7 @@ public abstract class Entity implements INameable, ICommandSource {
 
    public void tick() {
       if (!this.world.isRemote) {
-         this.setFlag(6, this.func_225510_bt_());
+         this.setFlag(6, this.isGlowing());
       }
 
       this.baseTick();
@@ -436,11 +436,11 @@ public abstract class Entity implements INameable, ICommandSource {
 
    }
 
-   public void func_223308_g(int p_223308_1_) {
+   public void setFireTimer(int p_223308_1_) {
       this.fire = p_223308_1_;
    }
 
-   public int func_223314_ad() {
+   public int getFireTimer() {
       return this.fire;
    }
 
@@ -492,7 +492,7 @@ public abstract class Entity implements INameable, ICommandSource {
          this.collidedVertically = pos.y != vec3d.y;
          this.onGround = this.collidedVertically && pos.y < 0.0D;
          this.collided = this.collidedHorizontally || this.collidedVertically;
-         BlockPos blockpos = this.func_226268_ag_();
+         BlockPos blockpos = this.getOnPosition();
          BlockState blockstate = this.world.getBlockState(blockpos);
          this.updateFallState(vec3d.y, this.onGround, blockstate, blockpos);
          Vec3d vec3d1 = this.getMotion();
@@ -509,11 +509,11 @@ public abstract class Entity implements INameable, ICommandSource {
             block.onLanded(this.world, this);
          }
 
-         if (this.onGround && !this.func_226271_bk_()) {
+         if (this.onGround && !this.isSteppingCarefully()) {
             block.onEntityWalk(this.world, blockpos, this);
          }
 
-         if (this.func_225502_at_() && !this.isPassenger()) {
+         if (this.canTriggerWalking() && !this.isPassenger()) {
             double d0 = vec3d.x;
             double d1 = vec3d.y;
             double d2 = vec3d.z;
@@ -521,7 +521,7 @@ public abstract class Entity implements INameable, ICommandSource {
                d1 = 0.0D;
             }
 
-            this.distanceWalkedModified = (float)((double)this.distanceWalkedModified + (double)MathHelper.sqrt(func_213296_b(vec3d)) * 0.6D);
+            this.distanceWalkedModified = (float)((double)this.distanceWalkedModified + (double)MathHelper.sqrt(horizontalMag(vec3d)) * 0.6D);
             this.distanceWalkedOnStepModified = (float)((double)this.distanceWalkedOnStepModified + (double)MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2) * 0.6D);
             if (this.distanceWalkedOnStepModified > this.nextStepDistance && !blockstate.isAir()) {
                this.nextStepDistance = this.determineNextStepDistance();
@@ -553,7 +553,7 @@ public abstract class Entity implements INameable, ICommandSource {
             throw new ReportedException(crashreport);
          }
 
-         this.setMotion(this.getMotion().mul((double)this.func_225515_ai_(), 1.0D, (double)this.func_225515_ai_()));
+         this.setMotion(this.getMotion().mul((double)this.getSpeedFactor(), 1.0D, (double)this.getSpeedFactor()));
          boolean flag = this.isInWaterRainOrBubbleColumn();
          if (this.world.isFlammableWithin(this.getBoundingBox().shrink(0.001D))) {
             if (!flag) {
@@ -577,7 +577,7 @@ public abstract class Entity implements INameable, ICommandSource {
       }
    }
 
-   protected BlockPos func_226268_ag_() {
+   protected BlockPos getOnPosition() {
       int i = MathHelper.floor(this.posX);
       int j = MathHelper.floor(this.posY - (double)0.2F);
       int k = MathHelper.floor(this.posZ);
@@ -594,25 +594,23 @@ public abstract class Entity implements INameable, ICommandSource {
       return blockpos;
    }
 
-   protected float func_226269_ah_() {
-      float f = this.world.getBlockState(new BlockPos(this)).getBlock().func_226892_n_();
-      float f1 = this.world.getBlockState(this.getBlockPosDownHalf()).getBlock().func_226892_n_();
+   protected float getJumpFactor() {
+      float f = this.world.getBlockState(new BlockPos(this)).getBlock().getJumpFactor();
+      float f1 = this.world.getBlockState(this.getPositionUnderneath()).getBlock().getJumpFactor();
       return (double)f == 1.0D ? f1 : f;
    }
 
-   protected float func_225515_ai_() {
+   protected float getSpeedFactor() {
       Block block = this.world.getBlockState(new BlockPos(this)).getBlock();
-      float f = block.func_226891_m_();
+      float f = block.getSpeedFactor();
       if (block != Blocks.WATER && block != Blocks.BUBBLE_COLUMN) {
-         return (double)f == 1.0D ? this.world.getBlockState(this.getBlockPosDownHalf()).getBlock().func_226891_m_() : f;
+         return (double)f == 1.0D ? this.world.getBlockState(this.getPositionUnderneath()).getBlock().getSpeedFactor() : f;
       } else {
          return f;
       }
    }
 
-   //AH CHANGE REFACTOR
-   protected BlockPos getBlockPosDownHalf() {
-   //protected BlockPos func_226270_aj_() {
+   protected BlockPos getPositionUnderneath() {
       return new BlockPos(this.posX, this.getBoundingBox().minY - 0.5000001D, this.posZ);
    }
 
@@ -660,46 +658,46 @@ public abstract class Entity implements INameable, ICommandSource {
       Stream<VoxelShape> stream = VoxelShapes.compare(voxelshape, VoxelShapes.create(axisalignedbb.shrink(1.0E-7D)), IBooleanFunction.AND) ? Stream.empty() : Stream.of(voxelshape);
       Stream<VoxelShape> stream1 = this.world.getEmptyCollisionShapes(this, axisalignedbb.expand(vec), ImmutableSet.of());
       ReuseableStream<VoxelShape> reuseablestream = new ReuseableStream<>(Stream.concat(stream1, stream));
-      Vec3d vec3d = vec.lengthSquared() == 0.0D ? vec : func_223307_a(this, vec, axisalignedbb, this.world, iselectioncontext, reuseablestream);
+      Vec3d vec3d = vec.lengthSquared() == 0.0D ? vec : collideBoundingBoxHeuristically(this, vec, axisalignedbb, this.world, iselectioncontext, reuseablestream);
       boolean flag = vec.x != vec3d.x;
       boolean flag1 = vec.y != vec3d.y;
       boolean flag2 = vec.z != vec3d.z;
       boolean flag3 = this.onGround || flag1 && vec.y < 0.0D;
       if (this.stepHeight > 0.0F && flag3 && (flag || flag2)) {
-         Vec3d vec3d1 = func_223307_a(this, new Vec3d(vec.x, (double)this.stepHeight, vec.z), axisalignedbb, this.world, iselectioncontext, reuseablestream);
-         Vec3d vec3d2 = func_223307_a(this, new Vec3d(0.0D, (double)this.stepHeight, 0.0D), axisalignedbb.expand(vec.x, 0.0D, vec.z), this.world, iselectioncontext, reuseablestream);
+         Vec3d vec3d1 = collideBoundingBoxHeuristically(this, new Vec3d(vec.x, (double)this.stepHeight, vec.z), axisalignedbb, this.world, iselectioncontext, reuseablestream);
+         Vec3d vec3d2 = collideBoundingBoxHeuristically(this, new Vec3d(0.0D, (double)this.stepHeight, 0.0D), axisalignedbb.expand(vec.x, 0.0D, vec.z), this.world, iselectioncontext, reuseablestream);
          if (vec3d2.y < (double)this.stepHeight) {
-            Vec3d vec3d3 = func_223307_a(this, new Vec3d(vec.x, 0.0D, vec.z), axisalignedbb.offset(vec3d2), this.world, iselectioncontext, reuseablestream).add(vec3d2);
-            if (func_213296_b(vec3d3) > func_213296_b(vec3d1)) {
+            Vec3d vec3d3 = collideBoundingBoxHeuristically(this, new Vec3d(vec.x, 0.0D, vec.z), axisalignedbb.offset(vec3d2), this.world, iselectioncontext, reuseablestream).add(vec3d2);
+            if (horizontalMag(vec3d3) > horizontalMag(vec3d1)) {
                vec3d1 = vec3d3;
             }
          }
 
-         if (func_213296_b(vec3d1) > func_213296_b(vec3d)) {
-            return vec3d1.add(func_223307_a(this, new Vec3d(0.0D, -vec3d1.y + vec.y, 0.0D), axisalignedbb.offset(vec3d1), this.world, iselectioncontext, reuseablestream));
+         if (horizontalMag(vec3d1) > horizontalMag(vec3d)) {
+            return vec3d1.add(collideBoundingBoxHeuristically(this, new Vec3d(0.0D, -vec3d1.y + vec.y, 0.0D), axisalignedbb.offset(vec3d1), this.world, iselectioncontext, reuseablestream));
          }
       }
 
       return vec3d;
    }
 
-   public static double func_213296_b(Vec3d vec) {
+   public static double horizontalMag(Vec3d vec) {
       return vec.x * vec.x + vec.z * vec.z;
    }
 
-   public static Vec3d func_223307_a(@Nullable Entity p_223307_0_, Vec3d p_223307_1_, AxisAlignedBB p_223307_2_, World p_223307_3_, ISelectionContext p_223307_4_, ReuseableStream<VoxelShape> p_223307_5_) {
+   public static Vec3d collideBoundingBoxHeuristically(@Nullable Entity p_223307_0_, Vec3d p_223307_1_, AxisAlignedBB p_223307_2_, World p_223307_3_, ISelectionContext p_223307_4_, ReuseableStream<VoxelShape> p_223307_5_) {
       boolean flag = p_223307_1_.x == 0.0D;
       boolean flag1 = p_223307_1_.y == 0.0D;
       boolean flag2 = p_223307_1_.z == 0.0D;
       if ((!flag || !flag1) && (!flag || !flag2) && (!flag1 || !flag2)) {
          ReuseableStream<VoxelShape> reuseablestream = new ReuseableStream<>(Stream.concat(p_223307_5_.createStream(), p_223307_3_.func_226666_b_(p_223307_0_, p_223307_2_.expand(p_223307_1_))));
-         return func_223310_a(p_223307_1_, p_223307_2_, reuseablestream);
+         return collideBoundingBox(p_223307_1_, p_223307_2_, reuseablestream);
       } else {
          return getAllowedMovement(p_223307_1_, p_223307_2_, p_223307_3_, p_223307_4_, p_223307_5_);
       }
    }
 
-   public static Vec3d func_223310_a(Vec3d p_223310_0_, AxisAlignedBB p_223310_1_, ReuseableStream<VoxelShape> p_223310_2_) {
+   public static Vec3d collideBoundingBox(Vec3d p_223310_0_, AxisAlignedBB p_223310_1_, ReuseableStream<VoxelShape> p_223310_2_) {
       double d0 = p_223310_0_.x;
       double d1 = p_223310_0_.y;
       double d2 = p_223310_0_.z;
@@ -771,7 +769,7 @@ public abstract class Entity implements INameable, ICommandSource {
 
    public void resetPositionToBB() {
       AxisAlignedBB axisalignedbb = this.getBoundingBox();
-      this.func_226288_n_((axisalignedbb.minX + axisalignedbb.maxX) / 2.0D, axisalignedbb.minY, (axisalignedbb.minZ + axisalignedbb.maxZ) / 2.0D);
+      this.setRawPosition((axisalignedbb.minX + axisalignedbb.maxX) / 2.0D, axisalignedbb.minY, (axisalignedbb.minZ + axisalignedbb.maxZ) / 2.0D);
    }
 
    protected SoundEvent getSwimSound() {
@@ -864,7 +862,7 @@ public abstract class Entity implements INameable, ICommandSource {
       this.dataManager.set(NO_GRAVITY, noGravity);
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return true;
    }
 
@@ -897,10 +895,10 @@ public abstract class Entity implements INameable, ICommandSource {
       return this.getType().isImmuneToFire();
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       if (this.isBeingRidden()) {
          for(Entity entity : this.getPassengers()) {
-            entity.func_225503_b_(p_225503_1_, p_225503_2_);
+            entity.onLivingFall(distance, damageMultiplier);
          }
       }
 
@@ -1036,13 +1034,13 @@ public abstract class Entity implements INameable, ICommandSource {
       if (this.getRidingEntity() instanceof BoatEntity) {
          return false;
       } else {
-         double d0 = this.getPosYPlusEyeHeight();
+         double d0 = this.getPosYEye();
          BlockPos blockpos = new BlockPos(this.getPosX(), d0, this.getPosZ());
          if (checkChunkLoaded && !this.world.chunkExists(blockpos.getX() >> 4, blockpos.getZ() >> 4)) {
             return false;
          } else {
             IFluidState ifluidstate = this.world.getFluidState(blockpos);
-            return ifluidstate.isTagged(p_213290_1_) && d0 < (double)((float)blockpos.getY() + ifluidstate.func_215679_a(this.world, blockpos) + 0.11111111F);
+            return ifluidstate.isTagged(p_213290_1_) && d0 < (double)((float)blockpos.getY() + ifluidstate.getActualHeight(this.world, blockpos) + 0.11111111F);
          }
       }
    }
@@ -1075,7 +1073,7 @@ public abstract class Entity implements INameable, ICommandSource {
    public float getBrightness() {
       BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(this.getPosX(), 0.0D, this.getPosZ());
       if (this.world.isBlockLoaded(blockpos$mutable)) {
-         blockpos$mutable.setY(MathHelper.floor(this.getPosYPlusEyeHeight()));
+         blockpos$mutable.setY(MathHelper.floor(this.getPosYEye()));
          return this.world.getBrightness(blockpos$mutable);
       } else {
          return 0.0F;
@@ -1104,20 +1102,20 @@ public abstract class Entity implements INameable, ICommandSource {
    }
 
    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
-      this.func_226286_f_(x, y, z);
+      this.forceSetPosition(x, y, z);
       this.rotationYaw = yaw;
       this.rotationPitch = pitch;
-      this.func_226264_Z_();
+      this.recenterBoundingBox();
    }
 
-   public void func_226286_f_(double p_226286_1_, double p_226286_3_, double p_226286_5_) {
-      this.func_226288_n_(p_226286_1_, p_226286_3_, p_226286_5_);
-      this.prevPosX = p_226286_1_;
-      this.prevPosY = p_226286_3_;
-      this.prevPosZ = p_226286_5_;
-      this.lastTickPosX = p_226286_1_;
-      this.lastTickPosY = p_226286_3_;
-      this.lastTickPosZ = p_226286_5_;
+   public void forceSetPosition(double x, double y, double z) {
+      this.setRawPosition(x, y, z);
+      this.prevPosX = x;
+      this.prevPosY = y;
+      this.prevPosZ = z;
+      this.lastTickPosX = x;
+      this.lastTickPosY = y;
+      this.lastTickPosZ = z;
    }
 
    public float getDistance(Entity entityIn) {
@@ -1222,17 +1220,17 @@ public abstract class Entity implements INameable, ICommandSource {
       return new Vec3d((double)(f3 * f4), (double)(-f5), (double)(f2 * f4));
    }
 
-   public final Vec3d func_213286_i(float partialTicks) {
-      return this.func_213320_d(this.getPitch(partialTicks), this.getYaw(partialTicks));
+   public final Vec3d getUpVector(float partialTicks) {
+      return this.calculateUpVector(this.getPitch(partialTicks), this.getYaw(partialTicks));
    }
 
-   protected final Vec3d func_213320_d(float p_213320_1_, float p_213320_2_) {
+   protected final Vec3d calculateUpVector(float p_213320_1_, float p_213320_2_) {
       return this.getVectorForRotation(p_213320_1_ - 90.0F, p_213320_2_);
    }
 
    public final Vec3d getEyePosition(float partialTicks) {
       if (partialTicks == 1.0F) {
-         return new Vec3d(this.getPosX(), this.getPosYPlusEyeHeight(), this.getPosZ());
+         return new Vec3d(this.getPosX(), this.getPosYEye(), this.getPosZ());
       } else {
          double d0 = MathHelper.lerp((double)partialTicks, this.prevPosX, this.getPosX());
          double d1 = MathHelper.lerp((double)partialTicks, this.prevPosY, this.getPosY()) + (double)this.getEyeHeight();
@@ -1241,7 +1239,7 @@ public abstract class Entity implements INameable, ICommandSource {
       }
    }
 
-   public RayTraceResult func_213324_a(double p_213324_1_, float p_213324_3_, boolean p_213324_4_) {
+   public RayTraceResult pick(double p_213324_1_, float p_213324_3_, boolean p_213324_4_) {
       Vec3d vec3d = this.getEyePosition(p_213324_3_);
       Vec3d vec3d1 = this.getLook(p_213324_3_);
       Vec3d vec3d2 = vec3d.add(vec3d1.x * p_213324_1_, vec3d1.y * p_213324_1_, vec3d1.z * p_213324_1_);
@@ -1337,7 +1335,7 @@ public abstract class Entity implements INameable, ICommandSource {
             ListNBT listnbt = new ListNBT();
 
             for(String s : this.tags) {
-               listnbt.add(StringNBT.func_229705_a_(s));
+               listnbt.add(StringNBT.valueOf(s));
             }
 
             compound.put("Tags", listnbt);
@@ -1377,7 +1375,7 @@ public abstract class Entity implements INameable, ICommandSource {
          double d1 = listnbt2.getDouble(1);
          double d2 = listnbt2.getDouble(2);
          this.setMotion(Math.abs(d0) > 10.0D ? 0.0D : d0, Math.abs(d1) > 10.0D ? 0.0D : d1, Math.abs(d2) > 10.0D ? 0.0D : d2);
-         this.func_226286_f_(listnbt.getDouble(0), listnbt.getDouble(1), listnbt.getDouble(2));
+         this.forceSetPosition(listnbt.getDouble(0), listnbt.getDouble(1), listnbt.getDouble(2));
          this.rotationYaw = listnbt3.getFloat(0);
          this.rotationPitch = listnbt3.getFloat(1);
          this.prevRotationYaw = this.rotationYaw;
@@ -1401,7 +1399,7 @@ public abstract class Entity implements INameable, ICommandSource {
 
          if (Double.isFinite(this.getPosX()) && Double.isFinite(this.getPosY()) && Double.isFinite(this.getPosZ())) {
             if (Double.isFinite((double)this.rotationYaw) && Double.isFinite((double)this.rotationPitch)) {
-               this.func_226264_Z_();
+               this.recenterBoundingBox();
                this.setRotation(this.rotationYaw, this.rotationPitch);
                if (compound.contains("CustomName", 8)) {
                   this.setCustomName(ITextComponent.Serializer.fromJson(compound.getString("CustomName")));
@@ -1423,7 +1421,7 @@ public abstract class Entity implements INameable, ICommandSource {
 
                this.readAdditional(compound);
                if (this.shouldSetPosAfterLoading()) {
-                  this.func_226264_Z_();
+                  this.recenterBoundingBox();
                }
 
             } else {
@@ -1459,7 +1457,7 @@ public abstract class Entity implements INameable, ICommandSource {
       ListNBT listnbt = new ListNBT();
 
       for(double d0 : numbers) {
-         listnbt.add(DoubleNBT.func_229684_a_(d0));
+         listnbt.add(DoubleNBT.valueOf(d0));
       }
 
       return listnbt;
@@ -1469,25 +1467,25 @@ public abstract class Entity implements INameable, ICommandSource {
       ListNBT listnbt = new ListNBT();
 
       for(float f : numbers) {
-         listnbt.add(FloatNBT.func_229689_a_(f));
+         listnbt.add(FloatNBT.valueOf(f));
       }
 
       return listnbt;
    }
 
    @Nullable
-   public ItemEntity entityDropItem(IItemProvider p_199703_1_) {
-      return this.entityDropItem(p_199703_1_, 0);
+   public ItemEntity entityDropItem(IItemProvider itemIn) {
+      return this.entityDropItem(itemIn, 0);
    }
 
    @Nullable
-   public ItemEntity entityDropItem(IItemProvider p_199702_1_, int offset) {
-      return this.entityDropItem(new ItemStack(p_199702_1_), (float)offset);
+   public ItemEntity entityDropItem(IItemProvider itemIn, int offset) {
+      return this.entityDropItem(new ItemStack(itemIn), (float)offset);
    }
 
    @Nullable
-   public ItemEntity entityDropItem(ItemStack p_199701_1_) {
-      return this.entityDropItem(p_199701_1_, 0.0F);
+   public ItemEntity entityDropItem(ItemStack stack) {
+      return this.entityDropItem(stack, 0.0F);
    }
 
    @Nullable
@@ -1519,7 +1517,7 @@ public abstract class Entity implements INameable, ICommandSource {
                int l = MathHelper.floor(this.getPosZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * this.size.width * 0.8F));
                if (blockpos$pooledmutable.getX() != k || blockpos$pooledmutable.getY() != j || blockpos$pooledmutable.getZ() != l) {
                   blockpos$pooledmutable.setPos(k, j, l);
-                  if (this.world.getBlockState(blockpos$pooledmutable).func_229980_m_(this.world, blockpos$pooledmutable)) {
+                  if (this.world.getBlockState(blockpos$pooledmutable).isSuffocating(this.world, blockpos$pooledmutable)) {
                      boolean flag = true;
                      return flag;
                   }
@@ -1777,32 +1775,28 @@ public abstract class Entity implements INameable, ICommandSource {
       return true;
    }
 
-   //AH CHANGE REFACTOR
-   public void setSneaking(boolean p_226284_1_) {
-   //public void func_226284_e_(boolean p_226284_1_) {
-      this.setFlag(1, p_226284_1_);
+   public void setSneaking(boolean keyDownIn) {
+      this.setFlag(1, keyDownIn);
    }
 
-   //AH CHANGE
-   public boolean getSneaking() {
-   //public boolean func_225608_bj_() {
+   public boolean isShiftKeyDown() {
       return this.getFlag(1);
    }
 
-   public boolean func_226271_bk_() {
-      return this.getSneaking();
+   public boolean isSteppingCarefully() {
+      return this.isShiftKeyDown();
    }
 
-   public boolean func_226272_bl_() {
-      return this.getSneaking();
+   public boolean isSuppressingBounce() {
+      return this.isShiftKeyDown();
    }
 
-   public boolean func_226273_bm_() {
-      return this.getSneaking();
+   public boolean isDiscrete() {
+      return this.isShiftKeyDown();
    }
 
-   public boolean func_226274_bn_() {
-      return this.getSneaking();
+   public boolean isDescending() {
+      return this.isShiftKeyDown();
    }
 
    public boolean isCrouching() {
@@ -1821,20 +1815,20 @@ public abstract class Entity implements INameable, ICommandSource {
       return this.getFlag(4);
    }
 
-   public boolean func_213314_bj() {
+   public boolean isActualySwimming() {
       return this.getPose() == Pose.SWIMMING;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_213300_bk() {
-      return this.func_213314_bj() && !this.isInWater();
+   public boolean isVisuallySwimming() {
+      return this.isActualySwimming() && !this.isInWater();
    }
 
    public void setSwimming(boolean p_204711_1_) {
       this.setFlag(4, p_204711_1_);
    }
 
-   public boolean func_225510_bt_() {
+   public boolean isGlowing() {
       return this.glowing || this.world.isRemote && this.getFlag(6);
    }
 
@@ -1949,7 +1943,7 @@ public abstract class Entity implements INameable, ICommandSource {
 
       for(Direction direction1 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
          blockpos$mutable.setPos(blockpos).move(direction1);
-         if (!this.world.getBlockState(blockpos$mutable).func_224756_o(this.world, blockpos$mutable)) {
+         if (!this.world.getBlockState(blockpos$mutable).isCollisionShapeOpaque(this.world, blockpos$mutable)) {
             double d1 = vec3d.getCoordinate(direction1.getAxis());
             double d2 = direction1.getAxisDirection() == Direction.AxisDirection.POSITIVE ? 1.0D - d1 : d1;
             if (d2 < d0) {
@@ -2088,14 +2082,14 @@ public abstract class Entity implements INameable, ICommandSource {
             d1 = MathHelper.clamp(d1, d4, d6);
             Vec3d vec3d1 = this.getLastPortalVec();
             blockpos = new BlockPos(d0, this.getPosY(), d1);
-            BlockPattern.PortalInfo blockpattern$portalinfo = serverworld1.getDefaultTeleporter().func_222272_a(blockpos, vec3d, this.getTeleportDirection(), vec3d1.x, vec3d1.y, this instanceof PlayerEntity);
+            BlockPattern.PortalInfo blockpattern$portalinfo = serverworld1.getDefaultTeleporter().placeInExistingPortal(blockpos, vec3d, this.getTeleportDirection(), vec3d1.x, vec3d1.y, this instanceof PlayerEntity);
             if (blockpattern$portalinfo == null) {
                return null;
             }
 
-            blockpos = new BlockPos(blockpattern$portalinfo.field_222505_a);
-            vec3d = blockpattern$portalinfo.field_222506_b;
-            f = (float)blockpattern$portalinfo.field_222507_c;
+            blockpos = new BlockPos(blockpattern$portalinfo.pos);
+            vec3d = blockpattern$portalinfo.motion;
+            f = (float)blockpattern$portalinfo.rotation;
          }
 
          this.world.getProfiler().endStartSection("reloading");
@@ -2232,7 +2226,7 @@ public abstract class Entity implements INameable, ICommandSource {
    public final void teleportKeepLoaded(double p_223102_1_, double p_223102_3_, double p_223102_5_) {
       if (this.world instanceof ServerWorld) {
          ChunkPos chunkpos = new ChunkPos(new BlockPos(p_223102_1_, p_223102_3_, p_223102_5_));
-         ((ServerWorld)this.world).getChunkProvider().func_217228_a(TicketType.POST_TELEPORT, chunkpos, 0, this.getEntityId());
+         ((ServerWorld)this.world).getChunkProvider().registerTicket(TicketType.POST_TELEPORT, chunkpos, 0, this.getEntityId());
          this.world.getChunk(chunkpos.x, chunkpos.z);
          this.setPositionAndUpdate(p_223102_1_, p_223102_3_, p_223102_5_);
       }
@@ -2245,7 +2239,7 @@ public abstract class Entity implements INameable, ICommandSource {
          this.func_226276_cg_().forEach((p_226267_1_) -> {
             serverworld.chunkCheck(p_226267_1_);
             p_226267_1_.isPositionDirty = true;
-            p_226267_1_.func_226265_a_(Entity::func_225653_b_);
+            p_226267_1_.func_226265_a_(Entity::moveForced);
          });
       }
    }
@@ -2327,8 +2321,8 @@ public abstract class Entity implements INameable, ICommandSource {
       this.boundingBox = bb;
    }
 
-   protected float getEyeHeight(Pose p_213316_1_, EntitySize p_213316_2_) {
-      return p_213316_2_.height * 0.85F;
+   protected float getEyeHeight(Pose poseIn, EntitySize sizeIn) {
+      return sizeIn.height * 0.85F;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -2604,7 +2598,7 @@ public abstract class Entity implements INameable, ICommandSource {
                      blockpos$pooledmutable.setPos(l1, i2, j2);
                      IFluidState ifluidstate = this.world.getFluidState(blockpos$pooledmutable);
                      if (ifluidstate.isTagged(p_210500_1_)) {
-                        double d1 = (double)((float)i2 + ifluidstate.func_215679_a(this.world, blockpos$pooledmutable));
+                        double d1 = (double)((float)i2 + ifluidstate.getActualHeight(this.world, blockpos$pooledmutable));
                         if (d1 >= axisalignedbb.minY) {
                            flag1 = true;
                            d0 = Math.max(d1 - axisalignedbb.minY, d0);
@@ -2667,88 +2661,64 @@ public abstract class Entity implements INameable, ICommandSource {
       return this.motion;
    }
 
-   public void setMotion(Vec3d p_213317_1_) {
-      this.motion = p_213317_1_;
+   public void setMotion(Vec3d motionIn) {
+      this.motion = motionIn;
    }
 
-   public void setMotion(double p_213293_1_, double p_213293_3_, double p_213293_5_) {
-      this.setMotion(new Vec3d(p_213293_1_, p_213293_3_, p_213293_5_));
+   public void setMotion(double x, double y, double z) {
+      this.setMotion(new Vec3d(x, y, z));
    }
 
-   //AH CHANGE - REFACTOR ******
    public final double getPosX() {
       return this.posX;
    }
-   /*
-   public final double func_226277_ct_() {
-      return this.posX;
-   }
-   */
-   //AH END ******
 
-
-   public double func_226275_c_(double p_226275_1_) {
+   public double getPosXWidth(double p_226275_1_) {
       return this.posX + (double)this.getWidth() * p_226275_1_;
    }
 
-   public double func_226282_d_(double p_226282_1_) {
-      return this.func_226275_c_((2.0D * this.rand.nextDouble() - 1.0D) * p_226282_1_);
+   public double getPosXRandom(double p_226282_1_) {
+      return this.getPosXWidth((2.0D * this.rand.nextDouble() - 1.0D) * p_226282_1_);
    }
 
-   //AH CHANGE - REFACTOR ******
    public final double getPosY() {
       return this.posY;
    }
-   /*
-   public final double func_226278_cu_() {
-      return this.posY;
-   }
-   */
-   //AH END ******
 
-   public double func_226283_e_(double p_226283_1_) {
+   public double getPosYHeight(double p_226283_1_) {
       return this.posY + (double)this.getHeight() * p_226283_1_;
    }
 
-   public double func_226279_cv_() {
-      return this.func_226283_e_(this.rand.nextDouble());
+   public double getPosYRandom() {
+      return this.getPosYHeight(this.rand.nextDouble());
    }
 
-   //AH CHANGE REFACTOR
-   public double getPosYPlusEyeHeight() {
-   //public double func_226280_cw_() {
+   public double getPosYEye() {
       return this.posY + (double)this.eyeHeight;
    }
 
-   //AH CHANGE - REFACTOR ******
    public final double getPosZ() {
       return this.posZ;
    }
-   /*
-   public final double func_226281_cx_() {
-      return this.posZ;
-   }
-   */
-   //AH END ******
 
-   public double func_226285_f_(double p_226285_1_) {
+   public double getPosZWidth(double p_226285_1_) {
       return this.posZ + (double)this.getWidth() * p_226285_1_;
    }
 
-   public double func_226287_g_(double p_226287_1_) {
-      return this.func_226285_f_((2.0D * this.rand.nextDouble() - 1.0D) * p_226287_1_);
+   public double getPosZRandom(double p_226287_1_) {
+      return this.getPosZWidth((2.0D * this.rand.nextDouble() - 1.0D) * p_226287_1_);
    }
 
-   public void func_226288_n_(double p_226288_1_, double p_226288_3_, double p_226288_5_) {
-      this.posX = p_226288_1_;
-      this.posY = p_226288_3_;
-      this.posZ = p_226288_5_;
+   public void setRawPosition(double x, double y, double z) {
+      this.posX = x;
+      this.posY = y;
+      this.posZ = z;
    }
 
    public void checkDespawn() {
    }
 
-   public void func_225653_b_(double p_225653_1_, double p_225653_3_, double p_225653_5_) {
+   public void moveForced(double p_225653_1_, double p_225653_3_, double p_225653_5_) {
       this.setLocationAndAngles(p_225653_1_, p_225653_3_, p_225653_5_, this.rotationYaw, this.rotationPitch);
    }
 

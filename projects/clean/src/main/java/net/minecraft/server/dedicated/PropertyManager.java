@@ -45,34 +45,34 @@ public abstract class PropertyManager<T extends PropertyManager<T>> {
 
    }
 
-   private static <V extends Number> Function<String, V> func_218963_a(Function<String, V> p_218963_0_) {
+   private static <V extends Number> Function<String, V> safeParseNumber(Function<String, V> parseFunc) {
       return (p_218975_1_) -> {
          try {
-            return (V)(p_218963_0_.apply(p_218975_1_));
+            return (V)(parseFunc.apply(p_218975_1_));
          } catch (NumberFormatException var3) {
             return (V)null;
          }
       };
    }
 
-   protected static <V> Function<String, V> func_218964_a(IntFunction<V> p_218964_0_, Function<String, V> p_218964_1_) {
+   protected static <V> Function<String, V> enumConverter(IntFunction<V> byId, Function<String, V> byName) {
       return (p_218971_2_) -> {
          try {
-            return p_218964_0_.apply(Integer.parseInt(p_218971_2_));
+            return byId.apply(Integer.parseInt(p_218971_2_));
          } catch (NumberFormatException var4) {
-            return p_218964_1_.apply(p_218971_2_);
+            return byName.apply(p_218971_2_);
          }
       };
    }
 
    @Nullable
-   private String func_218976_c(String key) {
+   private String getStringValue(String key) {
       return (String)this.serverProperties.get(key);
    }
 
    @Nullable
    protected <V> V func_218984_a(String key, Function<String, V> p_218984_2_) {
-      String s = this.func_218976_c(key);
+      String s = this.getStringValue(key);
       if (s == null) {
          return (V)null;
       } else {
@@ -82,14 +82,14 @@ public abstract class PropertyManager<T extends PropertyManager<T>> {
    }
 
    protected <V> V func_218983_a(String key, Function<String, V> p_218983_2_, Function<V, String> p_218983_3_, V p_218983_4_) {
-      String s = this.func_218976_c(key);
+      String s = this.getStringValue(key);
       V v = MoreObjects.firstNonNull((V)(s != null ? p_218983_2_.apply(s) : null), p_218983_4_);
       this.serverProperties.put(key, p_218983_3_.apply(v));
       return v;
    }
 
    protected <V> PropertyManager<T>.Property<V> func_218981_b(String key, Function<String, V> p_218981_2_, Function<V, String> p_218981_3_, V p_218981_4_) {
-      String s = this.func_218976_c(key);
+      String s = this.getStringValue(key);
       V v = MoreObjects.firstNonNull((V)(s != null ? p_218981_2_.apply(s) : null), p_218981_4_);
       this.serverProperties.put(key, p_218981_3_.apply(v));
       return new PropertyManager.Property(key, v, p_218981_3_);
@@ -110,7 +110,7 @@ public abstract class PropertyManager<T extends PropertyManager<T>> {
       return this.func_218981_b(key, p_218965_2_, Objects::toString, p_218965_3_);
    }
 
-   protected String func_218973_a(String key, String p_218973_2_) {
+   protected String registerString(String key, String p_218973_2_) {
       return this.func_218983_a(key, Function.identity(), Function.identity(), p_218973_2_);
    }
 
@@ -119,23 +119,23 @@ public abstract class PropertyManager<T extends PropertyManager<T>> {
       return this.func_218984_a(key, Function.identity());
    }
 
-   protected int func_218968_a(String key, int p_218968_2_) {
-      return this.func_218979_a(key, func_218963_a(Integer::parseInt), p_218968_2_);
+   protected int registerInt(String key, int p_218968_2_) {
+      return this.func_218979_a(key, safeParseNumber(Integer::parseInt), p_218968_2_);
    }
 
    protected PropertyManager<T>.Property<Integer> func_218974_b(String key, int p_218974_2_) {
-      return this.func_218965_b(key, func_218963_a(Integer::parseInt), p_218974_2_);
+      return this.func_218965_b(key, safeParseNumber(Integer::parseInt), p_218974_2_);
    }
 
    protected int func_218962_a(String key, UnaryOperator<Integer> p_218962_2_, int p_218962_3_) {
-      return this.func_218977_a(key, func_218963_a(Integer::parseInt), p_218962_2_, Objects::toString, p_218962_3_);
+      return this.func_218977_a(key, safeParseNumber(Integer::parseInt), p_218962_2_, Objects::toString, p_218962_3_);
    }
 
    protected long func_218967_a(String key, long p_218967_2_) {
-      return this.func_218979_a(key, func_218963_a(Long::parseLong), p_218967_2_);
+      return this.func_218979_a(key, safeParseNumber(Long::parseLong), p_218967_2_);
    }
 
-   protected boolean func_218982_a(String key, boolean p_218982_2_) {
+   protected boolean registerBool(String key, boolean p_218982_2_) {
       return this.func_218979_a(key, Boolean::valueOf, p_218982_2_);
    }
 

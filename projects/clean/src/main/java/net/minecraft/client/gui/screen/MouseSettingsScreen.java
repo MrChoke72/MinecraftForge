@@ -24,17 +24,17 @@ public class MouseSettingsScreen extends SettingsScreen {
    protected void init() {
       this.field_213045_b = new OptionsRowList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
       if (InputMappings.func_224790_a()) {
-         this.field_213045_b.func_214335_a(Stream.concat(Arrays.stream(OPTIONS), Stream.of(AbstractOption.field_225302_l)).toArray((p_223702_0_) -> {
+         this.field_213045_b.addOptions(Stream.concat(Arrays.stream(OPTIONS), Stream.of(AbstractOption.RAW_MOUSE_INPUT)).toArray((p_223702_0_) -> {
             return new AbstractOption[p_223702_0_];
          }));
       } else {
-         this.field_213045_b.func_214335_a(OPTIONS);
+         this.field_213045_b.addOptions(OPTIONS);
       }
 
       this.children.add(this.field_213045_b);
       this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, I18n.format("gui.done"), (p_223703_1_) -> {
-         this.field_228183_b_.saveOptions();
-         this.minecraft.displayGuiScreen(this.field_228182_a_);
+         this.gameSettings.saveOptions();
+         this.minecraft.displayGuiScreen(this.parentScreen);
       }));
    }
 

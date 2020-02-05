@@ -86,18 +86,18 @@ public class PlacementSettings {
       return this;
    }
 
-   public PlacementSettings func_215219_b() {
+   public PlacementSettings clearProcessors() {
       this.processors.clear();
       return this;
    }
 
-   public PlacementSettings addProcessor(StructureProcessor p_215222_1_) {
-      this.processors.add(p_215222_1_);
+   public PlacementSettings addProcessor(StructureProcessor structureProcessorIn) {
+      this.processors.add(structureProcessorIn);
       return this;
    }
 
-   public PlacementSettings func_215220_b(StructureProcessor p_215220_1_) {
-      this.processors.remove(p_215220_1_);
+   public PlacementSettings func_215220_b(StructureProcessor structureProcessorIn) {
+      this.processors.remove(structureProcessorIn);
       return this;
    }
 
@@ -109,7 +109,7 @@ public class PlacementSettings {
       return this.rotation;
    }
 
-   public BlockPos func_207664_d() {
+   public BlockPos getCenterOffset() {
       return this.centerOffset;
    }
 

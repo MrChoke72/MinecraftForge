@@ -32,92 +32,92 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class EditBookScreen extends Screen {
    private final PlayerEntity editingPlayer;
    private final ItemStack book;
-   private boolean field_214234_c;
-   private boolean field_214235_d;
-   private int field_214236_e;
-   private int field_214237_f;
-   private final List<String> field_214238_g = Lists.newArrayList();
-   private String field_214239_h = "";
-   private int field_214240_i;
-   private int field_214241_j;
-   private long field_214242_k;
-   private int field_214243_l = -1;
-   private ChangePageButton field_214244_m;
-   private ChangePageButton field_214245_n;
-   private Button field_214246_o;
-   private Button field_214247_p;
-   private Button field_214248_q;
-   private Button field_214249_r;
+   private boolean bookIsModified;
+   private boolean bookGettingSigned;
+   private int updateCount;
+   private int currPage;
+   private final List<String> bookPages = Lists.newArrayList();
+   private String bookTitle = "";
+   private int selectionEnd;
+   private int selectionStart;
+   private long lastClickTime;
+   private int cachedPage = -1;
+   private ChangePageButton buttonNextPage;
+   private ChangePageButton buttonPreviousPage;
+   private Button buttonDone;
+   private Button buttonSign;
+   private Button buttonFinalize;
+   private Button buttonCancel;
    private final Hand hand;
 
-   public EditBookScreen(PlayerEntity p_i51100_1_, ItemStack p_i51100_2_, Hand p_i51100_3_) {
-      super(NarratorChatListener.field_216868_a);
-      this.editingPlayer = p_i51100_1_;
-      this.book = p_i51100_2_;
-      this.hand = p_i51100_3_;
-      CompoundNBT compoundnbt = p_i51100_2_.getTag();
+   public EditBookScreen(PlayerEntity player, ItemStack bookIn, Hand handIn) {
+      super(NarratorChatListener.EMPTY);
+      this.editingPlayer = player;
+      this.book = bookIn;
+      this.hand = handIn;
+      CompoundNBT compoundnbt = bookIn.getTag();
       if (compoundnbt != null) {
          ListNBT listnbt = compoundnbt.getList("pages", 8).copy();
 
          for(int i = 0; i < listnbt.size(); ++i) {
-            this.field_214238_g.add(listnbt.getString(i));
+            this.bookPages.add(listnbt.getString(i));
          }
       }
 
-      if (this.field_214238_g.isEmpty()) {
-         this.field_214238_g.add("");
+      if (this.bookPages.isEmpty()) {
+         this.bookPages.add("");
       }
 
    }
 
-   private int func_214199_a() {
-      return this.field_214238_g.size();
+   private int getPageCount() {
+      return this.bookPages.size();
    }
 
    public void tick() {
       super.tick();
-      ++this.field_214236_e;
+      ++this.updateCount;
    }
 
    protected void init() {
       this.minecraft.keyboardListener.enableRepeatEvents(true);
-      this.field_214247_p = this.addButton(new Button(this.width / 2 - 100, 196, 98, 20, I18n.format("book.signButton"), (p_214201_1_) -> {
-         this.field_214235_d = true;
-         this.func_214229_d();
+      this.buttonSign = this.addButton(new Button(this.width / 2 - 100, 196, 98, 20, I18n.format("book.signButton"), (p_214201_1_) -> {
+         this.bookGettingSigned = true;
+         this.updateButtons();
       }));
-      this.field_214246_o = this.addButton(new Button(this.width / 2 + 2, 196, 98, 20, I18n.format("gui.done"), (p_214204_1_) -> {
+      this.buttonDone = this.addButton(new Button(this.width / 2 + 2, 196, 98, 20, I18n.format("gui.done"), (p_214204_1_) -> {
          this.minecraft.displayGuiScreen((Screen)null);
          this.sendBookToServer(false);
       }));
-      this.field_214248_q = this.addButton(new Button(this.width / 2 - 100, 196, 98, 20, I18n.format("book.finalizeButton"), (p_214195_1_) -> {
-         if (this.field_214235_d) {
+      this.buttonFinalize = this.addButton(new Button(this.width / 2 - 100, 196, 98, 20, I18n.format("book.finalizeButton"), (p_214195_1_) -> {
+         if (this.bookGettingSigned) {
             this.sendBookToServer(true);
             this.minecraft.displayGuiScreen((Screen)null);
          }
 
       }));
-      this.field_214249_r = this.addButton(new Button(this.width / 2 + 2, 196, 98, 20, I18n.format("gui.cancel"), (p_214212_1_) -> {
-         if (this.field_214235_d) {
-            this.field_214235_d = false;
+      this.buttonCancel = this.addButton(new Button(this.width / 2 + 2, 196, 98, 20, I18n.format("gui.cancel"), (p_214212_1_) -> {
+         if (this.bookGettingSigned) {
+            this.bookGettingSigned = false;
          }
 
-         this.func_214229_d();
+         this.updateButtons();
       }));
       int i = (this.width - 192) / 2;
       int j = 2;
-      this.field_214244_m = this.addButton(new ChangePageButton(i + 116, 159, true, (p_214208_1_) -> {
-         this.func_214214_c();
+      this.buttonNextPage = this.addButton(new ChangePageButton(i + 116, 159, true, (p_214208_1_) -> {
+         this.nextPage();
       }, true));
-      this.field_214245_n = this.addButton(new ChangePageButton(i + 43, 159, false, (p_214205_1_) -> {
-         this.func_214228_b();
+      this.buttonPreviousPage = this.addButton(new ChangePageButton(i + 43, 159, false, (p_214205_1_) -> {
+         this.previousPage();
       }, true));
-      this.func_214229_d();
+      this.updateButtons();
    }
 
-   private String func_214219_a(String p_214219_1_) {
+   private String removeUnprintableChars(String text) {
       StringBuilder stringbuilder = new StringBuilder();
 
-      for(char c0 : p_214219_1_.toCharArray()) {
+      for(char c0 : text.toCharArray()) {
          if (c0 != 167 && c0 != 127) {
             stringbuilder.append(c0);
          }
@@ -126,50 +126,50 @@ public class EditBookScreen extends Screen {
       return stringbuilder.toString();
    }
 
-   private void func_214228_b() {
-      if (this.field_214237_f > 0) {
-         --this.field_214237_f;
-         this.field_214240_i = 0;
-         this.field_214241_j = this.field_214240_i;
+   private void previousPage() {
+      if (this.currPage > 0) {
+         --this.currPage;
+         this.selectionEnd = 0;
+         this.selectionStart = this.selectionEnd;
       }
 
-      this.func_214229_d();
+      this.updateButtons();
    }
 
-   private void func_214214_c() {
-      if (this.field_214237_f < this.func_214199_a() - 1) {
-         ++this.field_214237_f;
-         this.field_214240_i = 0;
-         this.field_214241_j = this.field_214240_i;
+   private void nextPage() {
+      if (this.currPage < this.getPageCount() - 1) {
+         ++this.currPage;
+         this.selectionEnd = 0;
+         this.selectionStart = this.selectionEnd;
       } else {
-         this.func_214215_f();
-         if (this.field_214237_f < this.func_214199_a() - 1) {
-            ++this.field_214237_f;
+         this.addNewPage();
+         if (this.currPage < this.getPageCount() - 1) {
+            ++this.currPage;
          }
 
-         this.field_214240_i = 0;
-         this.field_214241_j = this.field_214240_i;
+         this.selectionEnd = 0;
+         this.selectionStart = this.selectionEnd;
       }
 
-      this.func_214229_d();
+      this.updateButtons();
    }
 
    public void removed() {
       this.minecraft.keyboardListener.enableRepeatEvents(false);
    }
 
-   private void func_214229_d() {
-      this.field_214245_n.visible = !this.field_214235_d && this.field_214237_f > 0;
-      this.field_214244_m.visible = !this.field_214235_d;
-      this.field_214246_o.visible = !this.field_214235_d;
-      this.field_214247_p.visible = !this.field_214235_d;
-      this.field_214249_r.visible = this.field_214235_d;
-      this.field_214248_q.visible = this.field_214235_d;
-      this.field_214248_q.active = !this.field_214239_h.trim().isEmpty();
+   private void updateButtons() {
+      this.buttonPreviousPage.visible = !this.bookGettingSigned && this.currPage > 0;
+      this.buttonNextPage.visible = !this.bookGettingSigned;
+      this.buttonDone.visible = !this.bookGettingSigned;
+      this.buttonSign.visible = !this.bookGettingSigned;
+      this.buttonCancel.visible = this.bookGettingSigned;
+      this.buttonFinalize.visible = this.bookGettingSigned;
+      this.buttonFinalize.active = !this.bookTitle.trim().isEmpty();
    }
 
-   private void func_214213_e() {
-      ListIterator<String> listiterator = this.field_214238_g.listIterator(this.field_214238_g.size());
+   private void trimEmptyPages() {
+      ListIterator<String> listiterator = this.bookPages.listIterator(this.bookPages.size());
 
       while(listiterator.hasPrevious() && listiterator.previous().isEmpty()) {
          listiterator.remove();
@@ -177,28 +177,28 @@ public class EditBookScreen extends Screen {
 
    }
 
-   private void sendBookToServer(boolean p_214198_1_) {
-      if (this.field_214234_c) {
-         this.func_214213_e();
+   private void sendBookToServer(boolean publish) {
+      if (this.bookIsModified) {
+         this.trimEmptyPages();
          ListNBT listnbt = new ListNBT();
-         this.field_214238_g.stream().map(StringNBT::func_229705_a_).forEach(listnbt::add);
-         if (!this.field_214238_g.isEmpty()) {
+         this.bookPages.stream().map(StringNBT::valueOf).forEach(listnbt::add);
+         if (!this.bookPages.isEmpty()) {
             this.book.setTagInfo("pages", listnbt);
          }
 
-         if (p_214198_1_) {
-            this.book.setTagInfo("author", StringNBT.func_229705_a_(this.editingPlayer.getGameProfile().getName()));
-            this.book.setTagInfo("title", StringNBT.func_229705_a_(this.field_214239_h.trim()));
+         if (publish) {
+            this.book.setTagInfo("author", StringNBT.valueOf(this.editingPlayer.getGameProfile().getName()));
+            this.book.setTagInfo("title", StringNBT.valueOf(this.bookTitle.trim()));
          }
 
-         this.minecraft.getConnection().sendPacket(new CEditBookPacket(this.book, p_214198_1_, this.hand));
+         this.minecraft.getConnection().sendPacket(new CEditBookPacket(this.book, publish, this.hand));
       }
    }
 
-   private void func_214215_f() {
-      if (this.func_214199_a() < 100) {
-         this.field_214238_g.add("");
-         this.field_214234_c = true;
+   private void addNewPage() {
+      if (this.getPageCount() < 100) {
+         this.bookPages.add("");
+         this.bookIsModified = true;
       }
    }
 
@@ -206,82 +206,82 @@ public class EditBookScreen extends Screen {
       if (super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)) {
          return true;
       } else {
-         return this.field_214235_d ? this.func_214196_c(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) : this.func_214230_b(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
+         return this.bookGettingSigned ? this.keyPressedInTitle(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) : this.keyPressedInBook(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
       }
    }
 
    public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
       if (super.charTyped(p_charTyped_1_, p_charTyped_2_)) {
          return true;
-      } else if (this.field_214235_d) {
-         if (this.field_214239_h.length() < 16 && SharedConstants.isAllowedCharacter(p_charTyped_1_)) {
-            this.field_214239_h = this.field_214239_h + Character.toString(p_charTyped_1_);
-            this.func_214229_d();
-            this.field_214234_c = true;
+      } else if (this.bookGettingSigned) {
+         if (this.bookTitle.length() < 16 && SharedConstants.isAllowedCharacter(p_charTyped_1_)) {
+            this.bookTitle = this.bookTitle + Character.toString(p_charTyped_1_);
+            this.updateButtons();
+            this.bookIsModified = true;
             return true;
          } else {
             return false;
          }
       } else if (SharedConstants.isAllowedCharacter(p_charTyped_1_)) {
-         this.func_214202_k(Character.toString(p_charTyped_1_));
+         this.insertTextIntoPage(Character.toString(p_charTyped_1_));
          return true;
       } else {
          return false;
       }
    }
 
-   private boolean func_214230_b(int p_214230_1_, int p_214230_2_, int p_214230_3_) {
-      String s = this.func_214193_h();
-      if (Screen.isSelectAll(p_214230_1_)) {
-         this.field_214241_j = 0;
-         this.field_214240_i = s.length();
+   private boolean keyPressedInBook(int keyCode, int scanCode, int modifiers) {
+      String s = this.getCurrPageText();
+      if (Screen.isSelectAll(keyCode)) {
+         this.selectionStart = 0;
+         this.selectionEnd = s.length();
          return true;
-      } else if (Screen.isCopy(p_214230_1_)) {
-         this.minecraft.keyboardListener.setClipboardString(this.func_214231_i());
+      } else if (Screen.isCopy(keyCode)) {
+         this.minecraft.keyboardListener.setClipboardString(this.getSelectedText());
          return true;
-      } else if (Screen.isPaste(p_214230_1_)) {
-         this.func_214202_k(this.func_214219_a(TextFormatting.getTextWithoutFormattingCodes(this.minecraft.keyboardListener.getClipboardString().replaceAll("\\r", ""))));
-         this.field_214241_j = this.field_214240_i;
+      } else if (Screen.isPaste(keyCode)) {
+         this.insertTextIntoPage(this.removeUnprintableChars(TextFormatting.getTextWithoutFormattingCodes(this.minecraft.keyboardListener.getClipboardString().replaceAll("\\r", ""))));
+         this.selectionStart = this.selectionEnd;
          return true;
-      } else if (Screen.isCut(p_214230_1_)) {
-         this.minecraft.keyboardListener.setClipboardString(this.func_214231_i());
-         this.func_214192_g();
+      } else if (Screen.isCut(keyCode)) {
+         this.minecraft.keyboardListener.setClipboardString(this.getSelectedText());
+         this.removeSelectedText();
          return true;
       } else {
-         switch(p_214230_1_) {
+         switch(keyCode) {
          case 257:
          case 335:
-            this.func_214202_k("\n");
+            this.insertTextIntoPage("\n");
             return true;
          case 259:
-            this.func_214207_b(s);
+            this.backspacePressed(s);
             return true;
          case 261:
-            this.func_214221_c(s);
+            this.deletePressed(s);
             return true;
          case 262:
-            this.func_214218_e(s);
+            this.rightPressed(s);
             return true;
          case 263:
-            this.func_214200_d(s);
+            this.leftPressed(s);
             return true;
          case 264:
-            this.func_214209_g(s);
+            this.downPressed(s);
             return true;
          case 265:
-            this.func_214197_f(s);
+            this.upPressed(s);
             return true;
          case 266:
-            this.field_214245_n.onPress();
+            this.buttonPreviousPage.onPress();
             return true;
          case 267:
-            this.field_214244_m.onPress();
+            this.buttonNextPage.onPress();
             return true;
          case 268:
-            this.func_214220_h(s);
+            this.homePressed(s);
             return true;
          case 269:
-            this.func_214211_i(s);
+            this.endPressed(s);
             return true;
          default:
             return false;
@@ -289,74 +289,74 @@ public class EditBookScreen extends Screen {
       }
    }
 
-   private void func_214207_b(String p_214207_1_) {
-      if (!p_214207_1_.isEmpty()) {
-         if (this.field_214241_j != this.field_214240_i) {
-            this.func_214192_g();
-         } else if (this.field_214240_i > 0) {
-            String s = (new StringBuilder(p_214207_1_)).deleteCharAt(Math.max(0, this.field_214240_i - 1)).toString();
+   private void backspacePressed(String pageText) {
+      if (!pageText.isEmpty()) {
+         if (this.selectionStart != this.selectionEnd) {
+            this.removeSelectedText();
+         } else if (this.selectionEnd > 0) {
+            String s = (new StringBuilder(pageText)).deleteCharAt(Math.max(0, this.selectionEnd - 1)).toString();
             this.func_214217_j(s);
-            this.field_214240_i = Math.max(0, this.field_214240_i - 1);
-            this.field_214241_j = this.field_214240_i;
+            this.selectionEnd = Math.max(0, this.selectionEnd - 1);
+            this.selectionStart = this.selectionEnd;
          }
       }
 
    }
 
-   private void func_214221_c(String p_214221_1_) {
-      if (!p_214221_1_.isEmpty()) {
-         if (this.field_214241_j != this.field_214240_i) {
-            this.func_214192_g();
-         } else if (this.field_214240_i < p_214221_1_.length()) {
-            String s = (new StringBuilder(p_214221_1_)).deleteCharAt(Math.max(0, this.field_214240_i)).toString();
+   private void deletePressed(String pageText) {
+      if (!pageText.isEmpty()) {
+         if (this.selectionStart != this.selectionEnd) {
+            this.removeSelectedText();
+         } else if (this.selectionEnd < pageText.length()) {
+            String s = (new StringBuilder(pageText)).deleteCharAt(Math.max(0, this.selectionEnd)).toString();
             this.func_214217_j(s);
          }
       }
 
    }
 
-   private void func_214200_d(String p_214200_1_) {
+   private void leftPressed(String pageText) {
       int i = this.font.getBidiFlag() ? 1 : -1;
       if (Screen.hasControlDown()) {
-         this.field_214240_i = this.font.func_216863_a(p_214200_1_, i, this.field_214240_i, true);
+         this.selectionEnd = this.font.getWordPosition(pageText, i, this.selectionEnd, true);
       } else {
-         this.field_214240_i = Math.max(0, this.field_214240_i + i);
+         this.selectionEnd = Math.max(0, this.selectionEnd + i);
       }
 
       if (!Screen.hasShiftDown()) {
-         this.field_214241_j = this.field_214240_i;
+         this.selectionStart = this.selectionEnd;
       }
 
    }
 
-   private void func_214218_e(String p_214218_1_) {
+   private void rightPressed(String pageText) {
       int i = this.font.getBidiFlag() ? -1 : 1;
       if (Screen.hasControlDown()) {
-         this.field_214240_i = this.font.func_216863_a(p_214218_1_, i, this.field_214240_i, true);
+         this.selectionEnd = this.font.getWordPosition(pageText, i, this.selectionEnd, true);
       } else {
-         this.field_214240_i = Math.min(p_214218_1_.length(), this.field_214240_i + i);
+         this.selectionEnd = Math.min(pageText.length(), this.selectionEnd + i);
       }
 
       if (!Screen.hasShiftDown()) {
-         this.field_214241_j = this.field_214240_i;
+         this.selectionStart = this.selectionEnd;
       }
 
    }
 
-   private void func_214197_f(String p_214197_1_) {
-      if (!p_214197_1_.isEmpty()) {
-         EditBookScreen.Point editbookscreen$point = this.func_214194_c(p_214197_1_, this.field_214240_i);
-         if (editbookscreen$point.field_216929_c == 0) {
-            this.field_214240_i = 0;
+   private void upPressed(String pageText) {
+      if (!pageText.isEmpty()) {
+         EditBookScreen.Point editbookscreen$point = this.func_214194_c(pageText, this.selectionEnd);
+         if (editbookscreen$point.y == 0) {
+            this.selectionEnd = 0;
             if (!Screen.hasShiftDown()) {
-               this.field_214241_j = this.field_214240_i;
+               this.selectionStart = this.selectionEnd;
             }
          } else {
-            int i = this.func_214203_a(p_214197_1_, new EditBookScreen.Point(editbookscreen$point.field_216928_b + this.func_214206_a(p_214197_1_, this.field_214240_i) / 3, editbookscreen$point.field_216929_c - 9));
+            int i = this.func_214203_a(pageText, new EditBookScreen.Point(editbookscreen$point.x + this.func_214206_a(pageText, this.selectionEnd) / 3, editbookscreen$point.y - 9));
             if (i >= 0) {
-               this.field_214240_i = i;
+               this.selectionEnd = i;
                if (!Screen.hasShiftDown()) {
-                  this.field_214241_j = this.field_214240_i;
+                  this.selectionStart = this.selectionEnd;
                }
             }
          }
@@ -364,21 +364,21 @@ public class EditBookScreen extends Screen {
 
    }
 
-   private void func_214209_g(String p_214209_1_) {
-      if (!p_214209_1_.isEmpty()) {
-         EditBookScreen.Point editbookscreen$point = this.func_214194_c(p_214209_1_, this.field_214240_i);
-         int i = this.font.getWordWrappedHeight(p_214209_1_ + "" + TextFormatting.BLACK + "_", 114);
-         if (editbookscreen$point.field_216929_c + 9 == i) {
-            this.field_214240_i = p_214209_1_.length();
+   private void downPressed(String pageText) {
+      if (!pageText.isEmpty()) {
+         EditBookScreen.Point editbookscreen$point = this.func_214194_c(pageText, this.selectionEnd);
+         int i = this.font.getWordWrappedHeight(pageText + "" + TextFormatting.BLACK + "_", 114);
+         if (editbookscreen$point.y + 9 == i) {
+            this.selectionEnd = pageText.length();
             if (!Screen.hasShiftDown()) {
-               this.field_214241_j = this.field_214240_i;
+               this.selectionStart = this.selectionEnd;
             }
          } else {
-            int j = this.func_214203_a(p_214209_1_, new EditBookScreen.Point(editbookscreen$point.field_216928_b + this.func_214206_a(p_214209_1_, this.field_214240_i) / 3, editbookscreen$point.field_216929_c + 9));
+            int j = this.func_214203_a(pageText, new EditBookScreen.Point(editbookscreen$point.x + this.func_214206_a(pageText, this.selectionEnd) / 3, editbookscreen$point.y + 9));
             if (j >= 0) {
-               this.field_214240_i = j;
+               this.selectionEnd = j;
                if (!Screen.hasShiftDown()) {
-                  this.field_214241_j = this.field_214240_i;
+                  this.selectionStart = this.selectionEnd;
                }
             }
          }
@@ -386,30 +386,30 @@ public class EditBookScreen extends Screen {
 
    }
 
-   private void func_214220_h(String p_214220_1_) {
-      this.field_214240_i = this.func_214203_a(p_214220_1_, new EditBookScreen.Point(0, this.func_214194_c(p_214220_1_, this.field_214240_i).field_216929_c));
+   private void homePressed(String pageText) {
+      this.selectionEnd = this.func_214203_a(pageText, new EditBookScreen.Point(0, this.func_214194_c(pageText, this.selectionEnd).y));
       if (!Screen.hasShiftDown()) {
-         this.field_214241_j = this.field_214240_i;
+         this.selectionStart = this.selectionEnd;
       }
 
    }
 
-   private void func_214211_i(String p_214211_1_) {
-      this.field_214240_i = this.func_214203_a(p_214211_1_, new EditBookScreen.Point(113, this.func_214194_c(p_214211_1_, this.field_214240_i).field_216929_c));
+   private void endPressed(String pageText) {
+      this.selectionEnd = this.func_214203_a(pageText, new EditBookScreen.Point(113, this.func_214194_c(pageText, this.selectionEnd).y));
       if (!Screen.hasShiftDown()) {
-         this.field_214241_j = this.field_214240_i;
+         this.selectionStart = this.selectionEnd;
       }
 
    }
 
-   private void func_214192_g() {
-      if (this.field_214241_j != this.field_214240_i) {
-         String s = this.func_214193_h();
-         int i = Math.min(this.field_214240_i, this.field_214241_j);
-         int j = Math.max(this.field_214240_i, this.field_214241_j);
+   private void removeSelectedText() {
+      if (this.selectionStart != this.selectionEnd) {
+         String s = this.getCurrPageText();
+         int i = Math.min(this.selectionEnd, this.selectionStart);
+         int j = Math.max(this.selectionEnd, this.selectionStart);
          String s1 = s.substring(0, i) + s.substring(j);
-         this.field_214240_i = i;
-         this.field_214241_j = this.field_214240_i;
+         this.selectionEnd = i;
+         this.selectionStart = this.selectionEnd;
          this.func_214217_j(s1);
       }
    }
@@ -418,20 +418,20 @@ public class EditBookScreen extends Screen {
       return (int)this.font.getCharWidth(p_214206_1_.charAt(MathHelper.clamp(p_214206_2_, 0, p_214206_1_.length() - 1)));
    }
 
-   private boolean func_214196_c(int p_214196_1_, int p_214196_2_, int p_214196_3_) {
-      switch(p_214196_1_) {
+   private boolean keyPressedInTitle(int keyCode, int scanCode, int modifiers) {
+      switch(keyCode) {
       case 257:
       case 335:
-         if (!this.field_214239_h.isEmpty()) {
+         if (!this.bookTitle.isEmpty()) {
             this.sendBookToServer(true);
             this.minecraft.displayGuiScreen((Screen)null);
          }
 
          return true;
       case 259:
-         if (!this.field_214239_h.isEmpty()) {
-            this.field_214239_h = this.field_214239_h.substring(0, this.field_214239_h.length() - 1);
-            this.func_214229_d();
+         if (!this.bookTitle.isEmpty()) {
+            this.bookTitle = this.bookTitle.substring(0, this.bookTitle.length() - 1);
+            this.updateButtons();
          }
 
          return true;
@@ -440,30 +440,30 @@ public class EditBookScreen extends Screen {
       }
    }
 
-   private String func_214193_h() {
-      return this.field_214237_f >= 0 && this.field_214237_f < this.field_214238_g.size() ? this.field_214238_g.get(this.field_214237_f) : "";
+   private String getCurrPageText() {
+      return this.currPage >= 0 && this.currPage < this.bookPages.size() ? this.bookPages.get(this.currPage) : "";
    }
 
    private void func_214217_j(String p_214217_1_) {
-      if (this.field_214237_f >= 0 && this.field_214237_f < this.field_214238_g.size()) {
-         this.field_214238_g.set(this.field_214237_f, p_214217_1_);
-         this.field_214234_c = true;
+      if (this.currPage >= 0 && this.currPage < this.bookPages.size()) {
+         this.bookPages.set(this.currPage, p_214217_1_);
+         this.bookIsModified = true;
       }
 
    }
 
-   private void func_214202_k(String p_214202_1_) {
-      if (this.field_214241_j != this.field_214240_i) {
-         this.func_214192_g();
+   private void insertTextIntoPage(String text) {
+      if (this.selectionStart != this.selectionEnd) {
+         this.removeSelectedText();
       }
 
-      String s = this.func_214193_h();
-      this.field_214240_i = MathHelper.clamp(this.field_214240_i, 0, s.length());
-      String s1 = (new StringBuilder(s)).insert(this.field_214240_i, p_214202_1_).toString();
+      String s = this.getCurrPageText();
+      this.selectionEnd = MathHelper.clamp(this.selectionEnd, 0, s.length());
+      String s1 = (new StringBuilder(s)).insert(this.selectionEnd, text).toString();
       int i = this.font.getWordWrappedHeight(s1 + "" + TextFormatting.BLACK + "_", 114);
       if (i <= 128 && s1.length() < 1024) {
          this.func_214217_j(s1);
-         this.field_214241_j = this.field_214240_i = Math.min(this.func_214193_h().length(), this.field_214240_i + p_214202_1_.length());
+         this.selectionStart = this.selectionEnd = Math.min(this.getCurrPageText().length(), this.selectionEnd + text.length());
       }
 
    }
@@ -472,47 +472,47 @@ public class EditBookScreen extends Screen {
       this.renderBackground();
       this.setFocused((IGuiEventListener)null);
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-      this.minecraft.getTextureManager().bindTexture(ReadBookScreen.field_214167_b);
+      this.minecraft.getTextureManager().bindTexture(ReadBookScreen.BOOK_TEXTURES);
       int i = (this.width - 192) / 2;
       int j = 2;
       this.blit(i, 2, 0, 0, 192, 192);
-      if (this.field_214235_d) {
-         String s = this.field_214239_h;
-         if (this.field_214236_e / 6 % 2 == 0) {
+      if (this.bookGettingSigned) {
+         String s = this.bookTitle;
+         if (this.updateCount / 6 % 2 == 0) {
             s = s + "" + TextFormatting.BLACK + "_";
          } else {
             s = s + "" + TextFormatting.GRAY + "_";
          }
 
          String s1 = I18n.format("book.editTitle");
-         int k = this.func_214225_l(s1);
+         int k = this.getTextWidth(s1);
          this.font.drawString(s1, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
-         int l = this.func_214225_l(s);
+         int l = this.getTextWidth(s);
          this.font.drawString(s, (float)(i + 36 + (114 - l) / 2), 50.0F, 0);
          String s2 = I18n.format("book.byAuthor", this.editingPlayer.getName().getString());
-         int i1 = this.func_214225_l(s2);
+         int i1 = this.getTextWidth(s2);
          this.font.drawString(TextFormatting.DARK_GRAY + s2, (float)(i + 36 + (114 - i1) / 2), 60.0F, 0);
          String s3 = I18n.format("book.finalizeWarning");
          this.font.drawSplitString(s3, i + 36, 82, 114, 0);
       } else {
-         String s4 = I18n.format("book.pageIndicator", this.field_214237_f + 1, this.func_214199_a());
-         String s5 = this.func_214193_h();
-         int j1 = this.func_214225_l(s4);
+         String s4 = I18n.format("book.pageIndicator", this.currPage + 1, this.getPageCount());
+         String s5 = this.getCurrPageText();
+         int j1 = this.getTextWidth(s4);
          this.font.drawString(s4, (float)(i - j1 + 192 - 44), 18.0F, 0);
          this.font.drawSplitString(s5, i + 36, 32, 114, 0);
-         this.func_214222_m(s5);
-         if (this.field_214236_e / 6 % 2 == 0) {
-            EditBookScreen.Point editbookscreen$point = this.func_214194_c(s5, this.field_214240_i);
+         this.highlightSelectedText(s5);
+         if (this.updateCount / 6 % 2 == 0) {
+            EditBookScreen.Point editbookscreen$point = this.func_214194_c(s5, this.selectionEnd);
             if (this.font.getBidiFlag()) {
                this.func_214227_a(editbookscreen$point);
-               editbookscreen$point.field_216928_b = editbookscreen$point.field_216928_b - 4;
+               editbookscreen$point.x = editbookscreen$point.x - 4;
             }
 
             this.func_214224_c(editbookscreen$point);
-            if (this.field_214240_i < s5.length()) {
-               AbstractGui.fill(editbookscreen$point.field_216928_b, editbookscreen$point.field_216929_c - 1, editbookscreen$point.field_216928_b + 1, editbookscreen$point.field_216929_c + 9, -16777216);
+            if (this.selectionEnd < s5.length()) {
+               AbstractGui.fill(editbookscreen$point.x, editbookscreen$point.y - 1, editbookscreen$point.x + 1, editbookscreen$point.y + 9, -16777216);
             } else {
-               this.font.drawString("_", (float)editbookscreen$point.field_216928_b, (float)editbookscreen$point.field_216929_c, 0);
+               this.font.drawString("_", (float)editbookscreen$point.x, (float)editbookscreen$point.y, 0);
             }
          }
       }
@@ -520,36 +520,36 @@ public class EditBookScreen extends Screen {
       super.render(p_render_1_, p_render_2_, p_render_3_);
    }
 
-   private int func_214225_l(String p_214225_1_) {
-      return this.font.getStringWidth(this.font.getBidiFlag() ? this.font.bidiReorder(p_214225_1_) : p_214225_1_);
+   private int getTextWidth(String text) {
+      return this.font.getStringWidth(this.font.getBidiFlag() ? this.font.bidiReorder(text) : text);
    }
 
    private int func_214216_b(String p_214216_1_, int p_214216_2_) {
       return this.font.sizeStringToWidth(p_214216_1_, p_214216_2_);
    }
 
-   private String func_214231_i() {
-      String s = this.func_214193_h();
-      int i = Math.min(this.field_214240_i, this.field_214241_j);
-      int j = Math.max(this.field_214240_i, this.field_214241_j);
+   private String getSelectedText() {
+      String s = this.getCurrPageText();
+      int i = Math.min(this.selectionEnd, this.selectionStart);
+      int j = Math.max(this.selectionEnd, this.selectionStart);
       return s.substring(i, j);
    }
 
-   private void func_214222_m(String p_214222_1_) {
-      if (this.field_214241_j != this.field_214240_i) {
-         int i = Math.min(this.field_214240_i, this.field_214241_j);
-         int j = Math.max(this.field_214240_i, this.field_214241_j);
-         String s = p_214222_1_.substring(i, j);
-         int k = this.font.func_216863_a(p_214222_1_, 1, j, true);
-         String s1 = p_214222_1_.substring(i, k);
-         EditBookScreen.Point editbookscreen$point = this.func_214194_c(p_214222_1_, i);
-         EditBookScreen.Point editbookscreen$point1 = new EditBookScreen.Point(editbookscreen$point.field_216928_b, editbookscreen$point.field_216929_c + 9);
+   private void highlightSelectedText(String pageText) {
+      if (this.selectionStart != this.selectionEnd) {
+         int i = Math.min(this.selectionEnd, this.selectionStart);
+         int j = Math.max(this.selectionEnd, this.selectionStart);
+         String s = pageText.substring(i, j);
+         int k = this.font.getWordPosition(pageText, 1, j, true);
+         String s1 = pageText.substring(i, k);
+         EditBookScreen.Point editbookscreen$point = this.func_214194_c(pageText, i);
+         EditBookScreen.Point editbookscreen$point1 = new EditBookScreen.Point(editbookscreen$point.x, editbookscreen$point.y + 9);
 
          while(!s.isEmpty()) {
-            int l = this.func_214216_b(s1, 114 - editbookscreen$point.field_216928_b);
+            int l = this.func_214216_b(s1, 114 - editbookscreen$point.x);
             if (s.length() <= l) {
-               editbookscreen$point1.field_216928_b = editbookscreen$point.field_216928_b + this.func_214225_l(s);
-               this.func_214223_a(editbookscreen$point, editbookscreen$point1);
+               editbookscreen$point1.x = editbookscreen$point.x + this.getTextWidth(s);
+               this.drawSelectionBox(editbookscreen$point, editbookscreen$point1);
                break;
             }
 
@@ -559,25 +559,25 @@ public class EditBookScreen extends Screen {
             boolean flag = c0 == ' ' || c0 == '\n';
             s = TextFormatting.getFormatString(s2) + s.substring(l + (flag ? 1 : 0));
             s1 = TextFormatting.getFormatString(s2) + s1.substring(l + (flag ? 1 : 0));
-            editbookscreen$point1.field_216928_b = editbookscreen$point.field_216928_b + this.func_214225_l(s2 + " ");
-            this.func_214223_a(editbookscreen$point, editbookscreen$point1);
-            editbookscreen$point.field_216928_b = 0;
-            editbookscreen$point.field_216929_c = editbookscreen$point.field_216929_c + 9;
-            editbookscreen$point1.field_216929_c = editbookscreen$point1.field_216929_c + 9;
+            editbookscreen$point1.x = editbookscreen$point.x + this.getTextWidth(s2 + " ");
+            this.drawSelectionBox(editbookscreen$point, editbookscreen$point1);
+            editbookscreen$point.x = 0;
+            editbookscreen$point.y = editbookscreen$point.y + 9;
+            editbookscreen$point1.y = editbookscreen$point1.y + 9;
          }
 
       }
    }
 
-   private void func_214223_a(EditBookScreen.Point p_214223_1_, EditBookScreen.Point p_214223_2_) {
-      EditBookScreen.Point editbookscreen$point = new EditBookScreen.Point(p_214223_1_.field_216928_b, p_214223_1_.field_216929_c);
-      EditBookScreen.Point editbookscreen$point1 = new EditBookScreen.Point(p_214223_2_.field_216928_b, p_214223_2_.field_216929_c);
+   private void drawSelectionBox(EditBookScreen.Point topLeft, EditBookScreen.Point bottomRight) {
+      EditBookScreen.Point editbookscreen$point = new EditBookScreen.Point(topLeft.x, topLeft.y);
+      EditBookScreen.Point editbookscreen$point1 = new EditBookScreen.Point(bottomRight.x, bottomRight.y);
       if (this.font.getBidiFlag()) {
          this.func_214227_a(editbookscreen$point);
          this.func_214227_a(editbookscreen$point1);
-         int i = editbookscreen$point1.field_216928_b;
-         editbookscreen$point1.field_216928_b = editbookscreen$point.field_216928_b;
-         editbookscreen$point.field_216928_b = i;
+         int i = editbookscreen$point1.x;
+         editbookscreen$point1.x = editbookscreen$point.x;
+         editbookscreen$point.x = i;
       }
 
       this.func_214224_c(editbookscreen$point);
@@ -589,25 +589,25 @@ public class EditBookScreen extends Screen {
       RenderSystem.enableColorLogicOp();
       RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-      bufferbuilder.func_225582_a_((double)editbookscreen$point.field_216928_b, (double)editbookscreen$point1.field_216929_c, 0.0D).endVertex();
-      bufferbuilder.func_225582_a_((double)editbookscreen$point1.field_216928_b, (double)editbookscreen$point1.field_216929_c, 0.0D).endVertex();
-      bufferbuilder.func_225582_a_((double)editbookscreen$point1.field_216928_b, (double)editbookscreen$point.field_216929_c, 0.0D).endVertex();
-      bufferbuilder.func_225582_a_((double)editbookscreen$point.field_216928_b, (double)editbookscreen$point.field_216929_c, 0.0D).endVertex();
+      bufferbuilder.pos((double)editbookscreen$point.x, (double)editbookscreen$point1.y, 0.0D).endVertex();
+      bufferbuilder.pos((double)editbookscreen$point1.x, (double)editbookscreen$point1.y, 0.0D).endVertex();
+      bufferbuilder.pos((double)editbookscreen$point1.x, (double)editbookscreen$point.y, 0.0D).endVertex();
+      bufferbuilder.pos((double)editbookscreen$point.x, (double)editbookscreen$point.y, 0.0D).endVertex();
       tessellator.draw();
       RenderSystem.disableColorLogicOp();
       RenderSystem.enableTexture();
    }
 
-   private EditBookScreen.Point func_214194_c(String p_214194_1_, int p_214194_2_) {
+   private EditBookScreen.Point func_214194_c(String pageText, int p_214194_2_) {
       EditBookScreen.Point editbookscreen$point = new EditBookScreen.Point();
       int i = 0;
       int j = 0;
 
-      for(String s = p_214194_1_; !s.isEmpty(); j = i) {
+      for(String s = pageText; !s.isEmpty(); j = i) {
          int k = this.func_214216_b(s, 114);
          if (s.length() <= k) {
             String s3 = s.substring(0, Math.min(Math.max(p_214194_2_ - j, 0), s.length()));
-            editbookscreen$point.field_216928_b = editbookscreen$point.field_216928_b + this.func_214225_l(s3);
+            editbookscreen$point.x = editbookscreen$point.x + this.getTextWidth(s3);
             break;
          }
 
@@ -618,11 +618,11 @@ public class EditBookScreen extends Screen {
          i += s1.length() + (flag ? 1 : 0);
          if (i - 1 >= p_214194_2_) {
             String s2 = s1.substring(0, Math.min(Math.max(p_214194_2_ - j, 0), s1.length()));
-            editbookscreen$point.field_216928_b = editbookscreen$point.field_216928_b + this.func_214225_l(s2);
+            editbookscreen$point.x = editbookscreen$point.x + this.getTextWidth(s2);
             break;
          }
 
-         editbookscreen$point.field_216929_c = editbookscreen$point.field_216929_c + 9;
+         editbookscreen$point.y = editbookscreen$point.y + 9;
       }
 
       return editbookscreen$point;
@@ -630,19 +630,19 @@ public class EditBookScreen extends Screen {
 
    private void func_214227_a(EditBookScreen.Point p_214227_1_) {
       if (this.font.getBidiFlag()) {
-         p_214227_1_.field_216928_b = 114 - p_214227_1_.field_216928_b;
+         p_214227_1_.x = 114 - p_214227_1_.x;
       }
 
    }
 
    private void func_214210_b(EditBookScreen.Point p_214210_1_) {
-      p_214210_1_.field_216928_b = p_214210_1_.field_216928_b - (this.width - 192) / 2 - 36;
-      p_214210_1_.field_216929_c = p_214210_1_.field_216929_c - 32;
+      p_214210_1_.x = p_214210_1_.x - (this.width - 192) / 2 - 36;
+      p_214210_1_.y = p_214210_1_.y - 32;
    }
 
    private void func_214224_c(EditBookScreen.Point p_214224_1_) {
-      p_214224_1_.field_216928_b = p_214224_1_.field_216928_b + (this.width - 192) / 2 + 36;
-      p_214224_1_.field_216929_c = p_214224_1_.field_216929_c + 32;
+      p_214224_1_.x = p_214224_1_.x + (this.width - 192) / 2 + 36;
+      p_214224_1_.y = p_214224_1_.y + 32;
    }
 
    private int func_214226_d(String p_214226_1_, int p_214226_2_) {
@@ -687,7 +687,7 @@ public class EditBookScreen extends Screen {
 
    private int func_214203_a(String p_214203_1_, EditBookScreen.Point p_214203_2_) {
       int i = 16 * 9;
-      if (p_214203_2_.field_216929_c > i) {
+      if (p_214203_2_.y > i) {
          return -1;
       } else {
          int j = Integer.MIN_VALUE;
@@ -698,8 +698,8 @@ public class EditBookScreen extends Screen {
             int i1 = this.func_214216_b(s, 114);
             if (i1 < s.length()) {
                String s1 = s.substring(0, i1);
-               if (p_214203_2_.field_216929_c >= j && p_214203_2_.field_216929_c < k) {
-                  int k1 = this.func_214226_d(s1, p_214203_2_.field_216928_b);
+               if (p_214203_2_.y >= j && p_214203_2_.y < k) {
+                  int k1 = this.func_214226_d(s1, p_214203_2_.x);
                   return k1 < 0 ? -1 : l + k1;
                }
 
@@ -707,8 +707,8 @@ public class EditBookScreen extends Screen {
                boolean flag = c0 == ' ' || c0 == '\n';
                s = TextFormatting.getFormatString(s1) + s.substring(i1 + (flag ? 1 : 0));
                l += s1.length() + (flag ? 1 : 0);
-            } else if (p_214203_2_.field_216929_c >= j && p_214203_2_.field_216929_c < k) {
-               int j1 = this.func_214226_d(s, p_214203_2_.field_216928_b);
+            } else if (p_214203_2_.y >= j && p_214203_2_.y < k) {
+               int j1 = this.func_214226_d(s, p_214203_2_.x);
                return j1 < 0 ? -1 : l + j1;
             }
 
@@ -722,47 +722,47 @@ public class EditBookScreen extends Screen {
    public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
       if (p_mouseClicked_5_ == 0) {
          long i = Util.milliTime();
-         String s = this.func_214193_h();
+         String s = this.getCurrPageText();
          if (!s.isEmpty()) {
             EditBookScreen.Point editbookscreen$point = new EditBookScreen.Point((int)p_mouseClicked_1_, (int)p_mouseClicked_3_);
             this.func_214210_b(editbookscreen$point);
             this.func_214227_a(editbookscreen$point);
             int j = this.func_214203_a(s, editbookscreen$point);
             if (j >= 0) {
-               if (j == this.field_214243_l && i - this.field_214242_k < 250L) {
-                  if (this.field_214241_j == this.field_214240_i) {
-                     this.field_214241_j = this.font.func_216863_a(s, -1, j, false);
-                     this.field_214240_i = this.font.func_216863_a(s, 1, j, false);
+               if (j == this.cachedPage && i - this.lastClickTime < 250L) {
+                  if (this.selectionStart == this.selectionEnd) {
+                     this.selectionStart = this.font.getWordPosition(s, -1, j, false);
+                     this.selectionEnd = this.font.getWordPosition(s, 1, j, false);
                   } else {
-                     this.field_214241_j = 0;
-                     this.field_214240_i = this.func_214193_h().length();
+                     this.selectionStart = 0;
+                     this.selectionEnd = this.getCurrPageText().length();
                   }
                } else {
-                  this.field_214240_i = j;
+                  this.selectionEnd = j;
                   if (!Screen.hasShiftDown()) {
-                     this.field_214241_j = this.field_214240_i;
+                     this.selectionStart = this.selectionEnd;
                   }
                }
             }
 
-            this.field_214243_l = j;
+            this.cachedPage = j;
          }
 
-         this.field_214242_k = i;
+         this.lastClickTime = i;
       }
 
       return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
    }
 
    public boolean mouseDragged(double p_mouseDragged_1_, double p_mouseDragged_3_, int p_mouseDragged_5_, double p_mouseDragged_6_, double p_mouseDragged_8_) {
-      if (p_mouseDragged_5_ == 0 && this.field_214237_f >= 0 && this.field_214237_f < this.field_214238_g.size()) {
-         String s = this.field_214238_g.get(this.field_214237_f);
+      if (p_mouseDragged_5_ == 0 && this.currPage >= 0 && this.currPage < this.bookPages.size()) {
+         String s = this.bookPages.get(this.currPage);
          EditBookScreen.Point editbookscreen$point = new EditBookScreen.Point((int)p_mouseDragged_1_, (int)p_mouseDragged_3_);
          this.func_214210_b(editbookscreen$point);
          this.func_214227_a(editbookscreen$point);
          int i = this.func_214203_a(s, editbookscreen$point);
          if (i >= 0) {
-            this.field_214240_i = i;
+            this.selectionEnd = i;
          }
       }
 
@@ -771,15 +771,15 @@ public class EditBookScreen extends Screen {
 
    @OnlyIn(Dist.CLIENT)
    class Point {
-      private int field_216928_b;
-      private int field_216929_c;
+      private int x;
+      private int y;
 
       Point() {
       }
 
-      Point(int p_i50636_2_, int p_i50636_3_) {
-         this.field_216928_b = p_i50636_2_;
-         this.field_216929_c = p_i50636_3_;
+      Point(int xIn, int yIn) {
+         this.x = xIn;
+         this.y = yIn;
       }
    }
 }

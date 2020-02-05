@@ -24,13 +24,13 @@ public class MushroomBlock extends BushBlock implements IGrowable {
       return SHAPE;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_4_.nextInt(25) == 0) {
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (rand.nextInt(25) == 0) {
          int i = 5;
          int j = 4;
 
-         for(BlockPos blockpos : BlockPos.getAllInBoxMutable(p_225534_3_.add(-4, -1, -4), p_225534_3_.add(4, 1, 4))) {
-            if (p_225534_2_.getBlockState(blockpos).getBlock() == this) {
+         for(BlockPos blockpos : BlockPos.getAllInBoxMutable(pos.add(-4, -1, -4), pos.add(4, 1, 4))) {
+            if (worldIn.getBlockState(blockpos).getBlock() == this) {
                --i;
                if (i <= 0) {
                   return;
@@ -38,18 +38,18 @@ public class MushroomBlock extends BushBlock implements IGrowable {
             }
          }
 
-         BlockPos blockpos1 = p_225534_3_.add(p_225534_4_.nextInt(3) - 1, p_225534_4_.nextInt(2) - p_225534_4_.nextInt(2), p_225534_4_.nextInt(3) - 1);
+         BlockPos blockpos1 = pos.add(rand.nextInt(3) - 1, rand.nextInt(2) - rand.nextInt(2), rand.nextInt(3) - 1);
 
          for(int k = 0; k < 4; ++k) {
-            if (p_225534_2_.isAirBlock(blockpos1) && p_225534_1_.isValidPosition(p_225534_2_, blockpos1)) {
-               p_225534_3_ = blockpos1;
+            if (worldIn.isAirBlock(blockpos1) && state.isValidPosition(worldIn, blockpos1)) {
+               pos = blockpos1;
             }
 
-            blockpos1 = p_225534_3_.add(p_225534_4_.nextInt(3) - 1, p_225534_4_.nextInt(2) - p_225534_4_.nextInt(2), p_225534_4_.nextInt(3) - 1);
+            blockpos1 = pos.add(rand.nextInt(3) - 1, rand.nextInt(2) - rand.nextInt(2), rand.nextInt(3) - 1);
          }
 
-         if (p_225534_2_.isAirBlock(blockpos1) && p_225534_1_.isValidPosition(p_225534_2_, blockpos1)) {
-            p_225534_2_.setBlockState(blockpos1, p_225534_1_, 2);
+         if (worldIn.isAirBlock(blockpos1) && state.isValidPosition(worldIn, blockpos1)) {
+            worldIn.setBlockState(blockpos1, state, 2);
          }
       }
 
@@ -64,7 +64,7 @@ public class MushroomBlock extends BushBlock implements IGrowable {
       BlockState blockstate = worldIn.getBlockState(blockpos);
       Block block = blockstate.getBlock();
       if (block != Blocks.MYCELIUM && block != Blocks.PODZOL) {
-         return worldIn.func_226659_b_(pos, 0) < 13 && this.isValidGround(blockstate, worldIn, blockpos);
+         return worldIn.getLightSubtracted(pos, 0) < 13 && this.isValidGround(blockstate, worldIn, blockpos);
       } else {
          return true;
       }
@@ -74,14 +74,14 @@ public class MushroomBlock extends BushBlock implements IGrowable {
       p_226940_1_.removeBlock(p_226940_2_, false);
       ConfiguredFeature<BigMushroomFeatureConfig, ?> configuredfeature;
       if (this == Blocks.BROWN_MUSHROOM) {
-         configuredfeature = Feature.HUGE_BROWN_MUSHROOM.func_225566_b_(DefaultBiomeFeatures.field_226768_ac_);
+         configuredfeature = Feature.HUGE_BROWN_MUSHROOM.withConfiguration(DefaultBiomeFeatures.BIG_BROWN_MUSHROOM);
       } else {
          if (this != Blocks.RED_MUSHROOM) {
             p_226940_1_.setBlockState(p_226940_2_, p_226940_3_, 3);
             return false;
          }
 
-         configuredfeature = Feature.HUGE_RED_MUSHROOM.func_225566_b_(DefaultBiomeFeatures.field_226767_ab_);
+         configuredfeature = Feature.HUGE_RED_MUSHROOM.withConfiguration(DefaultBiomeFeatures.BIG_RED_MUSHROOM);
       }
 
       if (configuredfeature.place(p_226940_1_, p_226940_1_.getChunkProvider().getChunkGenerator(), p_226940_4_, p_226940_2_)) {
@@ -100,7 +100,7 @@ public class MushroomBlock extends BushBlock implements IGrowable {
       return (double)rand.nextFloat() < 0.4D;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       this.func_226940_a_(p_225535_1_, p_225535_3_, p_225535_4_, p_225535_2_);
    }
 

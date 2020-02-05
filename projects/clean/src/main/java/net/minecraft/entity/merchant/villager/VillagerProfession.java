@@ -30,29 +30,29 @@ public class VillagerProfession {
    public static final VillagerProfession WEAPONSMITH = registerProfession("weaponsmith", PointOfInterestType.WEAPONSMITH, SoundEvents.ENTITY_VILLAGER_WORK_WEAPONSMITH);
    private final String name;
    private final PointOfInterestType pointOfInterest;
-   private final ImmutableSet<Item> itemSet;
-   private final ImmutableSet<Block> workBlockSet;
+   private final ImmutableSet<Item> specificItems;
+   private final ImmutableSet<Block> relatedWorldBlocks;
    @Nullable
    private final SoundEvent soundEvent;
 
-   private VillagerProfession(String name, PointOfInterestType poiType, ImmutableSet<Item> itemSet, ImmutableSet<Block> workBlockSet, @Nullable SoundEvent soundEvent) {
-      this.name = name;
-      this.pointOfInterest = poiType;
-      this.itemSet = itemSet;
-      this.workBlockSet = workBlockSet;
-      this.soundEvent = soundEvent;
+   private VillagerProfession(String p_i225734_1_, PointOfInterestType p_i225734_2_, ImmutableSet<Item> p_i225734_3_, ImmutableSet<Block> p_i225734_4_, @Nullable SoundEvent p_i225734_5_) {
+      this.name = p_i225734_1_;
+      this.pointOfInterest = p_i225734_2_;
+      this.specificItems = p_i225734_3_;
+      this.relatedWorldBlocks = p_i225734_4_;
+      this.soundEvent = p_i225734_5_;
    }
 
    public PointOfInterestType getPointOfInterest() {
       return this.pointOfInterest;
    }
 
-   public ImmutableSet<Item> getItemSet() {
-      return this.itemSet;
+   public ImmutableSet<Item> getSpecificItems() {
+      return this.specificItems;
    }
 
-   public ImmutableSet<Block> getWorkBlockSet() {
-      return this.workBlockSet;
+   public ImmutableSet<Block> getRelatedWorldBlocks() {
+      return this.relatedWorldBlocks;
    }
 
    @Nullable

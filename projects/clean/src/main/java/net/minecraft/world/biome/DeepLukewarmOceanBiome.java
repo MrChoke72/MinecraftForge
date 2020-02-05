@@ -14,10 +14,10 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public class DeepLukewarmOceanBiome extends Biome {
    public DeepLukewarmOceanBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_DIRT_SAND_CONFIG).precipitation(Biome.RainType.RAIN).category(Biome.Category.OCEAN).depth(-1.8F).scale(0.1F).temperature(0.5F).downfall(0.5F).waterColor(4566514).waterFogColor(267827).parent((String)null));
-      this.func_226711_a_(Feature.OCEAN_RUIN.func_225566_b_(new OceanRuinConfig(OceanRuinStructure.Type.WARM, 0.3F, 0.9F)));
-      this.func_226711_a_(Feature.OCEAN_MONUMENT.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.SHIPWRECK.func_225566_b_(new ShipwreckConfig(false)));
+      this.addStructure(Feature.OCEAN_RUIN.withConfiguration(new OceanRuinConfig(OceanRuinStructure.Type.WARM, 0.3F, 0.9F)));
+      this.addStructure(Feature.OCEAN_MONUMENT.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.SHIPWRECK.withConfiguration(new ShipwreckConfig(false)));
       DefaultBiomeFeatures.addOceanCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -25,9 +25,9 @@ public class DeepLukewarmOceanBiome extends Biome {
       DefaultBiomeFeatures.addStoneVariants(this);
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
-      DefaultBiomeFeatures.func_222296_u(this);
+      DefaultBiomeFeatures.addScatteredOakTrees(this);
       DefaultBiomeFeatures.addDefaultFlowers(this);
-      DefaultBiomeFeatures.func_222348_W(this);
+      DefaultBiomeFeatures.addSparseGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);

@@ -20,7 +20,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class PalettedContainer<T> implements IResizeCallback<T> {
-   private final IPalette<T> field_205521_b;
+   private final IPalette<T> registryPalette;
    private final IResizeCallback<T> field_205522_c = (p_205517_0_, p_205517_1_) -> {
       return 0;
    };
@@ -52,7 +52,7 @@ public class PalettedContainer<T> implements IResizeCallback<T> {
    }
 
    public PalettedContainer(IPalette<T> p_i48961_1_, ObjectIntIdentityMap<T> p_i48961_2_, Function<CompoundNBT, T> p_i48961_3_, Function<T, CompoundNBT> p_i48961_4_, T p_i48961_5_) {
-      this.field_205521_b = p_i48961_1_;
+      this.registryPalette = p_i48961_1_;
       this.registry = p_i48961_2_;
       this.deserializer = p_i48961_3_;
       this.serializer = p_i48961_4_;
@@ -73,7 +73,7 @@ public class PalettedContainer<T> implements IResizeCallback<T> {
          } else if (this.bits < 9) {
             this.palette = new PaletteHashMap<>(this.registry, this.bits, this, this.deserializer, this.serializer);
          } else {
-            this.palette = this.field_205521_b;
+            this.palette = this.registryPalette;
             this.bits = MathHelper.log2DeBruijn(this.registry.size());
          }
 
@@ -100,20 +100,20 @@ public class PalettedContainer<T> implements IResizeCallback<T> {
       return j;
    }
 
-   public T func_222641_a(int p_222641_1_, int p_222641_2_, int p_222641_3_, T p_222641_4_) {
+   public T lockedSwap(int x, int y, int z, T state) {
       this.lock();
-      T t = (T)this.func_222643_a(getIndex(p_222641_1_, p_222641_2_, p_222641_3_), p_222641_4_);
+      T t = (T)this.doSwap(getIndex(x, y, z), state);
       this.unlock();
       return t;
    }
 
-   public T func_222639_b(int p_222639_1_, int p_222639_2_, int p_222639_3_, T p_222639_4_) {
-      return (T)this.func_222643_a(getIndex(p_222639_1_, p_222639_2_, p_222639_3_), p_222639_4_);
+   public T swap(int x, int y, int z, T state) {
+      return (T)this.doSwap(getIndex(x, y, z), state);
    }
 
-   protected T func_222643_a(int p_222643_1_, T p_222643_2_) {
-      int i = this.palette.idFor(p_222643_2_);
-      int j = this.storage.func_219789_a(p_222643_1_, i);
+   protected T doSwap(int index, T state) {
+      int i = this.palette.idFor(state);
+      int j = this.storage.swapAt(index, i);
       T t = this.palette.get(j);
       return (T)(t == null ? this.defaultState : t);
    }
@@ -162,13 +162,13 @@ public class PalettedContainer<T> implements IResizeCallback<T> {
 
       this.palette.read(p_222642_1_);
       int j = p_222642_2_.length * 64 / 4096;
-      if (this.palette == this.field_205521_b) {
+      if (this.palette == this.registryPalette) {
          IPalette<T> ipalette = new PaletteHashMap<>(this.registry, i, this.field_205522_c, this.deserializer, this.serializer);
          ipalette.read(p_222642_1_);
          BitArray bitarray = new BitArray(i, 4096, p_222642_2_);
 
          for(int k = 0; k < 4096; ++k) {
-            this.storage.setAt(k, this.field_205521_b.idFor(ipalette.get(bitarray.getAt(k))));
+            this.storage.setAt(k, this.registryPalette.idFor(ipalette.get(bitarray.getAt(k))));
          }
       } else if (j == this.bits) {
          System.arraycopy(p_222642_2_, 0, this.storage.getBackingLongArray(), 0, p_222642_2_.length);
@@ -222,13 +222,13 @@ public class PalettedContainer<T> implements IResizeCallback<T> {
       return this.palette.contains(p_222640_1_);
    }
 
-   public void func_225497_a(PalettedContainer.ICountConsumer<T> p_225497_1_) {
+   public void count(PalettedContainer.ICountConsumer<T> countConsumerIn) {
       Int2IntMap int2intmap = new Int2IntOpenHashMap();
       this.storage.func_225421_a((p_225498_1_) -> {
          int2intmap.put(p_225498_1_, int2intmap.get(p_225498_1_) + 1);
       });
       int2intmap.int2IntEntrySet().forEach((p_225499_2_) -> {
-         p_225497_1_.accept(this.palette.get(p_225499_2_.getIntKey()), p_225499_2_.getIntValue());
+         countConsumerIn.accept(this.palette.get(p_225499_2_.getIntKey()), p_225499_2_.getIntValue());
       });
    }
 

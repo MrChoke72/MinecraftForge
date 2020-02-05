@@ -11,70 +11,70 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class ColorCache {
-   private final ThreadLocal<ColorCache.Entry> field_228066_a_ = ThreadLocal.withInitial(() -> {
+   private final ThreadLocal<ColorCache.Entry> threadCacheEntry = ThreadLocal.withInitial(() -> {
       return new ColorCache.Entry();
    });
-   private final Long2ObjectLinkedOpenHashMap<int[]> field_228067_b_ = new Long2ObjectLinkedOpenHashMap<>(256, 0.25F);
-   private final ReentrantReadWriteLock field_228068_c_ = new ReentrantReadWriteLock();
+   private final Long2ObjectLinkedOpenHashMap<int[]> cache = new Long2ObjectLinkedOpenHashMap<>(256, 0.25F);
+   private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-   public int func_228071_a_(BlockPos p_228071_1_, IntSupplier p_228071_2_) {
-      int i = p_228071_1_.getX() >> 4;
-      int j = p_228071_1_.getZ() >> 4;
-      ColorCache.Entry colorcache$entry = this.field_228066_a_.get();
-      if (colorcache$entry.field_228074_a_ != i || colorcache$entry.field_228075_b_ != j) {
-         colorcache$entry.field_228074_a_ = i;
-         colorcache$entry.field_228075_b_ = j;
-         colorcache$entry.field_228076_c_ = this.func_228073_b_(i, j);
+   public int getColor(BlockPos blockPosIn, IntSupplier colorSupplier) {
+      int i = blockPosIn.getX() >> 4;
+      int j = blockPosIn.getZ() >> 4;
+      ColorCache.Entry colorcache$entry = this.threadCacheEntry.get();
+      if (colorcache$entry.chunkX != i || colorcache$entry.chunkZ != j) {
+         colorcache$entry.chunkX = i;
+         colorcache$entry.chunkZ = j;
+         colorcache$entry.colorCache = this.getChunkCache(i, j);
       }
 
-      int k = p_228071_1_.getX() & 15;
-      int l = p_228071_1_.getZ() & 15;
+      int k = blockPosIn.getX() & 15;
+      int l = blockPosIn.getZ() & 15;
       int i1 = l << 4 | k;
-      int j1 = colorcache$entry.field_228076_c_[i1];
+      int j1 = colorcache$entry.colorCache[i1];
       if (j1 != -1) {
          return j1;
       } else {
-         int k1 = p_228071_2_.getAsInt();
-         colorcache$entry.field_228076_c_[i1] = k1;
+         int k1 = colorSupplier.getAsInt();
+         colorcache$entry.colorCache[i1] = k1;
          return k1;
       }
    }
 
-   public void func_228070_a_(int p_228070_1_, int p_228070_2_) {
+   public void invalidateChunk(int chunkX, int chunkZ) {
       try {
-         this.field_228068_c_.writeLock().lock();
+         this.lock.writeLock().lock();
 
          for(int i = -1; i <= 1; ++i) {
             for(int j = -1; j <= 1; ++j) {
-               long k = ChunkPos.asLong(p_228070_1_ + i, p_228070_2_ + j);
-               this.field_228067_b_.remove(k);
+               long k = ChunkPos.asLong(chunkX + i, chunkZ + j);
+               this.cache.remove(k);
             }
          }
       } finally {
-         this.field_228068_c_.writeLock().unlock();
+         this.lock.writeLock().unlock();
       }
 
    }
 
-   public void func_228069_a_() {
+   public void invalidateAll() {
       try {
-         this.field_228068_c_.writeLock().lock();
-         this.field_228067_b_.clear();
+         this.lock.writeLock().lock();
+         this.cache.clear();
       } finally {
-         this.field_228068_c_.writeLock().unlock();
+         this.lock.writeLock().unlock();
       }
 
    }
 
-   private int[] func_228073_b_(int p_228073_1_, int p_228073_2_) {
-      long i = ChunkPos.asLong(p_228073_1_, p_228073_2_);
-      this.field_228068_c_.readLock().lock();
+   private int[] getChunkCache(int chunkX, int chunkZ) {
+      long i = ChunkPos.asLong(chunkX, chunkZ);
+      this.lock.readLock().lock();
 
       int[] aint;
       try {
-         aint = this.field_228067_b_.get(i);
+         aint = this.cache.get(i);
       } finally {
-         this.field_228068_c_.readLock().unlock();
+         this.lock.readLock().unlock();
       }
 
       if (aint != null) {
@@ -84,14 +84,14 @@ public class ColorCache {
          Arrays.fill(aint1, -1);
 
          try {
-            this.field_228068_c_.writeLock().lock();
-            if (this.field_228067_b_.size() >= 256) {
-               this.field_228067_b_.removeFirst();
+            this.lock.writeLock().lock();
+            if (this.cache.size() >= 256) {
+               this.cache.removeFirst();
             }
 
-            this.field_228067_b_.put(i, aint1);
+            this.cache.put(i, aint1);
          } finally {
-            this.field_228068_c_.writeLock().unlock();
+            this.lock.writeLock().unlock();
          }
 
          return aint1;
@@ -100,9 +100,9 @@ public class ColorCache {
 
    @OnlyIn(Dist.CLIENT)
    static class Entry {
-      public int field_228074_a_ = Integer.MIN_VALUE;
-      public int field_228075_b_ = Integer.MIN_VALUE;
-      public int[] field_228076_c_;
+      public int chunkX = Integer.MIN_VALUE;
+      public int chunkZ = Integer.MIN_VALUE;
+      public int[] colorCache;
 
       private Entry() {
       }

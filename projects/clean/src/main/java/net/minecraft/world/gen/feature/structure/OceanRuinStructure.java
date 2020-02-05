@@ -62,21 +62,21 @@ public class OceanRuinStructure extends ScatteredStructure<OceanRuinConfig> {
       WARM("warm"),
       COLD("cold");
 
-      private static final Map<String, OceanRuinStructure.Type> field_215137_c = Arrays.stream(values()).collect(Collectors.toMap(OceanRuinStructure.Type::func_215135_a, (p_215134_0_) -> {
+      private static final Map<String, OceanRuinStructure.Type> BY_NAME = Arrays.stream(values()).collect(Collectors.toMap(OceanRuinStructure.Type::getName, (p_215134_0_) -> {
          return p_215134_0_;
       }));
-      private final String field_215138_d;
+      private final String name;
 
-      private Type(String p_i50621_3_) {
-         this.field_215138_d = p_i50621_3_;
+      private Type(String nameIn) {
+         this.name = nameIn;
       }
 
-      public String func_215135_a() {
-         return this.field_215138_d;
+      public String getName() {
+         return this.name;
       }
 
-      public static OceanRuinStructure.Type func_215136_a(String p_215136_0_) {
-         return field_215137_c.get(p_215136_0_);
+      public static OceanRuinStructure.Type getType(String nameIn) {
+         return BY_NAME.get(nameIn);
       }
    }
 }

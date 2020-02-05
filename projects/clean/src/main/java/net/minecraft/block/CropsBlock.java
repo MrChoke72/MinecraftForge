@@ -56,14 +56,14 @@ public class CropsBlock extends BushBlock implements IGrowable {
       return state.get(this.getAgeProperty()) >= this.getMaxAge();
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      super.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
-      if (p_225534_2_.func_226659_b_(p_225534_3_, 0) >= 9) {
-         int i = this.getAge(p_225534_1_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      super.tick(state, worldIn, pos, rand);
+      if (worldIn.getLightSubtracted(pos, 0) >= 9) {
+         int i = this.getAge(state);
          if (i < this.getMaxAge()) {
-            float f = getGrowthChance(this, p_225534_2_, p_225534_3_);
-            if (p_225534_4_.nextInt((int)(25.0F / f) + 1) == 0) {
-               p_225534_2_.setBlockState(p_225534_3_, this.withAge(i + 1), 2);
+            float f = getGrowthChance(this, worldIn, pos);
+            if (rand.nextInt((int)(25.0F / f) + 1) == 0) {
+               worldIn.setBlockState(pos, this.withAge(i + 1), 2);
             }
          }
       }
@@ -126,7 +126,7 @@ public class CropsBlock extends BushBlock implements IGrowable {
    }
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-      return (worldIn.func_226659_b_(pos, 0) >= 8 || worldIn.isMaxLightLevel(pos)) && super.isValidPosition(state, worldIn, pos);
+      return (worldIn.getLightSubtracted(pos, 0) >= 8 || worldIn.canSeeSky(pos)) && super.isValidPosition(state, worldIn, pos);
    }
 
    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
@@ -153,7 +153,7 @@ public class CropsBlock extends BushBlock implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       this.grow(p_225535_1_, p_225535_3_, p_225535_4_);
    }
 

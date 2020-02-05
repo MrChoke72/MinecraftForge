@@ -18,7 +18,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 
 public class TallSeaGrassBlock extends ShearableDoublePlantBlock implements ILiquidContainer {
-   public static final EnumProperty<DoubleBlockHalf> field_208065_c = ShearableDoublePlantBlock.field_208063_b;
+   public static final EnumProperty<DoubleBlockHalf> field_208065_c = ShearableDoublePlantBlock.PLANT_HALF;
    protected static final VoxelShape SHAPE = Block.makeCuboidShape(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
    public TallSeaGrassBlock(Block.Properties p_i49970_1_) {
@@ -30,7 +30,7 @@ public class TallSeaGrassBlock extends ShearableDoublePlantBlock implements ILiq
    }
 
    protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
-      return state.func_224755_d(worldIn, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
+      return state.isSolidSide(worldIn, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
    }
 
    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state) {

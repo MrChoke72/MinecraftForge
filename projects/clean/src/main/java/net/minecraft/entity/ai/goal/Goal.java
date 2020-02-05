@@ -24,9 +24,9 @@ public abstract class Goal {
    public void tick() {
    }
 
-   public void setMutexFlags(EnumSet<Goal.Flag> p_220684_1_) {
+   public void setMutexFlags(EnumSet<Goal.Flag> flagSet) {
       this.flags.clear();
-      this.flags.addAll(p_220684_1_);
+      this.flags.addAll(flagSet);
    }
 
    public String toString() {

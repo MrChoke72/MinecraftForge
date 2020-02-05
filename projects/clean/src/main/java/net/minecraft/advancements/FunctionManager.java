@@ -197,7 +197,7 @@ public class FunctionManager implements IResourceManagerReloadListener {
    }
 
    public CommandSource func_223402_g() {
-      return new CommandSource(ICommandSource.field_213139_a_, Vec3d.ZERO, Vec2f.ZERO, (ServerWorld)null, this.server.func_223707_k(), "", new StringTextComponent(""), this.server, (Entity)null);
+      return new CommandSource(ICommandSource.field_213139_a_, Vec3d.ZERO, Vec2f.ZERO, (ServerWorld)null, this.server.getFunctionLevel(), "", new StringTextComponent(""), this.server, (Entity)null);
    }
 
    public TagCollection<FunctionObject> getTagCollection() {

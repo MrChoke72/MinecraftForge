@@ -42,7 +42,7 @@ public class ExperienceOrbEntity extends Entity {
       super(p_i50382_1_, p_i50382_2_);
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -157,7 +157,7 @@ public class ExperienceOrbEntity extends Entity {
          if (this.delayBeforeCanPickup == 0 && entityIn.xpCooldown == 0) {
             entityIn.xpCooldown = 2;
             entityIn.onItemPickup(this, 1);
-            Entry<EquipmentSlotType, ItemStack> entry = EnchantmentHelper.func_222189_b(Enchantments.MENDING, entityIn);
+            Entry<EquipmentSlotType, ItemStack> entry = EnchantmentHelper.getRandomItemWithEnchantment(Enchantments.MENDING, entityIn);
             if (entry != null) {
                ItemStack itemstack = entry.getValue();
                if (!itemstack.isEmpty() && itemstack.isDamaged()) {

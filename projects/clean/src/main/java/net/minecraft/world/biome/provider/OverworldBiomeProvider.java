@@ -16,7 +16,7 @@ public class OverworldBiomeProvider extends BiomeProvider {
       this.genBiomes = LayerUtil.func_227474_a_(settingsProvider.func_226850_a_(), settingsProvider.func_226851_b_(), settingsProvider.getGeneratorSettings());
    }
 
-   public Biome func_225526_b_(int p_225526_1_, int p_225526_2_, int p_225526_3_) {
-      return this.genBiomes.func_215738_a(p_225526_1_, p_225526_3_);
+   public Biome getNoiseBiome(int x, int y, int z) {
+      return this.genBiomes.func_215738_a(x, z);
    }
 }

@@ -42,7 +42,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class KeyboardListener {
    private final Minecraft mc;
    private boolean repeatEventsEnabled;
-   private final ClipboardHelper field_216821_c = new ClipboardHelper();
+   private final ClipboardHelper clipboardHelper = new ClipboardHelper();
    private long debugCrashKeyPressTime = -1L;
    private long lastDebugCrashWarning = -1L;
    private long debugCrashWarningsSent = -1L;
@@ -238,12 +238,12 @@ public class KeyboardListener {
    }
 
    public void onKeyEvent(long windowPointer, int key, int scanCode, int action, int modifiers) {
-      if (windowPointer == this.mc.func_228018_at_().getHandle()) {
+      if (windowPointer == this.mc.getMainWindow().getHandle()) {
          if (this.debugCrashKeyPressTime > 0L) {
-            if (!InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 67) || !InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 292)) {
+            if (!InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 67) || !InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 292)) {
                this.debugCrashKeyPressTime = -1L;
             }
-         } else if (InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 67) && InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 292)) {
+         } else if (InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 67) && InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 292)) {
             this.actionKeyF3 = true;
             this.debugCrashKeyPressTime = Util.milliTime();
             this.lastDebugCrashWarning = Util.milliTime();
@@ -253,8 +253,8 @@ public class KeyboardListener {
          INestedGuiEventHandler inestedguieventhandler = this.mc.currentScreen;
          if (action == 1 && (!(this.mc.currentScreen instanceof ControlsScreen) || ((ControlsScreen)inestedguieventhandler).time <= Util.milliTime() - 20L)) {
             if (this.mc.gameSettings.keyBindFullscreen.matchesKey(key, scanCode)) {
-               this.mc.func_228018_at_().toggleFullscreen();
-               this.mc.gameSettings.fullscreen = this.mc.func_228018_at_().isFullscreen();
+               this.mc.getMainWindow().toggleFullscreen();
+               this.mc.gameSettings.fullscreen = this.mc.getMainWindow().isFullscreen();
                return;
             }
 
@@ -263,7 +263,7 @@ public class KeyboardListener {
                   ;
                }
 
-               ScreenShotHelper.saveScreenshot(this.mc.gameDir, this.mc.func_228018_at_().getFramebufferWidth(), this.mc.func_228018_at_().getFramebufferHeight(), this.mc.getFramebuffer(), (p_212449_1_) -> {
+               ScreenShotHelper.saveScreenshot(this.mc.gameDir, this.mc.getMainWindow().getFramebufferWidth(), this.mc.getMainWindow().getFramebufferHeight(), this.mc.getFramebuffer(), (p_212449_1_) -> {
                   this.mc.execute(() -> {
                      this.mc.ingameGUI.getChatGUI().printChatMessage(p_212449_1_);
                   });
@@ -272,9 +272,9 @@ public class KeyboardListener {
             }
          }
 
-         boolean flag = inestedguieventhandler == null || !(inestedguieventhandler.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)inestedguieventhandler.getFocused()).func_212955_f();
+         boolean flag = inestedguieventhandler == null || !(inestedguieventhandler.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)inestedguieventhandler.getFocused()).canWrite();
          if (action != 0 && key == 66 && Screen.hasControlDown() && flag) {
-            AbstractOption.NARRATOR.func_216722_a(this.mc.gameSettings, 1);
+            AbstractOption.NARRATOR.setValueIndex(this.mc.gameSettings, 1);
             if (inestedguieventhandler instanceof ChatOptionsScreen) {
                ((ChatOptionsScreen)inestedguieventhandler).updateNarratorButton();
             }
@@ -322,11 +322,11 @@ public class KeyboardListener {
                boolean flag1 = false;
                if (this.mc.currentScreen == null) {
                   if (key == 256) {
-                     boolean flag2 = InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 292);
+                     boolean flag2 = InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 292);
                      this.mc.displayInGameMenu(flag2);
                   }
 
-                  flag1 = InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 292) && this.processKeyF3(key);
+                  flag1 = InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 292) && this.processKeyF3(key);
                   this.actionKeyF3 |= flag1;
                   if (key == 290) {
                      this.mc.gameSettings.hideGUI = !this.mc.gameSettings.hideGUI;
@@ -358,7 +358,7 @@ public class KeyboardListener {
    }
 
    private void onCharEvent(long windowPointer, int codePoint, int modifiers) {
-      if (windowPointer == this.mc.func_228018_at_().getHandle()) {
+      if (windowPointer == this.mc.getMainWindow().getHandle()) {
          IGuiEventListener iguieventlistener = this.mc.currentScreen;
          if (iguieventlistener != null && this.mc.getLoadingGui() == null) {
             if (Character.charCount(codePoint) == 1) {
@@ -382,7 +382,7 @@ public class KeyboardListener {
    }
 
    public void setupCallbacks(long window) {
-      InputMappings.func_216505_a(window, (p_228001_1_, p_228001_3_, p_228001_4_, p_228001_5_, p_228001_6_) -> {
+      InputMappings.setKeyCallbacks(window, (p_228001_1_, p_228001_3_, p_228001_4_, p_228001_5_, p_228001_6_) -> {
          this.mc.execute(() -> {
             this.onKeyEvent(p_228001_1_, p_228001_3_, p_228001_4_, p_228001_5_, p_228001_6_);
          });
@@ -394,16 +394,16 @@ public class KeyboardListener {
    }
 
    public String getClipboardString() {
-      return this.field_216821_c.func_216487_a(this.mc.func_228018_at_().getHandle(), (p_227998_1_, p_227998_2_) -> {
+      return this.clipboardHelper.getClipboardString(this.mc.getMainWindow().getHandle(), (p_227998_1_, p_227998_2_) -> {
          if (p_227998_1_ != 65545) {
-            this.mc.func_228018_at_().logGlError(p_227998_1_, p_227998_2_);
+            this.mc.getMainWindow().logGlError(p_227998_1_, p_227998_2_);
          }
 
       });
    }
 
    public void setClipboardString(String string) {
-      this.field_216821_c.func_216489_a(this.mc.func_228018_at_().getHandle(), string);
+      this.clipboardHelper.setClipboardString(this.mc.getMainWindow().getHandle(), string);
    }
 
    public void tick() {
@@ -413,7 +413,7 @@ public class KeyboardListener {
          long k = i - this.lastDebugCrashWarning;
          if (j < 0L) {
             if (Screen.hasControlDown()) {
-               NativeUtil.func_216393_a();
+               NativeUtil.crash();
             }
 
             throw new ReportedException(new CrashReport("Manually triggered debug crash", new Throwable()));

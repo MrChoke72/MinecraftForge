@@ -51,9 +51,9 @@ public class DetectorRailBlock extends AbstractRailBlock {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_1_.get(POWERED)) {
-         this.updatePoweredState(p_225534_2_, p_225534_3_, p_225534_1_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (state.get(POWERED)) {
+         this.updatePoweredState(worldIn, pos, state);
       }
    }
 
@@ -83,7 +83,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
          this.updateConnectedRails(worldIn, pos, blockstate, true);
          worldIn.notifyNeighborsOfStateChange(pos, this);
          worldIn.notifyNeighborsOfStateChange(pos.down(), this);
-         worldIn.func_225319_b(pos, state, blockstate);
+         worldIn.markBlockRangeForRenderUpdate(pos, state, blockstate);
       }
 
       if (!flag1 && flag) {
@@ -92,7 +92,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
          this.updateConnectedRails(worldIn, pos, blockstate1, false);
          worldIn.notifyNeighborsOfStateChange(pos, this);
          worldIn.notifyNeighborsOfStateChange(pos.down(), this);
-         worldIn.func_225319_b(pos, state, blockstate1);
+         worldIn.markBlockRangeForRenderUpdate(pos, state, blockstate1);
       }
 
       if (flag1) {

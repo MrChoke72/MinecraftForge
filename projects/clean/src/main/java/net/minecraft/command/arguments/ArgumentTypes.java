@@ -54,7 +54,7 @@ public class ArgumentTypes {
       register("color", ColorArgument.class, new ArgumentSerializer<>(ColorArgument::color));
       register("component", ComponentArgument.class, new ArgumentSerializer<>(ComponentArgument::component));
       register("message", MessageArgument.class, new ArgumentSerializer<>(MessageArgument::message));
-      register("nbt_compound_tag", NBTCompoundTagArgument.class, new ArgumentSerializer<>(NBTCompoundTagArgument::func_218043_a));
+      register("nbt_compound_tag", NBTCompoundTagArgument.class, new ArgumentSerializer<>(NBTCompoundTagArgument::nbt));
       register("nbt_tag", NBTTagArgument.class, new ArgumentSerializer<>(NBTTagArgument::func_218085_a));
       register("nbt_path", NBTPathArgument.class, new ArgumentSerializer<>(NBTPathArgument::nbtPath));
       register("objective", ObjectiveArgument.class, new ArgumentSerializer<>(ObjectiveArgument::objective));
@@ -69,7 +69,7 @@ public class ArgumentTypes {
       register("item_slot", SlotArgument.class, new ArgumentSerializer<>(SlotArgument::slot));
       register("resource_location", ResourceLocationArgument.class, new ArgumentSerializer<>(ResourceLocationArgument::resourceLocation));
       register("mob_effect", PotionArgument.class, new ArgumentSerializer<>(PotionArgument::mobEffect));
-      register("function", FunctionArgument.class, new ArgumentSerializer<>(FunctionArgument::func_200021_a));
+      register("function", FunctionArgument.class, new ArgumentSerializer<>(FunctionArgument::function));
       register("entity_anchor", EntityAnchorArgument.class, new ArgumentSerializer<>(EntityAnchorArgument::entityAnchor));
       register("int_range", IRangeArgument.IntRange.class, new IRangeArgument.IntRange.Serializer());
       register("float_range", IRangeArgument.FloatRange.class, new IRangeArgument.FloatRange.Serializer());

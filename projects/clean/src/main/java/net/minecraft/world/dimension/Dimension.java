@@ -82,14 +82,14 @@ public abstract class Dimension {
    }
 
    public boolean hasSkyLight() {
-      return this.type.func_218272_d();
+      return this.type.hasSkyLight();
    }
 
    public boolean isNether() {
       return this.nether;
    }
 
-   public float func_227174_a_(int p_227174_1_) {
+   public float getLightBrightness(int p_227174_1_) {
       return this.lightBrightnessTable[p_227174_1_];
    }
 

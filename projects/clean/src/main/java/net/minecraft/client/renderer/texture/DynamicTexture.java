@@ -15,11 +15,11 @@ public class DynamicTexture extends Texture implements AutoCloseable {
       this.dynamicTextureData = nativeImageIn;
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            TextureUtil.func_225680_a_(this.getGlTextureId(), this.dynamicTextureData.getWidth(), this.dynamicTextureData.getHeight());
+            TextureUtil.prepareImage(this.getGlTextureId(), this.dynamicTextureData.getWidth(), this.dynamicTextureData.getHeight());
             this.updateDynamicTexture();
          });
       } else {
-         TextureUtil.func_225680_a_(this.getGlTextureId(), this.dynamicTextureData.getWidth(), this.dynamicTextureData.getHeight());
+         TextureUtil.prepareImage(this.getGlTextureId(), this.dynamicTextureData.getWidth(), this.dynamicTextureData.getHeight());
          this.updateDynamicTexture();
       }
 
@@ -28,14 +28,14 @@ public class DynamicTexture extends Texture implements AutoCloseable {
    public DynamicTexture(int widthIn, int heightIn, boolean clearIn) {
       RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
       this.dynamicTextureData = new NativeImage(widthIn, heightIn, clearIn);
-      TextureUtil.func_225680_a_(this.getGlTextureId(), this.dynamicTextureData.getWidth(), this.dynamicTextureData.getHeight());
+      TextureUtil.prepareImage(this.getGlTextureId(), this.dynamicTextureData.getWidth(), this.dynamicTextureData.getHeight());
    }
 
    public void loadTexture(IResourceManager manager) throws IOException {
    }
 
    public void updateDynamicTexture() {
-      this.func_229148_d_();
+      this.bindTexture();
       this.dynamicTextureData.uploadTextureSub(0, 0, 0, false);
    }
 

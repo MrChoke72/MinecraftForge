@@ -2,10 +2,8 @@ package net.minecraft.entity.monster;
 
 import com.google.common.collect.Maps;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -40,7 +38,6 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IWorld;
@@ -57,7 +54,6 @@ public class VindicatorEntity extends AbstractIllagerEntity {
    //private static final Predicate<Difficulty> field_213681_b = (p_213678_0_) -> {
       return p_213678_0_ == Difficulty.NORMAL || p_213678_0_ == Difficulty.HARD;
    };
-
    private boolean johnny;
 
    public VindicatorEntity(EntityType<? extends VindicatorEntity> p_i50189_1_, World p_i50189_2_) {
@@ -249,7 +245,7 @@ public class VindicatorEntity extends AbstractIllagerEntity {
    }
 
    //AH CHANGE NEW ******
-   static class BreakTrapDoorGoal extends net.minecraft.entity.ai.goal.BreakTrapDoorGoal {
+   static class BreakTrapDoorGoal extends com.mrchoke.entity.ai.goal.BreakTrapDoorGoal {
       public BreakTrapDoorGoal(MobEntity entity) {
          super(entity, 6, VindicatorEntity.checkDifficulty);
          this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE));

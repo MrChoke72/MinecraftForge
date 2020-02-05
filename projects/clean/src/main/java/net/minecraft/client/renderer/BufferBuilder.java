@@ -25,33 +25,33 @@ import org.apache.logging.log4j.Logger;
 public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexConsumer {
    private static final Logger LOGGER = LogManager.getLogger();
    private ByteBuffer byteBuffer;
-   private final List<BufferBuilder.DrawState> field_227821_i_ = Lists.newArrayList();
-   private int field_227822_j_ = 0;
-   private int field_227823_k_ = 0;
-   private int field_227824_l_ = 0;
-   private int field_227825_m_ = 0;
+   private final List<BufferBuilder.DrawState> drawStates = Lists.newArrayList();
+   private int drawStateIndex = 0;
+   private int renderedBytes = 0;
+   private int nextElementBytes = 0;
+   private int uploadedBytes = 0;
    private int vertexCount;
    @Nullable
    private VertexFormatElement vertexFormatElement;
    private int vertexFormatIndex;
    private int drawMode;
    private VertexFormat vertexFormat;
-   private boolean field_227826_s_;
-   private boolean field_227827_t_;
+   private boolean fastFormat;
+   private boolean fullFormat;
    private boolean isDrawing;
 
    public BufferBuilder(int bufferSizeIn) {
       this.byteBuffer = GLAllocation.createDirectByteBuffer(bufferSizeIn * 4);
    }
 
-   protected void func_227831_b_() {
+   protected void growBuffer() {
       this.growBuffer(this.vertexFormat.getSize());
    }
 
    private void growBuffer(int increaseAmount) {
-      if (this.field_227824_l_ + increaseAmount > this.byteBuffer.capacity()) {
+      if (this.nextElementBytes + increaseAmount > this.byteBuffer.capacity()) {
          int i = this.byteBuffer.capacity();
-         int j = i + func_216566_c(increaseAmount);
+         int j = i + roundUpPositive(increaseAmount);
          LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", i, j);
          ByteBuffer bytebuffer = GLAllocation.createDirectByteBuffer(j);
          this.byteBuffer.position(0);
@@ -61,17 +61,17 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
       }
    }
 
-   private static int func_216566_c(int p_216566_0_) {
+   private static int roundUpPositive(int xIn) {
       int i = 2097152;
-      if (p_216566_0_ == 0) {
+      if (xIn == 0) {
          return i;
       } else {
-         if (p_216566_0_ < 0) {
+         if (xIn < 0) {
             i *= -1;
          }
 
-         int j = p_216566_0_ % i;
-         return j == 0 ? p_216566_0_ : p_216566_0_ + i - j;
+         int j = xIn % i;
+         return j == 0 ? xIn : xIn + i - j;
       }
    }
 
@@ -82,7 +82,7 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
       float[] afloat = new float[i];
 
       for(int j = 0; j < i; ++j) {
-         afloat[j] = getDistanceSq(floatbuffer, cameraX, cameraY, cameraZ, this.vertexFormat.getIntegerSize(), this.field_227823_k_ / 4 + j * this.vertexFormat.getSize());
+         afloat[j] = getDistanceSq(floatbuffer, cameraX, cameraY, cameraZ, this.vertexFormat.getIntegerSize(), this.renderedBytes / 4 + j * this.vertexFormat.getSize());
       }
 
       int[] aint = new int[i];
@@ -100,21 +100,21 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
       for(int l = bitset.nextClearBit(0); l < aint.length; l = bitset.nextClearBit(l + 1)) {
          int i1 = aint[l];
          if (i1 != l) {
-            this.func_227829_a_(floatbuffer, i1);
+            this.limitToVertex(floatbuffer, i1);
             floatbuffer1.clear();
             floatbuffer1.put(floatbuffer);
             int j1 = i1;
 
             for(int k1 = aint[i1]; j1 != l; k1 = aint[k1]) {
-               this.func_227829_a_(floatbuffer, k1);
+               this.limitToVertex(floatbuffer, k1);
                FloatBuffer floatbuffer2 = floatbuffer.slice();
-               this.func_227829_a_(floatbuffer, j1);
+               this.limitToVertex(floatbuffer, j1);
                floatbuffer.put(floatbuffer2);
                bitset.set(j1);
                j1 = k1;
             }
 
-            this.func_227829_a_(floatbuffer, l);
+            this.limitToVertex(floatbuffer, l);
             floatbuffer1.flip();
             floatbuffer.put(floatbuffer1);
          }
@@ -124,15 +124,15 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
 
    }
 
-   private void func_227829_a_(FloatBuffer p_227829_1_, int p_227829_2_) {
+   private void limitToVertex(FloatBuffer floatBufferIn, int indexIn) {
       int i = this.vertexFormat.getIntegerSize() * 4;
-      p_227829_1_.limit(this.field_227823_k_ / 4 + (p_227829_2_ + 1) * i);
-      p_227829_1_.position(this.field_227823_k_ / 4 + p_227829_2_ * i);
+      floatBufferIn.limit(this.renderedBytes / 4 + (indexIn + 1) * i);
+      floatBufferIn.position(this.renderedBytes / 4 + indexIn * i);
    }
 
    public BufferBuilder.State getVertexState() {
-      this.byteBuffer.limit(this.field_227824_l_);
-      this.byteBuffer.position(this.field_227823_k_);
+      this.byteBuffer.limit(this.nextElementBytes);
+      this.byteBuffer.position(this.renderedBytes);
       ByteBuffer bytebuffer = ByteBuffer.allocate(this.vertexCount * this.vertexFormat.getSize());
       bytebuffer.put(this.byteBuffer);
       this.byteBuffer.clear();
@@ -159,17 +159,17 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
    }
 
    public void setVertexState(BufferBuilder.State state) {
-      state.field_227841_a_.clear();
-      int i = state.field_227841_a_.capacity();
+      state.stateByteBuffer.clear();
+      int i = state.stateByteBuffer.capacity();
       this.growBuffer(i);
       this.byteBuffer.limit(this.byteBuffer.capacity());
-      this.byteBuffer.position(this.field_227823_k_);
-      this.byteBuffer.put(state.field_227841_a_);
+      this.byteBuffer.position(this.renderedBytes);
+      this.byteBuffer.put(state.stateByteBuffer);
       this.byteBuffer.clear();
       VertexFormat vertexformat = state.stateVertexFormat;
-      this.func_227828_a_(vertexformat);
+      this.setVertexFormat(vertexformat);
       this.vertexCount = i / vertexformat.getSize();
-      this.field_227824_l_ = this.field_227823_k_ + this.vertexCount * vertexformat.getSize();
+      this.nextElementBytes = this.renderedBytes + this.vertexCount * vertexformat.getSize();
    }
 
    public void begin(int glMode, VertexFormat format) {
@@ -178,20 +178,20 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
       } else {
          this.isDrawing = true;
          this.drawMode = glMode;
-         this.func_227828_a_(format);
-         this.vertexFormatElement = format.func_227894_c_().get(0);
+         this.setVertexFormat(format);
+         this.vertexFormatElement = format.getElements().get(0);
          this.vertexFormatIndex = 0;
          this.byteBuffer.clear();
       }
    }
 
-   private void func_227828_a_(VertexFormat p_227828_1_) {
-      if (this.vertexFormat != p_227828_1_) {
-         this.vertexFormat = p_227828_1_;
-         boolean flag = p_227828_1_ == DefaultVertexFormats.field_227849_i_;
-         boolean flag1 = p_227828_1_ == DefaultVertexFormats.BLOCK;
-         this.field_227826_s_ = flag || flag1;
-         this.field_227827_t_ = flag;
+   private void setVertexFormat(VertexFormat newFormat) {
+      if (this.vertexFormat != newFormat) {
+         this.vertexFormat = newFormat;
+         boolean flag = newFormat == DefaultVertexFormats.ITEM;
+         boolean flag1 = newFormat == DefaultVertexFormats.BLOCK;
+         this.fastFormat = flag || flag1;
+         this.fullFormat = flag;
       }
    }
 
@@ -200,24 +200,24 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
          throw new IllegalStateException("Not building!");
       } else {
          this.isDrawing = false;
-         this.field_227821_i_.add(new BufferBuilder.DrawState(this.vertexFormat, this.vertexCount, this.drawMode));
-         this.field_227823_k_ += this.vertexCount * this.vertexFormat.getSize();
+         this.drawStates.add(new BufferBuilder.DrawState(this.vertexFormat, this.vertexCount, this.drawMode));
+         this.renderedBytes += this.vertexCount * this.vertexFormat.getSize();
          this.vertexCount = 0;
          this.vertexFormatElement = null;
          this.vertexFormatIndex = 0;
       }
    }
 
-   public void func_225589_a_(int p_225589_1_, byte p_225589_2_) {
-      this.byteBuffer.put(this.field_227824_l_ + p_225589_1_, p_225589_2_);
+   public void putByte(int indexIn, byte byteIn) {
+      this.byteBuffer.put(this.nextElementBytes + indexIn, byteIn);
    }
 
-   public void func_225591_a_(int p_225591_1_, short p_225591_2_) {
-      this.byteBuffer.putShort(this.field_227824_l_ + p_225591_1_, p_225591_2_);
+   public void putShort(int indexIn, short shortIn) {
+      this.byteBuffer.putShort(this.nextElementBytes + indexIn, shortIn);
    }
 
-   public void func_225590_a_(int p_225590_1_, float p_225590_2_) {
-      this.byteBuffer.putFloat(this.field_227824_l_ + p_225590_1_, p_225590_2_);
+   public void putFloat(int indexIn, float floatIn) {
+      this.byteBuffer.putFloat(this.nextElementBytes + indexIn, floatIn);
    }
 
    public void endVertex() {
@@ -225,74 +225,74 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
          throw new IllegalStateException("Not filled all elements of the vertex");
       } else {
          ++this.vertexCount;
-         this.func_227831_b_();
+         this.growBuffer();
       }
    }
 
    public void nextVertexFormatIndex() {
-      ImmutableList<VertexFormatElement> immutablelist = this.vertexFormat.func_227894_c_();
+      ImmutableList<VertexFormatElement> immutablelist = this.vertexFormat.getElements();
       this.vertexFormatIndex = (this.vertexFormatIndex + 1) % immutablelist.size();
-      this.field_227824_l_ += this.vertexFormatElement.getSize();
+      this.nextElementBytes += this.vertexFormatElement.getSize();
       VertexFormatElement vertexformatelement = immutablelist.get(this.vertexFormatIndex);
       this.vertexFormatElement = vertexformatelement;
       if (vertexformatelement.getUsage() == VertexFormatElement.Usage.PADDING) {
          this.nextVertexFormatIndex();
       }
 
-      if (this.field_227854_a_ && this.vertexFormatElement.getUsage() == VertexFormatElement.Usage.COLOR) {
-         IVertexConsumer.super.func_225586_a_(this.field_227855_b_, this.field_227856_c_, this.field_227857_d_, this.field_227858_e_);
+      if (this.defaultColor && this.vertexFormatElement.getUsage() == VertexFormatElement.Usage.COLOR) {
+         IVertexConsumer.super.color(this.defaultRed, this.defaultGreen, this.defaultBlue, this.defaultAlpha);
       }
 
    }
 
-   public IVertexBuilder func_225586_a_(int p_225586_1_, int p_225586_2_, int p_225586_3_, int p_225586_4_) {
-      if (this.field_227854_a_) {
+   public IVertexBuilder color(int red, int green, int blue, int alpha) {
+      if (this.defaultColor) {
          throw new IllegalStateException();
       } else {
-         return IVertexConsumer.super.func_225586_a_(p_225586_1_, p_225586_2_, p_225586_3_, p_225586_4_);
+         return IVertexConsumer.super.color(red, green, blue, alpha);
       }
    }
 
-   public void func_225588_a_(float p_225588_1_, float p_225588_2_, float p_225588_3_, float p_225588_4_, float p_225588_5_, float p_225588_6_, float p_225588_7_, float p_225588_8_, float p_225588_9_, int p_225588_10_, int p_225588_11_, float p_225588_12_, float p_225588_13_, float p_225588_14_) {
-      if (this.field_227854_a_) {
+   public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float texU, float texV, int overlayUV, int lightmapUV, float normalX, float normalY, float normalZ) {
+      if (this.defaultColor) {
          throw new IllegalStateException();
-      } else if (this.field_227826_s_) {
-         this.func_225590_a_(0, p_225588_1_);
-         this.func_225590_a_(4, p_225588_2_);
-         this.func_225590_a_(8, p_225588_3_);
-         this.func_225589_a_(12, (byte)((int)(p_225588_4_ * 255.0F)));
-         this.func_225589_a_(13, (byte)((int)(p_225588_5_ * 255.0F)));
-         this.func_225589_a_(14, (byte)((int)(p_225588_6_ * 255.0F)));
-         this.func_225589_a_(15, (byte)((int)(p_225588_7_ * 255.0F)));
-         this.func_225590_a_(16, p_225588_8_);
-         this.func_225590_a_(20, p_225588_9_);
+      } else if (this.fastFormat) {
+         this.putFloat(0, x);
+         this.putFloat(4, y);
+         this.putFloat(8, z);
+         this.putByte(12, (byte)((int)(red * 255.0F)));
+         this.putByte(13, (byte)((int)(green * 255.0F)));
+         this.putByte(14, (byte)((int)(blue * 255.0F)));
+         this.putByte(15, (byte)((int)(alpha * 255.0F)));
+         this.putFloat(16, texU);
+         this.putFloat(20, texV);
          int i;
-         if (this.field_227827_t_) {
-            this.func_225591_a_(24, (short)(p_225588_10_ & '\uffff'));
-            this.func_225591_a_(26, (short)(p_225588_10_ >> 16 & '\uffff'));
+         if (this.fullFormat) {
+            this.putShort(24, (short)(overlayUV & '\uffff'));
+            this.putShort(26, (short)(overlayUV >> 16 & '\uffff'));
             i = 28;
          } else {
             i = 24;
          }
 
-         this.func_225591_a_(i + 0, (short)(p_225588_11_ & '\uffff'));
-         this.func_225591_a_(i + 2, (short)(p_225588_11_ >> 16 & '\uffff'));
-         this.func_225589_a_(i + 4, IVertexConsumer.func_227846_a_(p_225588_12_));
-         this.func_225589_a_(i + 5, IVertexConsumer.func_227846_a_(p_225588_13_));
-         this.func_225589_a_(i + 6, IVertexConsumer.func_227846_a_(p_225588_14_));
-         this.field_227824_l_ += i + 8;
+         this.putShort(i + 0, (short)(lightmapUV & '\uffff'));
+         this.putShort(i + 2, (short)(lightmapUV >> 16 & '\uffff'));
+         this.putByte(i + 4, IVertexConsumer.normalInt(normalX));
+         this.putByte(i + 5, IVertexConsumer.normalInt(normalY));
+         this.putByte(i + 6, IVertexConsumer.normalInt(normalZ));
+         this.nextElementBytes += i + 8;
          this.endVertex();
       } else {
-         super.func_225588_a_(p_225588_1_, p_225588_2_, p_225588_3_, p_225588_4_, p_225588_5_, p_225588_6_, p_225588_7_, p_225588_8_, p_225588_9_, p_225588_10_, p_225588_11_, p_225588_12_, p_225588_13_, p_225588_14_);
+         super.vertex(x, y, z, red, green, blue, alpha, texU, texV, overlayUV, lightmapUV, normalX, normalY, normalZ);
       }
    }
 
-   public Pair<BufferBuilder.DrawState, ByteBuffer> func_227832_f_() {
-      BufferBuilder.DrawState bufferbuilder$drawstate = this.field_227821_i_.get(this.field_227822_j_++);
-      this.byteBuffer.position(this.field_227825_m_);
-      this.field_227825_m_ += bufferbuilder$drawstate.func_227839_b_() * bufferbuilder$drawstate.func_227838_a_().getSize();
-      this.byteBuffer.limit(this.field_227825_m_);
-      if (this.field_227822_j_ == this.field_227821_i_.size() && this.vertexCount == 0) {
+   public Pair<BufferBuilder.DrawState, ByteBuffer> getAndResetData() {
+      BufferBuilder.DrawState bufferbuilder$drawstate = this.drawStates.get(this.drawStateIndex++);
+      this.byteBuffer.position(this.uploadedBytes);
+      this.uploadedBytes += bufferbuilder$drawstate.getVertexCount() * bufferbuilder$drawstate.getFormat().getSize();
+      this.byteBuffer.limit(this.uploadedBytes);
+      if (this.drawStateIndex == this.drawStates.size() && this.vertexCount == 0) {
          this.reset();
       }
 
@@ -302,22 +302,22 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
    }
 
    public void reset() {
-      if (this.field_227823_k_ != this.field_227825_m_) {
-         LOGGER.warn("Bytes mismatch " + this.field_227823_k_ + " " + this.field_227825_m_);
+      if (this.renderedBytes != this.uploadedBytes) {
+         LOGGER.warn("Bytes mismatch " + this.renderedBytes + " " + this.uploadedBytes);
       }
 
-      this.func_227833_h_();
+      this.discard();
    }
 
-   public void func_227833_h_() {
-      this.field_227823_k_ = 0;
-      this.field_227825_m_ = 0;
-      this.field_227824_l_ = 0;
-      this.field_227821_i_.clear();
-      this.field_227822_j_ = 0;
+   public void discard() {
+      this.renderedBytes = 0;
+      this.uploadedBytes = 0;
+      this.nextElementBytes = 0;
+      this.drawStates.clear();
+      this.drawStateIndex = 0;
    }
 
-   public VertexFormatElement func_225592_i_() {
+   public VertexFormatElement getCurrentElement() {
       if (this.vertexFormatElement == null) {
          throw new IllegalStateException("BufferBuilder not started");
       } else {
@@ -325,43 +325,43 @@ public class BufferBuilder extends DefaultColorVertexBuilder implements IVertexC
       }
    }
 
-   public boolean func_227834_j_() {
+   public boolean isDrawing() {
       return this.isDrawing;
    }
 
    @OnlyIn(Dist.CLIENT)
    public static final class DrawState {
-      private final VertexFormat field_227835_a_;
-      private final int field_227836_b_;
-      private final int field_227837_c_;
+      private final VertexFormat format;
+      private final int vertexCount;
+      private final int drawMode;
 
-      private DrawState(VertexFormat p_i225905_1_, int p_i225905_2_, int p_i225905_3_) {
-         this.field_227835_a_ = p_i225905_1_;
-         this.field_227836_b_ = p_i225905_2_;
-         this.field_227837_c_ = p_i225905_3_;
+      private DrawState(VertexFormat formatIn, int vertexCountIn, int drawModeIn) {
+         this.format = formatIn;
+         this.vertexCount = vertexCountIn;
+         this.drawMode = drawModeIn;
       }
 
-      public VertexFormat func_227838_a_() {
-         return this.field_227835_a_;
+      public VertexFormat getFormat() {
+         return this.format;
       }
 
-      public int func_227839_b_() {
-         return this.field_227836_b_;
+      public int getVertexCount() {
+         return this.vertexCount;
       }
 
-      public int func_227840_c_() {
-         return this.field_227837_c_;
+      public int getDrawMode() {
+         return this.drawMode;
       }
    }
 
    @OnlyIn(Dist.CLIENT)
    public static class State {
-      private final ByteBuffer field_227841_a_;
+      private final ByteBuffer stateByteBuffer;
       private final VertexFormat stateVertexFormat;
 
-      private State(ByteBuffer p_i225907_1_, VertexFormat p_i225907_2_) {
-         this.field_227841_a_ = p_i225907_1_;
-         this.stateVertexFormat = p_i225907_2_;
+      private State(ByteBuffer byteBufferIn, VertexFormat vertexFormatIn) {
+         this.stateByteBuffer = byteBufferIn;
+         this.stateVertexFormat = vertexFormatIn;
       }
    }
 }

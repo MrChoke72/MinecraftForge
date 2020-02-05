@@ -174,9 +174,9 @@ public abstract class AbstractSkeletonEntity extends MonsterEntity implements IR
 
    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
       ItemStack itemstack = this.findAmmo(this.getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW)));
-      AbstractArrowEntity abstractarrowentity = this.func_213624_b(itemstack, distanceFactor);
+      AbstractArrowEntity abstractarrowentity = this.fireArrow(itemstack, distanceFactor);
       double d0 = target.getPosX() - this.getPosX();
-      double d1 = target.func_226283_e_(0.3333333333333333D) - abstractarrowentity.getPosY();
+      double d1 = target.getPosYHeight(0.3333333333333333D) - abstractarrowentity.getPosY();
       double d2 = target.getPosZ() - this.getPosZ();
       double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
       abstractarrowentity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
@@ -184,8 +184,8 @@ public abstract class AbstractSkeletonEntity extends MonsterEntity implements IR
       this.world.addEntity(abstractarrowentity);
    }
 
-   protected AbstractArrowEntity func_213624_b(ItemStack p_213624_1_, float p_213624_2_) {
-      return ProjectileHelper.func_221272_a(this, p_213624_1_, p_213624_2_);
+   protected AbstractArrowEntity fireArrow(ItemStack arrowStack, float distanceFactor) {
+      return ProjectileHelper.fireArrow(this, arrowStack, distanceFactor);
    }
 
    public void readAdditional(CompoundNBT compound) {

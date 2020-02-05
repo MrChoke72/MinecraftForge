@@ -18,19 +18,19 @@ import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
 public final class FlowerForestBiome extends Biome {
    public FlowerForestBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.RAIN).category(Biome.Category.FOREST).depth(0.1F).scale(0.4F).temperature(0.7F).downfall(0.8F).waterColor(4159204).waterFogColor(329011).parent("forest"));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.STRONGHOLD.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.STRONGHOLD.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
       DefaultBiomeFeatures.addMonsterRooms(this);
-      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.RANDOM_RANDOM_SELECTOR.func_225566_b_(new MultipleWithChanceRandomFeatureConfig(ImmutableList.of(Feature.field_227248_z_.func_225566_b_(DefaultBiomeFeatures.field_226723_K_), Feature.field_227248_z_.func_225566_b_(DefaultBiomeFeatures.field_226724_L_), Feature.field_227248_z_.func_225566_b_(DefaultBiomeFeatures.field_226725_M_), Feature.field_227247_y_.func_225566_b_(DefaultBiomeFeatures.field_226829_x_)), 2)).func_227228_a_(Placement.COUNT_HEIGHTMAP_32.func_227446_a_(new FrequencyConfig(5))));
+      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.RANDOM_RANDOM_SELECTOR.withConfiguration(new MultipleWithChanceRandomFeatureConfig(ImmutableList.of(Feature.RANDOM_PATCH.withConfiguration(DefaultBiomeFeatures.field_226723_K_), Feature.RANDOM_PATCH.withConfiguration(DefaultBiomeFeatures.field_226724_L_), Feature.RANDOM_PATCH.withConfiguration(DefaultBiomeFeatures.field_226725_M_), Feature.FLOWER.withConfiguration(DefaultBiomeFeatures.field_226829_x_)), 2)).func_227228_a_(Placement.COUNT_HEIGHTMAP_32.func_227446_a_(new FrequencyConfig(5))));
       DefaultBiomeFeatures.addStoneVariants(this);
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
-      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.RANDOM_SELECTOR.func_225566_b_(new MultipleRandomFeatureConfig(ImmutableList.of(Feature.NORMAL_TREE.func_225566_b_(DefaultBiomeFeatures.field_226820_o_).func_227227_a_(0.2F), Feature.FANCY_TREE.func_225566_b_(DefaultBiomeFeatures.field_226819_n_).func_227227_a_(0.1F)), Feature.NORMAL_TREE.func_225566_b_(DefaultBiomeFeatures.field_226818_m_))).func_227228_a_(Placement.COUNT_EXTRA_HEIGHTMAP.func_227446_a_(new AtSurfaceWithExtraConfig(6, 0.1F, 1))));
-      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.field_227247_y_.func_225566_b_(DefaultBiomeFeatures.field_226714_B_).func_227228_a_(Placement.COUNT_HEIGHTMAP_32.func_227446_a_(new FrequencyConfig(100))));
-      DefaultBiomeFeatures.func_222348_W(this);
+      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.RANDOM_SELECTOR.withConfiguration(new MultipleRandomFeatureConfig(ImmutableList.of(Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.field_230135_r_).func_227227_a_(0.2F), Feature.FANCY_TREE.withConfiguration(DefaultBiomeFeatures.field_230134_q_).func_227227_a_(0.1F)), Feature.NORMAL_TREE.withConfiguration(DefaultBiomeFeatures.field_230133_p_))).func_227228_a_(Placement.COUNT_EXTRA_HEIGHTMAP.func_227446_a_(new AtSurfaceWithExtraConfig(6, 0.1F, 1))));
+      this.addFeature(GenerationStage.Decoration.VEGETAL_DECORATION, Feature.FLOWER.withConfiguration(DefaultBiomeFeatures.field_226714_B_).func_227228_a_(Placement.COUNT_HEIGHTMAP_32.func_227446_a_(new FrequencyConfig(100))));
+      DefaultBiomeFeatures.addSparseGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);

@@ -46,6 +46,6 @@ public class NetworkTagCollection<T> extends TagCollection<T> {
          map.put(resourcelocation, builder.build(resourcelocation));
       }
 
-      this.func_223507_b(map);
+      this.toImmutable(map);
    }
 }

@@ -66,7 +66,7 @@ public class AbstractCoralPlantBlock extends Block implements IWaterLoggable {
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
       BlockPos blockpos = pos.down();
-      return worldIn.getBlockState(blockpos).func_224755_d(worldIn, blockpos, Direction.UP);
+      return worldIn.getBlockState(blockpos).isSolidSide(worldIn, blockpos, Direction.UP);
    }
 
    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {

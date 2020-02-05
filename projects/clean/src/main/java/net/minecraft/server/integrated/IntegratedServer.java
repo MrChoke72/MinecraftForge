@@ -9,6 +9,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import net.minecraft.client.ClientBrandRetriever;
@@ -47,16 +48,16 @@ public class IntegratedServer extends MinecraftServer {
    private LanServerPingThread lanServerPing;
    private UUID playerUuid;
 
-   public IntegratedServer(Minecraft p_i50895_1_, String worldName, String p_i50895_3_, WorldSettings p_i50895_4_, YggdrasilAuthenticationService p_i50895_5_, MinecraftSessionService p_i50895_6_, GameProfileRepository p_i50895_7_, PlayerProfileCache p_i50895_8_, IChunkStatusListenerFactory p_i50895_9_) {
-      super(new File(p_i50895_1_.gameDir, "saves"), p_i50895_1_.getProxy(), p_i50895_1_.getDataFixer(), new Commands(false), p_i50895_5_, p_i50895_6_, p_i50895_7_, p_i50895_8_, p_i50895_9_, worldName);
-      this.setServerOwner(p_i50895_1_.getSession().getUsername());
-      this.setWorldName(p_i50895_3_);
-      this.setDemo(p_i50895_1_.isDemo());
-      this.canCreateBonusChest(p_i50895_4_.isBonusChestEnabled());
+   public IntegratedServer(Minecraft mcIn, String worldName, String worldNameIn, WorldSettings worldSettingsIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepositoryIn, PlayerProfileCache profileCacheIn, IChunkStatusListenerFactory listenerFactoryIn) {
+      super(new File(mcIn.gameDir, "saves"), mcIn.getProxy(), mcIn.getDataFixer(), new Commands(false), authServiceIn, sessionServiceIn, profileRepositoryIn, profileCacheIn, listenerFactoryIn, worldName);
+      this.setServerOwner(mcIn.getSession().getUsername());
+      this.setWorldName(worldNameIn);
+      this.setDemo(mcIn.isDemo());
+      this.canCreateBonusChest(worldSettingsIn.isBonusChestEnabled());
       this.setBuildLimit(256);
       this.setPlayerList(new IntegratedPlayerList(this));
-      this.mc = p_i50895_1_;
-      this.worldSettings = this.isDemo() ? MinecraftServer.DEMO_WORLD_SETTINGS : p_i50895_4_;
+      this.mc = mcIn;
+      this.worldSettings = this.isDemo() ? MinecraftServer.DEMO_WORLD_SETTINGS : worldSettingsIn;
    }
 
    public void loadAllWorlds(String saveName, String worldNameIn, long seed, WorldType type, JsonElement generatorOptions) {
@@ -70,6 +71,7 @@ public class IntegratedServer extends MinecraftServer {
          worldinfo.setWorldName(worldNameIn);
       }
 
+      worldinfo.func_230145_a_(this.getServerModName(), this.func_230045_q_().isPresent());
       this.loadDataPacks(savehandler.getWorldDirectory(), worldinfo);
       IChunkStatusListener ichunkstatuslistener = this.chunkStatusListenerFactory.create(11);
       this.loadWorlds(savehandler, worldinfo, this.worldSettings, ichunkstatuslistener);
@@ -161,19 +163,23 @@ public class IntegratedServer extends MinecraftServer {
       report = super.addServerInfoToCrashReport(report);
       report.getCategory().addDetail("Type", "Integrated Server (map_client.txt)");
       report.getCategory().addDetail("Is Modded", () -> {
-         String s = ClientBrandRetriever.getClientModName();
-         if (!s.equals("vanilla")) {
-            return "Definitely; Client brand changed to '" + s + "'";
-         } else {
-            s = this.getServerModName();
-            if (!"vanilla".equals(s)) {
-               return "Definitely; Server brand changed to '" + s + "'";
-            } else {
-               return Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated" : "Probably not. Jar signature remains and both client + server brands are untouched.";
-            }
-         }
+         return this.func_230045_q_().orElse("Probably not. Jar signature remains and both client + server brands are untouched.");
       });
       return report;
+   }
+
+   public Optional<String> func_230045_q_() {
+      String s = ClientBrandRetriever.getClientModName();
+      if (!s.equals("vanilla")) {
+         return Optional.of("Definitely; Client brand changed to '" + s + "'");
+      } else {
+         s = this.getServerModName();
+         if (!"vanilla".equals(s)) {
+            return Optional.of("Definitely; Server brand changed to '" + s + "'");
+         } else {
+            return Minecraft.class.getSigners() == null ? Optional.of("Very likely; Jar signature invalidated") : Optional.empty();
+         }
+      }
    }
 
    public void fillSnooper(Snooper snooper) {
@@ -212,7 +218,7 @@ public class IntegratedServer extends MinecraftServer {
 
    }
 
-   public void initiateShutdown(boolean p_71263_1_) {
+   public void initiateShutdown(boolean waitForServer) {
       this.runImmediately(() -> {
          for(ServerPlayerEntity serverplayerentity : Lists.newArrayList(this.getPlayerList().getPlayers())) {
             if (!serverplayerentity.getUniqueID().equals(this.playerUuid)) {
@@ -221,7 +227,7 @@ public class IntegratedServer extends MinecraftServer {
          }
 
       });
-      super.initiateShutdown(p_71263_1_);
+      super.initiateShutdown(waitForServer);
       if (this.lanServerPing != null) {
          this.lanServerPing.interrupt();
          this.lanServerPing = null;
@@ -250,7 +256,7 @@ public class IntegratedServer extends MinecraftServer {
       return 2;
    }
 
-   public int func_223707_k() {
+   public int getFunctionLevel() {
       return 2;
    }
 
@@ -258,7 +264,7 @@ public class IntegratedServer extends MinecraftServer {
       this.playerUuid = uuid;
    }
 
-   public boolean func_213199_b(GameProfile p_213199_1_) {
-      return p_213199_1_.getName().equalsIgnoreCase(this.getServerOwner());
+   public boolean isServerOwner(GameProfile profileIn) {
+      return profileIn.getName().equalsIgnoreCase(this.getServerOwner());
    }
 }

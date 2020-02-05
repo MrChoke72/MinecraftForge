@@ -7,20 +7,20 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public interface ILightReader extends IBlockReader {
-   WorldLightManager getLightMgr();
+   WorldLightManager getLightManager();
 
    @OnlyIn(Dist.CLIENT)
-   int func_225525_a_(BlockPos p_225525_1_, ColorResolver p_225525_2_);
+   int getBlockColor(BlockPos blockPosIn, ColorResolver colorResolverIn);
 
-   default int getLightLevel(LightType lightType, BlockPos pos) {
-      return this.getLightMgr().getLightEngine(lightType).getLightFor(pos);
+   default int getLightFor(LightType lightTypeIn, BlockPos blockPosIn) {
+      return this.getLightManager().getLightEngine(lightTypeIn).getLightFor(blockPosIn);
    }
 
-   default int func_226659_b_(BlockPos pos, int p_226659_2_) {
-      return this.getLightMgr().func_227470_b_(pos, p_226659_2_);
+   default int getLightSubtracted(BlockPos blockPosIn, int amount) {
+      return this.getLightManager().getLightSubtracted(blockPosIn, amount);
    }
 
-   default boolean isMaxLightLevel(BlockPos pos) {
-      return this.getLightLevel(LightType.SKY, pos) >= this.getMaxLightLevel();
+   default boolean canSeeSky(BlockPos blockPosIn) {
+      return this.getLightFor(LightType.SKY, blockPosIn) >= this.getMaxLightLevel();
    }
 }

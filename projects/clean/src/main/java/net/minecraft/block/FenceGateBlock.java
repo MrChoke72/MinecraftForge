@@ -101,21 +101,21 @@ public class FenceGateBlock extends HorizontalBlock {
       return p_196380_1_.getBlock().isIn(BlockTags.WALLS);
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_1_.get(OPEN)) {
-         p_225533_1_ = p_225533_1_.with(OPEN, Boolean.valueOf(false));
-         p_225533_2_.setBlockState(p_225533_3_, p_225533_1_, 10);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (state.get(OPEN)) {
+         state = state.with(OPEN, Boolean.valueOf(false));
+         worldIn.setBlockState(pos, state, 10);
       } else {
-         Direction direction = p_225533_4_.getHorizontalFacing();
-         if (p_225533_1_.get(HORIZONTAL_FACING) == direction.getOpposite()) {
-            p_225533_1_ = p_225533_1_.with(HORIZONTAL_FACING, direction);
+         Direction direction = player.getHorizontalFacing();
+         if (state.get(HORIZONTAL_FACING) == direction.getOpposite()) {
+            state = state.with(HORIZONTAL_FACING, direction);
          }
 
-         p_225533_1_ = p_225533_1_.with(OPEN, Boolean.valueOf(true));
-         p_225533_2_.setBlockState(p_225533_3_, p_225533_1_, 10);
+         state = state.with(OPEN, Boolean.valueOf(true));
+         worldIn.setBlockState(pos, state, 10);
       }
 
-      p_225533_2_.playEvent(p_225533_4_, p_225533_1_.get(OPEN) ? 1008 : 1014, p_225533_3_, 0);
+      worldIn.playEvent(player, state.get(OPEN) ? 1008 : 1014, pos, 0);
       return ActionResultType.SUCCESS;
    }
 

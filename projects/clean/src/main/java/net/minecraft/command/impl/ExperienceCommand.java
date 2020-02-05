@@ -99,7 +99,7 @@ public class ExperienceCommand {
          return MathHelper.floor(p_198422_0_.experience * (float)p_198422_0_.xpBarCap());
       }),
       LEVELS("levels", ServerPlayerEntity::addExperienceLevel, (p_198425_0_, p_198425_1_) -> {
-         p_198425_0_.func_195399_b(p_198425_1_);
+         p_198425_0_.setExperienceLevel(p_198425_1_);
          return true;
       }, (p_198427_0_) -> {
          return p_198427_0_.experienceLevel;

@@ -27,9 +27,9 @@ public class KilledByCrossbowTrigger extends AbstractCriterionTrigger<KilledByCr
       return new KilledByCrossbowTrigger.Instance(aentitypredicate, minmaxbounds$intbound);
    }
 
-   public void func_215105_a(ServerPlayerEntity p_215105_1_, Collection<Entity> p_215105_2_, int p_215105_3_) {
+   public void trigger(ServerPlayerEntity p_215105_1_, Collection<Entity> p_215105_2_, int p_215105_3_) {
       this.func_227070_a_(p_215105_1_.getAdvancements(), (p_226842_3_) -> {
-         return p_226842_3_.func_215115_a(p_215105_1_, p_215105_2_, p_215105_3_);
+         return p_226842_3_.test(p_215105_1_, p_215105_2_, p_215105_3_);
       });
    }
 
@@ -59,7 +59,7 @@ public class KilledByCrossbowTrigger extends AbstractCriterionTrigger<KilledByCr
          return new KilledByCrossbowTrigger.Instance(aentitypredicate, p_215117_0_);
       }
 
-      public boolean func_215115_a(ServerPlayerEntity p_215115_1_, Collection<Entity> p_215115_2_, int p_215115_3_) {
+      public boolean test(ServerPlayerEntity p_215115_1_, Collection<Entity> p_215115_2_, int p_215115_3_) {
          if (this.field_215118_a.length > 0) {
             List<Entity> list = Lists.newArrayList(p_215115_2_);
 

@@ -45,7 +45,7 @@ public class CopyNbt extends LootFunction {
       this.field_215888_c = ImmutableList.copyOf(p_i51240_3_);
    }
 
-   private static NBTPathArgument.NBTPath func_215880_b(String p_215880_0_) {
+   private static NBTPathArgument.NBTPath parsePath(String p_215880_0_) {
       try {
          return (new NBTPathArgument()).parse(new StringReader(p_215880_0_));
       } catch (CommandSyntaxException commandsyntaxexception) {
@@ -68,18 +68,18 @@ public class CopyNbt extends LootFunction {
       return stack;
    }
 
-   public static CopyNbt.Builder func_215881_a(CopyNbt.Source p_215881_0_) {
-      return new CopyNbt.Builder(p_215881_0_);
+   public static CopyNbt.Builder builder(CopyNbt.Source source) {
+      return new CopyNbt.Builder(source);
    }
 
    public static enum Action {
       REPLACE("replace") {
-         public void func_216227_a(INBT p_216227_1_, NBTPathArgument.NBTPath p_216227_2_, List<INBT> p_216227_3_) throws CommandSyntaxException {
+         public void runAction(INBT p_216227_1_, NBTPathArgument.NBTPath p_216227_2_, List<INBT> p_216227_3_) throws CommandSyntaxException {
             p_216227_2_.func_218076_b(p_216227_1_, Iterables.getLast(p_216227_3_)::copy);
          }
       },
       APPEND("append") {
-         public void func_216227_a(INBT p_216227_1_, NBTPathArgument.NBTPath p_216227_2_, List<INBT> p_216227_3_) throws CommandSyntaxException {
+         public void runAction(INBT p_216227_1_, NBTPathArgument.NBTPath p_216227_2_, List<INBT> p_216227_3_) throws CommandSyntaxException {
             List<INBT> list = p_216227_2_.func_218073_a(p_216227_1_, ListNBT::new);
             list.forEach((p_216232_1_) -> {
                if (p_216232_1_ instanceof ListNBT) {
@@ -92,7 +92,7 @@ public class CopyNbt extends LootFunction {
          }
       },
       MERGE("merge") {
-         public void func_216227_a(INBT p_216227_1_, NBTPathArgument.NBTPath p_216227_2_, List<INBT> p_216227_3_) throws CommandSyntaxException {
+         public void runAction(INBT p_216227_1_, NBTPathArgument.NBTPath p_216227_2_, List<INBT> p_216227_3_) throws CommandSyntaxException {
             List<INBT> list = p_216227_2_.func_218073_a(p_216227_1_, CompoundNBT::new);
             list.forEach((p_216234_1_) -> {
                if (p_216234_1_ instanceof CompoundNBT) {
@@ -108,17 +108,17 @@ public class CopyNbt extends LootFunction {
          }
       };
 
-      private final String field_216230_d;
+      private final String op;
 
-      public abstract void func_216227_a(INBT p_216227_1_, NBTPathArgument.NBTPath p_216227_2_, List<INBT> p_216227_3_) throws CommandSyntaxException;
+      public abstract void runAction(INBT p_216227_1_, NBTPathArgument.NBTPath p_216227_2_, List<INBT> p_216227_3_) throws CommandSyntaxException;
 
       private Action(String p_i50670_3_) {
-         this.field_216230_d = p_i50670_3_;
+         this.op = p_i50670_3_;
       }
 
-      public static CopyNbt.Action func_216229_a(String p_216229_0_) {
+      public static CopyNbt.Action getByName(String p_216229_0_) {
          for(CopyNbt.Action copynbt$action : values()) {
-            if (copynbt$action.field_216230_d.equals(p_216229_0_)) {
+            if (copynbt$action.op.equals(p_216229_0_)) {
                return copynbt$action;
             }
          }
@@ -128,20 +128,20 @@ public class CopyNbt extends LootFunction {
    }
 
    public static class Builder extends LootFunction.Builder<CopyNbt.Builder> {
-      private final CopyNbt.Source field_216057_a;
-      private final List<CopyNbt.Operation> field_216058_b = Lists.newArrayList();
+      private final CopyNbt.Source source;
+      private final List<CopyNbt.Operation> operations = Lists.newArrayList();
 
       private Builder(CopyNbt.Source p_i50675_1_) {
-         this.field_216057_a = p_i50675_1_;
+         this.source = p_i50675_1_;
       }
 
-      public CopyNbt.Builder func_216055_a(String p_216055_1_, String p_216055_2_, CopyNbt.Action p_216055_3_) {
-         this.field_216058_b.add(new CopyNbt.Operation(p_216055_1_, p_216055_2_, p_216055_3_));
+      public CopyNbt.Builder addOperation(String sourcePath, String targetPath, CopyNbt.Action copyAction) {
+         this.operations.add(new CopyNbt.Operation(sourcePath, targetPath, copyAction));
          return this;
       }
 
-      public CopyNbt.Builder func_216056_a(String p_216056_1_, String p_216056_2_) {
-         return this.func_216055_a(p_216056_1_, p_216056_2_, CopyNbt.Action.REPLACE);
+      public CopyNbt.Builder replaceOperation(String sourcePath, String targetPath) {
+         return this.addOperation(sourcePath, targetPath, CopyNbt.Action.REPLACE);
       }
 
       protected CopyNbt.Builder doCast() {
@@ -149,30 +149,30 @@ public class CopyNbt extends LootFunction {
       }
 
       public ILootFunction build() {
-         return new CopyNbt(this.getConditions(), this.field_216057_a, this.field_216058_b);
+         return new CopyNbt(this.getConditions(), this.source, this.operations);
       }
    }
 
    static class Operation {
-      private final String field_216217_a;
+      private final String source;
       private final NBTPathArgument.NBTPath field_216218_b;
-      private final String field_216219_c;
+      private final String target;
       private final NBTPathArgument.NBTPath field_216220_d;
-      private final CopyNbt.Action field_216221_e;
+      private final CopyNbt.Action action;
 
       private Operation(String p_i50673_1_, String p_i50673_2_, CopyNbt.Action p_i50673_3_) {
-         this.field_216217_a = p_i50673_1_;
-         this.field_216218_b = CopyNbt.func_215880_b(p_i50673_1_);
-         this.field_216219_c = p_i50673_2_;
-         this.field_216220_d = CopyNbt.func_215880_b(p_i50673_2_);
-         this.field_216221_e = p_i50673_3_;
+         this.source = p_i50673_1_;
+         this.field_216218_b = CopyNbt.parsePath(p_i50673_1_);
+         this.target = p_i50673_2_;
+         this.field_216220_d = CopyNbt.parsePath(p_i50673_2_);
+         this.action = p_i50673_3_;
       }
 
       public void func_216216_a(Supplier<INBT> p_216216_1_, INBT p_216216_2_) {
          try {
             List<INBT> list = this.field_216218_b.func_218071_a(p_216216_2_);
             if (!list.isEmpty()) {
-               this.field_216221_e.func_216227_a(p_216216_1_.get(), this.field_216220_d, list);
+               this.action.runAction(p_216216_1_.get(), this.field_216220_d, list);
             }
          } catch (CommandSyntaxException var4) {
             ;
@@ -180,18 +180,18 @@ public class CopyNbt extends LootFunction {
 
       }
 
-      public JsonObject func_216214_a() {
+      public JsonObject serialize() {
          JsonObject jsonobject = new JsonObject();
-         jsonobject.addProperty("source", this.field_216217_a);
-         jsonobject.addProperty("target", this.field_216219_c);
-         jsonobject.addProperty("op", this.field_216221_e.field_216230_d);
+         jsonobject.addProperty("source", this.source);
+         jsonobject.addProperty("target", this.target);
+         jsonobject.addProperty("op", this.action.op);
          return jsonobject;
       }
 
-      public static CopyNbt.Operation func_216215_a(JsonObject p_216215_0_) {
+      public static CopyNbt.Operation deserialize(JsonObject p_216215_0_) {
          String s = JSONUtils.getString(p_216215_0_, "source");
          String s1 = JSONUtils.getString(p_216215_0_, "target");
-         CopyNbt.Action copynbt$action = CopyNbt.Action.func_216229_a(JSONUtils.getString(p_216215_0_, "op"));
+         CopyNbt.Action copynbt$action = CopyNbt.Action.getByName(JSONUtils.getString(p_216215_0_, "op"));
          return new CopyNbt.Operation(s, s1, copynbt$action);
       }
    }
@@ -205,7 +205,7 @@ public class CopyNbt extends LootFunction {
          super.serialize(object, functionClazz, serializationContext);
          object.addProperty("source", functionClazz.field_215887_a.field_216224_e);
          JsonArray jsonarray = new JsonArray();
-         functionClazz.field_215888_c.stream().map(CopyNbt.Operation::func_216214_a).forEach(jsonarray::add);
+         functionClazz.field_215888_c.stream().map(CopyNbt.Operation::serialize).forEach(jsonarray::add);
          object.add("ops", jsonarray);
       }
 
@@ -215,7 +215,7 @@ public class CopyNbt extends LootFunction {
 
          for(JsonElement jsonelement : JSONUtils.getJsonArray(object, "ops")) {
             JsonObject jsonobject = JSONUtils.getJsonObject(jsonelement, "op");
-            list.add(CopyNbt.Operation.func_216215_a(jsonobject));
+            list.add(CopyNbt.Operation.deserialize(jsonobject));
          }
 
          return new CopyNbt(conditionsIn, copynbt$source, list);

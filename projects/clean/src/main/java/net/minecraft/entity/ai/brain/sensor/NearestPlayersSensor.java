@@ -13,13 +13,13 @@ import net.minecraft.util.EntityPredicates;
 import net.minecraft.world.server.ServerWorld;
 
 public class NearestPlayersSensor extends Sensor<LivingEntity> {
-   protected void update(ServerWorld world, LivingEntity entity) {
-      List<PlayerEntity> list = world.getPlayers().stream().filter(EntityPredicates.NOT_SPECTATING).filter((player) -> {
-         return entity.getDistanceSq(player) < 256.0D;
-      }).sorted(Comparator.comparingDouble(entity::getDistanceSq)).collect(Collectors.toList());
-      Brain<?> brain = entity.getBrain();
+   protected void update(ServerWorld worldIn, LivingEntity entityIn) {
+      List<PlayerEntity> list = worldIn.getPlayers().stream().filter(EntityPredicates.NOT_SPECTATING).filter((p_220979_1_) -> {
+         return entityIn.getDistanceSq(p_220979_1_) < 256.0D;
+      }).sorted(Comparator.comparingDouble(entityIn::getDistanceSq)).collect(Collectors.toList());
+      Brain<?> brain = entityIn.getBrain();
       brain.setMemory(MemoryModuleType.NEAREST_PLAYERS, list);
-      brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list.stream().filter(entity::canEntityBeSeen).findFirst());
+      brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list.stream().filter(entityIn::canEntityBeSeen).findFirst());
    }
 
    public Set<MemoryModuleType<?>> getUsedMemories() {

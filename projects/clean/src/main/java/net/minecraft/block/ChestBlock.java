@@ -224,14 +224,14 @@ public class ChestBlock extends AbstractChestBlock<ChestTileEntity> implements I
       }
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         INamedContainerProvider inamedcontainerprovider = this.getContainer(p_225533_1_, p_225533_2_, p_225533_3_);
+         INamedContainerProvider inamedcontainerprovider = this.getContainer(state, worldIn, pos);
          if (inamedcontainerprovider != null) {
-            p_225533_4_.openContainer(inamedcontainerprovider);
-            p_225533_4_.addStat(this.getOpenStat());
+            player.openContainer(inamedcontainerprovider);
+            player.addStat(this.getOpenStat());
          }
 
          return ActionResultType.SUCCESS;

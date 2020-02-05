@@ -91,7 +91,7 @@ public class ChickenEntity extends AnimalEntity {
 
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 
@@ -148,7 +148,7 @@ public class ChickenEntity extends AnimalEntity {
       float f1 = MathHelper.cos(this.renderYawOffset * ((float)Math.PI / 180F));
       float f2 = 0.1F;
       float f3 = 0.0F;
-      passenger.setPosition(this.getPosX() + (double)(0.1F * f), this.func_226283_e_(0.5D) + passenger.getYOffset() + 0.0D, this.getPosZ() - (double)(0.1F * f1));
+      passenger.setPosition(this.getPosX() + (double)(0.1F * f), this.getPosYHeight(0.5D) + passenger.getYOffset() + 0.0D, this.getPosZ() - (double)(0.1F * f1));
       if (passenger instanceof LivingEntity) {
          ((LivingEntity)passenger).renderYawOffset = this.renderYawOffset;
       }

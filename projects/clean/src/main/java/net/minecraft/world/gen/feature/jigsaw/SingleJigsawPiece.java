@@ -71,25 +71,25 @@ public class SingleJigsawPiece extends JigsawPiece {
       return list1;
    }
 
-   public List<Template.BlockInfo> func_214849_a(TemplateManager p_214849_1_, BlockPos p_214849_2_, Rotation p_214849_3_, Random p_214849_4_) {
-      Template template = p_214849_1_.getTemplateDefaulted(this.location);
-      List<Template.BlockInfo> list = template.func_215386_a(p_214849_2_, (new PlacementSettings()).setRotation(p_214849_3_), Blocks.JIGSAW, true);
-      Collections.shuffle(list, p_214849_4_);
+   public List<Template.BlockInfo> getJigsawBlocks(TemplateManager templateManagerIn, BlockPos pos, Rotation rotationIn, Random rand) {
+      Template template = templateManagerIn.getTemplateDefaulted(this.location);
+      List<Template.BlockInfo> list = template.func_215386_a(pos, (new PlacementSettings()).setRotation(rotationIn), Blocks.JIGSAW, true);
+      Collections.shuffle(list, rand);
       return list;
    }
 
-   public MutableBoundingBox func_214852_a(TemplateManager p_214852_1_, BlockPos p_214852_2_, Rotation p_214852_3_) {
-      Template template = p_214852_1_.getTemplateDefaulted(this.location);
-      return template.func_215388_b((new PlacementSettings()).setRotation(p_214852_3_), p_214852_2_);
+   public MutableBoundingBox getBoundingBox(TemplateManager templateManagerIn, BlockPos pos, Rotation rotationIn) {
+      Template template = templateManagerIn.getTemplateDefaulted(this.location);
+      return template.getMutableBoundingBox((new PlacementSettings()).setRotation(rotationIn), pos);
    }
 
    public boolean func_225575_a_(TemplateManager p_225575_1_, IWorld p_225575_2_, ChunkGenerator<?> p_225575_3_, BlockPos p_225575_4_, Rotation p_225575_5_, MutableBoundingBox p_225575_6_, Random p_225575_7_) {
       Template template = p_225575_1_.getTemplateDefaulted(this.location);
-      PlacementSettings placementsettings = this.func_214860_a(p_225575_5_, p_225575_6_);
+      PlacementSettings placementsettings = this.createPlacementSettings(p_225575_5_, p_225575_6_);
       if (!template.addBlocksToWorld(p_225575_2_, p_225575_4_, placementsettings, 18)) {
          return false;
       } else {
-         for(Template.BlockInfo template$blockinfo : Template.func_215387_a(p_225575_2_, p_225575_4_, placementsettings, this.func_214857_a(p_225575_1_, p_225575_4_, p_225575_5_, false))) {
+         for(Template.BlockInfo template$blockinfo : Template.processBlockInfos(p_225575_2_, p_225575_4_, placementsettings, this.func_214857_a(p_225575_1_, p_225575_4_, p_225575_5_, false))) {
             this.func_214846_a(p_225575_2_, template$blockinfo, p_225575_4_, p_225575_5_, p_225575_7_, p_225575_6_);
          }
 
@@ -97,16 +97,16 @@ public class SingleJigsawPiece extends JigsawPiece {
       }
    }
 
-   protected PlacementSettings func_214860_a(Rotation p_214860_1_, MutableBoundingBox p_214860_2_) {
+   protected PlacementSettings createPlacementSettings(Rotation rotationIn, MutableBoundingBox boundsIn) {
       PlacementSettings placementsettings = new PlacementSettings();
-      placementsettings.setBoundingBox(p_214860_2_);
-      placementsettings.setRotation(p_214860_1_);
+      placementsettings.setBoundingBox(boundsIn);
+      placementsettings.setRotation(rotationIn);
       placementsettings.func_215223_c(true);
       placementsettings.setIgnoreEntities(false);
       placementsettings.addProcessor(BlockIgnoreStructureProcessor.AIR_AND_STRUCTURE_BLOCK);
       placementsettings.addProcessor(JigsawReplacementStructureProcessor.INSTANCE);
       this.processors.forEach(placementsettings::addProcessor);
-      this.getPlacementBehaviour().func_214937_b().forEach(placementsettings::addProcessor);
+      this.getPlacementBehaviour().getStructureProcessors().forEach(placementsettings::addProcessor);
       return placementsettings;
    }
 
@@ -114,9 +114,9 @@ public class SingleJigsawPiece extends JigsawPiece {
       return IJigsawDeserializer.SINGLE_POOL_ELEMENT;
    }
 
-   public <T> Dynamic<T> serialize0(DynamicOps<T> p_214851_1_) {
-      return new Dynamic<>(p_214851_1_, p_214851_1_.createMap(ImmutableMap.of(p_214851_1_.createString("location"), p_214851_1_.createString(this.location.toString()), p_214851_1_.createString("processors"), p_214851_1_.createList(this.processors.stream().map((p_214859_1_) -> {
-         return p_214859_1_.serialize(p_214851_1_).getValue();
+   public <T> Dynamic<T> serialize0(DynamicOps<T> ops) {
+      return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("location"), ops.createString(this.location.toString()), ops.createString("processors"), ops.createList(this.processors.stream().map((p_214859_1_) -> {
+         return p_214859_1_.serialize(ops).getValue();
       })))));
    }
 

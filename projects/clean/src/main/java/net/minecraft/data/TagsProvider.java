@@ -28,9 +28,9 @@ public abstract class TagsProvider<T> implements IDataProvider {
    protected final Registry<T> registry;
    protected final Map<Tag<T>, Tag.Builder<T>> tagToBuilder = Maps.newLinkedHashMap();
 
-   protected TagsProvider(DataGenerator p_i49827_1_, Registry<T> p_i49827_2_) {
-      this.generator = p_i49827_1_;
-      this.registry = p_i49827_2_;
+   protected TagsProvider(DataGenerator generatorIn, Registry<T> registryIn) {
+      this.generator = generatorIn;
+      this.registry = registryIn;
    }
 
    protected abstract void registerTags();
@@ -60,7 +60,7 @@ public abstract class TagsProvider<T> implements IDataProvider {
                }
             }
 
-            cache.func_208316_a(path, s1);
+            cache.recordHash(path, s1);
          } catch (IOException ioexception) {
             LOGGER.error("Couldn't save tags to {}", path, ioexception);
          }

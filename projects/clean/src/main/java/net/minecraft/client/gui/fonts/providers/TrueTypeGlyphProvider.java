@@ -2,7 +2,6 @@ package net.minecraft.client.gui.fonts.providers;
 
 import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import javax.annotation.Nullable;
@@ -10,15 +9,14 @@ import net.minecraft.client.gui.fonts.IGlyphInfo;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 @OnlyIn(Dist.CLIENT)
 public class TrueTypeGlyphProvider implements IGlyphProvider {
-   private static final Logger LOGGER = LogManager.getLogger();
+   private final ByteBuffer field_230146_a_;
    private final STBTTFontinfo fontInfo;
    private final float oversample;
    private final CharSet chars = new CharArraySet();
@@ -27,29 +25,30 @@ public class TrueTypeGlyphProvider implements IGlyphProvider {
    private final float scale;
    private final float ascent;
 
-   public TrueTypeGlyphProvider(STBTTFontinfo info, float size, float oversampleIn, float shiftXIn, float shiftYIn, String charsIn) {
-      this.fontInfo = info;
-      this.oversample = oversampleIn;
-      charsIn.chars().forEach((p_211614_1_) -> {
+   public TrueTypeGlyphProvider(ByteBuffer p_i230051_1_, STBTTFontinfo p_i230051_2_, float p_i230051_3_, float p_i230051_4_, float p_i230051_5_, float p_i230051_6_, String p_i230051_7_) {
+      this.field_230146_a_ = p_i230051_1_;
+      this.fontInfo = p_i230051_2_;
+      this.oversample = p_i230051_4_;
+      p_i230051_7_.chars().forEach((p_211614_1_) -> {
          this.chars.add((char)(p_211614_1_ & '\uffff'));
       });
-      this.shiftX = shiftXIn * oversampleIn;
-      this.shiftY = shiftYIn * oversampleIn;
-      this.scale = STBTruetype.stbtt_ScaleForPixelHeight(info, size * oversampleIn);
+      this.shiftX = p_i230051_5_ * p_i230051_4_;
+      this.shiftY = p_i230051_6_ * p_i230051_4_;
+      this.scale = STBTruetype.stbtt_ScaleForPixelHeight(p_i230051_2_, p_i230051_3_ * p_i230051_4_);
 
       try (MemoryStack memorystack = MemoryStack.stackPush()) {
          IntBuffer intbuffer = memorystack.mallocInt(1);
          IntBuffer intbuffer1 = memorystack.mallocInt(1);
          IntBuffer intbuffer2 = memorystack.mallocInt(1);
-         STBTruetype.stbtt_GetFontVMetrics(info, intbuffer, intbuffer1, intbuffer2);
+         STBTruetype.stbtt_GetFontVMetrics(p_i230051_2_, intbuffer, intbuffer1, intbuffer2);
          this.ascent = (float)intbuffer.get(0) * this.scale;
       }
 
    }
 
    @Nullable
-   public TrueTypeGlyphProvider.GlpyhInfo func_212248_a(char p_212248_1_) {
-      if (this.chars.contains(p_212248_1_)) {
+   public TrueTypeGlyphProvider.GlpyhInfo getGlyphInfo(char character) {
+      if (this.chars.contains(character)) {
          return null;
       } else {
          Object lvt_9_1_;
@@ -58,7 +57,7 @@ public class TrueTypeGlyphProvider implements IGlyphProvider {
             IntBuffer intbuffer1 = memorystack.mallocInt(1);
             IntBuffer intbuffer2 = memorystack.mallocInt(1);
             IntBuffer intbuffer3 = memorystack.mallocInt(1);
-            int i = STBTruetype.stbtt_FindGlyphIndex(this.fontInfo, p_212248_1_);
+            int i = STBTruetype.stbtt_FindGlyphIndex(this.fontInfo, character);
             if (i != 0) {
                STBTruetype.stbtt_GetGlyphBitmapBoxSubpixel(this.fontInfo, i, this.scale, this.scale, this.shiftX, this.shiftY, intbuffer, intbuffer1, intbuffer2, intbuffer3);
                int k = intbuffer2.get(0) - intbuffer.get(0);
@@ -82,13 +81,9 @@ public class TrueTypeGlyphProvider implements IGlyphProvider {
       }
    }
 
-   public static STBTTFontinfo func_216485_a(ByteBuffer p_216485_0_) throws IOException {
-      STBTTFontinfo stbttfontinfo = STBTTFontinfo.create();
-      if (!STBTruetype.stbtt_InitFont(stbttfontinfo, p_216485_0_)) {
-         throw new IOException("Invalid ttf");
-      } else {
-         return stbttfontinfo;
-      }
+   public void close() {
+      this.fontInfo.free();
+      MemoryUtil.memFree(this.field_230146_a_);
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -136,7 +131,7 @@ public class TrueTypeGlyphProvider implements IGlyphProvider {
       public void uploadGlyph(int xOffset, int yOffset) {
          NativeImage nativeimage = new NativeImage(NativeImage.PixelFormat.LUMINANCE, this.width, this.height, false);
          nativeimage.renderGlyph(TrueTypeGlyphProvider.this.fontInfo, this.glyphIndex, this.width, this.height, TrueTypeGlyphProvider.this.scale, TrueTypeGlyphProvider.this.scale, TrueTypeGlyphProvider.this.shiftX, TrueTypeGlyphProvider.this.shiftY, 0, 0);
-         nativeimage.func_227788_a_(0, xOffset, yOffset, 0, 0, this.width, this.height, false, true);
+         nativeimage.uploadTextureSub(0, xOffset, yOffset, 0, 0, this.width, this.height, false, true);
       }
 
       public boolean isColored() {

@@ -72,7 +72,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class Registry<T> implements IObjectIntIterable<T> {
    protected static final Logger LOGGER = LogManager.getLogger();
-   private static final Map<ResourceLocation, Supplier<?>> field_218376_a = Maps.newLinkedHashMap();
+   private static final Map<ResourceLocation, Supplier<?>> LOCATION_TO_SUPPLIER = Maps.newLinkedHashMap();
    public static final MutableRegistry<MutableRegistry<?>> REGISTRY = new SimpleRegistry<>();
    public static final Registry<SoundEvent> SOUND_EVENT = registerSimple("sound_event", () -> {
       return SoundEvents.ENTITY_ITEM_PICKUP;
@@ -113,16 +113,16 @@ public abstract class Registry<T> implements IObjectIntIterable<T> {
    public static final Registry<Biome> BIOME = registerSimple("biome", () -> {
       return Biomes.DEFAULT;
    });
-   public static final Registry<BlockStateProviderType<?>> field_229387_t_ = registerSimple("block_state_provider_type", () -> {
+   public static final Registry<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = registerSimple("block_state_provider_type", () -> {
       return BlockStateProviderType.field_227394_a_;
    });
-   public static final Registry<BlockPlacerType<?>> field_229388_u_ = registerSimple("block_placer_type", () -> {
+   public static final Registry<BlockPlacerType<?>> BLOCK_PLACER_TYPE = registerSimple("block_placer_type", () -> {
       return BlockPlacerType.field_227259_a_;
    });
-   public static final Registry<FoliagePlacerType<?>> field_229389_v_ = registerSimple("foliage_placer_type", () -> {
+   public static final Registry<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPE = registerSimple("foliage_placer_type", () -> {
       return FoliagePlacerType.field_227386_a_;
    });
-   public static final Registry<TreeDecoratorType<?>> field_229390_w_ = registerSimple("tree_decorator_type", () -> {
+   public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = registerSimple("tree_decorator_type", () -> {
       return TreeDecoratorType.field_227426_b_;
    });
    public static final Registry<ParticleType<? extends IParticleData>> PARTICLE_TYPE = registerSimple("particle_type", () -> {
@@ -208,7 +208,7 @@ public abstract class Registry<T> implements IObjectIntIterable<T> {
 
    private static <T, R extends MutableRegistry<T>> R register(String p_222939_0_, R p_222939_1_, Supplier<T> p_222939_2_) {
       ResourceLocation resourcelocation = new ResourceLocation(p_222939_0_);
-      field_218376_a.put(resourcelocation, p_222939_2_);
+      LOCATION_TO_SUPPLIER.put(resourcelocation, p_222939_2_);
       return (R)(REGISTRY.register(resourcelocation, p_222939_1_));
    }
 
@@ -247,7 +247,7 @@ public abstract class Registry<T> implements IObjectIntIterable<T> {
    }
 
    static {
-      field_218376_a.entrySet().forEach((p_229397_0_) -> {
+      LOCATION_TO_SUPPLIER.entrySet().forEach((p_229397_0_) -> {
          if (p_229397_0_.getValue().get() == null) {
             LOGGER.error("Unable to bootstrap registry '{}'", p_229397_0_.getKey());
          }

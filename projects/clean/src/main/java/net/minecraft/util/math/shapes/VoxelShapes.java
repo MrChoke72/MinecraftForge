@@ -112,7 +112,7 @@ public final class VoxelShapes {
 
    public static VoxelShape combine(VoxelShape shape1, VoxelShape shape2, IBooleanFunction function) {
       if (function.apply(false, false)) {
-         throw (IllegalArgumentException)Util.func_229757_c_(new IllegalArgumentException());
+         throw (IllegalArgumentException)Util.spinlockIfDevMode(new IllegalArgumentException());
       } else if (shape1 == shape2) {
          return function.apply(true, true) ? shape1 : empty();
       } else {
@@ -134,7 +134,7 @@ public final class VoxelShapes {
 
    public static boolean compare(VoxelShape shape1, VoxelShape shape2, IBooleanFunction function) {
       if (function.apply(false, false)) {
-         throw (IllegalArgumentException)Util.func_229757_c_(new IllegalArgumentException());
+         throw (IllegalArgumentException)Util.spinlockIfDevMode(new IllegalArgumentException());
       } else if (shape1 == shape2) {
          return function.apply(true, true);
       } else if (shape1.isEmpty()) {
@@ -158,11 +158,11 @@ public final class VoxelShapes {
          IDoubleListMerger idoublelistmerger = makeListMerger(1, shape1.getValues(Direction.Axis.X), shape2.getValues(Direction.Axis.X), flag, flag1);
          IDoubleListMerger idoublelistmerger1 = makeListMerger(idoublelistmerger.func_212435_a().size() - 1, shape1.getValues(Direction.Axis.Y), shape2.getValues(Direction.Axis.Y), flag, flag1);
          IDoubleListMerger idoublelistmerger2 = makeListMerger((idoublelistmerger.func_212435_a().size() - 1) * (idoublelistmerger1.func_212435_a().size() - 1), shape1.getValues(Direction.Axis.Z), shape2.getValues(Direction.Axis.Z), flag, flag1);
-         return func_197874_a(idoublelistmerger, idoublelistmerger1, idoublelistmerger2, shape1.part, shape2.part, function);
+         return join(idoublelistmerger, idoublelistmerger1, idoublelistmerger2, shape1.part, shape2.part, function);
       }
    }
 
-   private static boolean func_197874_a(IDoubleListMerger p_197874_0_, IDoubleListMerger p_197874_1_, IDoubleListMerger p_197874_2_, VoxelShapePart p_197874_3_, VoxelShapePart p_197874_4_, IBooleanFunction p_197874_5_) {
+   private static boolean join(IDoubleListMerger p_197874_0_, IDoubleListMerger p_197874_1_, IDoubleListMerger p_197874_2_, VoxelShapePart p_197874_3_, VoxelShapePart p_197874_4_, IBooleanFunction p_197874_5_) {
       return !p_197874_0_.forMergedIndexes((p_199861_5_, p_199861_6_, p_199861_7_) -> {
          return p_197874_1_.forMergedIndexes((p_199860_6_, p_199860_7_, p_199860_8_) -> {
             return p_197874_2_.forMergedIndexes((p_199862_7_, p_199862_8_, p_199862_9_) -> {
@@ -235,7 +235,7 @@ public final class VoxelShapes {
                      if (k2 < 3) {
                         blockpos$mutable.func_218295_a(axisrotation, i2, j2, l1);
                         BlockState blockstate = worldReader.getBlockState(blockpos$mutable);
-                        if ((k2 != 1 || blockstate.func_215704_f()) && (k2 != 2 || blockstate.getBlock() == Blocks.MOVING_PISTON)) {
+                        if ((k2 != 1 || blockstate.isCollisionShapeLargerThanFullBlock()) && (k2 != 2 || blockstate.getBlock() == Blocks.MOVING_PISTON)) {
                            desiredOffset = blockstate.getCollisionShape(worldReader, blockpos$mutable, selectionContext).getAllowedOffset(direction$axis2, collisionBox.offset((double)(-blockpos$mutable.getX()), (double)(-blockpos$mutable.getY()), (double)(-blockpos$mutable.getZ())), desiredOffset);
                            if (Math.abs(desiredOffset) < 1.0E-7D) {
                               return 0.0D;
@@ -261,8 +261,8 @@ public final class VoxelShapes {
       }
    }
 
-   private static int getDifferenceFloored(double p_216385_0_, double p_216385_2_, double p_216385_4_) {
-      return p_216385_0_ > 0.0D ? MathHelper.floor(p_216385_4_ + p_216385_0_) + 1 : MathHelper.floor(p_216385_2_ + p_216385_0_) - 1;
+   private static int getDifferenceFloored(double desiredOffset, double min, double max) {
+      return desiredOffset > 0.0D ? MathHelper.floor(max + desiredOffset) + 1 : MathHelper.floor(min + desiredOffset) - 1;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -281,22 +281,22 @@ public final class VoxelShapes {
       }
    }
 
-   public static VoxelShape func_216387_a(VoxelShape p_216387_0_, Direction p_216387_1_) {
-      if (p_216387_0_ == fullCube()) {
+   public static VoxelShape getFaceShape(VoxelShape voxelShapeIn, Direction directionIn) {
+      if (voxelShapeIn == fullCube()) {
          return fullCube();
       } else {
-         Direction.Axis direction$axis = p_216387_1_.getAxis();
+         Direction.Axis direction$axis = directionIn.getAxis();
          boolean flag;
          int i;
-         if (p_216387_1_.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
-            flag = DoubleMath.fuzzyEquals(p_216387_0_.getEnd(direction$axis), 1.0D, 1.0E-7D);
-            i = p_216387_0_.part.getSize(direction$axis) - 1;
+         if (directionIn.getAxisDirection() == Direction.AxisDirection.POSITIVE) {
+            flag = DoubleMath.fuzzyEquals(voxelShapeIn.getEnd(direction$axis), 1.0D, 1.0E-7D);
+            i = voxelShapeIn.part.getSize(direction$axis) - 1;
          } else {
-            flag = DoubleMath.fuzzyEquals(p_216387_0_.getStart(direction$axis), 0.0D, 1.0E-7D);
+            flag = DoubleMath.fuzzyEquals(voxelShapeIn.getStart(direction$axis), 0.0D, 1.0E-7D);
             i = 0;
          }
 
-         return (VoxelShape)(!flag ? empty() : new SplitVoxelShape(p_216387_0_, direction$axis, i));
+         return (VoxelShape)(!flag ? empty() : new SplitVoxelShape(voxelShapeIn, direction$axis, i));
       }
    }
 
@@ -320,12 +320,12 @@ public final class VoxelShapes {
       }
    }
 
-   public static boolean func_223416_b(VoxelShape p_223416_0_, VoxelShape p_223416_1_) {
-      if (p_223416_0_ != fullCube() && p_223416_1_ != fullCube()) {
-         if (p_223416_0_.isEmpty() && p_223416_1_.isEmpty()) {
+   public static boolean faceShapeCovers(VoxelShape voxelShape1, VoxelShape voxelShape2) {
+      if (voxelShape1 != fullCube() && voxelShape2 != fullCube()) {
+         if (voxelShape1.isEmpty() && voxelShape2.isEmpty()) {
             return false;
          } else {
-            return !compare(fullCube(), combine(p_223416_0_, p_223416_1_, IBooleanFunction.OR), IBooleanFunction.ONLY_FIRST);
+            return !compare(fullCube(), combine(voxelShape1, voxelShape2, IBooleanFunction.OR), IBooleanFunction.ONLY_FIRST);
          }
       } else {
          return true;

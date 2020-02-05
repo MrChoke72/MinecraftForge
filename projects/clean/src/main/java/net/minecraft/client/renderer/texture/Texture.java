@@ -29,14 +29,14 @@ public abstract class Texture {
          j = 9728;
       }
 
-      GlStateManager.func_227677_b_(3553, 10241, i);
-      GlStateManager.func_227677_b_(3553, 10240, j);
+      GlStateManager.texParameter(3553, 10241, i);
+      GlStateManager.texParameter(3553, 10240, j);
    }
 
    public int getGlTextureId() {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
       if (this.glTextureId == -1) {
-         this.glTextureId = TextureUtil.func_225678_a_();
+         this.glTextureId = TextureUtil.generateTextureId();
       }
 
       return this.glTextureId;
@@ -46,13 +46,13 @@ public abstract class Texture {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
             if (this.glTextureId != -1) {
-               TextureUtil.func_225679_a_(this.glTextureId);
+               TextureUtil.releaseTextureId(this.glTextureId);
                this.glTextureId = -1;
             }
 
          });
       } else if (this.glTextureId != -1) {
-         TextureUtil.func_225679_a_(this.glTextureId);
+         TextureUtil.releaseTextureId(this.glTextureId);
          this.glTextureId = -1;
       }
 
@@ -60,18 +60,18 @@ public abstract class Texture {
 
    public abstract void loadTexture(IResourceManager manager) throws IOException;
 
-   public void func_229148_d_() {
+   public void bindTexture() {
       if (!RenderSystem.isOnRenderThreadOrInit()) {
          RenderSystem.recordRenderCall(() -> {
-            GlStateManager.func_227760_t_(this.getGlTextureId());
+            GlStateManager.bindTexture(this.getGlTextureId());
          });
       } else {
-         GlStateManager.func_227760_t_(this.getGlTextureId());
+         GlStateManager.bindTexture(this.getGlTextureId());
       }
 
    }
 
-   public void func_215244_a(TextureManager p_215244_1_, IResourceManager p_215244_2_, ResourceLocation p_215244_3_, Executor p_215244_4_) {
-      p_215244_1_.func_229263_a_(p_215244_3_, this);
+   public void loadTexture(TextureManager textureManagerIn, IResourceManager resourceManagerIn, ResourceLocation resourceLocationIn, Executor executorIn) {
+      textureManagerIn.loadTexture(resourceLocationIn, this);
    }
 }

@@ -21,17 +21,17 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class StonecutterContainer extends Container {
-   private final IWorldPosCallable field_217088_g;
-   private final IntReferenceHolder field_217089_h = IntReferenceHolder.single();
-   private final World field_217090_i;
+   private final IWorldPosCallable worldPosCallable;
+   private final IntReferenceHolder selectedRecipe = IntReferenceHolder.single();
+   private final World world;
    private List<StonecuttingRecipe> recipes = Lists.newArrayList();
-   private ItemStack field_217092_k = ItemStack.EMPTY;
-   private long field_217093_l;
-   final Slot field_217085_d;
-   final Slot field_217086_e;
+   private ItemStack itemStackInput = ItemStack.EMPTY;
+   private long lastOnTake;
+   final Slot inputInventorySlot;
+   final Slot outputInventorySlot;
    private Runnable inventoryUpdateListener = () -> {
    };
-   public final IInventory field_217087_f = new Inventory(1) {
+   public final IInventory inputInventory = new Inventory(1) {
       public void markDirty() {
          super.markDirty();
          StonecutterContainer.this.onCraftMatrixChanged(this);
@@ -40,32 +40,32 @@ public class StonecutterContainer extends Container {
    };
    private final CraftResultInventory inventory = new CraftResultInventory();
 
-   public StonecutterContainer(int p_i50059_1_, PlayerInventory p_i50059_2_) {
-      this(p_i50059_1_, p_i50059_2_, IWorldPosCallable.DUMMY);
+   public StonecutterContainer(int windowIdIn, PlayerInventory playerInventoryIn) {
+      this(windowIdIn, playerInventoryIn, IWorldPosCallable.DUMMY);
    }
 
-   public StonecutterContainer(int p_i50060_1_, PlayerInventory p_i50060_2_, final IWorldPosCallable p_i50060_3_) {
-      super(ContainerType.STONECUTTER, p_i50060_1_);
-      this.field_217088_g = p_i50060_3_;
-      this.field_217090_i = p_i50060_2_.player.world;
-      this.field_217085_d = this.addSlot(new Slot(this.field_217087_f, 0, 20, 33));
-      this.field_217086_e = this.addSlot(new Slot(this.inventory, 1, 143, 33) {
+   public StonecutterContainer(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
+      super(ContainerType.STONECUTTER, windowIdIn);
+      this.worldPosCallable = worldPosCallableIn;
+      this.world = playerInventoryIn.player.world;
+      this.inputInventorySlot = this.addSlot(new Slot(this.inputInventory, 0, 20, 33));
+      this.outputInventorySlot = this.addSlot(new Slot(this.inventory, 1, 143, 33) {
          public boolean isItemValid(ItemStack stack) {
             return false;
          }
 
          public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
-            ItemStack itemstack = StonecutterContainer.this.field_217085_d.decrStackSize(1);
+            ItemStack itemstack = StonecutterContainer.this.inputInventorySlot.decrStackSize(1);
             if (!itemstack.isEmpty()) {
-               StonecutterContainer.this.func_217082_i();
+               StonecutterContainer.this.updateRecipeResultSlot();
             }
 
             stack.getItem().onCreated(stack, thePlayer.world, thePlayer);
-            p_i50060_3_.consume((p_216954_1_, p_216954_2_) -> {
+            worldPosCallableIn.consume((p_216954_1_, p_216954_2_) -> {
                long l = p_216954_1_.getGameTime();
-               if (StonecutterContainer.this.field_217093_l != l) {
+               if (StonecutterContainer.this.lastOnTake != l) {
                   p_216954_1_.playSound((PlayerEntity)null, p_216954_2_, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                  StonecutterContainer.this.field_217093_l = l;
+                  StonecutterContainer.this.lastOnTake = l;
                }
 
             });
@@ -75,20 +75,20 @@ public class StonecutterContainer extends Container {
 
       for(int i = 0; i < 3; ++i) {
          for(int j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(p_i50060_2_, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            this.addSlot(new Slot(playerInventoryIn, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
          }
       }
 
       for(int k = 0; k < 9; ++k) {
-         this.addSlot(new Slot(p_i50060_2_, k, 8 + k * 18, 142));
+         this.addSlot(new Slot(playerInventoryIn, k, 8 + k * 18, 142));
       }
 
-      this.trackInt(this.field_217089_h);
+      this.trackInt(this.selectedRecipe);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_217073_e() {
-      return this.field_217089_h.get();
+   public int getSelectedRecipe() {
+      return this.selectedRecipe.get();
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -102,48 +102,48 @@ public class StonecutterContainer extends Container {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_217083_h() {
-      return this.field_217085_d.getHasStack() && !this.recipes.isEmpty();
+   public boolean hasItemsinInputSlot() {
+      return this.inputInventorySlot.getHasStack() && !this.recipes.isEmpty();
    }
 
    public boolean canInteractWith(PlayerEntity playerIn) {
-      return isWithinUsableDistance(this.field_217088_g, playerIn, Blocks.STONECUTTER);
+      return isWithinUsableDistance(this.worldPosCallable, playerIn, Blocks.STONECUTTER);
    }
 
    public boolean enchantItem(PlayerEntity playerIn, int id) {
       if (id >= 0 && id < this.recipes.size()) {
-         this.field_217089_h.set(id);
-         this.func_217082_i();
+         this.selectedRecipe.set(id);
+         this.updateRecipeResultSlot();
       }
 
       return true;
    }
 
    public void onCraftMatrixChanged(IInventory inventoryIn) {
-      ItemStack itemstack = this.field_217085_d.getStack();
-      if (itemstack.getItem() != this.field_217092_k.getItem()) {
-         this.field_217092_k = itemstack.copy();
+      ItemStack itemstack = this.inputInventorySlot.getStack();
+      if (itemstack.getItem() != this.itemStackInput.getItem()) {
+         this.itemStackInput = itemstack.copy();
          this.updateAvailableRecipes(inventoryIn, itemstack);
       }
 
    }
 
-   private void updateAvailableRecipes(IInventory p_217074_1_, ItemStack p_217074_2_) {
+   private void updateAvailableRecipes(IInventory inventoryIn, ItemStack stack) {
       this.recipes.clear();
-      this.field_217089_h.set(-1);
-      this.field_217086_e.putStack(ItemStack.EMPTY);
-      if (!p_217074_2_.isEmpty()) {
-         this.recipes = this.field_217090_i.getRecipeManager().getRecipes(IRecipeType.STONECUTTING, p_217074_1_, this.field_217090_i);
+      this.selectedRecipe.set(-1);
+      this.outputInventorySlot.putStack(ItemStack.EMPTY);
+      if (!stack.isEmpty()) {
+         this.recipes = this.world.getRecipeManager().getRecipes(IRecipeType.STONECUTTING, inventoryIn, this.world);
       }
 
    }
 
-   private void func_217082_i() {
+   private void updateRecipeResultSlot() {
       if (!this.recipes.isEmpty()) {
-         StonecuttingRecipe stonecuttingrecipe = this.recipes.get(this.field_217089_h.get());
-         this.field_217086_e.putStack(stonecuttingrecipe.getCraftingResult(this.field_217087_f));
+         StonecuttingRecipe stonecuttingrecipe = this.recipes.get(this.selectedRecipe.get());
+         this.outputInventorySlot.putStack(stonecuttingrecipe.getCraftingResult(this.inputInventory));
       } else {
-         this.field_217086_e.putStack(ItemStack.EMPTY);
+         this.outputInventorySlot.putStack(ItemStack.EMPTY);
       }
 
       this.detectAndSendChanges();
@@ -154,8 +154,8 @@ public class StonecutterContainer extends Container {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void setInventoryUpdateListener(Runnable p_217071_1_) {
-      this.inventoryUpdateListener = p_217071_1_;
+   public void setInventoryUpdateListener(Runnable listenerIn) {
+      this.inventoryUpdateListener = listenerIn;
    }
 
    public boolean canMergeSlot(ItemStack stack, Slot slotIn) {
@@ -180,7 +180,7 @@ public class StonecutterContainer extends Container {
             if (!this.mergeItemStack(itemstack1, 2, 38, false)) {
                return ItemStack.EMPTY;
             }
-         } else if (this.field_217090_i.getRecipeManager().getRecipe(IRecipeType.STONECUTTING, new Inventory(itemstack1), this.field_217090_i).isPresent()) {
+         } else if (this.world.getRecipeManager().getRecipe(IRecipeType.STONECUTTING, new Inventory(itemstack1), this.world).isPresent()) {
             if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
                return ItemStack.EMPTY;
             }
@@ -211,8 +211,8 @@ public class StonecutterContainer extends Container {
    public void onContainerClosed(PlayerEntity playerIn) {
       super.onContainerClosed(playerIn);
       this.inventory.removeStackFromSlot(1);
-      this.field_217088_g.consume((p_217079_2_, p_217079_3_) -> {
-         this.clearContainer(playerIn, playerIn.world, this.field_217087_f);
+      this.worldPosCallable.consume((p_217079_2_, p_217079_3_) -> {
+         this.clearContainer(playerIn, playerIn.world, this.inputInventory);
       });
    }
 }

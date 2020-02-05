@@ -16,7 +16,7 @@ public class MetaParticle extends Particle {
       super(p_i51021_1_, p_i51021_2_, p_i51021_4_, p_i51021_6_, p_i51021_8_, p_i51021_10_, p_i51021_12_);
    }
 
-   public final void func_225606_a_(IVertexBuilder p_225606_1_, ActiveRenderInfo p_225606_2_, float p_225606_3_) {
+   public final void renderParticle(IVertexBuilder buffer, ActiveRenderInfo renderInfo, float partialTicks) {
    }
 
    public IParticleRenderType getRenderType() {

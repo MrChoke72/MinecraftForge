@@ -15,24 +15,24 @@ import net.minecraft.world.server.ServerWorld;
 public class WalkRandomlyTask extends Task<CreatureEntity> {
    private final float speed;
 
-   public WalkRandomlyTask(float speed) {
+   public WalkRandomlyTask(float p_i50364_1_) {
       super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT));
-      this.speed = speed;
+      this.speed = p_i50364_1_;
    }
 
    protected boolean shouldExecute(ServerWorld worldIn, CreatureEntity owner) {
-      return !worldIn.isMaxLightLevel(new BlockPos(owner));
+      return !worldIn.canSeeSky(new BlockPos(owner));
    }
 
    protected void startExecuting(ServerWorld worldIn, CreatureEntity entityIn, long gameTimeIn) {
       BlockPos blockpos = new BlockPos(entityIn);
       List<BlockPos> list = BlockPos.getAllInBox(blockpos.add(-1, -1, -1), blockpos.add(1, 1, 1)).map(BlockPos::toImmutable).collect(Collectors.toList());
       Collections.shuffle(list);
-      Optional<BlockPos> optional = list.stream().filter((pos) -> {
-         return !worldIn.isMaxLightLevel(pos);
-      }).filter((pos) -> {
-         return worldIn.func_217400_a(pos, entityIn);
-      }).filter((pos) -> {
+      Optional<BlockPos> optional = list.stream().filter((p_220428_1_) -> {
+         return !worldIn.canSeeSky(p_220428_1_);
+      }).filter((p_220427_2_) -> {
+         return worldIn.isTopSolid(p_220427_2_, entityIn);
+      }).filter((p_220429_2_) -> {
          return worldIn.isEntityNoCollide(entityIn);
       }).findFirst();
       optional.ifPresent((pos) -> {

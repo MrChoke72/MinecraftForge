@@ -65,12 +65,12 @@ public class PotionUtils {
 
    }
 
-   public static int getColor(ItemStack p_190932_0_) {
-      CompoundNBT compoundnbt = p_190932_0_.getTag();
+   public static int getColor(ItemStack itemStackIn) {
+      CompoundNBT compoundnbt = itemStackIn.getTag();
       if (compoundnbt != null && compoundnbt.contains("CustomPotionColor", 99)) {
          return compoundnbt.getInt("CustomPotionColor");
       } else {
-         return getPotionFromItem(p_190932_0_) == Potions.EMPTY ? 16253176 : getPotionColorFromEffectList(getEffectsFromStack(p_190932_0_));
+         return getPotionFromItem(itemStackIn) == Potions.EMPTY ? 16253176 : getPotionColorFromEffectList(getEffectsFromStack(itemStackIn));
       }
    }
 

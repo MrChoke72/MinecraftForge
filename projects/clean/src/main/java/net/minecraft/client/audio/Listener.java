@@ -29,6 +29,6 @@ public class Listener {
 
    public void init() {
       this.setPosition(Vec3d.ZERO);
-      this.func_227580_a_(Vector3f.field_229182_e_, Vector3f.field_229181_d_);
+      this.func_227580_a_(Vector3f.ZN, Vector3f.YP);
    }
 }

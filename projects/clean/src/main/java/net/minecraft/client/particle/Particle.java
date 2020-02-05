@@ -32,7 +32,7 @@ public abstract class Particle {
    private AxisAlignedBB boundingBox = EMPTY_AABB;
    protected boolean onGround;
    protected boolean canCollide = true;
-   private boolean field_228343_B_;
+   private boolean collidedY;
    protected boolean isExpired;
    protected float width = 0.6F;
    protected float height = 1.8F;
@@ -119,7 +119,7 @@ public abstract class Particle {
       }
    }
 
-   public abstract void func_225606_a_(IVertexBuilder p_225606_1_, ActiveRenderInfo p_225606_2_, float p_225606_3_);
+   public abstract void renderParticle(IVertexBuilder buffer, ActiveRenderInfo renderInfo, float partialTicks);
 
    public abstract IParticleRenderType getRenderType();
 
@@ -153,11 +153,11 @@ public abstract class Particle {
    }
 
    public void move(double x, double y, double z) {
-      if (!this.field_228343_B_) {
+      if (!this.collidedY) {
          double d0 = x;
          double d1 = y;
          if (this.canCollide && (x != 0.0D || y != 0.0D || z != 0.0D)) {
-            Vec3d vec3d = Entity.func_223307_a((Entity)null, new Vec3d(x, y, z), this.getBoundingBox(), this.world, ISelectionContext.dummy(), new ReuseableStream<>(Stream.empty()));
+            Vec3d vec3d = Entity.collideBoundingBoxHeuristically((Entity)null, new Vec3d(x, y, z), this.getBoundingBox(), this.world, ISelectionContext.dummy(), new ReuseableStream<>(Stream.empty()));
             x = vec3d.x;
             y = vec3d.y;
             z = vec3d.z;
@@ -169,7 +169,7 @@ public abstract class Particle {
          }
 
          if (Math.abs(y) >= (double)1.0E-5F && Math.abs(y) < (double)1.0E-5F) {
-            this.field_228343_B_ = true;
+            this.collidedY = true;
          }
 
          this.onGround = y != y && d1 < 0.0D;
@@ -193,7 +193,7 @@ public abstract class Particle {
 
    protected int getBrightnessForRender(float partialTick) {
       BlockPos blockpos = new BlockPos(this.posX, this.posY, this.posZ);
-      return this.world.isBlockLoaded(blockpos) ? WorldRenderer.func_228421_a_(this.world, blockpos) : 0;
+      return this.world.isBlockLoaded(blockpos) ? WorldRenderer.getCombinedLight(this.world, blockpos) : 0;
    }
 
    public boolean isAlive() {

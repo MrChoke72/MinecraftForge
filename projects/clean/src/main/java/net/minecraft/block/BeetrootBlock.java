@@ -33,9 +33,9 @@ public class BeetrootBlock extends CropsBlock {
       return Items.BEETROOT_SEEDS;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_4_.nextInt(3) != 0) {
-         super.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (rand.nextInt(3) != 0) {
+         super.tick(state, worldIn, pos, rand);
       }
 
    }

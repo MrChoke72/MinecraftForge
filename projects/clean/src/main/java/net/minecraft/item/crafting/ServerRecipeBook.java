@@ -74,14 +74,14 @@ public class ServerRecipeBook extends RecipeBook {
       ListNBT listnbt = new ListNBT();
 
       for(ResourceLocation resourcelocation : this.recipes) {
-         listnbt.add(StringNBT.func_229705_a_(resourcelocation.toString()));
+         listnbt.add(StringNBT.valueOf(resourcelocation.toString()));
       }
 
       compoundnbt.put("recipes", listnbt);
       ListNBT listnbt1 = new ListNBT();
 
       for(ResourceLocation resourcelocation1 : this.newRecipes) {
-         listnbt1.add(StringNBT.func_229705_a_(resourcelocation1.toString()));
+         listnbt1.add(StringNBT.valueOf(resourcelocation1.toString()));
       }
 
       compoundnbt.put("toBeDisplayed", listnbt1);

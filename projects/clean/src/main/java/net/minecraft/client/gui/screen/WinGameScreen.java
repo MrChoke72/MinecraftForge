@@ -38,7 +38,7 @@ public class WinGameScreen extends Screen {
    private float scrollSpeed = 0.5F;
 
    public WinGameScreen(boolean poemIn, Runnable onFinishedIn) {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
       this.poem = poemIn;
       this.onFinished = onFinishedIn;
       if (!poemIn) {
@@ -145,10 +145,10 @@ public class WinGameScreen extends Screen {
       Tessellator tessellator = Tessellator.getInstance();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_(0.0D, (double)this.height, (double)this.getBlitOffset()).func_225583_a_(0.0F, f * 0.015625F).func_227885_a_(f3, f3, f3, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_((double)i, (double)this.height, (double)this.getBlitOffset()).func_225583_a_((float)i * 0.015625F, f * 0.015625F).func_227885_a_(f3, f3, f3, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_((double)i, 0.0D, (double)this.getBlitOffset()).func_225583_a_((float)i * 0.015625F, f1 * 0.015625F).func_227885_a_(f3, f3, f3, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_(0.0D, 0.0D, (double)this.getBlitOffset()).func_225583_a_(0.0F, f1 * 0.015625F).func_227885_a_(f3, f3, f3, 1.0F).endVertex();
+      bufferbuilder.pos(0.0D, (double)this.height, (double)this.getBlitOffset()).tex(0.0F, f * 0.015625F).color(f3, f3, f3, 1.0F).endVertex();
+      bufferbuilder.pos((double)i, (double)this.height, (double)this.getBlitOffset()).tex((float)i * 0.015625F, f * 0.015625F).color(f3, f3, f3, 1.0F).endVertex();
+      bufferbuilder.pos((double)i, 0.0D, (double)this.getBlitOffset()).tex((float)i * 0.015625F, f1 * 0.015625F).color(f3, f3, f3, 1.0F).endVertex();
+      bufferbuilder.pos(0.0D, 0.0D, (double)this.getBlitOffset()).tex(0.0F, f1 * 0.015625F).color(f3, f3, f3, 1.0F).endVertex();
       tessellator.draw();
    }
 
@@ -201,10 +201,10 @@ public class WinGameScreen extends Screen {
       Tessellator tessellator = Tessellator.getInstance();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_(0.0D, (double)k1, (double)this.getBlitOffset()).func_225583_a_(0.0F, 1.0F).func_227885_a_(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_((double)j1, (double)k1, (double)this.getBlitOffset()).func_225583_a_(1.0F, 1.0F).func_227885_a_(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_((double)j1, 0.0D, (double)this.getBlitOffset()).func_225583_a_(1.0F, 0.0F).func_227885_a_(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-      bufferbuilder.func_225582_a_(0.0D, 0.0D, (double)this.getBlitOffset()).func_225583_a_(0.0F, 0.0F).func_227885_a_(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+      bufferbuilder.pos(0.0D, (double)k1, (double)this.getBlitOffset()).tex(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+      bufferbuilder.pos((double)j1, (double)k1, (double)this.getBlitOffset()).tex(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+      bufferbuilder.pos((double)j1, 0.0D, (double)this.getBlitOffset()).tex(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+      bufferbuilder.pos(0.0D, 0.0D, (double)this.getBlitOffset()).tex(0.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
       tessellator.draw();
       RenderSystem.disableBlend();
       super.render(p_render_1_, p_render_2_, p_render_3_);

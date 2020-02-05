@@ -83,23 +83,23 @@ public class ClientWorld extends World {
    private final ClientPlayNetHandler connection;
    private final WorldRenderer worldRenderer;
    private final Minecraft mc = Minecraft.getInstance();
-   private final List<AbstractClientPlayerEntity> field_217431_w = Lists.newArrayList();
+   private final List<AbstractClientPlayerEntity> players = Lists.newArrayList();
    private int ambienceTicks = this.rand.nextInt(12000);
    private Scoreboard scoreboard = new Scoreboard();
-   private final Map<String, MapData> field_217432_z = Maps.newHashMap();
-   private int field_228314_A_;
-   private final Object2ObjectArrayMap<ColorResolver, ColorCache> field_228315_B_ = Util.make(new Object2ObjectArrayMap<>(3), (p_228319_0_) -> {
+   private final Map<String, MapData> maps = Maps.newHashMap();
+   private int timeLightningFlash;
+   private final Object2ObjectArrayMap<ColorResolver, ColorCache> colorCaches = Util.make(new Object2ObjectArrayMap<>(3), (p_228319_0_) -> {
       p_228319_0_.put(BiomeColors.GRASS_COLOR, new ColorCache());
       p_228319_0_.put(BiomeColors.FOLIAGE_COLOR, new ColorCache());
       p_228319_0_.put(BiomeColors.WATER_COLOR, new ColorCache());
    });
 
-   public ClientWorld(ClientPlayNetHandler p_i51056_1_, WorldSettings p_i51056_2_, DimensionType dimType, int p_i51056_4_, IProfiler p_i51056_5_, WorldRenderer p_i51056_6_) {
-      super(new WorldInfo(p_i51056_2_, "MpServer"), dimType, (p_228317_1_, p_228317_2_) -> {
-         return new ClientChunkProvider((ClientWorld)p_228317_1_, p_i51056_4_);
-      }, p_i51056_5_, true);
-      this.connection = p_i51056_1_;
-      this.worldRenderer = p_i51056_6_;
+   public ClientWorld(ClientPlayNetHandler netHandler, WorldSettings worldSettingsIn, DimensionType dimType, int viewDistance, IProfiler profilerIn, WorldRenderer worldRendererIn) {
+      super(new WorldInfo(worldSettingsIn, "MpServer"), dimType, (p_228317_1_, p_228317_2_) -> {
+         return new ClientChunkProvider((ClientWorld)p_228317_1_, viewDistance);
+      }, profilerIn, true);
+      this.connection = netHandler;
+      this.worldRenderer = worldRendererIn;
       this.setSpawnPoint(new BlockPos(8, 64, 8));
       this.calculateInitialSkylight();
       this.calculateInitialWeather();
@@ -110,7 +110,7 @@ public class ClientWorld extends World {
       this.advanceTime();
       this.getProfiler().startSection("blocks");
       this.chunkProvider.tick(hasTimeLeft);
-      this.func_217426_j();
+      this.playMoodSoundAndCheckLight();
       this.getProfiler().endSection();
    }
 
@@ -125,7 +125,7 @@ public class ClientWorld extends World {
 
       for(int i = 0; i < this.globalEntities.size(); ++i) {
          Entity entity = this.globalEntities.get(i);
-         this.func_217390_a((p_228325_0_) -> {
+         this.guardEntityTick((p_228325_0_) -> {
             ++p_228325_0_.ticksExisted;
             p_228325_0_.tick();
          }, entity);
@@ -143,7 +143,7 @@ public class ClientWorld extends World {
          if (!entity1.isPassenger()) {
             iprofiler.startSection("tick");
             if (!entity1.removed) {
-               this.func_217390_a(this::func_217418_a, entity1);
+               this.guardEntityTick(this::updateEntity, entity1);
             }
 
             iprofiler.endSection();
@@ -158,38 +158,38 @@ public class ClientWorld extends World {
       }
 
       iprofiler.endSection();
-      this.func_217391_K();
+      this.tickBlockEntities();
       iprofiler.endSection();
    }
 
-   public void func_217418_a(Entity p_217418_1_) {
-      if (p_217418_1_ instanceof PlayerEntity || this.getChunkProvider().isChunkLoaded(p_217418_1_)) {
-         p_217418_1_.func_226286_f_(p_217418_1_.getPosX(), p_217418_1_.getPosY(), p_217418_1_.getPosZ());
-         p_217418_1_.prevRotationYaw = p_217418_1_.rotationYaw;
-         p_217418_1_.prevRotationPitch = p_217418_1_.rotationPitch;
-         if (p_217418_1_.addedToChunk || p_217418_1_.isSpectator()) {
-            ++p_217418_1_.ticksExisted;
+   public void updateEntity(Entity entityIn) {
+      if (entityIn instanceof PlayerEntity || this.getChunkProvider().isChunkLoaded(entityIn)) {
+         entityIn.forceSetPosition(entityIn.getPosX(), entityIn.getPosY(), entityIn.getPosZ());
+         entityIn.prevRotationYaw = entityIn.rotationYaw;
+         entityIn.prevRotationPitch = entityIn.rotationPitch;
+         if (entityIn.addedToChunk || entityIn.isSpectator()) {
+            ++entityIn.ticksExisted;
             this.getProfiler().startSection(() -> {
-               return Registry.ENTITY_TYPE.getKey(p_217418_1_.getType()).toString();
+               return Registry.ENTITY_TYPE.getKey(entityIn.getType()).toString();
             });
-            p_217418_1_.tick();
+            entityIn.tick();
             this.getProfiler().endSection();
          }
 
-         this.func_217423_b(p_217418_1_);
-         if (p_217418_1_.addedToChunk) {
-            for(Entity entity : p_217418_1_.getPassengers()) {
-               this.func_217420_a(p_217418_1_, entity);
+         this.checkChunk(entityIn);
+         if (entityIn.addedToChunk) {
+            for(Entity entity : entityIn.getPassengers()) {
+               this.updateEntityRidden(entityIn, entity);
             }
          }
 
       }
    }
 
-   public void func_217420_a(Entity p_217420_1_, Entity p_217420_2_) {
+   public void updateEntityRidden(Entity p_217420_1_, Entity p_217420_2_) {
       if (!p_217420_2_.removed && p_217420_2_.getRidingEntity() == p_217420_1_) {
          if (p_217420_2_ instanceof PlayerEntity || this.getChunkProvider().isChunkLoaded(p_217420_2_)) {
-            p_217420_2_.func_226286_f_(p_217420_2_.getPosX(), p_217420_2_.getPosY(), p_217420_2_.getPosZ());
+            p_217420_2_.forceSetPosition(p_217420_2_.getPosX(), p_217420_2_.getPosY(), p_217420_2_.getPosZ());
             p_217420_2_.prevRotationYaw = p_217420_2_.rotationYaw;
             p_217420_2_.prevRotationPitch = p_217420_2_.rotationPitch;
             if (p_217420_2_.addedToChunk) {
@@ -197,10 +197,10 @@ public class ClientWorld extends World {
                p_217420_2_.updateRidden();
             }
 
-            this.func_217423_b(p_217420_2_);
+            this.checkChunk(p_217420_2_);
             if (p_217420_2_.addedToChunk) {
                for(Entity entity : p_217420_2_.getPassengers()) {
-                  this.func_217420_a(p_217420_2_, entity);
+                  this.updateEntityRidden(p_217420_2_, entity);
                }
             }
 
@@ -210,40 +210,40 @@ public class ClientWorld extends World {
       }
    }
 
-   public void func_217423_b(Entity p_217423_1_) {
+   public void checkChunk(Entity entityIn) {
       this.getProfiler().startSection("chunkCheck");
-      int i = MathHelper.floor(p_217423_1_.getPosX() / 16.0D);
-      int j = MathHelper.floor(p_217423_1_.getPosY() / 16.0D);
-      int k = MathHelper.floor(p_217423_1_.getPosZ() / 16.0D);
-      if (!p_217423_1_.addedToChunk || p_217423_1_.chunkCoordX != i || p_217423_1_.chunkCoordY != j || p_217423_1_.chunkCoordZ != k) {
-         if (p_217423_1_.addedToChunk && this.chunkExists(p_217423_1_.chunkCoordX, p_217423_1_.chunkCoordZ)) {
-            this.getChunk(p_217423_1_.chunkCoordX, p_217423_1_.chunkCoordZ).removeEntityAtIndex(p_217423_1_, p_217423_1_.chunkCoordY);
+      int i = MathHelper.floor(entityIn.getPosX() / 16.0D);
+      int j = MathHelper.floor(entityIn.getPosY() / 16.0D);
+      int k = MathHelper.floor(entityIn.getPosZ() / 16.0D);
+      if (!entityIn.addedToChunk || entityIn.chunkCoordX != i || entityIn.chunkCoordY != j || entityIn.chunkCoordZ != k) {
+         if (entityIn.addedToChunk && this.chunkExists(entityIn.chunkCoordX, entityIn.chunkCoordZ)) {
+            this.getChunk(entityIn.chunkCoordX, entityIn.chunkCoordZ).removeEntityAtIndex(entityIn, entityIn.chunkCoordY);
          }
 
-         if (!p_217423_1_.setPositionNonDirty() && !this.chunkExists(i, k)) {
-            p_217423_1_.addedToChunk = false;
+         if (!entityIn.setPositionNonDirty() && !this.chunkExists(i, k)) {
+            entityIn.addedToChunk = false;
          } else {
-            this.getChunk(i, k).addEntity(p_217423_1_);
+            this.getChunk(i, k).addEntity(entityIn);
          }
       }
 
       this.getProfiler().endSection();
    }
 
-   public void onChunkUnloaded(Chunk p_217409_1_) {
-      this.tileEntitiesToBeRemoved.addAll(p_217409_1_.getTileEntityMap().values());
-      this.chunkProvider.getLightManager().func_215571_a(p_217409_1_.getPos(), false);
+   public void onChunkUnloaded(Chunk chunkIn) {
+      this.tileEntitiesToBeRemoved.addAll(chunkIn.getTileEntityMap().values());
+      this.chunkProvider.getLightManager().enableLightSources(chunkIn.getPos(), false);
    }
 
-   public void func_228323_e_(int p_228323_1_, int p_228323_2_) {
-      this.field_228315_B_.forEach((p_228316_2_, p_228316_3_) -> {
-         p_228316_3_.func_228070_a_(p_228323_1_, p_228323_2_);
+   public void onChunkLoaded(int chunkX, int chunkZ) {
+      this.colorCaches.forEach((p_228316_2_, p_228316_3_) -> {
+         p_228316_3_.invalidateChunk(chunkX, chunkZ);
       });
    }
 
-   public void func_228327_h_() {
-      this.field_228315_B_.forEach((p_228320_0_, p_228320_1_) -> {
-         p_228320_1_.func_228069_a_();
+   public void clearColorCaches() {
+      this.colorCaches.forEach((p_228320_0_, p_228320_1_) -> {
+         p_228320_1_.invalidateAll();
       });
    }
 
@@ -251,7 +251,7 @@ public class ClientWorld extends World {
       return true;
    }
 
-   private void func_217426_j() {
+   private void playMoodSoundAndCheckLight() {
       if (this.mc.player != null) {
          if (this.ambienceTicks > 0) {
             --this.ambienceTicks;
@@ -261,7 +261,7 @@ public class ClientWorld extends World {
             double d0 = blockpos.distanceSq(blockpos1);
             if (d0 >= 4.0D && d0 <= 256.0D) {
                BlockState blockstate = this.getBlockState(blockpos1);
-               if (blockstate.isAir() && this.func_226659_b_(blockpos1, 0) <= this.rand.nextInt(8) && this.getLightLevel(LightType.SKY, blockpos1) <= 0) {
+               if (blockstate.isAir() && this.getLightSubtracted(blockpos1, 0) <= this.rand.nextInt(8) && this.getLightFor(LightType.SKY, blockpos1) <= 0) {
                   this.playSound((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, SoundEvents.AMBIENT_CAVE, SoundCategory.AMBIENT, 0.7F, 0.8F + this.rand.nextFloat() * 0.2F, false);
                   this.ambienceTicks = this.rand.nextInt(12000) + 6000;
                }
@@ -271,27 +271,27 @@ public class ClientWorld extends World {
       }
    }
 
-   public int func_217425_f() {
+   public int getCountLoadedEntities() {
       return this.entitiesById.size();
    }
 
-   public void addLightning(LightningBoltEntity p_217410_1_) {
-      this.globalEntities.add(p_217410_1_);
+   public void addLightning(LightningBoltEntity entityIn) {
+      this.globalEntities.add(entityIn);
    }
 
-   public void addPlayer(int p_217408_1_, AbstractClientPlayerEntity p_217408_2_) {
-      this.addEntityImpl(p_217408_1_, p_217408_2_);
-      this.field_217431_w.add(p_217408_2_);
+   public void addPlayer(int playerId, AbstractClientPlayerEntity playerEntityIn) {
+      this.addEntityImpl(playerId, playerEntityIn);
+      this.players.add(playerEntityIn);
    }
 
-   public void addEntity(int p_217411_1_, Entity p_217411_2_) {
-      this.addEntityImpl(p_217411_1_, p_217411_2_);
+   public void addEntity(int entityIdIn, Entity entityToSpawn) {
+      this.addEntityImpl(entityIdIn, entityToSpawn);
    }
 
-   private void addEntityImpl(int p_217424_1_, Entity p_217424_2_) {
-      this.removeEntityFromWorld(p_217424_1_);
-      this.entitiesById.put(p_217424_1_, p_217424_2_);
-      this.getChunkProvider().getChunk(MathHelper.floor(p_217424_2_.getPosX() / 16.0D), MathHelper.floor(p_217424_2_.getPosZ() / 16.0D), ChunkStatus.FULL, true).addEntity(p_217424_2_);
+   private void addEntityImpl(int entityIdIn, Entity entityToSpawn) {
+      this.removeEntityFromWorld(entityIdIn);
+      this.entitiesById.put(entityIdIn, entityToSpawn);
+      this.getChunkProvider().getChunk(MathHelper.floor(entityToSpawn.getPosX() / 16.0D), MathHelper.floor(entityToSpawn.getPosZ() / 16.0D), ChunkStatus.FULL, true).addEntity(entityToSpawn);
    }
 
    public void removeEntityFromWorld(int eid) {
@@ -303,22 +303,22 @@ public class ClientWorld extends World {
 
    }
 
-   private void removeEntity(Entity p_217414_1_) {
-      p_217414_1_.detach();
-      if (p_217414_1_.addedToChunk) {
-         this.getChunk(p_217414_1_.chunkCoordX, p_217414_1_.chunkCoordZ).removeEntity(p_217414_1_);
+   private void removeEntity(Entity entityIn) {
+      entityIn.detach();
+      if (entityIn.addedToChunk) {
+         this.getChunk(entityIn.chunkCoordX, entityIn.chunkCoordZ).removeEntity(entityIn);
       }
 
-      this.field_217431_w.remove(p_217414_1_);
+      this.players.remove(entityIn);
    }
 
-   public void addEntitiesToChunk(Chunk p_217417_1_) {
+   public void addEntitiesToChunk(Chunk chunkIn) {
       for(Entry<Entity> entry : this.entitiesById.int2ObjectEntrySet()) {
          Entity entity = entry.getValue();
          int i = MathHelper.floor(entity.getPosX() / 16.0D);
          int j = MathHelper.floor(entity.getPosZ() / 16.0D);
-         if (i == p_217417_1_.getPos().x && j == p_217417_1_.getPos().z) {
-            p_217417_1_.addEntity(entity);
+         if (i == chunkIn.getPos().x && j == chunkIn.getPos().z) {
+            chunkIn.addEntity(entity);
          }
       }
 
@@ -371,7 +371,7 @@ public class ClientWorld extends World {
          ifluidstate.animateTick(this, pos, random);
          IParticleData iparticledata = ifluidstate.getDripParticleData();
          if (iparticledata != null && this.rand.nextInt(10) == 0) {
-            boolean flag = blockstate.func_224755_d(this, pos, Direction.DOWN);
+            boolean flag = blockstate.isSolidSide(this, pos, Direction.DOWN);
             BlockPos blockpos = pos.down();
             this.spawnFluidParticle(blockpos, this.getBlockState(blockpos), iparticledata, flag);
          }
@@ -409,12 +409,12 @@ public class ClientWorld extends World {
       }
    }
 
-   private void spawnParticle(BlockPos posIn, IParticleData particleDataIn, VoxelShape voxelShapeIn, double p_211835_4_) {
-      this.spawnParticle((double)posIn.getX() + voxelShapeIn.getStart(Direction.Axis.X), (double)posIn.getX() + voxelShapeIn.getEnd(Direction.Axis.X), (double)posIn.getZ() + voxelShapeIn.getStart(Direction.Axis.Z), (double)posIn.getZ() + voxelShapeIn.getEnd(Direction.Axis.Z), p_211835_4_, particleDataIn);
+   private void spawnParticle(BlockPos posIn, IParticleData particleDataIn, VoxelShape voxelShapeIn, double y) {
+      this.spawnParticle((double)posIn.getX() + voxelShapeIn.getStart(Direction.Axis.X), (double)posIn.getX() + voxelShapeIn.getEnd(Direction.Axis.X), (double)posIn.getZ() + voxelShapeIn.getStart(Direction.Axis.Z), (double)posIn.getZ() + voxelShapeIn.getEnd(Direction.Axis.Z), y, particleDataIn);
    }
 
-   private void spawnParticle(double p_211834_1_, double p_211834_3_, double p_211834_5_, double p_211834_7_, double p_211834_9_, IParticleData p_211834_11_) {
-      this.addParticle(p_211834_11_, MathHelper.lerp(this.rand.nextDouble(), p_211834_1_, p_211834_3_), p_211834_9_, MathHelper.lerp(this.rand.nextDouble(), p_211834_5_, p_211834_7_), 0.0D, 0.0D, 0.0D);
+   private void spawnParticle(double xStart, double xEnd, double zStart, double zEnd, double y, IParticleData particleDataIn) {
+      this.addParticle(particleDataIn, MathHelper.lerp(this.rand.nextDouble(), xStart, xEnd), y, MathHelper.lerp(this.rand.nextDouble(), zStart, zEnd), 0.0D, 0.0D, 0.0D);
    }
 
    public void removeAllEntities() {
@@ -449,9 +449,9 @@ public class ClientWorld extends World {
 
    }
 
-   public void playMovingSound(@Nullable PlayerEntity p_217384_1_, Entity p_217384_2_, SoundEvent p_217384_3_, SoundCategory p_217384_4_, float p_217384_5_, float p_217384_6_) {
-      if (p_217384_1_ == this.mc.player) {
-         this.mc.getSoundHandler().play(new EntityTickableSound(p_217384_3_, p_217384_4_, p_217384_2_));
+   public void playMovingSound(@Nullable PlayerEntity playerIn, Entity entityIn, SoundEvent eventIn, SoundCategory categoryIn, float volume, float pitch) {
+      if (playerIn == this.mc.player) {
+         this.mc.getSoundHandler().play(new EntityTickableSound(eventIn, categoryIn, entityIn));
       }
 
    }
@@ -512,12 +512,12 @@ public class ClientWorld extends World {
    }
 
    @Nullable
-   public MapData func_217406_a(String p_217406_1_) {
-      return this.field_217432_z.get(p_217406_1_);
+   public MapData getMapData(String mapName) {
+      return this.maps.get(mapName);
    }
 
-   public void func_217399_a(MapData p_217399_1_) {
-      this.field_217432_z.put(p_217399_1_.getName(), p_217399_1_);
+   public void registerMapData(MapData mapDataIn) {
+      this.maps.put(mapDataIn.getName(), mapDataIn);
    }
 
    public int getNextMapId() {
@@ -536,8 +536,8 @@ public class ClientWorld extends World {
       this.worldRenderer.notifyBlockUpdate(this, pos, oldState, newState, flags);
    }
 
-   public void func_225319_b(BlockPos p_225319_1_, BlockState p_225319_2_, BlockState p_225319_3_) {
-      this.worldRenderer.func_224746_a(p_225319_1_, p_225319_2_, p_225319_3_);
+   public void markBlockRangeForRenderUpdate(BlockPos blockPosIn, BlockState oldState, BlockState newState) {
+      this.worldRenderer.markBlockRangeForRenderUpdate(blockPosIn, oldState, newState);
    }
 
    public void markSurroundingsForRerender(int sectionX, int sectionY, int sectionZ) {
@@ -578,41 +578,41 @@ public class ClientWorld extends World {
       this.worldRenderer.addParticle(particleData, false, true, x, y, z, xSpeed, ySpeed, zSpeed);
    }
 
-   public void func_217404_b(IParticleData p_217404_1_, boolean p_217404_2_, double p_217404_3_, double p_217404_5_, double p_217404_7_, double p_217404_9_, double p_217404_11_, double p_217404_13_) {
-      this.worldRenderer.addParticle(p_217404_1_, p_217404_1_.getType().getAlwaysShow() || p_217404_2_, true, p_217404_3_, p_217404_5_, p_217404_7_, p_217404_9_, p_217404_11_, p_217404_13_);
+   public void addOptionalParticle(IParticleData particleData, boolean ignoreRange, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+      this.worldRenderer.addParticle(particleData, particleData.getType().getAlwaysShow() || ignoreRange, true, x, y, z, xSpeed, ySpeed, zSpeed);
    }
 
    public List<AbstractClientPlayerEntity> getPlayers() {
-      return this.field_217431_w;
+      return this.players;
    }
 
-   public Biome func_225604_a_(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
+   public Biome getNoiseBiomeRaw(int x, int y, int z) {
       return Biomes.PLAINS;
    }
 
-   public float func_228326_g_(float p_228326_1_) {
-      float f = this.getCelestialAngle(p_228326_1_);
+   public float getSunBrightness(float partialTicks) {
+      float f = this.getCelestialAngle(partialTicks);
       float f1 = 1.0F - (MathHelper.cos(f * ((float)Math.PI * 2F)) * 2.0F + 0.2F);
       f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
       f1 = 1.0F - f1;
-      f1 = (float)((double)f1 * (1.0D - (double)(this.getRainStrength(p_228326_1_) * 5.0F) / 16.0D));
-      f1 = (float)((double)f1 * (1.0D - (double)(this.getThunderStrength(p_228326_1_) * 5.0F) / 16.0D));
+      f1 = (float)((double)f1 * (1.0D - (double)(this.getRainStrength(partialTicks) * 5.0F) / 16.0D));
+      f1 = (float)((double)f1 * (1.0D - (double)(this.getThunderStrength(partialTicks) * 5.0F) / 16.0D));
       return f1 * 0.8F + 0.2F;
    }
 
-   public Vec3d func_228318_a_(BlockPos p_228318_1_, float p_228318_2_) {
-      float f = this.getCelestialAngle(p_228318_2_);
+   public Vec3d getSkyColor(BlockPos blockPosIn, float partialTicks) {
+      float f = this.getCelestialAngle(partialTicks);
       float f1 = MathHelper.cos(f * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
       f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
-      Biome biome = this.func_226691_t_(p_228318_1_);
-      int i = biome.func_225529_c_();
+      Biome biome = this.getBiome(blockPosIn);
+      int i = biome.getSkyColor();
       float f2 = (float)(i >> 16 & 255) / 255.0F;
       float f3 = (float)(i >> 8 & 255) / 255.0F;
       float f4 = (float)(i & 255) / 255.0F;
       f2 = f2 * f1;
       f3 = f3 * f1;
       f4 = f4 * f1;
-      float f5 = this.getRainStrength(p_228318_2_);
+      float f5 = this.getRainStrength(partialTicks);
       if (f5 > 0.0F) {
          float f6 = (f2 * 0.3F + f3 * 0.59F + f4 * 0.11F) * 0.6F;
          float f7 = 1.0F - f5 * 0.75F;
@@ -621,7 +621,7 @@ public class ClientWorld extends World {
          f4 = f4 * f7 + f6 * (1.0F - f7);
       }
 
-      float f9 = this.getThunderStrength(p_228318_2_);
+      float f9 = this.getThunderStrength(partialTicks);
       if (f9 > 0.0F) {
          float f10 = (f2 * 0.3F + f3 * 0.59F + f4 * 0.11F) * 0.2F;
          float f8 = 1.0F - f9 * 0.75F;
@@ -630,8 +630,8 @@ public class ClientWorld extends World {
          f4 = f4 * f8 + f10 * (1.0F - f8);
       }
 
-      if (this.field_228314_A_ > 0) {
-         float f11 = (float)this.field_228314_A_ - p_228318_2_;
+      if (this.timeLightningFlash > 0) {
+         float f11 = (float)this.timeLightningFlash - partialTicks;
          if (f11 > 1.0F) {
             f11 = 1.0F;
          }
@@ -645,14 +645,14 @@ public class ClientWorld extends World {
       return new Vec3d((double)f2, (double)f3, (double)f4);
    }
 
-   public Vec3d func_228328_h_(float p_228328_1_) {
-      float f = this.getCelestialAngle(p_228328_1_);
+   public Vec3d getCloudColor(float partialTicks) {
+      float f = this.getCelestialAngle(partialTicks);
       float f1 = MathHelper.cos(f * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
       f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
       float f2 = 1.0F;
       float f3 = 1.0F;
       float f4 = 1.0F;
-      float f5 = this.getRainStrength(p_228328_1_);
+      float f5 = this.getRainStrength(partialTicks);
       if (f5 > 0.0F) {
          float f6 = (f2 * 0.3F + f3 * 0.59F + f4 * 0.11F) * 0.6F;
          float f7 = 1.0F - f5 * 0.95F;
@@ -664,7 +664,7 @@ public class ClientWorld extends World {
       f2 = f2 * (f1 * 0.9F + 0.1F);
       f3 = f3 * (f1 * 0.9F + 0.1F);
       f4 = f4 * (f1 * 0.85F + 0.15F);
-      float f9 = this.getThunderStrength(p_228328_1_);
+      float f9 = this.getThunderStrength(partialTicks);
       if (f9 > 0.0F) {
          float f10 = (f2 * 0.3F + f3 * 0.59F + f4 * 0.11F) * 0.2F;
          float f8 = 1.0F - f9 * 0.95F;
@@ -676,52 +676,52 @@ public class ClientWorld extends World {
       return new Vec3d((double)f2, (double)f3, (double)f4);
    }
 
-   public Vec3d func_228329_i_(float p_228329_1_) {
-      float f = this.getCelestialAngle(p_228329_1_);
-      return this.dimension.getFogColor(f, p_228329_1_);
+   public Vec3d getFogColor(float partialTicks) {
+      float f = this.getCelestialAngle(partialTicks);
+      return this.dimension.getFogColor(f, partialTicks);
    }
 
-   public float func_228330_j_(float p_228330_1_) {
-      float f = this.getCelestialAngle(p_228330_1_);
+   public float getStarBrightness(float partialTicks) {
+      float f = this.getCelestialAngle(partialTicks);
       float f1 = 1.0F - (MathHelper.cos(f * ((float)Math.PI * 2F)) * 2.0F + 0.25F);
       f1 = MathHelper.clamp(f1, 0.0F, 1.0F);
       return f1 * f1 * 0.5F;
    }
 
-   public double func_228331_m_() {
+   public double getHorizonHeight() {
       return this.worldInfo.getGenerator() == WorldType.FLAT ? 0.0D : 63.0D;
    }
 
-   public int func_228332_n_() {
-      return this.field_228314_A_;
+   public int getTimeLightningFlash() {
+      return this.timeLightningFlash;
    }
 
-   public void func_225605_c_(int p_225605_1_) {
-      this.field_228314_A_ = p_225605_1_;
+   public void setTimeLightningFlash(int timeFlashIn) {
+      this.timeLightningFlash = timeFlashIn;
    }
 
-   public int func_225525_a_(BlockPos p_225525_1_, ColorResolver p_225525_2_) {
-      ColorCache colorcache = this.field_228315_B_.get(p_225525_2_);
-      return colorcache.func_228071_a_(p_225525_1_, () -> {
-         return this.func_228321_b_(p_225525_1_, p_225525_2_);
+   public int getBlockColor(BlockPos blockPosIn, ColorResolver colorResolverIn) {
+      ColorCache colorcache = this.colorCaches.get(colorResolverIn);
+      return colorcache.getColor(blockPosIn, () -> {
+         return this.getBlockColorRaw(blockPosIn, colorResolverIn);
       });
    }
 
-   public int func_228321_b_(BlockPos p_228321_1_, ColorResolver p_228321_2_) {
+   public int getBlockColorRaw(BlockPos blockPosIn, ColorResolver colorResolverIn) {
       int i = Minecraft.getInstance().gameSettings.biomeBlendRadius;
       if (i == 0) {
-         return p_228321_2_.getColor(this.func_226691_t_(p_228321_1_), (double)p_228321_1_.getX(), (double)p_228321_1_.getZ());
+         return colorResolverIn.getColor(this.getBiome(blockPosIn), (double)blockPosIn.getX(), (double)blockPosIn.getZ());
       } else {
          int j = (i * 2 + 1) * (i * 2 + 1);
          int k = 0;
          int l = 0;
          int i1 = 0;
-         CubeCoordinateIterator cubecoordinateiterator = new CubeCoordinateIterator(p_228321_1_.getX() - i, p_228321_1_.getY(), p_228321_1_.getZ() - i, p_228321_1_.getX() + i, p_228321_1_.getY(), p_228321_1_.getZ() + i);
+         CubeCoordinateIterator cubecoordinateiterator = new CubeCoordinateIterator(blockPosIn.getX() - i, blockPosIn.getY(), blockPosIn.getZ() - i, blockPosIn.getX() + i, blockPosIn.getY(), blockPosIn.getZ() + i);
 
          int j1;
          for(BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(); cubecoordinateiterator.hasNext(); i1 += j1 & 255) {
             blockpos$mutable.setPos(cubecoordinateiterator.getX(), cubecoordinateiterator.getY(), cubecoordinateiterator.getZ());
-            j1 = p_228321_2_.getColor(this.func_226691_t_(blockpos$mutable), (double)blockpos$mutable.getX(), (double)blockpos$mutable.getZ());
+            j1 = colorResolverIn.getColor(this.getBiome(blockpos$mutable), (double)blockpos$mutable.getX(), (double)blockpos$mutable.getZ());
             k += (j1 & 16711680) >> 16;
             l += (j1 & '\uff00') >> 8;
          }

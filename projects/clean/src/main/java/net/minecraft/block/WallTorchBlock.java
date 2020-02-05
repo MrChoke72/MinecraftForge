@@ -47,7 +47,7 @@ public class WallTorchBlock extends TorchBlock {
       Direction direction = state.get(HORIZONTAL_FACING);
       BlockPos blockpos = pos.offset(direction.getOpposite());
       BlockState blockstate = worldIn.getBlockState(blockpos);
-      return blockstate.func_224755_d(worldIn, blockpos, direction);
+      return blockstate.isSolidSide(worldIn, blockpos, direction);
    }
 
    @Nullable

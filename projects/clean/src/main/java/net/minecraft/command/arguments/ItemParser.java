@@ -26,7 +26,7 @@ public class ItemParser {
    public static final DynamicCommandExceptionType ITEM_BAD_ID = new DynamicCommandExceptionType((p_208696_0_) -> {
       return new TranslationTextComponent("argument.item.id.invalid", p_208696_0_);
    });
-   private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> field_197334_b = SuggestionsBuilder::buildFuture;
+   private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> DEFAULT_SUGGESTIONS_BUILDER = SuggestionsBuilder::buildFuture;
    private final StringReader reader;
    private final boolean allowTags;
    private final Map<IProperty<?>, Comparable<?>> field_197336_d = Maps.newHashMap();
@@ -34,8 +34,8 @@ public class ItemParser {
    @Nullable
    private CompoundNBT nbt;
    private ResourceLocation tag = new ResourceLocation("");
-   private int field_201956_j;
-   private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> field_197339_g = field_197334_b;
+   private int readerCursor;
+   private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestionsBuilder = DEFAULT_SUGGESTIONS_BUILDER;
 
    public ItemParser(StringReader readerIn, boolean allowTags) {
       this.reader = readerIn;
@@ -68,9 +68,9 @@ public class ItemParser {
       if (!this.allowTags) {
          throw ITEM_TAGS_NOT_ALLOWED.create();
       } else {
-         this.field_197339_g = this::func_201955_c;
+         this.suggestionsBuilder = this::suggestTag;
          this.reader.expect('#');
-         this.field_201956_j = this.reader.getCursor();
+         this.readerCursor = this.reader.getCursor();
          this.tag = ResourceLocation.read(this.reader);
       }
    }
@@ -80,43 +80,43 @@ public class ItemParser {
    }
 
    public ItemParser parse() throws CommandSyntaxException {
-      this.field_197339_g = this::func_197331_c;
+      this.suggestionsBuilder = this::suggestTagOrItem;
       if (this.reader.canRead() && this.reader.peek() == '#') {
          this.readTag();
       } else {
          this.readItem();
-         this.field_197339_g = this::func_197328_b;
+         this.suggestionsBuilder = this::suggestItem;
       }
 
       if (this.reader.canRead() && this.reader.peek() == '{') {
-         this.field_197339_g = field_197334_b;
+         this.suggestionsBuilder = DEFAULT_SUGGESTIONS_BUILDER;
          this.readNBT();
       }
 
       return this;
    }
 
-   private CompletableFuture<Suggestions> func_197328_b(SuggestionsBuilder p_197328_1_) {
-      if (p_197328_1_.getRemaining().isEmpty()) {
-         p_197328_1_.suggest(String.valueOf('{'));
+   private CompletableFuture<Suggestions> suggestItem(SuggestionsBuilder builder) {
+      if (builder.getRemaining().isEmpty()) {
+         builder.suggest(String.valueOf('{'));
       }
 
-      return p_197328_1_.buildFuture();
+      return builder.buildFuture();
    }
 
-   private CompletableFuture<Suggestions> func_201955_c(SuggestionsBuilder p_201955_1_) {
-      return ISuggestionProvider.suggestIterable(ItemTags.getCollection().getRegisteredTags(), p_201955_1_.createOffset(this.field_201956_j));
+   private CompletableFuture<Suggestions> suggestTag(SuggestionsBuilder builder) {
+      return ISuggestionProvider.suggestIterable(ItemTags.getCollection().getRegisteredTags(), builder.createOffset(this.readerCursor));
    }
 
-   private CompletableFuture<Suggestions> func_197331_c(SuggestionsBuilder p_197331_1_) {
+   private CompletableFuture<Suggestions> suggestTagOrItem(SuggestionsBuilder builder) {
       if (this.allowTags) {
-         ISuggestionProvider.suggestIterable(ItemTags.getCollection().getRegisteredTags(), p_197331_1_, String.valueOf('#'));
+         ISuggestionProvider.suggestIterable(ItemTags.getCollection().getRegisteredTags(), builder, String.valueOf('#'));
       }
 
-      return ISuggestionProvider.suggestIterable(Registry.ITEM.keySet(), p_197331_1_);
+      return ISuggestionProvider.suggestIterable(Registry.ITEM.keySet(), builder);
    }
 
-   public CompletableFuture<Suggestions> func_197329_a(SuggestionsBuilder p_197329_1_) {
-      return this.field_197339_g.apply(p_197329_1_.createOffset(this.reader.getCursor()));
+   public CompletableFuture<Suggestions> fillSuggestions(SuggestionsBuilder builder) {
+      return this.suggestionsBuilder.apply(builder.createOffset(this.reader.getCursor()));
    }
 }

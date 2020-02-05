@@ -56,14 +56,14 @@ public class NoteBlock extends Block {
 
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         p_225533_1_ = p_225533_1_.cycle(NOTE);
-         p_225533_2_.setBlockState(p_225533_3_, p_225533_1_, 3);
-         this.triggerNote(p_225533_2_, p_225533_3_);
-         p_225533_4_.addStat(Stats.TUNE_NOTEBLOCK);
+         state = state.cycle(NOTE);
+         worldIn.setBlockState(pos, state, 3);
+         this.triggerNote(worldIn, pos);
+         player.addStat(Stats.TUNE_NOTEBLOCK);
          return ActionResultType.SUCCESS;
       }
    }

@@ -25,7 +25,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class LegacyResourcePackWrapperV4 implements IResourcePack {
-   private static final Map<String, Pair<ChestType, ResourceLocation>> field_229279_d_ = Util.make(Maps.newHashMap(), (p_229288_0_) -> {
+   private static final Map<String, Pair<ChestType, ResourceLocation>> CHESTS = Util.make(Maps.newHashMap(), (p_229288_0_) -> {
       p_229288_0_.put("textures/entity/chest/normal_left.png", new Pair<>(ChestType.LEFT, new ResourceLocation("textures/entity/chest/normal_double.png")));
       p_229288_0_.put("textures/entity/chest/normal_right.png", new Pair<>(ChestType.RIGHT, new ResourceLocation("textures/entity/chest/normal_double.png")));
       p_229288_0_.put("textures/entity/chest/normal.png", new Pair<>(ChestType.SINGLE, new ResourceLocation("textures/entity/chest/normal.png")));
@@ -37,43 +37,43 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
       p_229288_0_.put("textures/entity/chest/christmas.png", new Pair<>(ChestType.SINGLE, new ResourceLocation("textures/entity/chest/christmas.png")));
       p_229288_0_.put("textures/entity/chest/ender.png", new Pair<>(ChestType.SINGLE, new ResourceLocation("textures/entity/chest/ender.png")));
    });
-   private static final List<String> field_229280_e_ = Lists.newArrayList("base", "border", "bricks", "circle", "creeper", "cross", "curly_border", "diagonal_left", "diagonal_right", "diagonal_up_left", "diagonal_up_right", "flower", "globe", "gradient", "gradient_up", "half_horizontal", "half_horizontal_bottom", "half_vertical", "half_vertical_right", "mojang", "rhombus", "skull", "small_stripes", "square_bottom_left", "square_bottom_right", "square_top_left", "square_top_right", "straight_cross", "stripe_bottom", "stripe_center", "stripe_downleft", "stripe_downright", "stripe_left", "stripe_middle", "stripe_right", "stripe_top", "triangle_bottom", "triangle_top", "triangles_bottom", "triangles_top");
-   private static final Set<String> field_229281_f_ = field_229280_e_.stream().map((p_229291_0_) -> {
+   private static final List<String> PATTERNS = Lists.newArrayList("base", "border", "bricks", "circle", "creeper", "cross", "curly_border", "diagonal_left", "diagonal_right", "diagonal_up_left", "diagonal_up_right", "flower", "globe", "gradient", "gradient_up", "half_horizontal", "half_horizontal_bottom", "half_vertical", "half_vertical_right", "mojang", "rhombus", "skull", "small_stripes", "square_bottom_left", "square_bottom_right", "square_top_left", "square_top_right", "straight_cross", "stripe_bottom", "stripe_center", "stripe_downleft", "stripe_downright", "stripe_left", "stripe_middle", "stripe_right", "stripe_top", "triangle_bottom", "triangle_top", "triangles_bottom", "triangles_top");
+   private static final Set<String> SHIELDS = PATTERNS.stream().map((p_229291_0_) -> {
       return "textures/entity/shield/" + p_229291_0_ + ".png";
    }).collect(Collectors.toSet());
-   private static final Set<String> field_229282_g_ = field_229280_e_.stream().map((p_229287_0_) -> {
+   private static final Set<String> BANNERS = PATTERNS.stream().map((p_229287_0_) -> {
       return "textures/entity/banner/" + p_229287_0_ + ".png";
    }).collect(Collectors.toSet());
-   public static final ResourceLocation field_229276_a_ = new ResourceLocation("textures/entity/shield_base.png");
-   public static final ResourceLocation field_229277_b_ = new ResourceLocation("textures/entity/banner_base.png");
-   public static final ResourceLocation field_229278_c_ = new ResourceLocation("textures/entity/iron_golem.png");
-   private final IResourcePack field_229283_h_;
+   public static final ResourceLocation SHIELD_BASE = new ResourceLocation("textures/entity/shield_base.png");
+   public static final ResourceLocation BANNER_BASE = new ResourceLocation("textures/entity/banner_base.png");
+   public static final ResourceLocation OLD_IRON_GOLEM_LOCATION = new ResourceLocation("textures/entity/iron_golem.png");
+   private final IResourcePack resourcePack;
 
    public LegacyResourcePackWrapperV4(IResourcePack p_i226053_1_) {
-      this.field_229283_h_ = p_i226053_1_;
+      this.resourcePack = p_i226053_1_;
    }
 
    public InputStream getRootResourceStream(String fileName) throws IOException {
-      return this.field_229283_h_.getRootResourceStream(fileName);
+      return this.resourcePack.getRootResourceStream(fileName);
    }
 
    public boolean resourceExists(ResourcePackType type, ResourceLocation location) {
       if (!"minecraft".equals(location.getNamespace())) {
-         return this.field_229283_h_.resourceExists(type, location);
+         return this.resourcePack.resourceExists(type, location);
       } else {
          String s = location.getPath();
          if ("textures/misc/enchanted_item_glint.png".equals(s)) {
             return false;
          } else if ("textures/entity/iron_golem/iron_golem.png".equals(s)) {
-            return this.field_229283_h_.resourceExists(type, field_229278_c_);
+            return this.resourcePack.resourceExists(type, OLD_IRON_GOLEM_LOCATION);
          } else if (!"textures/entity/conduit/wind.png".equals(s) && !"textures/entity/conduit/wind_vertical.png".equals(s)) {
-            if (field_229281_f_.contains(s)) {
-               return this.field_229283_h_.resourceExists(type, field_229276_a_) && this.field_229283_h_.resourceExists(type, location);
-            } else if (!field_229282_g_.contains(s)) {
-               Pair<ChestType, ResourceLocation> pair = field_229279_d_.get(s);
-               return pair != null && this.field_229283_h_.resourceExists(type, pair.getSecond()) ? true : this.field_229283_h_.resourceExists(type, location);
+            if (SHIELDS.contains(s)) {
+               return this.resourcePack.resourceExists(type, SHIELD_BASE) && this.resourcePack.resourceExists(type, location);
+            } else if (!BANNERS.contains(s)) {
+               Pair<ChestType, ResourceLocation> pair = CHESTS.get(s);
+               return pair != null && this.resourcePack.resourceExists(type, pair.getSecond()) ? true : this.resourcePack.resourceExists(type, location);
             } else {
-               return this.field_229283_h_.resourceExists(type, field_229277_b_) && this.field_229283_h_.resourceExists(type, location);
+               return this.resourcePack.resourceExists(type, BANNER_BASE) && this.resourcePack.resourceExists(type, location);
             }
          } else {
             return false;
@@ -83,26 +83,26 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
 
    public InputStream getResourceStream(ResourcePackType type, ResourceLocation location) throws IOException {
       if (!"minecraft".equals(location.getNamespace())) {
-         return this.field_229283_h_.getResourceStream(type, location);
+         return this.resourcePack.getResourceStream(type, location);
       } else {
          String s = location.getPath();
          if ("textures/entity/iron_golem/iron_golem.png".equals(s)) {
-            return this.field_229283_h_.getResourceStream(type, field_229278_c_);
+            return this.resourcePack.getResourceStream(type, OLD_IRON_GOLEM_LOCATION);
          } else {
-            if (field_229281_f_.contains(s)) {
-               InputStream inputstream2 = func_229286_a_(this.field_229283_h_.getResourceStream(type, field_229276_a_), this.field_229283_h_.getResourceStream(type, location), 64, 2, 2, 12, 22);
+            if (SHIELDS.contains(s)) {
+               InputStream inputstream2 = func_229286_a_(this.resourcePack.getResourceStream(type, SHIELD_BASE), this.resourcePack.getResourceStream(type, location), 64, 2, 2, 12, 22);
                if (inputstream2 != null) {
                   return inputstream2;
                }
-            } else if (field_229282_g_.contains(s)) {
-               InputStream inputstream1 = func_229286_a_(this.field_229283_h_.getResourceStream(type, field_229277_b_), this.field_229283_h_.getResourceStream(type, location), 64, 0, 0, 42, 41);
+            } else if (BANNERS.contains(s)) {
+               InputStream inputstream1 = func_229286_a_(this.resourcePack.getResourceStream(type, BANNER_BASE), this.resourcePack.getResourceStream(type, location), 64, 0, 0, 42, 41);
                if (inputstream1 != null) {
                   return inputstream1;
                }
             } else {
                if ("textures/entity/enderdragon/dragon.png".equals(s) || "textures/entity/enderdragon/dragon_exploding.png".equals(s)) {
                   ByteArrayInputStream bytearrayinputstream;
-                  try (NativeImage nativeimage = NativeImage.read(this.field_229283_h_.getResourceStream(type, location))) {
+                  try (NativeImage nativeimage = NativeImage.read(this.resourcePack.getResourceStream(type, location))) {
                      int k = nativeimage.getWidth() / 256;
 
                      for(int i = 88 * k; i < 200 * k; ++i) {
@@ -111,20 +111,20 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
                         }
                      }
 
-                     bytearrayinputstream = new ByteArrayInputStream(nativeimage.func_227796_e_());
+                     bytearrayinputstream = new ByteArrayInputStream(nativeimage.getBytes());
                   }
 
                   return bytearrayinputstream;
                }
 
                if ("textures/entity/conduit/closed_eye.png".equals(s) || "textures/entity/conduit/open_eye.png".equals(s)) {
-                  return func_229285_a_(this.field_229283_h_.getResourceStream(type, location));
+                  return func_229285_a_(this.resourcePack.getResourceStream(type, location));
                }
 
-               Pair<ChestType, ResourceLocation> pair = field_229279_d_.get(s);
+               Pair<ChestType, ResourceLocation> pair = CHESTS.get(s);
                if (pair != null) {
                   ChestType chesttype = pair.getFirst();
-                  InputStream inputstream = this.field_229283_h_.getResourceStream(type, pair.getSecond());
+                  InputStream inputstream = this.resourcePack.getResourceStream(type, pair.getSecond());
                   if (chesttype == ChestType.SINGLE) {
                      return func_229292_d_(inputstream);
                   }
@@ -139,7 +139,7 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
                }
             }
 
-            return this.field_229283_h_.getResourceStream(type, location);
+            return this.resourcePack.getResourceStream(type, location);
          }
       }
    }
@@ -162,13 +162,13 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
 
             for(int l = p_229286_4_ * k; l < p_229286_6_ * k; ++l) {
                for(int i1 = p_229286_3_ * k; i1 < p_229286_5_ * k; ++i1) {
-                  int j1 = NativeImage.func_227791_b_(nativeimage1.getPixelRGBA(i1, l));
+                  int j1 = NativeImage.getRed(nativeimage1.getPixelRGBA(i1, l));
                   int k1 = nativeimage.getPixelRGBA(i1, l);
-                  nativeimage2.setPixelRGBA(i1, l, NativeImage.func_227787_a_(j1, NativeImage.func_227795_d_(k1), NativeImage.func_227793_c_(k1), NativeImage.func_227791_b_(k1)));
+                  nativeimage2.setPixelRGBA(i1, l, NativeImage.getCombined(j1, NativeImage.getBlue(k1), NativeImage.getGreen(k1), NativeImage.getRed(k1)));
                }
             }
 
-            bytearrayinputstream = new ByteArrayInputStream(nativeimage2.func_227796_e_());
+            bytearrayinputstream = new ByteArrayInputStream(nativeimage2.getBytes());
          }
       }
 
@@ -183,7 +183,7 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
 
          try (NativeImage nativeimage1 = new NativeImage(2 * i, 2 * j, true)) {
             func_229284_a_(nativeimage, nativeimage1, 0, 0, 0, 0, i, j, 1, false, false);
-            bytearrayinputstream = new ByteArrayInputStream(nativeimage1.func_227796_e_());
+            bytearrayinputstream = new ByteArrayInputStream(nativeimage1.getBytes());
          }
       }
 
@@ -213,7 +213,7 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
             func_229284_a_(nativeimage, nativeimage1, 2, 1, 3, 1, 1, 4, k, true, true);
             func_229284_a_(nativeimage, nativeimage1, 3, 1, 2, 1, 1, 4, k, true, true);
             func_229284_a_(nativeimage, nativeimage1, 4, 1, 1, 1, 1, 4, k, true, true);
-            bytearrayinputstream = new ByteArrayInputStream(nativeimage1.func_227796_e_());
+            bytearrayinputstream = new ByteArrayInputStream(nativeimage1.getBytes());
          }
       }
 
@@ -243,7 +243,7 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
             func_229284_a_(nativeimage, nativeimage1, 0, 1, 0, 1, 1, 4, k, true, true);
             func_229284_a_(nativeimage, nativeimage1, 1, 1, 3, 1, 1, 4, k, true, true);
             func_229284_a_(nativeimage, nativeimage1, 5, 1, 1, 1, 1, 4, k, true, true);
-            bytearrayinputstream = new ByteArrayInputStream(nativeimage1.func_227796_e_());
+            bytearrayinputstream = new ByteArrayInputStream(nativeimage1.getBytes());
          }
       }
 
@@ -276,32 +276,32 @@ public class LegacyResourcePackWrapperV4 implements IResourcePack {
             func_229284_a_(nativeimage, nativeimage1, 1, 1, 4, 1, 2, 4, k, true, true);
             func_229284_a_(nativeimage, nativeimage1, 3, 1, 3, 1, 1, 4, k, true, true);
             func_229284_a_(nativeimage, nativeimage1, 4, 1, 1, 1, 2, 4, k, true, true);
-            bytearrayinputstream = new ByteArrayInputStream(nativeimage1.func_227796_e_());
+            bytearrayinputstream = new ByteArrayInputStream(nativeimage1.getBytes());
          }
       }
 
       return bytearrayinputstream;
    }
 
-   public Collection<ResourceLocation> func_225637_a_(ResourcePackType p_225637_1_, String p_225637_2_, String p_225637_3_, int p_225637_4_, Predicate<String> p_225637_5_) {
-      return this.field_229283_h_.func_225637_a_(p_225637_1_, p_225637_2_, p_225637_3_, p_225637_4_, p_225637_5_);
+   public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn) {
+      return this.resourcePack.getAllResourceLocations(type, namespaceIn, pathIn, maxDepthIn, filterIn);
    }
 
    public Set<String> getResourceNamespaces(ResourcePackType type) {
-      return this.field_229283_h_.getResourceNamespaces(type);
+      return this.resourcePack.getResourceNamespaces(type);
    }
 
    @Nullable
    public <T> T getMetadata(IMetadataSectionSerializer<T> deserializer) throws IOException {
-      return this.field_229283_h_.getMetadata(deserializer);
+      return this.resourcePack.getMetadata(deserializer);
    }
 
    public String getName() {
-      return this.field_229283_h_.getName();
+      return this.resourcePack.getName();
    }
 
    public void close() throws IOException {
-      this.field_229283_h_.close();
+      this.resourcePack.close();
    }
 
    private static void func_229284_a_(NativeImage p_229284_0_, NativeImage p_229284_1_, int p_229284_2_, int p_229284_3_, int p_229284_4_, int p_229284_5_, int p_229284_6_, int p_229284_7_, int p_229284_8_, boolean p_229284_9_, boolean p_229284_10_) {

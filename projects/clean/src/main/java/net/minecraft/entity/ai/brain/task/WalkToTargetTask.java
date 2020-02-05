@@ -50,13 +50,11 @@ public class WalkToTargetTask extends Task<MobEntity> {
          this.targetPos = walktarget.getTarget().getBlockPos();
 
 
-         //AH CHANGE DEBUG OFF
-         /*
+         //AH CHANGE DEBUG
          if(owner.getCustomName() != null && owner.getCustomName().getString().equals("Chuck"))
          {
             System.out.println("WalkToTargetTask  targetPos=" + targetPos.getX() + "," + targetPos.getY() + "," + targetPos.getZ());
          }
-          */
 
 
          return true;
@@ -129,7 +127,7 @@ public class WalkToTargetTask extends Task<MobEntity> {
             return true;
          }
 
-         Vec3d vec3d = RandomPositionGenerator.findRandomTargetToward((CreatureEntity)entity, 10, 7, new Vec3d(blockpos));
+         Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards((CreatureEntity)entity, 10, 7, new Vec3d(blockpos));
          if (vec3d != null) {
             this.path = entity.getNavigator().getPathToPos(vec3d.x, vec3d.y, vec3d.z, 0);
             return this.path != null;
@@ -140,6 +138,6 @@ public class WalkToTargetTask extends Task<MobEntity> {
    }
 
    private boolean hasReachedTarget(MobEntity entity, WalkTarget walkTarget) {
-      return walkTarget.getTarget().getBlockPos().manhattanDistance(new BlockPos(entity)) <= walkTarget.getReachDist();
+      return walkTarget.getTarget().getBlockPos().manhattanDistance(new BlockPos(entity)) <= walkTarget.getDistance();
    }
 }

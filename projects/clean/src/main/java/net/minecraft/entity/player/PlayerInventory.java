@@ -272,23 +272,23 @@ public class PlayerInventory implements IInventory, INameable {
       return this.add(-1, itemStackIn);
    }
 
-   public boolean add(int p_191971_1_, ItemStack p_191971_2_) {
-      if (p_191971_2_.isEmpty()) {
+   public boolean add(int slotIn, ItemStack stack) {
+      if (stack.isEmpty()) {
          return false;
       } else {
          try {
-            if (p_191971_2_.isDamaged()) {
-               if (p_191971_1_ == -1) {
-                  p_191971_1_ = this.getFirstEmptyStack();
+            if (stack.isDamaged()) {
+               if (slotIn == -1) {
+                  slotIn = this.getFirstEmptyStack();
                }
 
-               if (p_191971_1_ >= 0) {
-                  this.mainInventory.set(p_191971_1_, p_191971_2_.copy());
-                  this.mainInventory.get(p_191971_1_).setAnimationsToGo(5);
-                  p_191971_2_.setCount(0);
+               if (slotIn >= 0) {
+                  this.mainInventory.set(slotIn, stack.copy());
+                  this.mainInventory.get(slotIn).setAnimationsToGo(5);
+                  stack.setCount(0);
                   return true;
                } else if (this.player.abilities.isCreativeMode) {
-                  p_191971_2_.setCount(0);
+                  stack.setCount(0);
                   return true;
                } else {
                   return false;
@@ -296,53 +296,53 @@ public class PlayerInventory implements IInventory, INameable {
             } else {
                int i;
                while(true) {
-                  i = p_191971_2_.getCount();
-                  if (p_191971_1_ == -1) {
-                     p_191971_2_.setCount(this.storePartialItemStack(p_191971_2_));
+                  i = stack.getCount();
+                  if (slotIn == -1) {
+                     stack.setCount(this.storePartialItemStack(stack));
                   } else {
-                     p_191971_2_.setCount(this.addResource(p_191971_1_, p_191971_2_));
+                     stack.setCount(this.addResource(slotIn, stack));
                   }
 
-                  if (p_191971_2_.isEmpty() || p_191971_2_.getCount() >= i) {
+                  if (stack.isEmpty() || stack.getCount() >= i) {
                      break;
                   }
                }
 
-               if (p_191971_2_.getCount() == i && this.player.abilities.isCreativeMode) {
-                  p_191971_2_.setCount(0);
+               if (stack.getCount() == i && this.player.abilities.isCreativeMode) {
+                  stack.setCount(0);
                   return true;
                } else {
-                  return p_191971_2_.getCount() < i;
+                  return stack.getCount() < i;
                }
             }
          } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Adding item to inventory");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being added");
-            crashreportcategory.addDetail("Item ID", Item.getIdFromItem(p_191971_2_.getItem()));
-            crashreportcategory.addDetail("Item data", p_191971_2_.getDamage());
+            crashreportcategory.addDetail("Item ID", Item.getIdFromItem(stack.getItem()));
+            crashreportcategory.addDetail("Item data", stack.getDamage());
             crashreportcategory.addDetail("Item name", () -> {
-               return p_191971_2_.getDisplayName().getString();
+               return stack.getDisplayName().getString();
             });
             throw new ReportedException(crashreport);
          }
       }
    }
 
-   public void placeItemBackInInventory(World p_191975_1_, ItemStack p_191975_2_) {
-      if (!p_191975_1_.isRemote) {
-         while(!p_191975_2_.isEmpty()) {
-            int i = this.storeItemStack(p_191975_2_);
+   public void placeItemBackInInventory(World worldIn, ItemStack stack) {
+      if (!worldIn.isRemote) {
+         while(!stack.isEmpty()) {
+            int i = this.storeItemStack(stack);
             if (i == -1) {
                i = this.getFirstEmptyStack();
             }
 
             if (i == -1) {
-               this.player.dropItem(p_191975_2_, false);
+               this.player.dropItem(stack, false);
                break;
             }
 
-            int j = p_191975_2_.getMaxStackSize() - this.getStackInSlot(i).getCount();
-            if (this.add(i, p_191975_2_.split(j))) {
+            int j = stack.getMaxStackSize() - this.getStackInSlot(i).getCount();
+            if (this.add(i, stack.split(j))) {
                ((ServerPlayerEntity)this.player).connection.sendPacket(new SSetSlotPacket(-2, i, this.getStackInSlot(i)));
             }
          }
@@ -539,7 +539,7 @@ public class PlayerInventory implements IInventory, INameable {
             if (itemstack.getItem() instanceof ArmorItem) {
                int j = i;
                itemstack.damageItem((int)damage, this.player, (p_214023_1_) -> {
-                  p_214023_1_.sendBreakAnimation(EquipmentSlotType.func_220318_a(EquipmentSlotType.Group.ARMOR, j));
+                  p_214023_1_.sendBreakAnimation(EquipmentSlotType.fromSlotTypeAndIndex(EquipmentSlotType.Group.ARMOR, j));
                });
             }
          }
@@ -608,7 +608,7 @@ public class PlayerInventory implements IInventory, INameable {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean hasTag(Tag<Item> p_199712_1_) {
+   public boolean hasTag(Tag<Item> itemTag) {
       label23:
       for(List<ItemStack> list : this.allInventories) {
          Iterator iterator = list.iterator();
@@ -619,7 +619,7 @@ public class PlayerInventory implements IInventory, INameable {
             }
 
             ItemStack itemstack = (ItemStack)iterator.next();
-            if (!itemstack.isEmpty() && p_199712_1_.contains(itemstack.getItem())) {
+            if (!itemstack.isEmpty() && itemTag.contains(itemstack.getItem())) {
                break;
             }
          }
@@ -645,7 +645,7 @@ public class PlayerInventory implements IInventory, INameable {
 
    }
 
-   public void func_201571_a(RecipeItemHelper p_201571_1_) {
+   public void accountStacks(RecipeItemHelper p_201571_1_) {
       for(ItemStack itemstack : this.mainInventory) {
          p_201571_1_.accountPlainStack(itemstack);
       }

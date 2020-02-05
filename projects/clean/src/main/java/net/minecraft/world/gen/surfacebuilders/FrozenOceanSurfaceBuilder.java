@@ -30,11 +30,11 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderConf
       double d0 = 0.0D;
       double d1 = 0.0D;
       BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-      float f = biomeIn.func_225486_c(blockpos$mutable.setPos(x, 63, z));
-      double d2 = Math.min(Math.abs(noise), this.field_205199_h.func_215464_a((double)x * 0.1D, (double)z * 0.1D, false) * 15.0D);
+      float f = biomeIn.getTemperature(blockpos$mutable.setPos(x, 63, z));
+      double d2 = Math.min(Math.abs(noise), this.field_205199_h.noiseAt((double)x * 0.1D, (double)z * 0.1D, false) * 15.0D);
       if (d2 > 1.8D) {
          double d3 = 0.09765625D;
-         double d4 = Math.abs(this.field_205200_i.func_215464_a((double)x * 0.09765625D, (double)z * 0.09765625D, false));
+         double d4 = Math.abs(this.field_205200_i.noiseAt((double)x * 0.09765625D, (double)z * 0.09765625D, false));
          d0 = d2 * d2 * 1.2D;
          double d5 = Math.ceil(d4 * 40.0D) + 14.0D;
          if (d0 > d5) {
@@ -89,7 +89,7 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderConf
             }
 
             if (j1 < seaLevel && (blockstate == null || blockstate.isAir())) {
-               if (biomeIn.func_225486_c(blockpos$mutable.setPos(x, j1, z)) < 0.15F) {
+               if (biomeIn.getTemperature(blockpos$mutable.setPos(x, j1, z)) < 0.15F) {
                   blockstate = ICE;
                } else {
                   blockstate = defaultFluid;

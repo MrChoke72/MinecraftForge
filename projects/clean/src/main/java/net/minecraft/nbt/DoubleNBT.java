@@ -8,11 +8,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class DoubleNBT extends NumberNBT {
-   public static final DoubleNBT field_229682_a_ = new DoubleNBT(0.0D);
-   public static final INBTType<DoubleNBT> field_229683_b_ = new INBTType<DoubleNBT>() {
+   public static final DoubleNBT ZERO = new DoubleNBT(0.0D);
+   public static final INBTType<DoubleNBT> TYPE = new INBTType<DoubleNBT>() {
       public DoubleNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(128L);
-         return DoubleNBT.func_229684_a_(p_225649_1_.readDouble());
+         return DoubleNBT.valueOf(p_225649_1_.readDouble());
       }
 
       public String func_225648_a_() {
@@ -33,8 +33,8 @@ public class DoubleNBT extends NumberNBT {
       this.data = data;
    }
 
-   public static DoubleNBT func_229684_a_(double p_229684_0_) {
-      return p_229684_0_ == 0.0D ? field_229682_a_ : new DoubleNBT(p_229684_0_);
+   public static DoubleNBT valueOf(double p_229684_0_) {
+      return p_229684_0_ == 0.0D ? ZERO : new DoubleNBT(p_229684_0_);
    }
 
    public void write(DataOutput output) throws IOException {
@@ -45,8 +45,8 @@ public class DoubleNBT extends NumberNBT {
       return 6;
    }
 
-   public INBTType<DoubleNBT> func_225647_b_() {
-      return field_229683_b_;
+   public INBTType<DoubleNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {

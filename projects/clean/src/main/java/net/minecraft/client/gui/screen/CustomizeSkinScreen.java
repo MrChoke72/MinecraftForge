@@ -12,8 +12,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CustomizeSkinScreen extends SettingsScreen {
-   public CustomizeSkinScreen(Screen p_i225931_1_, GameSettings p_i225931_2_) {
-      super(p_i225931_1_, p_i225931_2_, new TranslationTextComponent("options.skinCustomisation.title"));
+   public CustomizeSkinScreen(Screen parentScreenIn, GameSettings gameSettingsIn) {
+      super(parentScreenIn, gameSettingsIn, new TranslationTextComponent("options.skinCustomisation.title"));
    }
 
    protected void init() {
@@ -21,17 +21,17 @@ public class CustomizeSkinScreen extends SettingsScreen {
 
       for(PlayerModelPart playermodelpart : PlayerModelPart.values()) {
          this.addButton(new Button(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, this.getMessage(playermodelpart), (p_213080_2_) -> {
-            this.field_228183_b_.switchModelPartEnabled(playermodelpart);
+            this.gameSettings.switchModelPartEnabled(playermodelpart);
             p_213080_2_.setMessage(this.getMessage(playermodelpart));
          }));
          ++i;
       }
 
-      this.addButton(new OptionButton(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, AbstractOption.MAIN_HAND, AbstractOption.MAIN_HAND.func_216720_c(this.field_228183_b_), (p_213081_1_) -> {
-         AbstractOption.MAIN_HAND.func_216722_a(this.field_228183_b_, 1);
-         this.field_228183_b_.saveOptions();
-         p_213081_1_.setMessage(AbstractOption.MAIN_HAND.func_216720_c(this.field_228183_b_));
-         this.field_228183_b_.sendSettingsToServer();
+      this.addButton(new OptionButton(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, AbstractOption.MAIN_HAND, AbstractOption.MAIN_HAND.getText(this.gameSettings), (p_213081_1_) -> {
+         AbstractOption.MAIN_HAND.setValueIndex(this.gameSettings, 1);
+         this.gameSettings.saveOptions();
+         p_213081_1_.setMessage(AbstractOption.MAIN_HAND.getText(this.gameSettings));
+         this.gameSettings.sendSettingsToServer();
       }));
       ++i;
       if (i % 2 == 1) {
@@ -39,7 +39,7 @@ public class CustomizeSkinScreen extends SettingsScreen {
       }
 
       this.addButton(new Button(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.format("gui.done"), (p_213079_1_) -> {
-         this.minecraft.displayGuiScreen(this.field_228182_a_);
+         this.minecraft.displayGuiScreen(this.parentScreen);
       }));
    }
 
@@ -51,7 +51,7 @@ public class CustomizeSkinScreen extends SettingsScreen {
 
    private String getMessage(PlayerModelPart playerModelParts) {
       String s;
-      if (this.field_228183_b_.getModelParts().contains(playerModelParts)) {
+      if (this.gameSettings.getModelParts().contains(playerModelParts)) {
          s = I18n.format("options.on");
       } else {
          s = I18n.format("options.off");

@@ -35,29 +35,29 @@ import net.minecraft.world.gen.feature.template.TemplateManager;
 import net.minecraft.world.storage.loot.LootTables;
 
 public class OceanRuinPieces {
-   private static final ResourceLocation[] field_204058_G = new ResourceLocation[]{new ResourceLocation("underwater_ruin/warm_1"), new ResourceLocation("underwater_ruin/warm_2"), new ResourceLocation("underwater_ruin/warm_3"), new ResourceLocation("underwater_ruin/warm_4"), new ResourceLocation("underwater_ruin/warm_5"), new ResourceLocation("underwater_ruin/warm_6"), new ResourceLocation("underwater_ruin/warm_7"), new ResourceLocation("underwater_ruin/warm_8")};
-   private static final ResourceLocation[] field_204059_H = new ResourceLocation[]{new ResourceLocation("underwater_ruin/brick_1"), new ResourceLocation("underwater_ruin/brick_2"), new ResourceLocation("underwater_ruin/brick_3"), new ResourceLocation("underwater_ruin/brick_4"), new ResourceLocation("underwater_ruin/brick_5"), new ResourceLocation("underwater_ruin/brick_6"), new ResourceLocation("underwater_ruin/brick_7"), new ResourceLocation("underwater_ruin/brick_8")};
-   private static final ResourceLocation[] field_204053_B = new ResourceLocation[]{new ResourceLocation("underwater_ruin/cracked_1"), new ResourceLocation("underwater_ruin/cracked_2"), new ResourceLocation("underwater_ruin/cracked_3"), new ResourceLocation("underwater_ruin/cracked_4"), new ResourceLocation("underwater_ruin/cracked_5"), new ResourceLocation("underwater_ruin/cracked_6"), new ResourceLocation("underwater_ruin/cracked_7"), new ResourceLocation("underwater_ruin/cracked_8")};
-   private static final ResourceLocation[] field_204061_J = new ResourceLocation[]{new ResourceLocation("underwater_ruin/mossy_1"), new ResourceLocation("underwater_ruin/mossy_2"), new ResourceLocation("underwater_ruin/mossy_3"), new ResourceLocation("underwater_ruin/mossy_4"), new ResourceLocation("underwater_ruin/mossy_5"), new ResourceLocation("underwater_ruin/mossy_6"), new ResourceLocation("underwater_ruin/mossy_7"), new ResourceLocation("underwater_ruin/mossy_8")};
-   private static final ResourceLocation[] field_204062_K = new ResourceLocation[]{new ResourceLocation("underwater_ruin/big_brick_1"), new ResourceLocation("underwater_ruin/big_brick_2"), new ResourceLocation("underwater_ruin/big_brick_3"), new ResourceLocation("underwater_ruin/big_brick_8")};
-   private static final ResourceLocation[] field_204066_O = new ResourceLocation[]{new ResourceLocation("underwater_ruin/big_mossy_1"), new ResourceLocation("underwater_ruin/big_mossy_2"), new ResourceLocation("underwater_ruin/big_mossy_3"), new ResourceLocation("underwater_ruin/big_mossy_8")};
-   private static final ResourceLocation[] field_204070_S = new ResourceLocation[]{new ResourceLocation("underwater_ruin/big_cracked_1"), new ResourceLocation("underwater_ruin/big_cracked_2"), new ResourceLocation("underwater_ruin/big_cracked_3"), new ResourceLocation("underwater_ruin/big_cracked_8")};
-   private static final ResourceLocation[] field_204049_ab = new ResourceLocation[]{new ResourceLocation("underwater_ruin/big_warm_4"), new ResourceLocation("underwater_ruin/big_warm_5"), new ResourceLocation("underwater_ruin/big_warm_6"), new ResourceLocation("underwater_ruin/big_warm_7")};
+   private static final ResourceLocation[] STRUCTURE_WARM = new ResourceLocation[]{new ResourceLocation("underwater_ruin/warm_1"), new ResourceLocation("underwater_ruin/warm_2"), new ResourceLocation("underwater_ruin/warm_3"), new ResourceLocation("underwater_ruin/warm_4"), new ResourceLocation("underwater_ruin/warm_5"), new ResourceLocation("underwater_ruin/warm_6"), new ResourceLocation("underwater_ruin/warm_7"), new ResourceLocation("underwater_ruin/warm_8")};
+   private static final ResourceLocation[] STRUCTURE_BRICK = new ResourceLocation[]{new ResourceLocation("underwater_ruin/brick_1"), new ResourceLocation("underwater_ruin/brick_2"), new ResourceLocation("underwater_ruin/brick_3"), new ResourceLocation("underwater_ruin/brick_4"), new ResourceLocation("underwater_ruin/brick_5"), new ResourceLocation("underwater_ruin/brick_6"), new ResourceLocation("underwater_ruin/brick_7"), new ResourceLocation("underwater_ruin/brick_8")};
+   private static final ResourceLocation[] STRUCTURE_CRACKED = new ResourceLocation[]{new ResourceLocation("underwater_ruin/cracked_1"), new ResourceLocation("underwater_ruin/cracked_2"), new ResourceLocation("underwater_ruin/cracked_3"), new ResourceLocation("underwater_ruin/cracked_4"), new ResourceLocation("underwater_ruin/cracked_5"), new ResourceLocation("underwater_ruin/cracked_6"), new ResourceLocation("underwater_ruin/cracked_7"), new ResourceLocation("underwater_ruin/cracked_8")};
+   private static final ResourceLocation[] STRUCTURE_MOSSY = new ResourceLocation[]{new ResourceLocation("underwater_ruin/mossy_1"), new ResourceLocation("underwater_ruin/mossy_2"), new ResourceLocation("underwater_ruin/mossy_3"), new ResourceLocation("underwater_ruin/mossy_4"), new ResourceLocation("underwater_ruin/mossy_5"), new ResourceLocation("underwater_ruin/mossy_6"), new ResourceLocation("underwater_ruin/mossy_7"), new ResourceLocation("underwater_ruin/mossy_8")};
+   private static final ResourceLocation[] STRUCTURE_BRICK_BIG = new ResourceLocation[]{new ResourceLocation("underwater_ruin/big_brick_1"), new ResourceLocation("underwater_ruin/big_brick_2"), new ResourceLocation("underwater_ruin/big_brick_3"), new ResourceLocation("underwater_ruin/big_brick_8")};
+   private static final ResourceLocation[] STRUCTURE_MOSSY_BIG = new ResourceLocation[]{new ResourceLocation("underwater_ruin/big_mossy_1"), new ResourceLocation("underwater_ruin/big_mossy_2"), new ResourceLocation("underwater_ruin/big_mossy_3"), new ResourceLocation("underwater_ruin/big_mossy_8")};
+   private static final ResourceLocation[] STRUCTURE_CRACKED_BIG = new ResourceLocation[]{new ResourceLocation("underwater_ruin/big_cracked_1"), new ResourceLocation("underwater_ruin/big_cracked_2"), new ResourceLocation("underwater_ruin/big_cracked_3"), new ResourceLocation("underwater_ruin/big_cracked_8")};
+   private static final ResourceLocation[] STRUCTURE_WARM_BIG = new ResourceLocation[]{new ResourceLocation("underwater_ruin/big_warm_4"), new ResourceLocation("underwater_ruin/big_warm_5"), new ResourceLocation("underwater_ruin/big_warm_6"), new ResourceLocation("underwater_ruin/big_warm_7")};
 
-   private static ResourceLocation func_204042_a(Random p_204042_0_) {
-      return field_204058_G[p_204042_0_.nextInt(field_204058_G.length)];
+   private static ResourceLocation getRandomPieceWarm(Random rand) {
+      return STRUCTURE_WARM[rand.nextInt(STRUCTURE_WARM.length)];
    }
 
-   private static ResourceLocation func_204043_b(Random p_204043_0_) {
-      return field_204049_ab[p_204043_0_.nextInt(field_204049_ab.length)];
+   private static ResourceLocation getRandomPieceWarmBig(Random rand) {
+      return STRUCTURE_WARM_BIG[rand.nextInt(STRUCTURE_WARM_BIG.length)];
    }
 
-   public static void func_204041_a(TemplateManager p_204041_0_, BlockPos p_204041_1_, Rotation p_204041_2_, List<StructurePiece> p_204041_3_, Random p_204041_4_, OceanRuinConfig p_204041_5_) {
-      boolean flag = p_204041_4_.nextFloat() <= p_204041_5_.largeProbability;
+   public static void func_204041_a(TemplateManager templateManagerIn, BlockPos pos, Rotation rotationIn, List<StructurePiece> pieces, Random rand, OceanRuinConfig config) {
+      boolean flag = rand.nextFloat() <= config.largeProbability;
       float f = flag ? 0.9F : 0.8F;
-      func_204045_a(p_204041_0_, p_204041_1_, p_204041_2_, p_204041_3_, p_204041_4_, p_204041_5_, flag, f);
-      if (flag && p_204041_4_.nextFloat() <= p_204041_5_.clusterProbability) {
-         func_204047_a(p_204041_0_, p_204041_4_, p_204041_2_, p_204041_1_, p_204041_5_, p_204041_3_);
+      func_204045_a(templateManagerIn, pos, rotationIn, pieces, rand, config, flag, f);
+      if (flag && rand.nextFloat() <= config.clusterProbability) {
+         func_204047_a(templateManagerIn, rand, rotationIn, pos, config, pieces);
       }
 
    }
@@ -88,31 +88,31 @@ public class OceanRuinPieces {
 
    }
 
-   private static List<BlockPos> func_204044_a(Random p_204044_0_, int p_204044_1_, int p_204044_2_) {
+   private static List<BlockPos> func_204044_a(Random rand, int xIn, int zIn) {
       List<BlockPos> list = Lists.newArrayList();
-      list.add(new BlockPos(p_204044_1_ - 16 + MathHelper.nextInt(p_204044_0_, 1, 8), 90, p_204044_2_ + 16 + MathHelper.nextInt(p_204044_0_, 1, 7)));
-      list.add(new BlockPos(p_204044_1_ - 16 + MathHelper.nextInt(p_204044_0_, 1, 8), 90, p_204044_2_ + MathHelper.nextInt(p_204044_0_, 1, 7)));
-      list.add(new BlockPos(p_204044_1_ - 16 + MathHelper.nextInt(p_204044_0_, 1, 8), 90, p_204044_2_ - 16 + MathHelper.nextInt(p_204044_0_, 4, 8)));
-      list.add(new BlockPos(p_204044_1_ + MathHelper.nextInt(p_204044_0_, 1, 7), 90, p_204044_2_ + 16 + MathHelper.nextInt(p_204044_0_, 1, 7)));
-      list.add(new BlockPos(p_204044_1_ + MathHelper.nextInt(p_204044_0_, 1, 7), 90, p_204044_2_ - 16 + MathHelper.nextInt(p_204044_0_, 4, 6)));
-      list.add(new BlockPos(p_204044_1_ + 16 + MathHelper.nextInt(p_204044_0_, 1, 7), 90, p_204044_2_ + 16 + MathHelper.nextInt(p_204044_0_, 3, 8)));
-      list.add(new BlockPos(p_204044_1_ + 16 + MathHelper.nextInt(p_204044_0_, 1, 7), 90, p_204044_2_ + MathHelper.nextInt(p_204044_0_, 1, 7)));
-      list.add(new BlockPos(p_204044_1_ + 16 + MathHelper.nextInt(p_204044_0_, 1, 7), 90, p_204044_2_ - 16 + MathHelper.nextInt(p_204044_0_, 4, 8)));
+      list.add(new BlockPos(xIn - 16 + MathHelper.nextInt(rand, 1, 8), 90, zIn + 16 + MathHelper.nextInt(rand, 1, 7)));
+      list.add(new BlockPos(xIn - 16 + MathHelper.nextInt(rand, 1, 8), 90, zIn + MathHelper.nextInt(rand, 1, 7)));
+      list.add(new BlockPos(xIn - 16 + MathHelper.nextInt(rand, 1, 8), 90, zIn - 16 + MathHelper.nextInt(rand, 4, 8)));
+      list.add(new BlockPos(xIn + MathHelper.nextInt(rand, 1, 7), 90, zIn + 16 + MathHelper.nextInt(rand, 1, 7)));
+      list.add(new BlockPos(xIn + MathHelper.nextInt(rand, 1, 7), 90, zIn - 16 + MathHelper.nextInt(rand, 4, 6)));
+      list.add(new BlockPos(xIn + 16 + MathHelper.nextInt(rand, 1, 7), 90, zIn + 16 + MathHelper.nextInt(rand, 3, 8)));
+      list.add(new BlockPos(xIn + 16 + MathHelper.nextInt(rand, 1, 7), 90, zIn + MathHelper.nextInt(rand, 1, 7)));
+      list.add(new BlockPos(xIn + 16 + MathHelper.nextInt(rand, 1, 7), 90, zIn - 16 + MathHelper.nextInt(rand, 4, 8)));
       return list;
    }
 
-   private static void func_204045_a(TemplateManager p_204045_0_, BlockPos p_204045_1_, Rotation p_204045_2_, List<StructurePiece> p_204045_3_, Random p_204045_4_, OceanRuinConfig p_204045_5_, boolean p_204045_6_, float p_204045_7_) {
-      if (p_204045_5_.field_204031_a == OceanRuinStructure.Type.WARM) {
-         ResourceLocation resourcelocation = p_204045_6_ ? func_204043_b(p_204045_4_) : func_204042_a(p_204045_4_);
-         p_204045_3_.add(new OceanRuinPieces.Piece(p_204045_0_, resourcelocation, p_204045_1_, p_204045_2_, p_204045_7_, p_204045_5_.field_204031_a, p_204045_6_));
-      } else if (p_204045_5_.field_204031_a == OceanRuinStructure.Type.COLD) {
-         ResourceLocation[] aresourcelocation2 = p_204045_6_ ? field_204062_K : field_204059_H;
-         ResourceLocation[] aresourcelocation = p_204045_6_ ? field_204070_S : field_204053_B;
-         ResourceLocation[] aresourcelocation1 = p_204045_6_ ? field_204066_O : field_204061_J;
-         int i = p_204045_4_.nextInt(aresourcelocation2.length);
-         p_204045_3_.add(new OceanRuinPieces.Piece(p_204045_0_, aresourcelocation2[i], p_204045_1_, p_204045_2_, p_204045_7_, p_204045_5_.field_204031_a, p_204045_6_));
-         p_204045_3_.add(new OceanRuinPieces.Piece(p_204045_0_, aresourcelocation[i], p_204045_1_, p_204045_2_, 0.7F, p_204045_5_.field_204031_a, p_204045_6_));
-         p_204045_3_.add(new OceanRuinPieces.Piece(p_204045_0_, aresourcelocation1[i], p_204045_1_, p_204045_2_, 0.5F, p_204045_5_.field_204031_a, p_204045_6_));
+   private static void func_204045_a(TemplateManager templateManagerIn, BlockPos p_204045_1_, Rotation p_204045_2_, List<StructurePiece> pieces, Random rand, OceanRuinConfig config, boolean shouldGenerateLargeVariant, float p_204045_7_) {
+      if (config.field_204031_a == OceanRuinStructure.Type.WARM) {
+         ResourceLocation resourcelocation = shouldGenerateLargeVariant ? getRandomPieceWarmBig(rand) : getRandomPieceWarm(rand);
+         pieces.add(new OceanRuinPieces.Piece(templateManagerIn, resourcelocation, p_204045_1_, p_204045_2_, p_204045_7_, config.field_204031_a, shouldGenerateLargeVariant));
+      } else if (config.field_204031_a == OceanRuinStructure.Type.COLD) {
+         ResourceLocation[] aresourcelocation2 = shouldGenerateLargeVariant ? STRUCTURE_BRICK_BIG : STRUCTURE_BRICK;
+         ResourceLocation[] aresourcelocation = shouldGenerateLargeVariant ? STRUCTURE_CRACKED_BIG : STRUCTURE_CRACKED;
+         ResourceLocation[] aresourcelocation1 = shouldGenerateLargeVariant ? STRUCTURE_MOSSY_BIG : STRUCTURE_MOSSY;
+         int i = rand.nextInt(aresourcelocation2.length);
+         pieces.add(new OceanRuinPieces.Piece(templateManagerIn, aresourcelocation2[i], p_204045_1_, p_204045_2_, p_204045_7_, config.field_204031_a, shouldGenerateLargeVariant));
+         pieces.add(new OceanRuinPieces.Piece(templateManagerIn, aresourcelocation[i], p_204045_1_, p_204045_2_, 0.7F, config.field_204031_a, shouldGenerateLargeVariant));
+         pieces.add(new OceanRuinPieces.Piece(templateManagerIn, aresourcelocation1[i], p_204045_1_, p_204045_2_, 0.5F, config.field_204031_a, shouldGenerateLargeVariant));
       }
 
    }
@@ -120,40 +120,40 @@ public class OceanRuinPieces {
    public static class Piece extends TemplateStructurePiece {
       private final OceanRuinStructure.Type biomeType;
       private final float integrity;
-      private final ResourceLocation field_204038_f;
+      private final ResourceLocation templateName;
       private final Rotation rotation;
       private final boolean isLarge;
 
-      public Piece(TemplateManager p_i48868_1_, ResourceLocation p_i48868_2_, BlockPos p_i48868_3_, Rotation p_i48868_4_, float p_i48868_5_, OceanRuinStructure.Type p_i48868_6_, boolean p_i48868_7_) {
+      public Piece(TemplateManager templateManagerIn, ResourceLocation templateNameIn, BlockPos templatePositionIn, Rotation rotationIn, float integrityIn, OceanRuinStructure.Type typeIn, boolean isLargeIn) {
          super(IStructurePieceType.ORP, 0);
-         this.field_204038_f = p_i48868_2_;
-         this.templatePosition = p_i48868_3_;
-         this.rotation = p_i48868_4_;
-         this.integrity = p_i48868_5_;
-         this.biomeType = p_i48868_6_;
-         this.isLarge = p_i48868_7_;
-         this.func_204034_a(p_i48868_1_);
+         this.templateName = templateNameIn;
+         this.templatePosition = templatePositionIn;
+         this.rotation = rotationIn;
+         this.integrity = integrityIn;
+         this.biomeType = typeIn;
+         this.isLarge = isLargeIn;
+         this.setup(templateManagerIn);
       }
 
       public Piece(TemplateManager p_i50592_1_, CompoundNBT p_i50592_2_) {
          super(IStructurePieceType.ORP, p_i50592_2_);
-         this.field_204038_f = new ResourceLocation(p_i50592_2_.getString("Template"));
+         this.templateName = new ResourceLocation(p_i50592_2_.getString("Template"));
          this.rotation = Rotation.valueOf(p_i50592_2_.getString("Rot"));
          this.integrity = p_i50592_2_.getFloat("Integrity");
          this.biomeType = OceanRuinStructure.Type.valueOf(p_i50592_2_.getString("BiomeType"));
          this.isLarge = p_i50592_2_.getBoolean("IsLarge");
-         this.func_204034_a(p_i50592_1_);
+         this.setup(p_i50592_1_);
       }
 
-      private void func_204034_a(TemplateManager p_204034_1_) {
-         Template template = p_204034_1_.getTemplateDefaulted(this.field_204038_f);
+      private void setup(TemplateManager templateManagerIn) {
+         Template template = templateManagerIn.getTemplateDefaulted(this.templateName);
          PlacementSettings placementsettings = (new PlacementSettings()).setRotation(this.rotation).setMirror(Mirror.NONE).addProcessor(BlockIgnoreStructureProcessor.AIR_AND_STRUCTURE_BLOCK);
          this.setup(template, this.templatePosition, placementsettings);
       }
 
       protected void readAdditional(CompoundNBT tagCompound) {
          super.readAdditional(tagCompound);
-         tagCompound.putString("Template", this.field_204038_f.toString());
+         tagCompound.putString("Template", this.templateName.toString());
          tagCompound.putString("Rot", this.rotation.name());
          tagCompound.putFloat("Integrity", this.integrity);
          tagCompound.putString("BiomeType", this.biomeType.toString());
@@ -183,7 +183,7 @@ public class OceanRuinPieces {
       }
 
       public boolean func_225577_a_(IWorld p_225577_1_, ChunkGenerator<?> p_225577_2_, Random p_225577_3_, MutableBoundingBox p_225577_4_, ChunkPos p_225577_5_) {
-         this.placeSettings.func_215219_b().addProcessor(new IntegrityProcessor(this.integrity)).addProcessor(BlockIgnoreStructureProcessor.AIR_AND_STRUCTURE_BLOCK);
+         this.placeSettings.clearProcessors().addProcessor(new IntegrityProcessor(this.integrity)).addProcessor(BlockIgnoreStructureProcessor.AIR_AND_STRUCTURE_BLOCK);
          int i = p_225577_1_.getHeight(Heightmap.Type.OCEAN_FLOOR_WG, this.templatePosition.getX(), this.templatePosition.getZ());
          this.templatePosition = new BlockPos(this.templatePosition.getX(), i, this.templatePosition.getZ());
          BlockPos blockpos = Template.getTransformedPos(new BlockPos(this.template.getSize().getX() - 1, 0, this.template.getSize().getZ() - 1), Mirror.NONE, this.rotation, BlockPos.ZERO).add(this.templatePosition);
@@ -191,23 +191,23 @@ public class OceanRuinPieces {
          return super.func_225577_a_(p_225577_1_, p_225577_2_, p_225577_3_, p_225577_4_, p_225577_5_);
       }
 
-      private int func_204035_a(BlockPos p_204035_1_, IBlockReader p_204035_2_, BlockPos p_204035_3_) {
-         int i = p_204035_1_.getY();
+      private int func_204035_a(BlockPos templatePos, IBlockReader blockReaderIn, BlockPos templateTransformedPos) {
+         int i = templatePos.getY();
          int j = 512;
          int k = i - 1;
          int l = 0;
 
-         for(BlockPos blockpos : BlockPos.getAllInBoxMutable(p_204035_1_, p_204035_3_)) {
+         for(BlockPos blockpos : BlockPos.getAllInBoxMutable(templatePos, templateTransformedPos)) {
             int i1 = blockpos.getX();
             int j1 = blockpos.getZ();
-            int k1 = p_204035_1_.getY() - 1;
+            int k1 = templatePos.getY() - 1;
             BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(i1, k1, j1);
-            BlockState blockstate = p_204035_2_.getBlockState(blockpos$mutable);
+            BlockState blockstate = blockReaderIn.getBlockState(blockpos$mutable);
 
-            for(IFluidState ifluidstate = p_204035_2_.getFluidState(blockpos$mutable); (blockstate.isAir() || ifluidstate.isTagged(FluidTags.WATER) || blockstate.getBlock().isIn(BlockTags.ICE)) && k1 > 1; ifluidstate = p_204035_2_.getFluidState(blockpos$mutable)) {
+            for(IFluidState ifluidstate = blockReaderIn.getFluidState(blockpos$mutable); (blockstate.isAir() || ifluidstate.isTagged(FluidTags.WATER) || blockstate.getBlock().isIn(BlockTags.ICE)) && k1 > 1; ifluidstate = blockReaderIn.getFluidState(blockpos$mutable)) {
                --k1;
                blockpos$mutable.setPos(i1, k1, j1);
-               blockstate = p_204035_2_.getBlockState(blockpos$mutable);
+               blockstate = blockReaderIn.getBlockState(blockpos$mutable);
             }
 
             j = Math.min(j, k1);
@@ -216,7 +216,7 @@ public class OceanRuinPieces {
             }
          }
 
-         int l1 = Math.abs(p_204035_1_.getX() - p_204035_3_.getX());
+         int l1 = Math.abs(templatePos.getX() - templateTransformedPos.getX());
          if (k - j > 2 && l > l1 - 2) {
             i = j + 1;
          }

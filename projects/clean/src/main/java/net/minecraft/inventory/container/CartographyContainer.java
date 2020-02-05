@@ -125,7 +125,7 @@ public class CartographyContainer extends Container {
    private void func_216993_a(ItemStack p_216993_1_, ItemStack p_216993_2_, ItemStack p_216993_3_) {
       this.field_216999_d.consume((p_216996_4_, p_216996_5_) -> {
          Item item = p_216993_2_.getItem();
-         MapData mapdata = FilledMapItem.func_219994_a(p_216993_1_, p_216996_4_);
+         MapData mapdata = FilledMapItem.getData(p_216993_1_, p_216996_4_);
          if (mapdata != null) {
             ItemStack itemstack;
             if (item == Items.PAPER && !mapdata.locked && mapdata.scale < 4) {

@@ -7,8 +7,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class Button extends AbstractButton {
    protected final Button.IPressable onPress;
 
-   public Button(int widthIn, int heightIn, int p_i51141_3_, int p_i51141_4_, String text, Button.IPressable onPress) {
-      super(widthIn, heightIn, p_i51141_3_, p_i51141_4_, text);
+   public Button(int widthIn, int heightIn, int width, int height, String text, Button.IPressable onPress) {
+      super(widthIn, heightIn, width, height, text);
       this.onPress = onPress;
    }
 

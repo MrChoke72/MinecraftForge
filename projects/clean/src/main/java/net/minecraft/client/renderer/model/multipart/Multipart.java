@@ -77,18 +77,18 @@ public class Multipart implements IUnbakedModel {
       }).collect(Collectors.toSet());
    }
 
-   public Collection<Material> func_225614_a_(Function<ResourceLocation, IUnbakedModel> p_225614_1_, Set<Pair<String, String>> p_225614_2_) {
+   public Collection<Material> getTextures(Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
       return this.getSelectors().stream().flatMap((p_228832_2_) -> {
-         return p_228832_2_.getVariantList().func_225614_a_(p_225614_1_, p_225614_2_).stream();
+         return p_228832_2_.getVariantList().getTextures(modelGetter, missingTextureErrors).stream();
       }).collect(Collectors.toSet());
    }
 
    @Nullable
-   public IBakedModel func_225613_a_(ModelBakery p_225613_1_, Function<Material, TextureAtlasSprite> p_225613_2_, IModelTransform p_225613_3_, ResourceLocation p_225613_4_) {
+   public IBakedModel bakeModel(ModelBakery modelBakeryIn, Function<Material, TextureAtlasSprite> spriteGetterIn, IModelTransform transformIn, ResourceLocation locationIn) {
       MultipartBakedModel.Builder multipartbakedmodel$builder = new MultipartBakedModel.Builder();
 
       for(Selector selector : this.getSelectors()) {
-         IBakedModel ibakedmodel = selector.getVariantList().func_225613_a_(p_225613_1_, p_225613_2_, p_225613_3_, p_225613_4_);
+         IBakedModel ibakedmodel = selector.getVariantList().bakeModel(modelBakeryIn, spriteGetterIn, transformIn, locationIn);
          if (ibakedmodel != null) {
             multipartbakedmodel$builder.putModel(selector.getPredicate(this.stateContainer), ibakedmodel);
          }

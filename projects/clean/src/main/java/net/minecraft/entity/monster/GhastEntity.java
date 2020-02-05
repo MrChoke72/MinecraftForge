@@ -36,8 +36,8 @@ public class GhastEntity extends FlyingEntity implements IMob {
    private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(GhastEntity.class, DataSerializers.BOOLEAN);
    private int explosionStrength = 1;
 
-   public GhastEntity(EntityType<? extends GhastEntity> p_i50206_1_, World p_i50206_2_) {
-      super(p_i50206_1_, p_i50206_2_);
+   public GhastEntity(EntityType<? extends GhastEntity> type, World worldIn) {
+      super(type, worldIn);
       this.experienceValue = 5;
       this.moveController = new GhastEntity.MoveHelperController(this);
    }
@@ -64,7 +64,7 @@ public class GhastEntity extends FlyingEntity implements IMob {
       return this.explosionStrength;
    }
 
-   protected boolean func_225511_J_() {
+   protected boolean isDespawnPeaceful() {
       return true;
    }
 
@@ -110,8 +110,8 @@ public class GhastEntity extends FlyingEntity implements IMob {
       return 10.0F;
    }
 
-   public static boolean func_223368_b(EntityType<GhastEntity> p_223368_0_, IWorld p_223368_1_, SpawnReason p_223368_2_, BlockPos p_223368_3_, Random p_223368_4_) {
-      return p_223368_1_.getDifficulty() != Difficulty.PEACEFUL && p_223368_4_.nextInt(20) == 0 && canEntitySpawn(p_223368_0_, p_223368_1_, p_223368_2_, p_223368_3_, p_223368_4_);
+   public static boolean func_223368_b(EntityType<GhastEntity> p_223368_0_, IWorld p_223368_1_, SpawnReason reason, BlockPos p_223368_3_, Random p_223368_4_) {
+      return p_223368_1_.getDifficulty() != Difficulty.PEACEFUL && p_223368_4_.nextInt(20) == 0 && canSpawnOn(p_223368_0_, p_223368_1_, reason, p_223368_3_, p_223368_4_);
    }
 
    public int getMaxSpawnedInChunk() {
@@ -169,12 +169,12 @@ public class GhastEntity extends FlyingEntity implements IMob {
                double d1 = 4.0D;
                Vec3d vec3d = this.parentEntity.getLook(1.0F);
                double d2 = livingentity.getPosX() - (this.parentEntity.getPosX() + vec3d.x * 4.0D);
-               double d3 = livingentity.func_226283_e_(0.5D) - (0.5D + this.parentEntity.func_226283_e_(0.5D));
+               double d3 = livingentity.getPosYHeight(0.5D) - (0.5D + this.parentEntity.getPosYHeight(0.5D));
                double d4 = livingentity.getPosZ() - (this.parentEntity.getPosZ() + vec3d.z * 4.0D);
                world.playEvent((PlayerEntity)null, 1016, new BlockPos(this.parentEntity), 0);
                FireballEntity fireballentity = new FireballEntity(world, this.parentEntity, d2, d3, d4);
                fireballentity.explosionPower = this.parentEntity.getFireballStrength();
-               fireballentity.setPosition(this.parentEntity.getPosX() + vec3d.x * 4.0D, this.parentEntity.func_226283_e_(0.5D) + 0.5D, fireballentity.getPosZ() + vec3d.z * 4.0D);
+               fireballentity.setPosition(this.parentEntity.getPosX() + vec3d.x * 4.0D, this.parentEntity.getPosYHeight(0.5D) + 0.5D, fireballentity.getPosZ() + vec3d.z * 4.0D);
                world.addEntity(fireballentity);
                this.attackTimer = -40;
             }

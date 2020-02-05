@@ -54,8 +54,8 @@ public class BubbleColumnBlock extends Block implements IBucketPickupHandler {
       placeBubbleColumn(worldIn, pos.up(), getDrag(worldIn, pos.down()));
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      placeBubbleColumn(p_225534_2_, p_225534_3_.up(), getDrag(p_225534_2_, p_225534_3_));
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      placeBubbleColumn(worldIn, pos.up(), getDrag(worldIn, pos));
    }
 
    public IFluidState getFluidState(BlockState state) {

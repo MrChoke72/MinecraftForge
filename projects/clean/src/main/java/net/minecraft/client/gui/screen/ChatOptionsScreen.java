@@ -35,7 +35,7 @@ public class ChatOptionsScreen extends SettingsScreen {
       }
 
       this.addButton(new Button(this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.format("gui.done"), (p_212990_1_) -> {
-         this.minecraft.displayGuiScreen(this.field_228182_a_);
+         this.minecraft.displayGuiScreen(this.parentScreen);
       }));
    }
 
@@ -46,6 +46,6 @@ public class ChatOptionsScreen extends SettingsScreen {
    }
 
    public void updateNarratorButton() {
-      this.narratorButton.setMessage(AbstractOption.NARRATOR.func_216720_c(this.field_228183_b_));
+      this.narratorButton.setMessage(AbstractOption.NARRATOR.getText(this.gameSettings));
    }
 }

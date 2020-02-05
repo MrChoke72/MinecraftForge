@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class TicketManager {
    private static final Logger LOGGER = LogManager.getLogger();
-   private static final int PLAYER_TICKET_LEVEL = 33 + ChunkStatus.func_222599_a(ChunkStatus.FULL) - 2;
+   private static final int PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistance(ChunkStatus.FULL) - 2;
    private final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
    private final Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> tickets = new Long2ObjectOpenHashMap<>();
    private final TicketManager.ChunkTicketTracker ticketTracker = new TicketManager.ChunkTicketTracker();
@@ -81,15 +81,15 @@ public abstract class TicketManager {
       return !p_229844_0_.isEmpty() ? p_229844_0_.func_226178_b_().getLevel() : ChunkManager.MAX_LOADED_LEVEL + 1;
    }
 
-   protected abstract boolean func_219371_a(long p_219371_1_);
+   protected abstract boolean contains(long p_219371_1_);
 
    @Nullable
-   protected abstract ChunkHolder func_219335_b(long p_219335_1_);
+   protected abstract ChunkHolder func_219335_b(long chunkPosIn);
 
    @Nullable
    protected abstract ChunkHolder func_219372_a(long p_219372_1_, int p_219372_3_, @Nullable ChunkHolder p_219372_4_, int p_219372_5_);
 
-   public boolean func_219353_a(ChunkManager p_219353_1_) {
+   public boolean processUpdates(ChunkManager p_219353_1_) {
       this.playerChunkTracker.func_215497_a();
       this.playerTicketTracker.func_215497_a();
       int i = Integer.MAX_VALUE - this.ticketTracker.func_215493_a(Integer.MAX_VALUE);
@@ -110,7 +110,7 @@ public abstract class TicketManager {
 
             while(longiterator.hasNext()) {
                long j = longiterator.nextLong();
-               if (this.func_229848_e_(j).stream().anyMatch((p_219369_0_) -> {
+               if (this.getTicketSet(j).stream().anyMatch((p_219369_0_) -> {
                   return p_219369_0_.getType() == TicketType.PLAYER;
                })) {
                   ChunkHolder chunkholder = p_219353_1_.func_219220_a(j);
@@ -136,18 +136,18 @@ public abstract class TicketManager {
    }
 
    private void register(long chunkPosIn, Ticket<?> ticketIn) {
-      SortedArraySet<Ticket<?>> sortedarrayset = this.func_229848_e_(chunkPosIn);
+      SortedArraySet<Ticket<?>> sortedarrayset = this.getTicketSet(chunkPosIn);
       int i = func_229844_a_(sortedarrayset);
       Ticket<?> ticket = sortedarrayset.func_226175_a_(ticketIn);
-      ticket.func_229861_a_(this.currentTime);
+      ticket.setTimestamp(this.currentTime);
       if (ticketIn.getLevel() < i) {
          this.ticketTracker.updateSourceLevel(chunkPosIn, ticketIn.getLevel(), true);
       }
 
    }
 
-   private void func_219349_b(long chunkPosIn, Ticket<?> ticketIn) {
-      SortedArraySet<Ticket<?>> sortedarrayset = this.func_229848_e_(chunkPosIn);
+   private void release(long chunkPosIn, Ticket<?> ticketIn) {
+      SortedArraySet<Ticket<?>> sortedarrayset = this.getTicketSet(chunkPosIn);
       if (sortedarrayset.remove(ticketIn)) {
          ;
       }
@@ -165,7 +165,7 @@ public abstract class TicketManager {
 
    public <T> void releaseWithLevel(TicketType<T> type, ChunkPos pos, int level, T value) {
       Ticket<T> ticket = new Ticket<>(type, level, value);
-      this.func_219349_b(pos.asLong(), ticket);
+      this.release(pos.asLong(), ticket);
    }
 
    public <T> void register(TicketType<T> type, ChunkPos pos, int distance, T value) {
@@ -174,12 +174,12 @@ public abstract class TicketManager {
 
    public <T> void release(TicketType<T> type, ChunkPos pos, int distance, T value) {
       Ticket<T> ticket = new Ticket<>(type, 33 - distance, value);
-      this.func_219349_b(pos.asLong(), ticket);
+      this.release(pos.asLong(), ticket);
    }
 
-   private SortedArraySet<Ticket<?>> func_229848_e_(long p_229848_1_) {
+   private SortedArraySet<Ticket<?>> getTicketSet(long p_229848_1_) {
       return this.tickets.computeIfAbsent(p_229848_1_, (p_229851_0_) -> {
-         return SortedArraySet.func_226172_a_(4);
+         return SortedArraySet.newSet(4);
       });
    }
 
@@ -188,7 +188,7 @@ public abstract class TicketManager {
       if (add) {
          this.register(pos.asLong(), ticket);
       } else {
-         this.func_219349_b(pos.asLong(), ticket);
+         this.release(pos.asLong(), ticket);
       }
 
    }
@@ -226,8 +226,8 @@ public abstract class TicketManager {
       return s;
    }
 
-   protected void setViewDistance(int p_219354_1_) {
-      this.playerTicketTracker.func_215508_a(p_219354_1_);
+   protected void setViewDistance(int viewDistance) {
+      this.playerTicketTracker.func_215508_a(viewDistance);
    }
 
    public int func_219358_b() {
@@ -259,7 +259,7 @@ public abstract class TicketManager {
       }
 
       protected int getLevel(long sectionPosIn) {
-         if (!TicketManager.this.func_219371_a(sectionPosIn)) {
+         if (!TicketManager.this.contains(sectionPosIn)) {
             ChunkHolder chunkholder = TicketManager.this.func_219335_b(sectionPosIn);
             if (chunkholder != null) {
                return chunkholder.func_219299_i();
@@ -353,30 +353,30 @@ public abstract class TicketManager {
          this.field_215512_e = p_215508_1_;
       }
 
-      private void func_215504_a(long p_215504_1_, int p_215504_3_, boolean p_215504_4_, boolean p_215504_5_) {
+      private void func_215504_a(long chunkPosIn, int p_215504_3_, boolean p_215504_4_, boolean p_215504_5_) {
          if (p_215504_4_ != p_215504_5_) {
-            Ticket<?> ticket = new Ticket<>(TicketType.PLAYER, TicketManager.PLAYER_TICKET_LEVEL, new ChunkPos(p_215504_1_));
+            Ticket<?> ticket = new Ticket<>(TicketType.PLAYER, TicketManager.PLAYER_TICKET_LEVEL, new ChunkPos(chunkPosIn));
             if (p_215504_5_) {
                TicketManager.this.field_219385_m.enqueue(ChunkTaskPriorityQueueSorter.func_219069_a(() -> {
                   TicketManager.this.field_219388_p.execute(() -> {
-                     if (this.func_215505_c(this.getLevel(p_215504_1_))) {
-                        TicketManager.this.register(p_215504_1_, ticket);
-                        TicketManager.this.field_219387_o.add(p_215504_1_);
+                     if (this.func_215505_c(this.getLevel(chunkPosIn))) {
+                        TicketManager.this.register(chunkPosIn, ticket);
+                        TicketManager.this.field_219387_o.add(chunkPosIn);
                      } else {
                         TicketManager.this.field_219386_n.enqueue(ChunkTaskPriorityQueueSorter.func_219073_a(() -> {
-                        }, p_215504_1_, false));
+                        }, chunkPosIn, false));
                      }
 
                   });
-               }, p_215504_1_, () -> {
+               }, chunkPosIn, () -> {
                   return p_215504_3_;
                }));
             } else {
                TicketManager.this.field_219386_n.enqueue(ChunkTaskPriorityQueueSorter.func_219073_a(() -> {
                   TicketManager.this.field_219388_p.execute(() -> {
-                     TicketManager.this.func_219349_b(p_215504_1_, ticket);
+                     TicketManager.this.release(chunkPosIn, ticket);
                   });
-               }, p_215504_1_, true));
+               }, chunkPosIn, true));
             }
          }
 

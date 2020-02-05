@@ -24,18 +24,18 @@ public class FallingBlockRenderer extends EntityRenderer<FallingBlockEntity> {
       this.shadowSize = 0.5F;
    }
 
-   public void func_225623_a_(FallingBlockEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      BlockState blockstate = p_225623_1_.getBlockState();
+   public void render(FallingBlockEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      BlockState blockstate = entityIn.getBlockState();
       if (blockstate.getRenderType() == BlockRenderType.MODEL) {
-         World world = p_225623_1_.getWorldObj();
-         if (blockstate != world.getBlockState(new BlockPos(p_225623_1_)) && blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
-            p_225623_4_.func_227860_a_();
-            BlockPos blockpos = new BlockPos(p_225623_1_.getPosX(), p_225623_1_.getBoundingBox().maxY, p_225623_1_.getPosZ());
-            p_225623_4_.func_227861_a_(-0.5D, 0.0D, -0.5D);
+         World world = entityIn.getWorldObj();
+         if (blockstate != world.getBlockState(new BlockPos(entityIn)) && blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
+            matrixStackIn.push();
+            BlockPos blockpos = new BlockPos(entityIn.getPosX(), entityIn.getBoundingBox().maxY, entityIn.getPosZ());
+            matrixStackIn.translate(-0.5D, 0.0D, -0.5D);
             BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
-            blockrendererdispatcher.getBlockModelRenderer().func_228802_a_(world, blockrendererdispatcher.getModelForState(blockstate), blockstate, blockpos, p_225623_4_, p_225623_5_.getBuffer(RenderTypeLookup.func_228390_a_(blockstate)), false, new Random(), blockstate.getPositionRandom(p_225623_1_.getOrigin()), OverlayTexture.field_229196_a_);
-            p_225623_4_.func_227865_b_();
-            super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+            blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(blockstate), blockstate, blockpos, matrixStackIn, bufferIn.getBuffer(RenderTypeLookup.getChunkRenderType(blockstate)), false, new Random(), blockstate.getPositionRandom(entityIn.getOrigin()), OverlayTexture.DEFAULT_LIGHT);
+            matrixStackIn.pop();
+            super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
          }
       }
    }

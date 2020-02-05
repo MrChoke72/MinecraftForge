@@ -1,5 +1,6 @@
 package net.minecraft.client.renderer.texture;
 
+import com.google.common.base.Charsets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.ByteArrayOutputStream;
@@ -34,7 +35,7 @@ import org.lwjgl.system.MemoryUtil;
 
 @OnlyIn(Dist.CLIENT)
 public final class NativeImage implements AutoCloseable {
-   private static final Logger field_227785_a_ = LogManager.getLogger();
+   private static final Logger LOGGER = LogManager.getLogger();
    private static final Set<StandardOpenOption> OPEN_OPTIONS = EnumSet.of(StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
    private final NativeImage.PixelFormat pixelFormat;
    private final int width;
@@ -83,7 +84,7 @@ public final class NativeImage implements AutoCloseable {
 
       NativeImage nativeimage;
       try {
-         bytebuffer = TextureUtil.func_225684_a_(inputStreamIn);
+         bytebuffer = TextureUtil.readToBuffer(inputStreamIn);
          bytebuffer.rewind();
          nativeimage = read(pixelFormatIn, bytebuffer);
       } finally {
@@ -124,11 +125,11 @@ public final class NativeImage implements AutoCloseable {
    private static void setWrapST(boolean clamp) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
       if (clamp) {
-         GlStateManager.func_227677_b_(3553, 10242, 10496);
-         GlStateManager.func_227677_b_(3553, 10243, 10496);
+         GlStateManager.texParameter(3553, 10242, 10496);
+         GlStateManager.texParameter(3553, 10243, 10496);
       } else {
-         GlStateManager.func_227677_b_(3553, 10242, 10497);
-         GlStateManager.func_227677_b_(3553, 10243, 10497);
+         GlStateManager.texParameter(3553, 10242, 10497);
+         GlStateManager.texParameter(3553, 10243, 10497);
       }
 
    }
@@ -136,11 +137,11 @@ public final class NativeImage implements AutoCloseable {
    private static void setMinMagFilters(boolean linear, boolean mipmap) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
       if (linear) {
-         GlStateManager.func_227677_b_(3553, 10241, mipmap ? 9987 : 9729);
-         GlStateManager.func_227677_b_(3553, 10240, 9729);
+         GlStateManager.texParameter(3553, 10241, mipmap ? 9987 : 9729);
+         GlStateManager.texParameter(3553, 10240, 9729);
       } else {
-         GlStateManager.func_227677_b_(3553, 10241, mipmap ? 9986 : 9728);
-         GlStateManager.func_227677_b_(3553, 10240, 9728);
+         GlStateManager.texParameter(3553, 10241, mipmap ? 9986 : 9728);
+         GlStateManager.texParameter(3553, 10240, 9728);
       }
 
    }
@@ -215,14 +216,14 @@ public final class NativeImage implements AutoCloseable {
          throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
       } else {
          int i = this.getPixelRGBA(xIn, yIn);
-         float f = (float)func_227786_a_(colIn) / 255.0F;
-         float f1 = (float)func_227795_d_(colIn) / 255.0F;
-         float f2 = (float)func_227793_c_(colIn) / 255.0F;
-         float f3 = (float)func_227791_b_(colIn) / 255.0F;
-         float f4 = (float)func_227786_a_(i) / 255.0F;
-         float f5 = (float)func_227795_d_(i) / 255.0F;
-         float f6 = (float)func_227793_c_(i) / 255.0F;
-         float f7 = (float)func_227791_b_(i) / 255.0F;
+         float f = (float)getAlpha(colIn) / 255.0F;
+         float f1 = (float)getBlue(colIn) / 255.0F;
+         float f2 = (float)getGreen(colIn) / 255.0F;
+         float f3 = (float)getRed(colIn) / 255.0F;
+         float f4 = (float)getAlpha(i) / 255.0F;
+         float f5 = (float)getBlue(i) / 255.0F;
+         float f6 = (float)getGreen(i) / 255.0F;
+         float f7 = (float)getRed(i) / 255.0F;
          float f8 = 1.0F - f;
          float f9 = f * f + f4 * f8;
          float f10 = f1 * f + f5 * f8;
@@ -248,7 +249,7 @@ public final class NativeImage implements AutoCloseable {
          int k = (int)(f10 * 255.0F);
          int l = (int)(f11 * 255.0F);
          int i1 = (int)(f12 * 255.0F);
-         this.setPixelRGBA(xIn, yIn, func_227787_a_(j, k, l, i1));
+         this.setPixelRGBA(xIn, yIn, getCombined(j, k, l, i1));
       }
    }
 
@@ -263,10 +264,10 @@ public final class NativeImage implements AutoCloseable {
          for(int i = 0; i < this.getHeight(); ++i) {
             for(int j = 0; j < this.getWidth(); ++j) {
                int k = this.getPixelRGBA(j, i);
-               int l = func_227786_a_(k);
-               int i1 = func_227795_d_(k);
-               int j1 = func_227793_c_(k);
-               int k1 = func_227791_b_(k);
+               int l = getAlpha(k);
+               int i1 = getBlue(k);
+               int j1 = getGreen(k);
+               int k1 = getRed(k);
                int l1 = l << 24 | k1 << 16 | j1 << 8 | i1;
                aint[j + i * this.getWidth()] = l1;
             }
@@ -277,40 +278,40 @@ public final class NativeImage implements AutoCloseable {
    }
 
    public void uploadTextureSub(int level, int xOffset, int yOffset, boolean mipmap) {
-      this.func_227788_a_(level, xOffset, yOffset, 0, 0, this.width, this.height, false, mipmap);
+      this.uploadTextureSub(level, xOffset, yOffset, 0, 0, this.width, this.height, false, mipmap);
    }
 
-   public void func_227788_a_(int p_227788_1_, int p_227788_2_, int p_227788_3_, int p_227788_4_, int p_227788_5_, int p_227788_6_, int p_227788_7_, boolean p_227788_8_, boolean p_227788_9_) {
-      this.func_227789_a_(p_227788_1_, p_227788_2_, p_227788_3_, p_227788_4_, p_227788_5_, p_227788_6_, p_227788_7_, false, false, p_227788_8_, p_227788_9_);
+   public void uploadTextureSub(int level, int xOffset, int yOffset, int unpackSkipPixels, int unpackSkipRows, int widthIn, int heightIn, boolean mipmap, boolean autoClose) {
+      this.uploadTextureSub(level, xOffset, yOffset, unpackSkipPixels, unpackSkipRows, widthIn, heightIn, false, false, mipmap, autoClose);
    }
 
-   public void func_227789_a_(int p_227789_1_, int p_227789_2_, int p_227789_3_, int p_227789_4_, int p_227789_5_, int p_227789_6_, int p_227789_7_, boolean p_227789_8_, boolean p_227789_9_, boolean p_227789_10_, boolean p_227789_11_) {
+   public void uploadTextureSub(int level, int xOffset, int yOffset, int unpackSkipPixels, int unpackSkipRows, int widthIn, int heightIn, boolean blur, boolean clamp, boolean mipmap, boolean autoClose) {
       if (!RenderSystem.isOnRenderThreadOrInit()) {
          RenderSystem.recordRenderCall(() -> {
-            this.func_227792_b_(p_227789_1_, p_227789_2_, p_227789_3_, p_227789_4_, p_227789_5_, p_227789_6_, p_227789_7_, p_227789_8_, p_227789_9_, p_227789_10_, p_227789_11_);
+            this.uploadTextureSubRaw(level, xOffset, yOffset, unpackSkipPixels, unpackSkipRows, widthIn, heightIn, blur, clamp, mipmap, autoClose);
          });
       } else {
-         this.func_227792_b_(p_227789_1_, p_227789_2_, p_227789_3_, p_227789_4_, p_227789_5_, p_227789_6_, p_227789_7_, p_227789_8_, p_227789_9_, p_227789_10_, p_227789_11_);
+         this.uploadTextureSubRaw(level, xOffset, yOffset, unpackSkipPixels, unpackSkipRows, widthIn, heightIn, blur, clamp, mipmap, autoClose);
       }
 
    }
 
-   private void func_227792_b_(int p_227792_1_, int p_227792_2_, int p_227792_3_, int p_227792_4_, int p_227792_5_, int p_227792_6_, int p_227792_7_, boolean p_227792_8_, boolean p_227792_9_, boolean p_227792_10_, boolean p_227792_11_) {
+   private void uploadTextureSubRaw(int level, int xOffset, int yOffset, int unpackSkipPixels, int unpackSkipRows, int widthIn, int heightIn, boolean blur, boolean clamp, boolean mipmap, boolean autoClose) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
       this.checkImage();
-      setMinMagFilters(p_227792_8_, p_227792_10_);
-      setWrapST(p_227792_9_);
-      if (p_227792_6_ == this.getWidth()) {
-         GlStateManager.func_227748_o_(3314, 0);
+      setMinMagFilters(blur, mipmap);
+      setWrapST(clamp);
+      if (widthIn == this.getWidth()) {
+         GlStateManager.pixelStore(3314, 0);
       } else {
-         GlStateManager.func_227748_o_(3314, this.getWidth());
+         GlStateManager.pixelStore(3314, this.getWidth());
       }
 
-      GlStateManager.func_227748_o_(3316, p_227792_4_);
-      GlStateManager.func_227748_o_(3315, p_227792_5_);
+      GlStateManager.pixelStore(3316, unpackSkipPixels);
+      GlStateManager.pixelStore(3315, unpackSkipRows);
       this.pixelFormat.setGlUnpackAlignment();
-      GlStateManager.func_227646_a_(3553, p_227792_1_, p_227792_2_, p_227792_3_, p_227792_6_, p_227792_7_, this.pixelFormat.getGlFormat(), 5121, this.imagePointer);
-      if (p_227792_11_) {
+      GlStateManager.texSubImage2D(3553, level, xOffset, yOffset, widthIn, heightIn, this.pixelFormat.getGlFormat(), 5121, this.imagePointer);
+      if (autoClose) {
          this.close();
       }
 
@@ -320,7 +321,7 @@ public final class NativeImage implements AutoCloseable {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
       this.checkImage();
       this.pixelFormat.setGlPackAlignment();
-      GlStateManager.func_227649_a_(3553, level, this.pixelFormat.getGlFormat(), 5121, this.imagePointer);
+      GlStateManager.getTexImage(3553, level, this.pixelFormat.getGlFormat(), 5121, this.imagePointer);
       if (opaque && this.pixelFormat.hasAlpha()) {
          for(int i = 0; i < this.getHeight(); ++i) {
             for(int j = 0; j < this.getWidth(); ++j) {
@@ -354,7 +355,7 @@ public final class NativeImage implements AutoCloseable {
          this.checkImage();
 
          try (WritableByteChannel writablebytechannel = Files.newByteChannel(pathIn, OPEN_OPTIONS)) {
-            if (!this.func_227790_a_(writablebytechannel)) {
+            if (!this.write(writablebytechannel)) {
                throw new IOException("Could not write image to the PNG file \"" + pathIn.toAbsolutePath() + "\": " + STBImage.stbi_failure_reason());
             }
          }
@@ -362,13 +363,13 @@ public final class NativeImage implements AutoCloseable {
       }
    }
 
-   public byte[] func_227796_e_() throws IOException {
+   public byte[] getBytes() throws IOException {
       byte[] abyte;
       try (
          ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
          WritableByteChannel writablebytechannel = Channels.newChannel(bytearrayoutputstream);
       ) {
-         if (!this.func_227790_a_(writablebytechannel)) {
+         if (!this.write(writablebytechannel)) {
             throw new IOException("Could not write image to byte array: " + STBImage.stbi_failure_reason());
          }
 
@@ -378,14 +379,14 @@ public final class NativeImage implements AutoCloseable {
       return abyte;
    }
 
-   private boolean func_227790_a_(WritableByteChannel p_227790_1_) throws IOException {
-      NativeImage.WriteCallback nativeimage$writecallback = new NativeImage.WriteCallback(p_227790_1_);
+   private boolean write(WritableByteChannel channelIn) throws IOException {
+      NativeImage.WriteCallback nativeimage$writecallback = new NativeImage.WriteCallback(channelIn);
 
       boolean flag;
       try {
          int i = Math.min(this.getHeight(), Integer.MAX_VALUE / this.getWidth() / this.pixelFormat.getPixelSize());
          if (i < this.getHeight()) {
-            field_227785_a_.warn("Dropping image height from {} to {} to fit the size into 32-bit signed int", this.getHeight(), i);
+            LOGGER.warn("Dropping image height from {} to {} to fit the size into 32-bit signed int", this.getHeight(), i);
          }
 
          if (STBImageWrite.nstbi_write_png_to_func(nativeimage$writecallback.address(), 0L, this.getWidth(), i, this.pixelFormat.getPixelSize(), this.imagePointer, 0) != 0) {
@@ -479,38 +480,38 @@ public final class NativeImage implements AutoCloseable {
       LWJGLMemoryUntracker.untrack(this.imagePointer);
    }
 
-   public static NativeImage func_216511_b(String p_216511_0_) throws IOException {
+   public static NativeImage readBase64(String stringIn) throws IOException {
+      byte[] abyte = Base64.getDecoder().decode(stringIn.replaceAll("\n", "").getBytes(Charsets.UTF_8));
+
       NativeImage nativeimage;
       try (MemoryStack memorystack = MemoryStack.stackPush()) {
-         ByteBuffer bytebuffer = memorystack.UTF8(p_216511_0_.replaceAll("\n", ""), false);
-         ByteBuffer bytebuffer1 = Base64.getDecoder().decode(bytebuffer);
-         ByteBuffer bytebuffer2 = memorystack.malloc(bytebuffer1.remaining());
-         bytebuffer2.put(bytebuffer1);
-         bytebuffer2.rewind();
-         nativeimage = read(bytebuffer2);
+         ByteBuffer bytebuffer = memorystack.malloc(abyte.length);
+         bytebuffer.put(abyte);
+         bytebuffer.rewind();
+         nativeimage = read(bytebuffer);
       }
 
       return nativeimage;
    }
 
-   public static int func_227786_a_(int p_227786_0_) {
-      return p_227786_0_ >> 24 & 255;
+   public static int getAlpha(int col) {
+      return col >> 24 & 255;
    }
 
-   public static int func_227791_b_(int p_227791_0_) {
-      return p_227791_0_ >> 0 & 255;
+   public static int getRed(int col) {
+      return col >> 0 & 255;
    }
 
-   public static int func_227793_c_(int p_227793_0_) {
-      return p_227793_0_ >> 8 & 255;
+   public static int getGreen(int col) {
+      return col >> 8 & 255;
    }
 
-   public static int func_227795_d_(int p_227795_0_) {
-      return p_227795_0_ >> 16 & 255;
+   public static int getBlue(int col) {
+      return col >> 16 & 255;
    }
 
-   public static int func_227787_a_(int p_227787_0_, int p_227787_1_, int p_227787_2_, int p_227787_3_) {
-      return (p_227787_0_ & 255) << 24 | (p_227787_1_ & 255) << 16 | (p_227787_2_ & 255) << 8 | (p_227787_3_ & 255) << 0;
+   public static int getCombined(int alpha, int blue, int green, int red) {
+      return (alpha & 255) << 24 | (blue & 255) << 16 | (green & 255) << 8 | (red & 255) << 0;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -556,12 +557,12 @@ public final class NativeImage implements AutoCloseable {
 
       public void setGlPackAlignment() {
          RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-         GlStateManager.func_227748_o_(3333, this.getPixelSize());
+         GlStateManager.pixelStore(3333, this.getPixelSize());
       }
 
       public void setGlUnpackAlignment() {
          RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-         GlStateManager.func_227748_o_(3317, this.getPixelSize());
+         GlStateManager.pixelStore(3317, this.getPixelSize());
       }
 
       public int getGlFormat() {

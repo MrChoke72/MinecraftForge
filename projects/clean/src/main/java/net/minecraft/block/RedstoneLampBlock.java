@@ -46,9 +46,9 @@ public class RedstoneLampBlock extends Block {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_1_.get(LIT) && !p_225534_2_.isBlockPowered(p_225534_3_)) {
-         p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.cycle(LIT), 2);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (state.get(LIT) && !worldIn.isBlockPowered(pos)) {
+         worldIn.setBlockState(pos, state.cycle(LIT), 2);
       }
 
    }

@@ -33,6 +33,6 @@ public class ArrowLayer<T extends LivingEntity, M extends PlayerModel<T>> extend
       this.field_229130_b_.rotationPitch = (float)(Math.atan2((double)p_225632_6_, (double)f) * (double)(180F / (float)Math.PI));
       this.field_229130_b_.prevRotationYaw = this.field_229130_b_.rotationYaw;
       this.field_229130_b_.prevRotationPitch = this.field_229130_b_.rotationPitch;
-      this.field_215336_a.func_229084_a_(this.field_229130_b_, 0.0D, 0.0D, 0.0D, 0.0F, p_225632_8_, p_225632_1_, p_225632_2_, p_225632_3_);
+      this.field_215336_a.renderEntityStatic(this.field_229130_b_, 0.0D, 0.0D, 0.0D, 0.0F, p_225632_8_, p_225632_1_, p_225632_2_, p_225632_3_);
    }
 }

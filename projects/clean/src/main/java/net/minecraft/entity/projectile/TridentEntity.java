@@ -32,20 +32,20 @@ public class TridentEntity extends AbstractArrowEntity {
    private boolean dealtDamage;
    public int returningTicks;
 
-   public TridentEntity(EntityType<? extends TridentEntity> p_i50148_1_, World p_i50148_2_) {
-      super(p_i50148_1_, p_i50148_2_);
+   public TridentEntity(EntityType<? extends TridentEntity> type, World worldIn) {
+      super(type, worldIn);
    }
 
-   public TridentEntity(World p_i48790_1_, LivingEntity p_i48790_2_, ItemStack p_i48790_3_) {
-      super(EntityType.TRIDENT, p_i48790_2_, p_i48790_1_);
-      this.thrownStack = p_i48790_3_.copy();
-      this.dataManager.set(LOYALTY_LEVEL, (byte)EnchantmentHelper.getLoyaltyModifier(p_i48790_3_));
-      this.dataManager.set(field_226571_aq_, p_i48790_3_.hasEffect());
+   public TridentEntity(World worldIn, LivingEntity thrower, ItemStack thrownStackIn) {
+      super(EntityType.TRIDENT, thrower, worldIn);
+      this.thrownStack = thrownStackIn.copy();
+      this.dataManager.set(LOYALTY_LEVEL, (byte)EnchantmentHelper.getLoyaltyModifier(thrownStackIn));
+      this.dataManager.set(field_226571_aq_, thrownStackIn.hasEffect());
    }
 
    @OnlyIn(Dist.CLIENT)
-   public TridentEntity(World p_i48791_1_, double p_i48791_2_, double p_i48791_4_, double p_i48791_6_) {
-      super(EntityType.TRIDENT, p_i48791_2_, p_i48791_4_, p_i48791_6_, p_i48791_1_);
+   public TridentEntity(World worldIn, double x, double y, double z) {
+      super(EntityType.TRIDENT, x, y, z, worldIn);
    }
 
    protected void registerData() {
@@ -60,7 +60,7 @@ public class TridentEntity extends AbstractArrowEntity {
       }
 
       Entity entity = this.getShooter();
-      if ((this.dealtDamage || this.func_203047_q()) && entity != null) {
+      if ((this.dealtDamage || this.getNoClip()) && entity != null) {
          int i = this.dataManager.get(LOYALTY_LEVEL);
          if (i > 0 && !this.shouldReturnToThrower()) {
             if (!this.world.isRemote && this.pickupStatus == AbstractArrowEntity.PickupStatus.ALLOWED) {
@@ -69,9 +69,9 @@ public class TridentEntity extends AbstractArrowEntity {
 
             this.remove();
          } else if (i > 0) {
-            this.func_203045_n(true);
-            Vec3d vec3d = new Vec3d(entity.getPosX() - this.getPosX(), entity.getPosYPlusEyeHeight() - this.getPosY(), entity.getPosZ() - this.getPosZ());
-            this.func_226288_n_(this.getPosX(), this.getPosY() + vec3d.y * 0.015D * (double)i, this.getPosZ());
+            this.setNoClip(true);
+            Vec3d vec3d = new Vec3d(entity.getPosX() - this.getPosX(), entity.getPosYEye() - this.getPosY(), entity.getPosZ() - this.getPosZ());
+            this.setRawPosition(this.getPosX(), this.getPosY() + vec3d.y * 0.015D * (double)i, this.getPosZ());
             if (this.world.isRemote) {
                this.lastTickPosY = this.getPosY();
             }
@@ -108,11 +108,11 @@ public class TridentEntity extends AbstractArrowEntity {
    }
 
    @Nullable
-   protected EntityRayTraceResult func_213866_a(Vec3d p_213866_1_, Vec3d p_213866_2_) {
-      return this.dealtDamage ? null : super.func_213866_a(p_213866_1_, p_213866_2_);
+   protected EntityRayTraceResult rayTraceEntities(Vec3d startVec, Vec3d endVec) {
+      return this.dealtDamage ? null : super.rayTraceEntities(startVec, endVec);
    }
 
-   protected void func_213868_a(EntityRayTraceResult p_213868_1_) {
+   protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
       Entity entity = p_213868_1_.getEntity();
       float f = 8.0F;
       if (entity instanceof LivingEntity) {
@@ -144,7 +144,7 @@ public class TridentEntity extends AbstractArrowEntity {
       float f1 = 1.0F;
       if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.thrownStack)) {
          BlockPos blockpos = entity.getPosition();
-         if (this.world.isMaxLightLevel(blockpos)) {
+         if (this.world.canSeeSky(blockpos)) {
             LightningBoltEntity lightningboltentity = new LightningBoltEntity(this.world, (double)blockpos.getX() + 0.5D, (double)blockpos.getY(), (double)blockpos.getZ() + 0.5D, false);
             lightningboltentity.setCaster(entity1 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity1 : null);
             ((ServerWorld)this.world).addLightningBolt(lightningboltentity);
@@ -156,7 +156,7 @@ public class TridentEntity extends AbstractArrowEntity {
       this.playSound(soundevent, f1, 1.0F);
    }
 
-   protected SoundEvent func_213867_k() {
+   protected SoundEvent getHitEntitySound() {
       return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
    }
 

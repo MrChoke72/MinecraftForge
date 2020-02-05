@@ -13,7 +13,7 @@ public class NibbleArray {
    public NibbleArray(byte[] storageArray) {
       this.data = storageArray;
       if (storageArray.length != 2048) {
-         throw (IllegalArgumentException)Util.func_229757_c_(new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + storageArray.length));
+         throw (IllegalArgumentException)Util.spinlockIfDevMode(new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + storageArray.length));
       }
    }
 

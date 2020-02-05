@@ -38,10 +38,10 @@ public class AnvilScreen extends ContainerScreen<RepairContainer> implements ICo
       this.nameField.setDisabledTextColour(-1);
       this.nameField.setEnableBackgroundDrawing(false);
       this.nameField.setMaxStringLength(35);
-      this.nameField.func_212954_a(this::func_214075_a);
+      this.nameField.setResponder(this::func_214075_a);
       this.children.add(this.nameField);
       this.container.addListener(this);
-      this.func_212928_a(this.nameField);
+      this.setFocusedDefault(this.nameField);
    }
 
    public void resize(Minecraft p_resize_1_, int p_resize_2_, int p_resize_3_) {
@@ -61,13 +61,13 @@ public class AnvilScreen extends ContainerScreen<RepairContainer> implements ICo
          this.minecraft.player.closeScreen();
       }
 
-      return !this.nameField.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) && !this.nameField.func_212955_f() ? super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) : true;
+      return !this.nameField.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) && !this.nameField.canWrite() ? super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) : true;
    }
 
    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
       RenderSystem.disableBlend();
       this.font.drawString(this.title.getFormattedText(), 60.0F, 6.0F, 4210752);
-      int i = this.container.func_216976_f();
+      int i = this.container.getMaximumCost();
       if (i > 0) {
          int j = 8453920;
          boolean flag = true;

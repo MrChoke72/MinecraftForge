@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
 import javax.annotation.Nullable;
-
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -28,12 +27,10 @@ public abstract class TargetGoal extends Goal {
       this(mobIn, checkSight, false);
    }
 
-   //Ah REFACTOR
-   public TargetGoal(MobEntity mobIn, boolean checkSight, boolean nearbyOnly) {
-   //public TargetGoal(MobEntity mobIn, boolean checkSight, boolean p_i50309_3_) {
+   public TargetGoal(MobEntity mobIn, boolean checkSight, boolean nearbyOnlyIn) {
       this.goalOwner = mobIn;
       this.shouldCheckSight = checkSight;
-      this.nearbyOnly = nearbyOnly;
+      this.nearbyOnly = nearbyOnlyIn;
    }
 
    public boolean shouldContinueExecuting() {
@@ -118,12 +115,12 @@ public abstract class TargetGoal extends Goal {
       this.target = null;
    }
 
-   protected boolean isSuitableTarget(@Nullable LivingEntity p_220777_1_, EntityPredicate p_220777_2_) {
-      if (p_220777_1_ == null) {
+   protected boolean isSuitableTarget(@Nullable LivingEntity potentialTarget, EntityPredicate targetPredicate) {
+      if (potentialTarget == null) {
          return false;
-      } else if (!p_220777_2_.canTarget(this.goalOwner, p_220777_1_)) {
+      } else if (!targetPredicate.canTarget(this.goalOwner, potentialTarget)) {
          return false;
-      } else if (!this.goalOwner.isWithinHomeDistanceFromPosition(new BlockPos(p_220777_1_))) {
+      } else if (!this.goalOwner.isWithinHomeDistanceFromPosition(new BlockPos(potentialTarget))) {
          return false;
       } else {
          if (this.nearbyOnly) {
@@ -132,7 +129,7 @@ public abstract class TargetGoal extends Goal {
             }
 
             if (this.targetSearchStatus == 0) {
-               this.targetSearchStatus = this.canEasilyReach(p_220777_1_) ? 1 : 2;
+               this.targetSearchStatus = this.canEasilyReach(potentialTarget) ? 1 : 2;
             }
 
             if (this.targetSearchStatus == 2) {
@@ -146,7 +143,7 @@ public abstract class TargetGoal extends Goal {
 
    private boolean canEasilyReach(LivingEntity target) {
       this.targetSearchDelay = 10 + this.goalOwner.getRNG().nextInt(5);
-      Path path = this.goalOwner.getNavigator().getPathToEntityLiving(target, 0);
+      Path path = this.goalOwner.getNavigator().getPathToEntity(target, 0);
       if (path == null) {
          return false;
       } else {
@@ -161,8 +158,8 @@ public abstract class TargetGoal extends Goal {
       }
    }
 
-   public TargetGoal setUnseenMemoryTicks(int p_190882_1_) {
-      this.unseenMemoryTicks = p_190882_1_;
+   public TargetGoal setUnseenMemoryTicks(int unseenMemoryTicksIn) {
+      this.unseenMemoryTicks = unseenMemoryTicksIn;
       return this;
    }
 }

@@ -20,13 +20,13 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 public class ColumnPosArgument implements ArgumentType<ILocationArgument> {
    private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~1 ~-2", "^ ^", "^-1 ^0");
-   public static final SimpleCommandExceptionType field_212604_a = new SimpleCommandExceptionType(new TranslationTextComponent("argument.pos2d.incomplete"));
+   public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(new TranslationTextComponent("argument.pos2d.incomplete"));
 
    public static ColumnPosArgument columnPos() {
       return new ColumnPosArgument();
    }
 
-   public static ColumnPos func_218101_a(CommandContext<CommandSource> p_218101_0_, String p_218101_1_) {
+   public static ColumnPos fromBlockPos(CommandContext<CommandSource> p_218101_0_, String p_218101_1_) {
       BlockPos blockpos = p_218101_0_.getArgument(p_218101_1_, ILocationArgument.class).getBlockPos(p_218101_0_.getSource());
       return new ColumnPos(blockpos.getX(), blockpos.getZ());
    }
@@ -34,7 +34,7 @@ public class ColumnPosArgument implements ArgumentType<ILocationArgument> {
    public ILocationArgument parse(StringReader p_parse_1_) throws CommandSyntaxException {
       int i = p_parse_1_.getCursor();
       if (!p_parse_1_.canRead()) {
-         throw field_212604_a.createWithContext(p_parse_1_);
+         throw INCOMPLETE_EXCEPTION.createWithContext(p_parse_1_);
       } else {
          LocationPart locationpart = LocationPart.parseInt(p_parse_1_);
          if (p_parse_1_.canRead() && p_parse_1_.peek() == ' ') {
@@ -43,7 +43,7 @@ public class ColumnPosArgument implements ArgumentType<ILocationArgument> {
             return new LocationInput(locationpart, new LocationPart(true, 0.0D), locationpart1);
          } else {
             p_parse_1_.setCursor(i);
-            throw field_212604_a.createWithContext(p_parse_1_);
+            throw INCOMPLETE_EXCEPTION.createWithContext(p_parse_1_);
          }
       }
    }

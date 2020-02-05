@@ -26,9 +26,9 @@ public class ResourceLoadProgressGui extends LoadingGui {
    private final IAsyncReloader asyncReloader;
    private final Consumer<Optional<Throwable>> completedCallback;
    private final boolean reloading;
-   private float field_212978_f;
-   private long field_212979_g = -1L;
-   private long field_212980_h = -1L;
+   private float progress;
+   private long fadeOutStart = -1L;
+   private long fadeInStart = -1L;
 
    public ResourceLoadProgressGui(Minecraft p_i225928_1_, IAsyncReloader p_i225928_2_, Consumer<Optional<Throwable>> p_i225928_3_, boolean p_i225928_4_) {
       this.mc = p_i225928_1_;
@@ -38,19 +38,19 @@ public class ResourceLoadProgressGui extends LoadingGui {
    }
 
    public static void loadLogoTexture(Minecraft mc) {
-      mc.getTextureManager().func_229263_a_(MOJANG_LOGO_TEXTURE, new ResourceLoadProgressGui.MojangLogoTexture());
+      mc.getTextureManager().loadTexture(MOJANG_LOGO_TEXTURE, new ResourceLoadProgressGui.MojangLogoTexture());
    }
 
    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
-      int i = this.mc.func_228018_at_().getScaledWidth();
-      int j = this.mc.func_228018_at_().getScaledHeight();
+      int i = this.mc.getMainWindow().getScaledWidth();
+      int j = this.mc.getMainWindow().getScaledHeight();
       long k = Util.milliTime();
-      if (this.reloading && (this.asyncReloader.asyncPartDone() || this.mc.currentScreen != null) && this.field_212980_h == -1L) {
-         this.field_212980_h = k;
+      if (this.reloading && (this.asyncReloader.asyncPartDone() || this.mc.currentScreen != null) && this.fadeInStart == -1L) {
+         this.fadeInStart = k;
       }
 
-      float f = this.field_212979_g > -1L ? (float)(k - this.field_212979_g) / 1000.0F : -1.0F;
-      float f1 = this.field_212980_h > -1L ? (float)(k - this.field_212980_h) / 500.0F : -1.0F;
+      float f = this.fadeOutStart > -1L ? (float)(k - this.fadeOutStart) / 1000.0F : -1.0F;
+      float f1 = this.fadeInStart > -1L ? (float)(k - this.fadeInStart) / 500.0F : -1.0F;
       float f2;
       if (f >= 1.0F) {
          if (this.mc.currentScreen != null) {
@@ -73,23 +73,23 @@ public class ResourceLoadProgressGui extends LoadingGui {
          f2 = 1.0F;
       }
 
-      int k1 = (this.mc.func_228018_at_().getScaledWidth() - 256) / 2;
-      int i1 = (this.mc.func_228018_at_().getScaledHeight() - 256) / 2;
+      int k1 = (this.mc.getMainWindow().getScaledWidth() - 256) / 2;
+      int i1 = (this.mc.getMainWindow().getScaledHeight() - 256) / 2;
       this.mc.getTextureManager().bindTexture(MOJANG_LOGO_TEXTURE);
       RenderSystem.enableBlend();
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, f2);
       this.blit(k1, i1, 0, 0, 256, 256);
       float f3 = this.asyncReloader.estimateExecutionSpeed();
-      this.field_212978_f = MathHelper.clamp(this.field_212978_f * 0.95F + f3 * 0.050000012F, 0.0F, 1.0F);
+      this.progress = MathHelper.clamp(this.progress * 0.95F + f3 * 0.050000012F, 0.0F, 1.0F);
       if (f < 1.0F) {
-         this.func_228181_a_(i / 2 - 150, j / 4 * 3, i / 2 + 150, j / 4 * 3 + 10, 1.0F - MathHelper.clamp(f, 0.0F, 1.0F));
+         this.renderProgressBar(i / 2 - 150, j / 4 * 3, i / 2 + 150, j / 4 * 3 + 10, 1.0F - MathHelper.clamp(f, 0.0F, 1.0F));
       }
 
       if (f >= 2.0F) {
          this.mc.setLoadingGui((LoadingGui)null);
       }
 
-      if (this.field_212979_g == -1L && this.asyncReloader.fullyDone() && (!this.reloading || f1 >= 2.0F)) {
+      if (this.fadeOutStart == -1L && this.asyncReloader.fullyDone() && (!this.reloading || f1 >= 2.0F)) {
          try {
             this.asyncReloader.join();
             this.completedCallback.accept(Optional.empty());
@@ -97,16 +97,16 @@ public class ResourceLoadProgressGui extends LoadingGui {
             this.completedCallback.accept(Optional.of(throwable));
          }
 
-         this.field_212979_g = Util.milliTime();
+         this.fadeOutStart = Util.milliTime();
          if (this.mc.currentScreen != null) {
-            this.mc.currentScreen.init(this.mc, this.mc.func_228018_at_().getScaledWidth(), this.mc.func_228018_at_().getScaledHeight());
+            this.mc.currentScreen.init(this.mc, this.mc.getMainWindow().getScaledWidth(), this.mc.getMainWindow().getScaledHeight());
          }
       }
 
    }
 
-   private void func_228181_a_(int p_228181_1_, int p_228181_2_, int p_228181_3_, int p_228181_4_, float p_228181_5_) {
-      int i = MathHelper.ceil((float)(p_228181_3_ - p_228181_1_ - 1) * this.field_212978_f);
+   private void renderProgressBar(int p_228181_1_, int p_228181_2_, int p_228181_3_, int p_228181_4_, float p_228181_5_) {
+      int i = MathHelper.ceil((float)(p_228181_3_ - p_228181_1_ - 1) * this.progress);
       fill(p_228181_1_ - 1, p_228181_2_ - 1, p_228181_3_ + 1, p_228181_4_ + 1, -16777216 | Math.round((1.0F - p_228181_5_) * 255.0F) << 16 | Math.round((1.0F - p_228181_5_) * 255.0F) << 8 | Math.round((1.0F - p_228181_5_) * 255.0F));
       fill(p_228181_1_, p_228181_2_, p_228181_3_, p_228181_4_, -1);
       fill(p_228181_1_ + 1, p_228181_2_ + 1, p_228181_1_ + i, p_228181_4_ - 1, -16777216 | (int)MathHelper.lerp(1.0F - p_228181_5_, 226.0F, 255.0F) << 16 | (int)MathHelper.lerp(1.0F - p_228181_5_, 40.0F, 255.0F) << 8 | (int)MathHelper.lerp(1.0F - p_228181_5_, 55.0F, 255.0F));
@@ -122,7 +122,7 @@ public class ResourceLoadProgressGui extends LoadingGui {
          super(ResourceLoadProgressGui.MOJANG_LOGO_TEXTURE);
       }
 
-      protected SimpleTexture.TextureData func_215246_b(IResourceManager resourceManager) {
+      protected SimpleTexture.TextureData getTextureData(IResourceManager resourceManager) {
          Minecraft minecraft = Minecraft.getInstance();
          VanillaPack vanillapack = minecraft.getPackFinder().getVanillaPack();
 

@@ -30,13 +30,13 @@ public class FolderPack extends ResourcePack {
       super(folder);
    }
 
-   public static boolean validatePath(File p_195777_0_, String p_195777_1_) throws IOException {
-      String s = p_195777_0_.getCanonicalPath();
+   public static boolean validatePath(File fileIn, String pathIn) throws IOException {
+      String s = fileIn.getCanonicalPath();
       if (OS_WINDOWS) {
          s = BACKSLASH_MATCHER.replaceFrom(s, '/');
       }
 
-      return s.endsWith(p_195777_1_);
+      return s.endsWith(pathIn);
    }
 
    protected InputStream getInputStream(String resourcePath) throws IOException {
@@ -87,10 +87,10 @@ public class FolderPack extends ResourcePack {
    public void close() throws IOException {
    }
 
-   public Collection<ResourceLocation> func_225637_a_(ResourcePackType p_225637_1_, String p_225637_2_, String p_225637_3_, int p_225637_4_, Predicate<String> p_225637_5_) {
-      File file1 = new File(this.file, p_225637_1_.getDirectoryName());
+   public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn) {
+      File file1 = new File(this.file, type.getDirectoryName());
       List<ResourceLocation> list = Lists.newArrayList();
-      this.func_199546_a(new File(new File(file1, p_225637_2_), p_225637_3_), p_225637_4_, p_225637_2_, list, p_225637_3_ + "/", p_225637_5_);
+      this.func_199546_a(new File(new File(file1, namespaceIn), pathIn), maxDepthIn, namespaceIn, list, pathIn + "/", filterIn);
       return list;
    }
 

@@ -17,11 +17,11 @@ public class GenericHeadModel extends Model {
    }
 
    public GenericHeadModel(int p_i51060_1_, int p_i51060_2_, int p_i51060_3_, int p_i51060_4_) {
-      super(RenderType::func_228644_e_);
+      super(RenderType::entityTranslucent);
       this.textureWidth = p_i51060_3_;
       this.textureHeight = p_i51060_4_;
       this.field_217105_a = new ModelRenderer(this, p_i51060_1_, p_i51060_2_);
-      this.field_217105_a.func_228301_a_(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.0F);
+      this.field_217105_a.addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.0F);
       this.field_217105_a.setRotationPoint(0.0F, 0.0F, 0.0F);
    }
 
@@ -30,7 +30,7 @@ public class GenericHeadModel extends Model {
       this.field_217105_a.rotateAngleX = p_225603_3_ * ((float)Math.PI / 180F);
    }
 
-   public void func_225598_a_(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
-      this.field_217105_a.func_228309_a_(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, p_225598_5_, p_225598_6_, p_225598_7_, p_225598_8_);
+   public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+      this.field_217105_a.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
    }
 }

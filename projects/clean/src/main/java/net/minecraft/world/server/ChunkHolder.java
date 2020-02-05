@@ -57,7 +57,7 @@ public class ChunkHolder {
    private final WorldLightManager lightManager;
    private final ChunkHolder.IListener field_219327_v;
    private final ChunkHolder.IPlayerProvider playerProvider;
-   private boolean field_219329_x;
+   private boolean accessible;
 
    public ChunkHolder(ChunkPos p_i50716_1_, int p_i50716_2_, WorldLightManager p_i50716_3_, ChunkHolder.IListener p_i50716_4_, ChunkHolder.IPlayerProvider p_i50716_5_) {
       this.pos = p_i50716_1_;
@@ -92,7 +92,7 @@ public class ChunkHolder {
    }
 
    @Nullable
-   public Chunk func_219298_c() {
+   public Chunk getChunkIfComplete() {
       CompletableFuture<Either<Chunk, ChunkHolder.IChunkLoadingError>> completablefuture = this.func_219296_a();
       Either<Chunk, ChunkHolder.IChunkLoadingError> either = completablefuture.getNow((Either<Chunk, ChunkHolder.IChunkLoadingError>)null);
       return either == null ? null : either.left().orElse((Chunk)null);
@@ -133,7 +133,7 @@ public class ChunkHolder {
    }
 
    public void markBlockChanged(int x, int y, int z) {
-      Chunk chunk = this.func_219298_c();
+      Chunk chunk = this.getChunkIfComplete();
       if (chunk != null) {
          this.blockChangeMask |= 1 << (y >> 4);
          if (this.changedBlocks < 64) {
@@ -152,7 +152,7 @@ public class ChunkHolder {
    }
 
    public void markLightChanged(LightType type, int sectionY) {
-      Chunk chunk = this.func_219298_c();
+      Chunk chunk = this.getChunkIfComplete();
       if (chunk != null) {
          chunk.setModified(true);
          if (type == LightType.SKY) {
@@ -312,7 +312,7 @@ public class ChunkHolder {
 
       boolean flag5 = chunkholder$locationtype.isAtLeast(ChunkHolder.LocationType.BORDER);
       boolean flag6 = chunkholder$locationtype1.isAtLeast(ChunkHolder.LocationType.BORDER);
-      this.field_219329_x |= flag6;
+      this.accessible |= flag6;
       if (!flag5 && flag6) {
          this.field_222983_h = p_219291_1_.func_222961_b(this);
          this.chain(this.field_222983_h);
@@ -342,7 +342,7 @@ public class ChunkHolder {
       boolean flag4 = chunkholder$locationtype1.isAtLeast(ChunkHolder.LocationType.ENTITY_TICKING);
       if (!flag3 && flag4) {
          if (this.field_219314_i != UNLOADED_CHUNK_FUTURE) {
-            throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException());
+            throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException());
          }
 
          this.field_219314_i = p_219291_1_.func_219188_b(this.pos);
@@ -359,19 +359,19 @@ public class ChunkHolder {
    }
 
    public static ChunkStatus func_219278_b(int p_219278_0_) {
-      return p_219278_0_ < 33 ? ChunkStatus.FULL : ChunkStatus.func_222581_a(p_219278_0_ - 33);
+      return p_219278_0_ < 33 ? ChunkStatus.FULL : ChunkStatus.getStatus(p_219278_0_ - 33);
    }
 
    public static ChunkHolder.LocationType func_219286_c(int p_219286_0_) {
       return LOCATION_TYPES[MathHelper.clamp(33 - p_219286_0_ + 1, 0, LOCATION_TYPES.length - 1)];
    }
 
-   public boolean func_219289_k() {
-      return this.field_219329_x;
+   public boolean isAccessible() {
+      return this.accessible;
    }
 
-   public void func_219303_l() {
-      this.field_219329_x = func_219286_c(this.field_219317_l).isAtLeast(ChunkHolder.LocationType.BORDER);
+   public void updateAccessible() {
+      this.accessible = func_219286_c(this.field_219317_l).isAtLeast(ChunkHolder.LocationType.BORDER);
    }
 
    public void func_219294_a(ChunkPrimerWrapper p_219294_1_) {

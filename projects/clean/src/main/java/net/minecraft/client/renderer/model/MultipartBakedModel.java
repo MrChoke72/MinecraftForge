@@ -22,6 +22,7 @@ public class MultipartBakedModel implements IBakedModel {
    private final List<Pair<Predicate<BlockState>, IBakedModel>> selectors;
    protected final boolean ambientOcclusion;
    protected final boolean gui3D;
+   protected final boolean field_230185_c_;
    protected final TextureAtlasSprite particleTexture;
    protected final ItemCameraTransforms cameraTransforms;
    protected final ItemOverrideList overrides;
@@ -32,6 +33,7 @@ public class MultipartBakedModel implements IBakedModel {
       IBakedModel ibakedmodel = p_i48273_1_.iterator().next().getRight();
       this.ambientOcclusion = ibakedmodel.isAmbientOcclusion();
       this.gui3D = ibakedmodel.isGui3d();
+      this.field_230185_c_ = ibakedmodel.func_230044_c_();
       this.particleTexture = ibakedmodel.getParticleTexture();
       this.cameraTransforms = ibakedmodel.getItemCameraTransforms();
       this.overrides = ibakedmodel.getOverrides();
@@ -74,6 +76,10 @@ public class MultipartBakedModel implements IBakedModel {
 
    public boolean isGui3d() {
       return this.gui3D;
+   }
+
+   public boolean func_230044_c_() {
+      return this.field_230185_c_;
    }
 
    public boolean isBuiltInRenderer() {

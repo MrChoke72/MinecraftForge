@@ -101,7 +101,7 @@ public class Util {
             forkjoinworkerthread.setName("Server-Worker-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
             return forkjoinworkerthread;
          }, (p_215086_0_, p_215086_1_) -> {
-            func_229757_c_(p_215086_1_);
+            spinlockIfDevMode(p_215086_1_);
             if (p_215086_1_ instanceof CompletionException) {
                p_215086_1_ = p_215086_1_.getCause();
             }
@@ -139,15 +139,15 @@ public class Util {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static <T> CompletableFuture<T> completedExceptionallyFuture(Throwable p_215087_0_) {
+   public static <T> CompletableFuture<T> completedExceptionallyFuture(Throwable throwableIn) {
       CompletableFuture<T> completablefuture = new CompletableFuture<>();
-      completablefuture.completeExceptionally(p_215087_0_);
+      completablefuture.completeExceptionally(throwableIn);
       return completablefuture;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static void func_229756_b_(Throwable p_229756_0_) {
-      throw p_229756_0_ instanceof RuntimeException ? (RuntimeException)p_229756_0_ : new RuntimeException(p_229756_0_);
+   public static void toRuntimeException(Throwable throwableIn) {
+      throw throwableIn instanceof RuntimeException ? (RuntimeException)throwableIn : new RuntimeException(throwableIn);
    }
 
    public static Util.OS getOSType() {
@@ -174,8 +174,8 @@ public class Util {
       });
    }
 
-   public static <T> T func_223378_a(List<T> p_223378_0_) {
-      return p_223378_0_.get(p_223378_0_.size() - 1);
+   public static <T> T getLast(List<T> listIn) {
+      return listIn.get(listIn.size() - 1);
    }
 
    public static <T> T getElementAfter(Iterable<T> iterable, @Nullable T element) {
@@ -229,11 +229,11 @@ public class Util {
       return (Strategy<K>) Util.IdentityStrategy.INSTANCE;
    }
 
-   public static <V> CompletableFuture<List<V>> gather(List<? extends CompletableFuture<? extends V>> p_215079_0_) {
-      List<V> list = Lists.newArrayListWithCapacity(p_215079_0_.size());
-      CompletableFuture<?>[] completablefuture = new CompletableFuture[p_215079_0_.size()];
+   public static <V> CompletableFuture<List<V>> gather(List<? extends CompletableFuture<? extends V>> futuresIn) {
+      List<V> list = Lists.newArrayListWithCapacity(futuresIn.size());
+      CompletableFuture<?>[] completablefuture = new CompletableFuture[futuresIn.size()];
       CompletableFuture<Void> completablefuture1 = new CompletableFuture<>();
-      p_215079_0_.forEach((p_215083_3_) -> {
+      futuresIn.forEach((p_215083_3_) -> {
          int i = list.size();
          list.add((V)null);
          completablefuture[i] = p_215083_3_.whenComplete((p_215085_3_, p_215085_4_) -> {
@@ -250,8 +250,8 @@ public class Util {
       });
    }
 
-   public static <T> Stream<T> streamOptional(Optional<? extends T> p_215081_0_) {
-      return DataFixUtils.orElseGet(p_215081_0_.map(Stream::of), Stream::empty);
+   public static <T> Stream<T> streamOptional(Optional<? extends T> optionalIn) {
+      return DataFixUtils.orElseGet(optionalIn.map(Stream::of), Stream::empty);
    }
 
    public static <T> Optional<T> acceptOrElse(Optional<T> opt, Consumer<T> consumer, Runnable orElse) {
@@ -264,44 +264,44 @@ public class Util {
       return opt;
    }
 
-   public static Runnable namedRunnable(Runnable p_215075_0_, Supplier<String> p_215075_1_) {
-      return p_215075_0_;
+   public static Runnable namedRunnable(Runnable runnableIn, Supplier<String> supplierIn) {
+      return runnableIn;
    }
 
-   public static Optional<UUID> readUUID(String p_215074_0_, Dynamic<?> p_215074_1_) {
-      return p_215074_1_.get(p_215074_0_ + "Most").asNumber().flatMap((p_215076_2_) -> {
-         return p_215074_1_.get(p_215074_0_ + "Least").asNumber().map((p_215080_1_) -> {
+   public static Optional<UUID> readUUID(String stringIn, Dynamic<?> dynamicIn) {
+      return dynamicIn.get(stringIn + "Most").asNumber().flatMap((p_215076_2_) -> {
+         return dynamicIn.get(stringIn + "Least").asNumber().map((p_215080_1_) -> {
             return new UUID(p_215076_2_.longValue(), p_215080_1_.longValue());
          });
       });
    }
 
-   public static <T> Dynamic<T> writeUUID(String p_215084_0_, UUID p_215084_1_, Dynamic<T> p_215084_2_) {
-      return p_215084_2_.set(p_215084_0_ + "Most", p_215084_2_.createLong(p_215084_1_.getMostSignificantBits())).set(p_215084_0_ + "Least", p_215084_2_.createLong(p_215084_1_.getLeastSignificantBits()));
+   public static <T> Dynamic<T> writeUUID(String stringIn, UUID uuidIn, Dynamic<T> dynamicIn) {
+      return dynamicIn.set(stringIn + "Most", dynamicIn.createLong(uuidIn.getMostSignificantBits())).set(stringIn + "Least", dynamicIn.createLong(uuidIn.getLeastSignificantBits()));
    }
 
-   public static <T extends Throwable> T func_229757_c_(T p_229757_0_) {
+   public static <T extends Throwable> T spinlockIfDevMode(T throwableIn) {
       if (SharedConstants.developmentMode) {
-         LOGGER.error("Trying to throw a fatal exception, pausing in IDE", p_229757_0_);
+         LOGGER.error("Trying to throw a fatal exception, pausing in IDE", throwableIn);
 
          while(true) {
             try {
                Thread.sleep(1000L);
                LOGGER.error("paused");
             } catch (InterruptedException var2) {
-               return p_229757_0_;
+               return throwableIn;
             }
          }
       } else {
-         return p_229757_0_;
+         return throwableIn;
       }
    }
 
-   public static String func_229758_d_(Throwable p_229758_0_) {
-      if (p_229758_0_.getCause() != null) {
-         return func_229758_d_(p_229758_0_.getCause());
+   public static String getMessage(Throwable throwableIn) {
+      if (throwableIn.getCause() != null) {
+         return getMessage(throwableIn.getCause());
       } else {
-         return p_229758_0_.getMessage() != null ? p_229758_0_.getMessage() : p_229758_0_.toString();
+         return throwableIn.getMessage() != null ? throwableIn.getMessage() : throwableIn.toString();
       }
    }
 

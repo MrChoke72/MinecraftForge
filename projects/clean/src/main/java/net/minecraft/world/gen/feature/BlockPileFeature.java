@@ -40,7 +40,7 @@ public class BlockPileFeature extends Feature<BlockStateProvidingFeatureConfig> 
    private boolean canPlaceOn(IWorld worldIn, BlockPos pos, Random random) {
       BlockPos blockpos = pos.down();
       BlockState blockstate = worldIn.getBlockState(blockpos);
-      return blockstate.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockstate.func_224755_d(worldIn, blockpos, Direction.UP);
+      return blockstate.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockstate.isSolidSide(worldIn, blockpos, Direction.UP);
    }
 
    private void func_227225_a_(IWorld p_227225_1_, BlockPos p_227225_2_, Random p_227225_3_, BlockStateProvidingFeatureConfig p_227225_4_) {

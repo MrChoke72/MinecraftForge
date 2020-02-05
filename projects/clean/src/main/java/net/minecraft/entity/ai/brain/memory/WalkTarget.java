@@ -8,23 +8,20 @@ import net.minecraft.util.math.Vec3d;
 public class WalkTarget {
    private final IPosWrapper target;
    private final float speed;
+   private final int distance;
 
-   //AH REFACTOR
-   private final int reachDist;
-   //private final int distance;
-
-   public WalkTarget(BlockPos targetIn, float speedIn, int reachDist) {
-      this(new BlockPosWrapper(targetIn), speedIn, reachDist);
+   public WalkTarget(BlockPos targetIn, float speedIn, int distanceIn) {
+      this(new BlockPosWrapper(targetIn), speedIn, distanceIn);
    }
 
-   public WalkTarget(Vec3d targetIn, float speedIn, int reachDist) {
-      this(new BlockPosWrapper(new BlockPos(targetIn)), speedIn, reachDist);
+   public WalkTarget(Vec3d targetIn, float speedIn, int distanceIn) {
+      this(new BlockPosWrapper(new BlockPos(targetIn)), speedIn, distanceIn);
    }
 
-   public WalkTarget(IPosWrapper targetIn, float speedIn, int reachDist) {
+   public WalkTarget(IPosWrapper targetIn, float speedIn, int distanceIn) {
       this.target = targetIn;
       this.speed = speedIn;
-      this.reachDist = reachDist;
+      this.distance = distanceIn;
    }
 
    public IPosWrapper getTarget() {
@@ -35,7 +32,7 @@ public class WalkTarget {
       return this.speed;
    }
 
-   public int getReachDist() {
-      return this.reachDist;
+   public int getDistance() {
+      return this.distance;
    }
 }

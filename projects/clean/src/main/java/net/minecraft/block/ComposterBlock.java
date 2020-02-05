@@ -37,7 +37,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ComposterBlock extends Block implements ISidedInventoryProvider {
-   public static final IntegerProperty field_220298_a = BlockStateProperties.LEVEL_0_8;
+   public static final IntegerProperty LEVEL = BlockStateProperties.LEVEL_0_8;
    public static final Object2FloatMap<IItemProvider> CHANCES = new Object2FloatOpenHashMap<>();
    public static final VoxelShape field_220300_c = VoxelShapes.fullCube();
    private static final VoxelShape[] field_220301_d = Util.make(new VoxelShape[9], (p_220291_0_) -> {
@@ -131,11 +131,11 @@ public class ComposterBlock extends Block implements ISidedInventoryProvider {
 
    public ComposterBlock(Block.Properties p_i49986_1_) {
       super(p_i49986_1_);
-      this.setDefaultState(this.stateContainer.getBaseState().with(field_220298_a, Integer.valueOf(0)));
+      this.setDefaultState(this.stateContainer.getBaseState().with(LEVEL, Integer.valueOf(0)));
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static void func_220292_a(World p_220292_0_, BlockPos p_220292_1_, boolean p_220292_2_) {
+   public static void playEvent(World p_220292_0_, BlockPos p_220292_1_, boolean p_220292_2_) {
       BlockState blockstate = p_220292_0_.getBlockState(p_220292_1_);
       p_220292_0_.playSound((double)p_220292_1_.getX(), (double)p_220292_1_.getY(), (double)p_220292_1_.getZ(), p_220292_2_ ? SoundEvents.BLOCK_COMPOSTER_FILL_SUCCESS : SoundEvents.BLOCK_COMPOSTER_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
       double d0 = blockstate.getShape(p_220292_0_, p_220292_1_).max(Direction.Axis.Y, 0.5D, 0.5D) + 0.03125D;
@@ -153,7 +153,7 @@ public class ComposterBlock extends Block implements ISidedInventoryProvider {
    }
 
    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-      return field_220301_d[state.get(field_220298_a)];
+      return field_220301_d[state.get(LEVEL)];
    }
 
    public VoxelShape getRaytraceShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
@@ -165,38 +165,38 @@ public class ComposterBlock extends Block implements ISidedInventoryProvider {
    }
 
    public void onBlockAdded(BlockState state, World worldIn, BlockPos pos, BlockState oldState, boolean isMoving) {
-      if (state.get(field_220298_a) == 7) {
+      if (state.get(LEVEL) == 7) {
          worldIn.getPendingBlockTicks().scheduleTick(pos, state.getBlock(), 20);
       }
 
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      int i = p_225533_1_.get(field_220298_a);
-      ItemStack itemstack = p_225533_4_.getHeldItem(p_225533_5_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      int i = state.get(LEVEL);
+      ItemStack itemstack = player.getHeldItem(handIn);
       if (i < 8 && CHANCES.containsKey(itemstack.getItem())) {
-         if (i < 7 && !p_225533_2_.isRemote) {
-            boolean flag = addItem(p_225533_1_, p_225533_2_, p_225533_3_, itemstack);
-            p_225533_2_.playEvent(1500, p_225533_3_, flag ? 1 : 0);
-            if (!p_225533_4_.abilities.isCreativeMode) {
+         if (i < 7 && !worldIn.isRemote) {
+            boolean flag = addItem(state, worldIn, pos, itemstack);
+            worldIn.playEvent(1500, pos, flag ? 1 : 0);
+            if (!player.abilities.isCreativeMode) {
                itemstack.shrink(1);
             }
          }
 
          return ActionResultType.SUCCESS;
       } else if (i == 8) {
-         if (!p_225533_2_.isRemote) {
+         if (!worldIn.isRemote) {
             float f = 0.7F;
-            double d0 = (double)(p_225533_2_.rand.nextFloat() * 0.7F) + (double)0.15F;
-            double d1 = (double)(p_225533_2_.rand.nextFloat() * 0.7F) + (double)0.060000002F + 0.6D;
-            double d2 = (double)(p_225533_2_.rand.nextFloat() * 0.7F) + (double)0.15F;
-            ItemEntity itementity = new ItemEntity(p_225533_2_, (double)p_225533_3_.getX() + d0, (double)p_225533_3_.getY() + d1, (double)p_225533_3_.getZ() + d2, new ItemStack(Items.BONE_MEAL));
+            double d0 = (double)(worldIn.rand.nextFloat() * 0.7F) + (double)0.15F;
+            double d1 = (double)(worldIn.rand.nextFloat() * 0.7F) + (double)0.060000002F + 0.6D;
+            double d2 = (double)(worldIn.rand.nextFloat() * 0.7F) + (double)0.15F;
+            ItemEntity itementity = new ItemEntity(worldIn, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, new ItemStack(Items.BONE_MEAL));
             itementity.setDefaultPickupDelay();
-            p_225533_2_.addEntity(itementity);
+            worldIn.addEntity(itementity);
          }
 
-         clear(p_225533_1_, p_225533_2_, p_225533_3_);
-         p_225533_2_.playSound((PlayerEntity)null, p_225533_3_, SoundEvents.BLOCK_COMPOSTER_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+         clear(state, worldIn, pos);
+         worldIn.playSound((PlayerEntity)null, pos, SoundEvents.BLOCK_COMPOSTER_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
          return ActionResultType.SUCCESS;
       } else {
          return ActionResultType.PASS;
@@ -204,17 +204,17 @@ public class ComposterBlock extends Block implements ISidedInventoryProvider {
    }
 
    private static void clear(BlockState p_220294_0_, IWorld p_220294_1_, BlockPos p_220294_2_) {
-      p_220294_1_.setBlockState(p_220294_2_, p_220294_0_.with(field_220298_a, Integer.valueOf(0)), 3);
+      p_220294_1_.setBlockState(p_220294_2_, p_220294_0_.with(LEVEL, Integer.valueOf(0)), 3);
    }
 
    private static boolean addItem(BlockState p_220293_0_, IWorld p_220293_1_, BlockPos p_220293_2_, ItemStack p_220293_3_) {
-      int i = p_220293_0_.get(field_220298_a);
+      int i = p_220293_0_.get(LEVEL);
       float f = CHANCES.getFloat(p_220293_3_.getItem());
       if ((i != 0 || !(f > 0.0F)) && !(p_220293_1_.getRandom().nextDouble() < (double)f)) {
          return false;
       } else {
          int j = i + 1;
-         p_220293_1_.setBlockState(p_220293_2_, p_220293_0_.with(field_220298_a, Integer.valueOf(j)), 3);
+         p_220293_1_.setBlockState(p_220293_2_, p_220293_0_.with(LEVEL, Integer.valueOf(j)), 3);
          if (j == 7) {
             p_220293_1_.getPendingBlockTicks().scheduleTick(p_220293_2_, p_220293_0_.getBlock(), 20);
          }
@@ -223,13 +223,13 @@ public class ComposterBlock extends Block implements ISidedInventoryProvider {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_1_.get(field_220298_a) == 7) {
-         p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.cycle(field_220298_a), 3);
-         p_225534_2_.playSound((PlayerEntity)null, p_225534_3_, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (state.get(LEVEL) == 7) {
+         worldIn.setBlockState(pos, state.cycle(LEVEL), 3);
+         worldIn.playSound((PlayerEntity)null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
       }
 
-      super.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
+      super.tick(state, worldIn, pos, rand);
    }
 
    public boolean hasComparatorInputOverride(BlockState state) {
@@ -237,11 +237,11 @@ public class ComposterBlock extends Block implements ISidedInventoryProvider {
    }
 
    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
-      return blockState.get(field_220298_a);
+      return blockState.get(LEVEL);
    }
 
    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-      builder.add(field_220298_a);
+      builder.add(LEVEL);
    }
 
    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
@@ -249,7 +249,7 @@ public class ComposterBlock extends Block implements ISidedInventoryProvider {
    }
 
    public ISidedInventory createInventory(BlockState p_219966_1_, IWorld p_219966_2_, BlockPos p_219966_3_) {
-      int i = p_219966_1_.get(field_220298_a);
+      int i = p_219966_1_.get(LEVEL);
       if (i == 8) {
          return new ComposterBlock.FullInventory(p_219966_1_, p_219966_2_, p_219966_3_, new ItemStack(Items.BONE_MEAL));
       } else {

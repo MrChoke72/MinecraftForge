@@ -24,7 +24,7 @@ public class FunctionArgument implements ArgumentType<FunctionArgument.IResult> 
       return new TranslationTextComponent("arguments.function.unknown", p_208694_0_);
    });
 
-   public static FunctionArgument func_200021_a() {
+   public static FunctionArgument function() {
       return new FunctionArgument();
    }
 

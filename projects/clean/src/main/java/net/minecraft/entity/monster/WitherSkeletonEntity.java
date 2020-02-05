@@ -25,8 +25,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class WitherSkeletonEntity extends AbstractSkeletonEntity {
-   public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> p_i50187_1_, World p_i50187_2_) {
-      super(p_i50187_1_, p_i50187_2_);
+   public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> typeIn, World worldIn) {
+      super(typeIn, worldIn);
       this.setPathPriority(PathNodeType.LAVA, 8.0F);
    }
 
@@ -90,8 +90,8 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
       }
    }
 
-   protected AbstractArrowEntity func_213624_b(ItemStack p_213624_1_, float p_213624_2_) {
-      AbstractArrowEntity abstractarrowentity = super.func_213624_b(p_213624_1_, p_213624_2_);
+   protected AbstractArrowEntity fireArrow(ItemStack arrowStack, float distanceFactor) {
+      AbstractArrowEntity abstractarrowentity = super.fireArrow(arrowStack, distanceFactor);
       abstractarrowentity.setFire(100);
       return abstractarrowentity;
    }

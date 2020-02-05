@@ -38,7 +38,7 @@ public class SubtitleOverlayGui extends AbstractGui implements ISoundEventListen
          RenderSystem.pushMatrix();
          RenderSystem.enableBlend();
          RenderSystem.defaultBlendFunc();
-         Vec3d vec3d = new Vec3d(this.client.player.getPosX(), this.client.player.getPosYPlusEyeHeight(), this.client.player.getPosZ());
+         Vec3d vec3d = new Vec3d(this.client.player.getPosX(), this.client.player.getPosYEye(), this.client.player.getPosZ());
          Vec3d vec3d1 = (new Vec3d(0.0D, 0.0D, -1.0D)).rotatePitch(-this.client.player.rotationPitch * ((float)Math.PI / 180F)).rotateYaw(-this.client.player.rotationYaw * ((float)Math.PI / 180F));
          Vec3d vec3d2 = (new Vec3d(0.0D, 1.0D, 0.0D)).rotatePitch(-this.client.player.rotationPitch * ((float)Math.PI / 180F)).rotateYaw(-this.client.player.rotationYaw * ((float)Math.PI / 180F));
          Vec3d vec3d3 = vec3d1.crossProduct(vec3d2);
@@ -72,9 +72,9 @@ public class SubtitleOverlayGui extends AbstractGui implements ISoundEventListen
             int l1 = MathHelper.floor(MathHelper.clampedLerp(255.0D, 75.0D, (double)((float)(Util.milliTime() - subtitleoverlaygui$subtitle1.getStartTime()) / 3000.0F)));
             int i2 = l1 << 16 | l1 << 8 | l1;
             RenderSystem.pushMatrix();
-            RenderSystem.translatef((float)this.client.func_228018_at_().getScaledWidth() - (float)l * 1.0F - 2.0F, (float)(this.client.func_228018_at_().getScaledHeight() - 30) - (float)(i * (i1 + 1)) * 1.0F, 0.0F);
+            RenderSystem.translatef((float)this.client.getMainWindow().getScaledWidth() - (float)l * 1.0F - 2.0F, (float)(this.client.getMainWindow().getScaledHeight() - 30) - (float)(i * (i1 + 1)) * 1.0F, 0.0F);
             RenderSystem.scalef(1.0F, 1.0F, 1.0F);
-            fill(-l - 1, -j1 - 1, l + 1, j1 + 1, this.client.gameSettings.func_216841_b(0.8F));
+            fill(-l - 1, -j1 - 1, l + 1, j1 + 1, this.client.gameSettings.getTextBackgroundColor(0.8F));
             RenderSystem.enableBlend();
             if (!flag) {
                if (d0 > 0.0D) {

@@ -37,28 +37,28 @@ public class FlowerPotBlock extends Block {
       return BlockRenderType.MODEL;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      ItemStack itemstack = p_225533_4_.getHeldItem(p_225533_5_);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      ItemStack itemstack = player.getHeldItem(handIn);
       Item item = itemstack.getItem();
       Block block = item instanceof BlockItem ? field_196451_b.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR;
       boolean flag = block == Blocks.AIR;
       boolean flag1 = this.flower == Blocks.AIR;
       if (flag != flag1) {
          if (flag1) {
-            p_225533_2_.setBlockState(p_225533_3_, block.getDefaultState(), 3);
-            p_225533_4_.addStat(Stats.POT_FLOWER);
-            if (!p_225533_4_.abilities.isCreativeMode) {
+            worldIn.setBlockState(pos, block.getDefaultState(), 3);
+            player.addStat(Stats.POT_FLOWER);
+            if (!player.abilities.isCreativeMode) {
                itemstack.shrink(1);
             }
          } else {
             ItemStack itemstack1 = new ItemStack(this.flower);
             if (itemstack.isEmpty()) {
-               p_225533_4_.setHeldItem(p_225533_5_, itemstack1);
-            } else if (!p_225533_4_.addItemStackToInventory(itemstack1)) {
-               p_225533_4_.dropItem(itemstack1, false);
+               player.setHeldItem(handIn, itemstack1);
+            } else if (!player.addItemStackToInventory(itemstack1)) {
+               player.dropItem(itemstack1, false);
             }
 
-            p_225533_2_.setBlockState(p_225533_3_, Blocks.FLOWER_POT.getDefaultState(), 3);
+            worldIn.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
          }
 
          return ActionResultType.SUCCESS;

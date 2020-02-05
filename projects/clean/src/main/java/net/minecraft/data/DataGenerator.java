@@ -32,7 +32,7 @@ public class DataGenerator {
 
    public void run() throws IOException {
       DirectoryCache directorycache = new DirectoryCache(this.outputFolder, "cache");
-      directorycache.func_218456_c(this.getOutputFolder().resolve("version.json"));
+      directorycache.addProtectedPath(this.getOutputFolder().resolve("version.json"));
       Stopwatch stopwatch = Stopwatch.createStarted();
       Stopwatch stopwatch1 = Stopwatch.createUnstarted();
 

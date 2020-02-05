@@ -15,7 +15,7 @@ public abstract class HugeTreesFeature<T extends BaseTreeFeatureConfig> extends 
    }
 
    protected int func_227256_a_(Random p_227256_1_, HugeTreeFeatureConfig p_227256_2_) {
-      int i = p_227256_1_.nextInt(3) + p_227256_2_.field_227371_p_;
+      int i = p_227256_1_.nextInt(3) + p_227256_2_.baseHeight;
       if (p_227256_2_.field_227275_a_ > 1) {
          i += p_227256_1_.nextInt(p_227256_2_.field_227275_a_);
       }

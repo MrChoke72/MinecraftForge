@@ -8,12 +8,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class StringNBT implements INBT {
-   public static final INBTType<StringNBT> field_229703_a_ = new INBTType<StringNBT>() {
+   public static final INBTType<StringNBT> TYPE = new INBTType<StringNBT>() {
       public StringNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(288L);
          String s = p_225649_1_.readUTF();
          p_225649_3_.read((long)(16 * s.length()));
-         return StringNBT.func_229705_a_(s);
+         return StringNBT.valueOf(s);
       }
 
       public String func_225648_a_() {
@@ -28,7 +28,7 @@ public class StringNBT implements INBT {
          return true;
       }
    };
-   private static final StringNBT field_229704_b_ = new StringNBT("");
+   private static final StringNBT EMPTY_STRING = new StringNBT("");
    private final String data;
 
    private StringNBT(String data) {
@@ -36,8 +36,8 @@ public class StringNBT implements INBT {
       this.data = data;
    }
 
-   public static StringNBT func_229705_a_(String p_229705_0_) {
-      return p_229705_0_.isEmpty() ? field_229704_b_ : new StringNBT(p_229705_0_);
+   public static StringNBT valueOf(String p_229705_0_) {
+      return p_229705_0_.isEmpty() ? EMPTY_STRING : new StringNBT(p_229705_0_);
    }
 
    public void write(DataOutput output) throws IOException {
@@ -48,8 +48,8 @@ public class StringNBT implements INBT {
       return 8;
    }
 
-   public INBTType<StringNBT> func_225647_b_() {
-      return field_229703_a_;
+   public INBTType<StringNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {

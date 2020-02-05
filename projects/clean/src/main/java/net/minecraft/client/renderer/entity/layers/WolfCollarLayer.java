@@ -13,14 +13,14 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class WolfCollarLayer extends LayerRenderer<WolfEntity, WolfModel<WolfEntity>> {
    private static final ResourceLocation WOLF_COLLAR = new ResourceLocation("textures/entity/wolf/wolf_collar.png");
 
-   public WolfCollarLayer(IEntityRenderer<WolfEntity, WolfModel<WolfEntity>> p_i50914_1_) {
-      super(p_i50914_1_);
+   public WolfCollarLayer(IEntityRenderer<WolfEntity, WolfModel<WolfEntity>> rendererIn) {
+      super(rendererIn);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, WolfEntity p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      if (p_225628_4_.isTamed() && !p_225628_4_.isInvisible()) {
-         float[] afloat = p_225628_4_.getCollarColor().getColorComponentValues();
-         func_229141_a_(this.getEntityModel(), WOLF_COLLAR, p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, afloat[0], afloat[1], afloat[2]);
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, WolfEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      if (entitylivingbaseIn.isTamed() && !entitylivingbaseIn.isInvisible()) {
+         float[] afloat = entitylivingbaseIn.getCollarColor().getColorComponentValues();
+         renderCutoutModel(this.getEntityModel(), WOLF_COLLAR, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, afloat[0], afloat[1], afloat[2]);
       }
    }
 }

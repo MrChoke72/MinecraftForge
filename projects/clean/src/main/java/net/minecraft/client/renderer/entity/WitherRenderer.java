@@ -18,7 +18,7 @@ public class WitherRenderer extends MobRenderer<WitherEntity, WitherModel<Wither
       this.addLayer(new WitherAuraLayer(this));
    }
 
-   protected int func_225624_a_(WitherEntity p_225624_1_, float p_225624_2_) {
+   protected int getBlockLight(WitherEntity entityIn, float partialTicks) {
       return 15;
    }
 
@@ -27,13 +27,13 @@ public class WitherRenderer extends MobRenderer<WitherEntity, WitherModel<Wither
       return i > 0 && (i > 80 || i / 5 % 2 != 1) ? INVULNERABLE_WITHER_TEXTURES : WITHER_TEXTURES;
    }
 
-   protected void func_225620_a_(WitherEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
+   protected void preRenderCallback(WitherEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
       float f = 2.0F;
-      int i = p_225620_1_.getInvulTime();
+      int i = entitylivingbaseIn.getInvulTime();
       if (i > 0) {
-         f -= ((float)i - p_225620_3_) / 220.0F * 0.5F;
+         f -= ((float)i - partialTickTime) / 220.0F * 0.5F;
       }
 
-      p_225620_2_.func_227862_a_(f, f, f);
+      matrixStackIn.scale(f, f, f);
    }
 }

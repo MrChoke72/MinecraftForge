@@ -40,27 +40,29 @@ public class BeehiveTreeDecorator extends TreeDecorator {
          List<BlockPos> list = p_225576_3_.stream().filter((p_227416_1_) -> {
             return p_227416_1_.getY() == i;
          }).collect(Collectors.toList());
-         BlockPos blockpos = list.get(p_225576_2_.nextInt(list.size()));
-         BlockPos blockpos1 = blockpos.offset(direction);
-         if (AbstractTreeFeature.isAir(p_225576_1_, blockpos1) && AbstractTreeFeature.isAir(p_225576_1_, blockpos1.offset(Direction.SOUTH))) {
-            BlockState blockstate = Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.field_226872_b_, Direction.SOUTH);
-            this.func_227423_a_(p_225576_1_, blockpos1, blockstate, p_225576_5_, p_225576_6_);
-            TileEntity tileentity = p_225576_1_.getTileEntity(blockpos1);
-            if (tileentity instanceof BeehiveTileEntity) {
-               BeehiveTileEntity beehivetileentity = (BeehiveTileEntity)tileentity;
-               int j = 2 + p_225576_2_.nextInt(2);
+         if (!list.isEmpty()) {
+            BlockPos blockpos = list.get(p_225576_2_.nextInt(list.size()));
+            BlockPos blockpos1 = blockpos.offset(direction);
+            if (AbstractTreeFeature.isAir(p_225576_1_, blockpos1) && AbstractTreeFeature.isAir(p_225576_1_, blockpos1.offset(Direction.SOUTH))) {
+               BlockState blockstate = Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.field_226872_b_, Direction.SOUTH);
+               this.func_227423_a_(p_225576_1_, blockpos1, blockstate, p_225576_5_, p_225576_6_);
+               TileEntity tileentity = p_225576_1_.getTileEntity(blockpos1);
+               if (tileentity instanceof BeehiveTileEntity) {
+                  BeehiveTileEntity beehivetileentity = (BeehiveTileEntity)tileentity;
+                  int j = 2 + p_225576_2_.nextInt(2);
 
-               for(int k = 0; k < j; ++k) {
-                  BeeEntity beeentity = new BeeEntity(EntityType.field_226289_e_, p_225576_1_.getWorld());
-                  beehivetileentity.func_226962_a_(beeentity, false, p_225576_2_.nextInt(599));
+                  for(int k = 0; k < j; ++k) {
+                     BeeEntity beeentity = new BeeEntity(EntityType.BEE, p_225576_1_.getWorld());
+                     beehivetileentity.func_226962_a_(beeentity, false, p_225576_2_.nextInt(599));
+                  }
                }
-            }
 
+            }
          }
       }
    }
 
    public <T> T serialize(DynamicOps<T> p_218175_1_) {
-      return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(ImmutableMap.of(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.field_229390_w_.getKey(this.field_227422_a_).toString()), p_218175_1_.createString("probability"), p_218175_1_.createFloat(this.field_227415_b_))))).getValue();
+      return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(ImmutableMap.of(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.TREE_DECORATOR_TYPE.getKey(this.field_227422_a_).toString()), p_218175_1_.createString("probability"), p_218175_1_.createFloat(this.field_227415_b_))))).getValue();
    }
 }

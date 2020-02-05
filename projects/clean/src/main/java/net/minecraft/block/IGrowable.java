@@ -11,5 +11,5 @@ public interface IGrowable {
 
    boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state);
 
-   void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_);
+   void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_);
 }

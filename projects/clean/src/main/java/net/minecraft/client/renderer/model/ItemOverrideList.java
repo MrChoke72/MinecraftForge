@@ -24,15 +24,15 @@ public class ItemOverrideList {
       this.overrideBakedModels = Collections.emptyList();
    }
 
-   public ItemOverrideList(ModelBakery p_i50984_1_, BlockModel p_i50984_2_, Function<ResourceLocation, IUnbakedModel> p_i50984_3_, List<ItemOverride> p_i50984_4_) {
-      this.overrideBakedModels = p_i50984_4_.stream().map((p_217649_3_) -> {
-         IUnbakedModel iunbakedmodel = p_i50984_3_.apply(p_217649_3_.getLocation());
-         return Objects.equals(iunbakedmodel, p_i50984_2_) ? null : p_i50984_1_.func_217845_a(p_217649_3_.getLocation(), ModelRotation.X0_Y0);
+   public ItemOverrideList(ModelBakery modelBakeryIn, BlockModel blockModelIn, Function<ResourceLocation, IUnbakedModel> modelGetter, List<ItemOverride> itemOverridesIn) {
+      this.overrideBakedModels = itemOverridesIn.stream().map((p_217649_3_) -> {
+         IUnbakedModel iunbakedmodel = modelGetter.apply(p_217649_3_.getLocation());
+         return Objects.equals(iunbakedmodel, blockModelIn) ? null : modelBakeryIn.bake(p_217649_3_.getLocation(), ModelRotation.X0_Y0);
       }).collect(Collectors.toList());
       Collections.reverse(this.overrideBakedModels);
 
-      for(int i = p_i50984_4_.size() - 1; i >= 0; --i) {
-         this.overrides.add(p_i50984_4_.get(i));
+      for(int i = itemOverridesIn.size() - 1; i >= 0; --i) {
+         this.overrides.add(itemOverridesIn.get(i));
       }
 
    }

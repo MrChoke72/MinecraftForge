@@ -325,24 +325,24 @@ public class MineshaftPieces {
    }
 
    public static class Cross extends MineshaftPieces.Piece {
-      private final Direction field_74953_a;
+      private final Direction corridorDirection;
       private final boolean isMultipleFloors;
 
       public Cross(TemplateManager p_i50454_1_, CompoundNBT p_i50454_2_) {
          super(IStructurePieceType.MSCROSSING, p_i50454_2_);
          this.isMultipleFloors = p_i50454_2_.getBoolean("tf");
-         this.field_74953_a = Direction.byHorizontalIndex(p_i50454_2_.getInt("D"));
+         this.corridorDirection = Direction.byHorizontalIndex(p_i50454_2_.getInt("D"));
       }
 
       protected void readAdditional(CompoundNBT tagCompound) {
          super.readAdditional(tagCompound);
          tagCompound.putBoolean("tf", this.isMultipleFloors);
-         tagCompound.putInt("D", this.field_74953_a.getHorizontalIndex());
+         tagCompound.putInt("D", this.corridorDirection.getHorizontalIndex());
       }
 
       public Cross(int p_i50455_1_, MutableBoundingBox p_i50455_2_, @Nullable Direction p_i50455_3_, MineshaftStructure.Type p_i50455_4_) {
          super(IStructurePieceType.MSCROSSING, p_i50455_1_, p_i50455_4_);
-         this.field_74953_a = p_i50455_3_;
+         this.corridorDirection = p_i50455_3_;
          this.boundingBox = p_i50455_2_;
          this.isMultipleFloors = p_i50455_2_.getYSize() > 3;
       }
@@ -381,7 +381,7 @@ public class MineshaftPieces {
 
       public void buildComponent(StructurePiece componentIn, List<StructurePiece> listIn, Random rand) {
          int i = this.getComponentType();
-         switch(this.field_74953_a) {
+         switch(this.corridorDirection) {
          case NORTH:
          default:
             MineshaftPieces.generateAndAddPiece(componentIn, listIn, rand, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ - 1, Direction.NORTH, i);
@@ -468,14 +468,14 @@ public class MineshaftPieces {
    abstract static class Piece extends StructurePiece {
       protected MineshaftStructure.Type mineShaftType;
 
-      public Piece(IStructurePieceType p_i50452_1_, int p_i50452_2_, MineshaftStructure.Type p_i50452_3_) {
-         super(p_i50452_1_, p_i50452_2_);
-         this.mineShaftType = p_i50452_3_;
+      public Piece(IStructurePieceType structurePieceTypeIn, int componentTypeIn, MineshaftStructure.Type typeIn) {
+         super(structurePieceTypeIn, componentTypeIn);
+         this.mineShaftType = typeIn;
       }
 
-      public Piece(IStructurePieceType p_i50453_1_, CompoundNBT p_i50453_2_) {
-         super(p_i50453_1_, p_i50453_2_);
-         this.mineShaftType = MineshaftStructure.Type.byId(p_i50453_2_.getInt("MST"));
+      public Piece(IStructurePieceType structurePieceTypeIn, CompoundNBT nbt) {
+         super(structurePieceTypeIn, nbt);
+         this.mineShaftType = MineshaftStructure.Type.byId(nbt.getInt("MST"));
       }
 
       protected void readAdditional(CompoundNBT tagCompound) {
@@ -502,9 +502,9 @@ public class MineshaftPieces {
          }
       }
 
-      protected boolean isSupportingBox(IBlockReader p_189918_1_, MutableBoundingBox p_189918_2_, int p_189918_3_, int p_189918_4_, int p_189918_5_, int p_189918_6_) {
-         for(int i = p_189918_3_; i <= p_189918_4_; ++i) {
-            if (this.getBlockStateFromPos(p_189918_1_, i, p_189918_5_ + 1, p_189918_6_, p_189918_2_).isAir()) {
+      protected boolean isSupportingBox(IBlockReader blockReaderIn, MutableBoundingBox boundsIn, int xStartIn, int xEndIn, int p_189918_5_, int zIn) {
+         for(int i = xStartIn; i <= xEndIn; ++i) {
+            if (this.getBlockStateFromPos(blockReaderIn, i, p_189918_5_ + 1, zIn, boundsIn).isAir()) {
                return false;
             }
          }
@@ -516,15 +516,15 @@ public class MineshaftPieces {
    public static class Room extends MineshaftPieces.Piece {
       private final List<MutableBoundingBox> connectedRooms = Lists.newLinkedList();
 
-      public Room(int p_i47137_1_, Random p_i47137_2_, int p_i47137_3_, int p_i47137_4_, MineshaftStructure.Type p_i47137_5_) {
-         super(IStructurePieceType.MSROOM, p_i47137_1_, p_i47137_5_);
-         this.mineShaftType = p_i47137_5_;
+      public Room(int p_i47137_1_, Random p_i47137_2_, int p_i47137_3_, int p_i47137_4_, MineshaftStructure.Type typeIn) {
+         super(IStructurePieceType.MSROOM, p_i47137_1_, typeIn);
+         this.mineShaftType = typeIn;
          this.boundingBox = new MutableBoundingBox(p_i47137_3_, 50, p_i47137_4_, p_i47137_3_ + 7 + p_i47137_2_.nextInt(6), 54 + p_i47137_2_.nextInt(6), p_i47137_4_ + 7 + p_i47137_2_.nextInt(6));
       }
 
-      public Room(TemplateManager p_i50451_1_, CompoundNBT p_i50451_2_) {
-         super(IStructurePieceType.MSROOM, p_i50451_2_);
-         ListNBT listnbt = p_i50451_2_.getList("Entrances", 11);
+      public Room(TemplateManager templateManagerIn, CompoundNBT nbt) {
+         super(IStructurePieceType.MSROOM, nbt);
+         ListNBT listnbt = nbt.getList("Entrances", 11);
 
          for(int i = 0; i < listnbt.size(); ++i) {
             this.connectedRooms.add(new MutableBoundingBox(listnbt.getIntArray(i)));

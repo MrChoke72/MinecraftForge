@@ -127,7 +127,7 @@ public class LootPool {
       }
 
       public LootPool.Builder addEntry(LootEntry.Builder<?> entriesBuilder) {
-         this.entries.add(entriesBuilder.func_216081_b());
+         this.entries.add(entriesBuilder.build());
          return this;
       }
 

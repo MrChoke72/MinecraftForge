@@ -71,7 +71,7 @@ public class ParticleManager implements IFutureReloadListener {
    private final AtlasTexture atlas = new AtlasTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE);
 
    public ParticleManager(World worldIn, TextureManager rendererIn) {
-      rendererIn.func_229263_a_(this.atlas.func_229223_g_(), this.atlas);
+      rendererIn.loadTexture(this.atlas.getBasePath(), this.atlas);
       this.world = worldIn;
       this.renderer = rendererIn;
       this.registerFactories();
@@ -136,10 +136,10 @@ public class ParticleManager implements IFutureReloadListener {
       this.registerFactory(ParticleTypes.UNDERWATER, UnderwaterParticle.Factory::new);
       this.registerFactory(ParticleTypes.SPLASH, SplashParticle.Factory::new);
       this.registerFactory(ParticleTypes.WITCH, SpellParticle.WitchFactory::new);
-      this.registerFactory(ParticleTypes.field_229427_ag_, DripParticle.DrippingHoneyFactory::new);
-      this.registerFactory(ParticleTypes.field_229428_ah_, DripParticle.FallingHoneyFactory::new);
-      this.registerFactory(ParticleTypes.field_229429_ai_, DripParticle.LandingHoneyFactory::new);
-      this.registerFactory(ParticleTypes.field_229430_aj_, DripParticle.FallingNectarFactory::new);
+      this.registerFactory(ParticleTypes.DRIPPING_HONEY, DripParticle.DrippingHoneyFactory::new);
+      this.registerFactory(ParticleTypes.FALLING_HONEY, DripParticle.FallingHoneyFactory::new);
+      this.registerFactory(ParticleTypes.LANDING_HONEY, DripParticle.LandingHoneyFactory::new);
+      this.registerFactory(ParticleTypes.FALLING_NECTAR, DripParticle.FallingNectarFactory::new);
    }
 
    public <T extends IParticleData> void registerFactory(ParticleType<T> particleTypeIn, IParticleFactory<T> particleFactoryIn) {
@@ -164,7 +164,7 @@ public class ParticleManager implements IFutureReloadListener {
       return CompletableFuture.allOf(completablefuture).thenApplyAsync((p_228344_4_) -> {
          preparationsProfiler.startTick();
          preparationsProfiler.startSection("stitching");
-         AtlasTexture.SheetData atlastexture$sheetdata = this.atlas.func_229220_a_(resourceManager, map.values().stream().flatMap(Collection::stream), preparationsProfiler, 0);
+         AtlasTexture.SheetData atlastexture$sheetdata = this.atlas.stitch(resourceManager, map.values().stream().flatMap(Collection::stream), preparationsProfiler, 0);
          preparationsProfiler.endSection();
          preparationsProfiler.endTick();
          return atlastexture$sheetdata;
@@ -184,7 +184,7 @@ public class ParticleManager implements IFutureReloadListener {
       }, gameExecutor);
    }
 
-   public void func_215232_a() {
+   public void close() {
       this.atlas.clear();
    }
 
@@ -303,14 +303,14 @@ public class ParticleManager implements IFutureReloadListener {
       }
    }
 
-   public void func_228345_a_(MatrixStack p_228345_1_, IRenderTypeBuffer.Impl p_228345_2_, LightTexture p_228345_3_, ActiveRenderInfo p_228345_4_, float p_228345_5_) {
-      p_228345_3_.enableLightmap();
+   public void renderParticles(MatrixStack matrixStackIn, IRenderTypeBuffer.Impl bufferIn, LightTexture lightTextureIn, ActiveRenderInfo activeRenderInfoIn, float partialTicks) {
+      lightTextureIn.enableLightmap();
       RenderSystem.enableAlphaTest();
       RenderSystem.defaultAlphaFunc();
       RenderSystem.enableDepthTest();
       RenderSystem.enableFog();
       RenderSystem.pushMatrix();
-      RenderSystem.multMatrix(p_228345_1_.func_227866_c_().func_227870_a_());
+      RenderSystem.multMatrix(matrixStackIn.getLast().getPositionMatrix());
 
       for(IParticleRenderType iparticlerendertype : TYPES) {
          Iterable<Particle> iterable = this.byType.get(iparticlerendertype);
@@ -322,7 +322,7 @@ public class ParticleManager implements IFutureReloadListener {
 
             for(Particle particle : iterable) {
                try {
-                  particle.func_225606_a_(bufferbuilder, p_228345_4_, p_228345_5_);
+                  particle.renderParticle(bufferbuilder, activeRenderInfoIn, partialTicks);
                } catch (Throwable throwable) {
                   CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering Particle");
                   CrashReportCategory crashreportcategory = crashreport.makeCategory("Particle being rendered");
@@ -340,7 +340,7 @@ public class ParticleManager implements IFutureReloadListener {
       RenderSystem.depthMask(true);
       RenderSystem.disableBlend();
       RenderSystem.defaultAlphaFunc();
-      p_228345_3_.disableLightmap();
+      lightTextureIn.disableLightmap();
       RenderSystem.disableFog();
    }
 
@@ -425,21 +425,21 @@ public class ParticleManager implements IFutureReloadListener {
 
    @OnlyIn(Dist.CLIENT)
    class AnimatedSpriteImpl implements IAnimatedSprite {
-      private List<TextureAtlasSprite> field_217594_b;
+      private List<TextureAtlasSprite> sprites;
 
       private AnimatedSpriteImpl() {
       }
 
       public TextureAtlasSprite get(int particleAge, int particleMaxAge) {
-         return this.field_217594_b.get(particleAge * (this.field_217594_b.size() - 1) / particleMaxAge);
+         return this.sprites.get(particleAge * (this.sprites.size() - 1) / particleMaxAge);
       }
 
       public TextureAtlasSprite get(Random p_217590_1_) {
-         return this.field_217594_b.get(p_217590_1_.nextInt(this.field_217594_b.size()));
+         return this.sprites.get(p_217590_1_.nextInt(this.sprites.size()));
       }
 
       public void setSprites(List<TextureAtlasSprite> p_217592_1_) {
-         this.field_217594_b = ImmutableList.copyOf(p_217592_1_);
+         this.sprites = ImmutableList.copyOf(p_217592_1_);
       }
    }
 

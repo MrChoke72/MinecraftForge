@@ -49,7 +49,7 @@ public class FarmlandBlock extends Block {
       return !this.getDefaultState().isValidPosition(context.getWorld(), context.getPos()) ? Blocks.DIRT.getDefaultState() : super.getStateForPlacement(context);
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 
@@ -57,19 +57,19 @@ public class FarmlandBlock extends Block {
       return SHAPE;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!p_225534_1_.isValidPosition(p_225534_2_, p_225534_3_)) {
-         turnToDirt(p_225534_1_, p_225534_2_, p_225534_3_);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!state.isValidPosition(worldIn, pos)) {
+         turnToDirt(state, worldIn, pos);
       } else {
-         int i = p_225534_1_.get(MOISTURE);
-         if (!hasWater(p_225534_2_, p_225534_3_) && !p_225534_2_.isRainingAt(p_225534_3_.up())) {
+         int i = state.get(MOISTURE);
+         if (!hasWater(worldIn, pos) && !worldIn.isRainingAt(pos.up())) {
             if (i > 0) {
-               p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(MOISTURE, Integer.valueOf(i - 1)), 2);
-            } else if (!hasCrops(p_225534_2_, p_225534_3_)) {
-               turnToDirt(p_225534_1_, p_225534_2_, p_225534_3_);
+               worldIn.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(i - 1)), 2);
+            } else if (!hasCrops(worldIn, pos)) {
+               turnToDirt(state, worldIn, pos);
             }
          } else if (i < 7) {
-            p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(MOISTURE, Integer.valueOf(7)), 2);
+            worldIn.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(7)), 2);
          }
 
       }
@@ -111,7 +111,7 @@ public class FarmlandBlock extends Block {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_229870_f_(BlockState p_229870_1_, IBlockReader p_229870_2_, BlockPos p_229870_3_) {
+   public boolean isViewBlocking(BlockState p_229870_1_, IBlockReader p_229870_2_, BlockPos p_229870_3_) {
       return true;
    }
 }

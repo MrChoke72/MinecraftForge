@@ -284,36 +284,36 @@ public class PlayerInteractionManager {
       }
    }
 
-   public ActionResultType func_219441_a(PlayerEntity p_219441_1_, World p_219441_2_, ItemStack p_219441_3_, Hand p_219441_4_, BlockRayTraceResult p_219441_5_) {
-      BlockPos blockpos = p_219441_5_.getPos();
-      BlockState blockstate = p_219441_2_.getBlockState(blockpos);
+   public ActionResultType func_219441_a(PlayerEntity playerIn, World worldIn, ItemStack stackIn, Hand handIn, BlockRayTraceResult blockRaytraceResultIn) {
+      BlockPos blockpos = blockRaytraceResultIn.getPos();
+      BlockState blockstate = worldIn.getBlockState(blockpos);
       if (this.gameType == GameType.SPECTATOR) {
-         INamedContainerProvider inamedcontainerprovider = blockstate.getContainer(p_219441_2_, blockpos);
+         INamedContainerProvider inamedcontainerprovider = blockstate.getContainer(worldIn, blockpos);
          if (inamedcontainerprovider != null) {
-            p_219441_1_.openContainer(inamedcontainerprovider);
+            playerIn.openContainer(inamedcontainerprovider);
             return ActionResultType.SUCCESS;
          } else {
             return ActionResultType.PASS;
          }
       } else {
-         boolean flag = !p_219441_1_.getHeldItemMainhand().isEmpty() || !p_219441_1_.getHeldItemOffhand().isEmpty();
-         boolean flag1 = p_219441_1_.func_226563_dT_() && flag;
+         boolean flag = !playerIn.getHeldItemMainhand().isEmpty() || !playerIn.getHeldItemOffhand().isEmpty();
+         boolean flag1 = playerIn.func_226563_dT_() && flag;
          if (!flag1) {
-            ActionResultType actionresulttype = blockstate.func_227031_a_(p_219441_2_, p_219441_1_, p_219441_4_, p_219441_5_);
-            if (actionresulttype.func_226246_a_()) {
+            ActionResultType actionresulttype = blockstate.onBlockActivated(worldIn, playerIn, handIn, blockRaytraceResultIn);
+            if (actionresulttype.isSuccessOrConsume()) {
                return actionresulttype;
             }
          }
 
-         if (!p_219441_3_.isEmpty() && !p_219441_1_.getCooldownTracker().hasCooldown(p_219441_3_.getItem())) {
-            ItemUseContext itemusecontext = new ItemUseContext(p_219441_1_, p_219441_4_, p_219441_5_);
+         if (!stackIn.isEmpty() && !playerIn.getCooldownTracker().hasCooldown(stackIn.getItem())) {
+            ItemUseContext itemusecontext = new ItemUseContext(playerIn, handIn, blockRaytraceResultIn);
             if (this.isCreative()) {
-               int i = p_219441_3_.getCount();
-               ActionResultType actionresulttype1 = p_219441_3_.onItemUse(itemusecontext);
-               p_219441_3_.setCount(i);
+               int i = stackIn.getCount();
+               ActionResultType actionresulttype1 = stackIn.onItemUse(itemusecontext);
+               stackIn.setCount(i);
                return actionresulttype1;
             } else {
-               return p_219441_3_.onItemUse(itemusecontext);
+               return stackIn.onItemUse(itemusecontext);
             }
          } else {
             return ActionResultType.PASS;

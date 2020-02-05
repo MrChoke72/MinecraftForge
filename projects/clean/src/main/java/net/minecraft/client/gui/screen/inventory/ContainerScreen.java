@@ -141,9 +141,9 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
       RenderSystem.enableDepthTest();
    }
 
-   protected void renderHoveredToolTip(int p_191948_1_, int p_191948_2_) {
+   protected void renderHoveredToolTip(int mouseX, int mouseY) {
       if (this.minecraft.player.inventory.getItemStack().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.getHasStack()) {
-         this.renderTooltip(this.hoveredSlot.getStack(), p_191948_1_, p_191948_2_);
+         this.renderTooltip(this.hoveredSlot.getStack(), mouseX, mouseY);
       }
 
    }
@@ -199,8 +199,8 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
       if (itemstack.isEmpty() && slotIn.isEnabled()) {
          Pair<ResourceLocation, ResourceLocation> pair = slotIn.func_225517_c_();
          if (pair != null) {
-            TextureAtlasSprite textureatlassprite = this.minecraft.func_228015_a_(pair.getFirst()).apply(pair.getSecond());
-            this.minecraft.getTextureManager().bindTexture(textureatlassprite.func_229241_m_().func_229223_g_());
+            TextureAtlasSprite textureatlassprite = this.minecraft.getTextureGetter(pair.getFirst()).apply(pair.getSecond());
+            this.minecraft.getTextureManager().bindTexture(textureatlassprite.getAtlasTexture().getBasePath());
             blit(i, j, this.getBlitOffset(), 16, 16, textureatlassprite);
             flag1 = true;
          }
@@ -245,10 +245,10 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
       }
    }
 
-   private Slot getSelectedSlot(double p_195360_1_, double p_195360_3_) {
+   private Slot getSelectedSlot(double mouseX, double mouseY) {
       for(int i = 0; i < this.container.inventorySlots.size(); ++i) {
          Slot slot = this.container.inventorySlots.get(i);
-         if (this.isSlotSelected(slot, p_195360_1_, p_195360_3_) && slot.isEnabled()) {
+         if (this.isSlotSelected(slot, mouseX, mouseY) && slot.isEnabled()) {
             return slot;
          }
       }
@@ -297,7 +297,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
                      if (this.minecraft.gameSettings.keyBindPickBlock.matchesMouseKey(p_mouseClicked_5_)) {
                         this.handleMouseClick(slot, l, p_mouseClicked_5_, ClickType.CLONE);
                      } else {
-                        boolean flag2 = l != -999 && (InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 340) || InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 344));
+                        boolean flag2 = l != -999 && (InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 340) || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 344));
                         ClickType clicktype = ClickType.PICKUP;
                         if (flag2) {
                            this.shiftClickedSlot = slot != null && slot.getHasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
@@ -333,8 +333,8 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
       }
    }
 
-   protected boolean hasClickedOutside(double p_195361_1_, double p_195361_3_, int p_195361_5_, int p_195361_6_, int p_195361_7_) {
-      return p_195361_1_ < (double)p_195361_5_ || p_195361_3_ < (double)p_195361_6_ || p_195361_1_ >= (double)(p_195361_5_ + this.xSize) || p_195361_3_ >= (double)(p_195361_6_ + this.ySize);
+   protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
+      return mouseX < (double)guiLeftIn || mouseY < (double)guiTopIn || mouseX >= (double)(guiLeftIn + this.xSize) || mouseY >= (double)(guiTopIn + this.ySize);
    }
 
    public boolean mouseDragged(double p_mouseDragged_1_, double p_mouseDragged_3_, int p_mouseDragged_5_, double p_mouseDragged_6_, double p_mouseDragged_8_) {
@@ -455,7 +455,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
             if (this.minecraft.gameSettings.keyBindPickBlock.matchesMouseKey(p_mouseReleased_5_)) {
                this.handleMouseClick(slot, k, p_mouseReleased_5_, ClickType.CLONE);
             } else {
-               boolean flag1 = k != -999 && (InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 340) || InputMappings.isKeyDown(Minecraft.getInstance().func_228018_at_().getHandle(), 344));
+               boolean flag1 = k != -999 && (InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 340) || InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), 344));
                if (flag1) {
                   this.shiftClickedSlot = slot != null && slot.getHasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
                }
@@ -473,16 +473,16 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
       return true;
    }
 
-   private boolean isSlotSelected(Slot p_195362_1_, double p_195362_2_, double p_195362_4_) {
-      return this.isPointInRegion(p_195362_1_.xPos, p_195362_1_.yPos, 16, 16, p_195362_2_, p_195362_4_);
+   private boolean isSlotSelected(Slot slotIn, double mouseX, double mouseY) {
+      return this.isPointInRegion(slotIn.xPos, slotIn.yPos, 16, 16, mouseX, mouseY);
    }
 
-   protected boolean isPointInRegion(int p_195359_1_, int p_195359_2_, int p_195359_3_, int p_195359_4_, double p_195359_5_, double p_195359_7_) {
+   protected boolean isPointInRegion(int x, int y, int width, int height, double mouseX, double mouseY) {
       int i = this.guiLeft;
       int j = this.guiTop;
-      p_195359_5_ = p_195359_5_ - (double)i;
-      p_195359_7_ = p_195359_7_ - (double)j;
-      return p_195359_5_ >= (double)(p_195359_1_ - 1) && p_195359_5_ < (double)(p_195359_1_ + p_195359_3_ + 1) && p_195359_7_ >= (double)(p_195359_2_ - 1) && p_195359_7_ < (double)(p_195359_2_ + p_195359_4_ + 1);
+      mouseX = mouseX - (double)i;
+      mouseY = mouseY - (double)j;
+      return mouseX >= (double)(x - 1) && mouseX < (double)(x + width + 1) && mouseY >= (double)(y - 1) && mouseY < (double)(y + height + 1);
    }
 
    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
@@ -518,10 +518,10 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
       }
    }
 
-   protected boolean func_195363_d(int p_195363_1_, int p_195363_2_) {
+   protected boolean func_195363_d(int keyCode, int scanCode) {
       if (this.minecraft.player.inventory.getItemStack().isEmpty() && this.hoveredSlot != null) {
          for(int i = 0; i < 9; ++i) {
-            if (this.minecraft.gameSettings.keyBindsHotbar[i].matchesKey(p_195363_1_, p_195363_2_)) {
+            if (this.minecraft.gameSettings.keyBindsHotbar[i].matchesKey(keyCode, scanCode)) {
                this.handleMouseClick(this.hoveredSlot, this.hoveredSlot.slotNumber, i, ClickType.SWAP);
                return true;
             }

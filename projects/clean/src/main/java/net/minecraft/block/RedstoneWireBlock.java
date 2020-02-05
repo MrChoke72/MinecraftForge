@@ -122,9 +122,9 @@ public class RedstoneWireBlock extends Block {
       BlockPos blockpos1 = pos.up();
       BlockState blockstate1 = worldIn.getBlockState(blockpos1);
       if (!blockstate1.isNormalCube(worldIn, blockpos1)) {
-         boolean flag = blockstate.func_224755_d(worldIn, blockpos, Direction.UP) || blockstate.getBlock() == Blocks.HOPPER;
+         boolean flag = blockstate.isSolidSide(worldIn, blockpos, Direction.UP) || blockstate.getBlock() == Blocks.HOPPER;
          if (flag && canConnectUpwardsTo(worldIn.getBlockState(blockpos.up()))) {
-            if (blockstate.func_224756_o(worldIn, blockpos)) {
+            if (blockstate.isCollisionShapeOpaque(worldIn, blockpos)) {
                return RedstoneSide.UP;
             }
 
@@ -138,7 +138,7 @@ public class RedstoneWireBlock extends Block {
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
       BlockPos blockpos = pos.down();
       BlockState blockstate = worldIn.getBlockState(blockpos);
-      return blockstate.func_224755_d(worldIn, blockpos, Direction.UP) || blockstate.getBlock() == Blocks.HOPPER;
+      return blockstate.isSolidSide(worldIn, blockpos, Direction.UP) || blockstate.getBlock() == Blocks.HOPPER;
    }
 
    private BlockState updateSurroundingRedstone(World worldIn, BlockPos pos, BlockState state) {

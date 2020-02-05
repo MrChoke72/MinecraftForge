@@ -18,32 +18,32 @@ public class MerchantContainer extends Container {
    private final IMerchant merchant;
    private final MerchantInventory merchantInventory;
    @OnlyIn(Dist.CLIENT)
-   private int field_217054_e;
+   private int merchantLevel;
    @OnlyIn(Dist.CLIENT)
    private boolean field_217055_f;
    @OnlyIn(Dist.CLIENT)
    private boolean field_223433_g;
 
-   public MerchantContainer(int p_i50068_1_, PlayerInventory p_i50068_2_) {
-      this(p_i50068_1_, p_i50068_2_, new NPCMerchant(p_i50068_2_.player));
+   public MerchantContainer(int id, PlayerInventory playerInventoryIn) {
+      this(id, playerInventoryIn, new NPCMerchant(playerInventoryIn.player));
    }
 
-   public MerchantContainer(int p_i50069_1_, PlayerInventory p_i50069_2_, IMerchant p_i50069_3_) {
-      super(ContainerType.MERCHANT, p_i50069_1_);
-      this.merchant = p_i50069_3_;
-      this.merchantInventory = new MerchantInventory(p_i50069_3_);
+   public MerchantContainer(int id, PlayerInventory playerInventoryIn, IMerchant merchantIn) {
+      super(ContainerType.MERCHANT, id);
+      this.merchant = merchantIn;
+      this.merchantInventory = new MerchantInventory(merchantIn);
       this.addSlot(new Slot(this.merchantInventory, 0, 136, 37));
       this.addSlot(new Slot(this.merchantInventory, 1, 162, 37));
-      this.addSlot(new MerchantResultSlot(p_i50069_2_.player, p_i50069_3_, this.merchantInventory, 2, 220, 37));
+      this.addSlot(new MerchantResultSlot(playerInventoryIn.player, merchantIn, this.merchantInventory, 2, 220, 37));
 
       for(int i = 0; i < 3; ++i) {
          for(int j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(p_i50069_2_, j + i * 9 + 9, 108 + j * 18, 84 + i * 18));
+            this.addSlot(new Slot(playerInventoryIn, j + i * 9 + 9, 108 + j * 18, 84 + i * 18));
          }
       }
 
       for(int k = 0; k < 9; ++k) {
-         this.addSlot(new Slot(p_i50069_2_, k, 108 + k * 18, 142));
+         this.addSlot(new Slot(playerInventoryIn, k, 108 + k * 18, 142));
       }
 
    }
@@ -67,28 +67,28 @@ public class MerchantContainer extends Container {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_217048_e() {
+   public int getXp() {
       return this.merchant.getXp();
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_217047_f() {
-      return this.merchantInventory.func_214024_h();
+   public int getPendingExp() {
+      return this.merchantInventory.getClientSideExp();
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_217052_e(int p_217052_1_) {
-      this.merchant.func_213702_q(p_217052_1_);
+   public void setXp(int xp) {
+      this.merchant.setXP(xp);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_217049_g() {
-      return this.field_217054_e;
+   public int getMerchantLevel() {
+      return this.merchantLevel;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_217043_f(int p_217043_1_) {
-      this.field_217054_e = p_217043_1_;
+   public void setMerchantLevel(int level) {
+      this.merchantLevel = level;
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -117,7 +117,7 @@ public class MerchantContainer extends Container {
             }
 
             slot.onSlotChange(itemstack1, itemstack);
-            this.func_223132_j();
+            this.playMerchantYesSound();
          } else if (index != 0 && index != 1) {
             if (index >= 3 && index < 30) {
                if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
@@ -146,10 +146,10 @@ public class MerchantContainer extends Container {
       return itemstack;
    }
 
-   private void func_223132_j() {
+   private void playMerchantYesSound() {
       if (!this.merchant.getWorld().isRemote) {
          Entity entity = (Entity)this.merchant;
-         this.merchant.getWorld().playSound(entity.getPosX(), entity.getPosY(), entity.getPosZ(), this.merchant.func_213714_ea(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
+         this.merchant.getWorld().playSound(entity.getPosX(), entity.getPosY(), entity.getPosZ(), this.merchant.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
       }
 
    }
@@ -177,7 +177,7 @@ public class MerchantContainer extends Container {
    }
 
    public void func_217046_g(int p_217046_1_) {
-      if (this.func_217051_h().size() > p_217046_1_) {
+      if (this.getOffers().size() > p_217046_1_) {
          ItemStack itemstack = this.merchantInventory.getStackInSlot(0);
          if (!itemstack.isEmpty()) {
             if (!this.mergeItemStack(itemstack, 3, 39, true)) {
@@ -197,9 +197,9 @@ public class MerchantContainer extends Container {
          }
 
          if (this.merchantInventory.getStackInSlot(0).isEmpty() && this.merchantInventory.getStackInSlot(1).isEmpty()) {
-            ItemStack itemstack2 = this.func_217051_h().get(p_217046_1_).func_222205_b();
+            ItemStack itemstack2 = this.getOffers().get(p_217046_1_).func_222205_b();
             this.func_217053_c(0, itemstack2);
-            ItemStack itemstack3 = this.func_217051_h().get(p_217046_1_).func_222202_c();
+            ItemStack itemstack3 = this.getOffers().get(p_217046_1_).getBuyingStackSecond();
             this.func_217053_c(1, itemstack3);
          }
 
@@ -210,7 +210,7 @@ public class MerchantContainer extends Container {
       if (!p_217053_2_.isEmpty()) {
          for(int i = 3; i < 39; ++i) {
             ItemStack itemstack = this.inventorySlots.get(i).getStack();
-            if (!itemstack.isEmpty() && this.func_217050_b(p_217053_2_, itemstack)) {
+            if (!itemstack.isEmpty() && this.areItemStacksEqual(p_217053_2_, itemstack)) {
                ItemStack itemstack1 = this.merchantInventory.getStackInSlot(p_217053_1_);
                int j = itemstack1.isEmpty() ? 0 : itemstack1.getCount();
                int k = Math.min(p_217053_2_.getMaxStackSize() - j, itemstack.getCount());
@@ -228,16 +228,16 @@ public class MerchantContainer extends Container {
 
    }
 
-   private boolean func_217050_b(ItemStack p_217050_1_, ItemStack p_217050_2_) {
-      return p_217050_1_.getItem() == p_217050_2_.getItem() && ItemStack.areItemStackTagsEqual(p_217050_1_, p_217050_2_);
+   private boolean areItemStacksEqual(ItemStack stack1, ItemStack stack2) {
+      return stack1.getItem() == stack2.getItem() && ItemStack.areItemStackTagsEqual(stack1, stack2);
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_217044_a(MerchantOffers p_217044_1_) {
-      this.merchant.func_213703_a(p_217044_1_);
+   public void setClientSideOffers(MerchantOffers offers) {
+      this.merchant.setClientSideOffers(offers);
    }
 
-   public MerchantOffers func_217051_h() {
+   public MerchantOffers getOffers() {
       return this.merchant.getOffers();
    }
 

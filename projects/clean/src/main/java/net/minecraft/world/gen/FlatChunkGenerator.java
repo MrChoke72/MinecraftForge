@@ -52,7 +52,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatGenerationSettings> {
                   Structure<IFeatureConfig> structure = (Structure)configuredfeature2.feature;
                   IFeatureConfig ifeatureconfig = biome.getStructureConfig(structure);
                   IFeatureConfig ifeatureconfig1 = ifeatureconfig != null ? ifeatureconfig : FlatGenerationSettings.FEATURE_CONFIGS.get(configuredfeature1);
-                  flatchunkgenerator$wrapperbiome.func_226711_a_(structure.func_225566_b_(ifeatureconfig1));
+                  flatchunkgenerator$wrapperbiome.addStructure(structure.withConfiguration(ifeatureconfig1));
                }
             }
          }
@@ -77,9 +77,9 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatGenerationSettings> {
 
       for(int i = 0; i < ablockstate.length; ++i) {
          BlockState blockstate = ablockstate[i];
-         if (blockstate != null && !Heightmap.Type.MOTION_BLOCKING.func_222684_d().test(blockstate)) {
+         if (blockstate != null && !Heightmap.Type.MOTION_BLOCKING.getHeightLimitPredicate().test(blockstate)) {
             this.settings.func_214990_a(i);
-            flatchunkgenerator$wrapperbiome.addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.func_225566_b_(new FillLayerConfig(i, blockstate)).func_227228_a_(Placement.NOPE.func_227446_a_(IPlacementConfig.NO_PLACEMENT_CONFIG)));
+            flatchunkgenerator$wrapperbiome.addFeature(GenerationStage.Decoration.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.withConfiguration(new FillLayerConfig(i, blockstate)).func_227228_a_(Placement.NOPE.func_227446_a_(IPlacementConfig.NO_PLACEMENT_CONFIG)));
          }
       }
 
@@ -101,8 +101,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatGenerationSettings> {
    public void makeBase(IWorld worldIn, IChunk chunkIn) {
       BlockState[] ablockstate = this.settings.getStates();
       BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-      Heightmap heightmap = chunkIn.func_217303_b(Heightmap.Type.OCEAN_FLOOR_WG);
-      Heightmap heightmap1 = chunkIn.func_217303_b(Heightmap.Type.WORLD_SURFACE_WG);
+      Heightmap heightmap = chunkIn.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
+      Heightmap heightmap1 = chunkIn.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
 
       for(int i = 0; i < ablockstate.length; ++i) {
          BlockState blockstate = ablockstate[i];
@@ -119,12 +119,12 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatGenerationSettings> {
 
    }
 
-   public int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type p_222529_3_) {
+   public int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type heightmapType) {
       BlockState[] ablockstate = this.settings.getStates();
 
       for(int i = ablockstate.length - 1; i >= 0; --i) {
          BlockState blockstate = ablockstate[i];
-         if (blockstate != null && p_222529_3_.func_222684_d().test(blockstate)) {
+         if (blockstate != null && heightmapType.getHeightLimitPredicate().test(blockstate)) {
             return i + 1;
          }
       }
@@ -152,8 +152,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatGenerationSettings> {
    }
 
    class WrapperBiome extends Biome {
-      protected WrapperBiome(ConfiguredSurfaceBuilder<?> p_i51092_2_, Biome.RainType p_i51092_3_, Biome.Category p_i51092_4_, float p_i51092_5_, float p_i51092_6_, float p_i51092_7_, float p_i51092_8_, int p_i51092_9_, int p_i51092_10_, @Nullable String p_i51092_11_) {
-         super((new Biome.Builder()).surfaceBuilder(p_i51092_2_).precipitation(p_i51092_3_).category(p_i51092_4_).depth(p_i51092_5_).scale(p_i51092_6_).temperature(p_i51092_7_).downfall(p_i51092_8_).waterColor(p_i51092_9_).waterFogColor(p_i51092_10_).parent(p_i51092_11_));
+      protected WrapperBiome(ConfiguredSurfaceBuilder<?> p_i51092_2_, Biome.RainType rainType, Biome.Category biomeCategory, float depthIn, float p_i51092_6_, float temperatureIn, float downfallIn, int waterColorIn, int waterFogColorIn, @Nullable String p_i51092_11_) {
+         super((new Biome.Builder()).surfaceBuilder(p_i51092_2_).precipitation(rainType).category(biomeCategory).depth(depthIn).scale(p_i51092_6_).temperature(temperatureIn).downfall(downfallIn).waterColor(waterColorIn).waterFogColor(waterFogColorIn).parent(p_i51092_11_));
       }
    }
 }

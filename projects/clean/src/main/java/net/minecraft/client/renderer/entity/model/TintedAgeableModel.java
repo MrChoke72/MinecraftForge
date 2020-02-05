@@ -18,7 +18,7 @@ public abstract class TintedAgeableModel<E extends Entity> extends AgeableModel<
       this.field_228252_f_ = p_228253_3_;
    }
 
-   public void func_225598_a_(MatrixStack p_225598_1_, IVertexBuilder p_225598_2_, int p_225598_3_, int p_225598_4_, float p_225598_5_, float p_225598_6_, float p_225598_7_, float p_225598_8_) {
-      super.func_225598_a_(p_225598_1_, p_225598_2_, p_225598_3_, p_225598_4_, this.field_228250_a_ * p_225598_5_, this.field_228251_b_ * p_225598_6_, this.field_228252_f_ * p_225598_7_, p_225598_8_);
+   public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+      super.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, this.field_228250_a_ * red, this.field_228251_b_ * green, this.field_228252_f_ * blue, alpha);
    }
 }

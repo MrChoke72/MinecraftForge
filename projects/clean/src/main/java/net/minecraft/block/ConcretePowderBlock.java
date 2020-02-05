@@ -17,7 +17,7 @@ public class ConcretePowderBlock extends FallingBlock {
    }
 
    public void onEndFalling(World worldIn, BlockPos pos, BlockState fallingState, BlockState hitState) {
-      if (causesSolidify(hitState)) {
+      if (func_230137_b_(worldIn, pos, hitState)) {
          worldIn.setBlockState(pos, this.solidifiedState, 3);
       }
 
@@ -26,7 +26,12 @@ public class ConcretePowderBlock extends FallingBlock {
    public BlockState getStateForPlacement(BlockItemUseContext context) {
       IBlockReader iblockreader = context.getWorld();
       BlockPos blockpos = context.getPos();
-      return !causesSolidify(iblockreader.getBlockState(blockpos)) && !isTouchingLiquid(iblockreader, blockpos) ? super.getStateForPlacement(context) : this.solidifiedState;
+      BlockState blockstate = iblockreader.getBlockState(blockpos);
+      return func_230137_b_(iblockreader, blockpos, blockstate) ? this.solidifiedState : super.getStateForPlacement(context);
+   }
+
+   private static boolean func_230137_b_(IBlockReader p_230137_0_, BlockPos p_230137_1_, BlockState p_230137_2_) {
+      return causesSolidify(p_230137_2_) || isTouchingLiquid(p_230137_0_, p_230137_1_);
    }
 
    private static boolean isTouchingLiquid(IBlockReader p_196441_0_, BlockPos p_196441_1_) {
@@ -38,7 +43,7 @@ public class ConcretePowderBlock extends FallingBlock {
          if (direction != Direction.DOWN || causesSolidify(blockstate)) {
             blockpos$mutable.setPos(p_196441_1_).move(direction);
             blockstate = p_196441_0_.getBlockState(blockpos$mutable);
-            if (causesSolidify(blockstate) && !blockstate.func_224755_d(p_196441_0_, p_196441_1_, direction.getOpposite())) {
+            if (causesSolidify(blockstate) && !blockstate.isSolidSide(p_196441_0_, p_196441_1_, direction.getOpposite())) {
                flag = true;
                break;
             }

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+
+import com.mrchoke.entity.ai.goal.OpenTrapDoorGoal;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.CreatureAttribute;
@@ -22,7 +24,15 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.BreakBlockGoal;
+import net.minecraft.entity.ai.goal.BreakDoorGoal;
+import net.minecraft.entity.ai.goal.HurtByTargetGoal;
+import net.minecraft.entity.ai.goal.LookAtGoal;
+import net.minecraft.entity.ai.goal.LookRandomlyGoal;
+import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
+import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
+import net.minecraft.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.passive.ChickenEntity;
@@ -259,9 +269,7 @@ public class ZombieEntity extends MonsterEntity {
       this.world.playEvent((PlayerEntity)null, 1040, new BlockPos(this), 0);
    }
 
-   //AH CHANGE REFACTOR
    protected void convert(EntityType<? extends ZombieEntity> p_213698_1_) {
-   //protected void func_213698_b(EntityType<? extends ZombieEntity> p_213698_1_) {
       if (!this.removed) {
          ZombieEntity zombieentity = p_213698_1_.create(this.world);
          zombieentity.copyLocationAndAnglesFrom(this);
@@ -343,7 +351,7 @@ public class ZombieEntity extends MonsterEntity {
                int j1 = j + MathHelper.nextInt(this.rand, 7, 40) * MathHelper.nextInt(this.rand, -1, 1);
                int k1 = k + MathHelper.nextInt(this.rand, 7, 40) * MathHelper.nextInt(this.rand, -1, 1);
                BlockPos blockpos = new BlockPos(i1, j1 - 1, k1);
-               if (this.world.getBlockState(blockpos).isUpSideFilled(this.world, blockpos, zombieentity) && this.world.getLight(new BlockPos(i1, j1, k1)) < 10) {
+               if (this.world.getBlockState(blockpos).isTopSolid(this.world, blockpos, zombieentity) && this.world.getLight(new BlockPos(i1, j1, k1)) < 10) {
                   zombieentity.setPosition((double)i1, (double)j1, (double)k1);
                   if (!this.world.isPlayerWithin((double)i1, (double)j1, (double)k1, 7.0D) && this.world.func_226668_i_(zombieentity) && this.world.isEntityNoCollide(zombieentity) && !this.world.containsAnyLiquid(zombieentity.getBoundingBox())) {
                      this.world.addEntity(zombieentity);
@@ -450,8 +458,8 @@ public class ZombieEntity extends MonsterEntity {
          villagerentity.remove();
          zombievillagerentity.onInitialSpawn(this.world, this.world.getDifficultyForLocation(new BlockPos(zombievillagerentity)), SpawnReason.CONVERSION, new ZombieEntity.GroupData(false), (CompoundNBT)null);
          zombievillagerentity.func_213792_a(villagerentity.getVillagerData());
-         zombievillagerentity.func_223727_a(villagerentity.func_223722_es().func_220914_a(NBTDynamicOps.INSTANCE).getValue());
-         zombievillagerentity.func_213790_g(villagerentity.getOffers().func_222199_a());
+         zombievillagerentity.func_223727_a(villagerentity.func_223722_es().serialize(NBTDynamicOps.INSTANCE).getValue());
+         zombievillagerentity.func_213790_g(villagerentity.getOffers().write());
          zombievillagerentity.func_213789_a(villagerentity.getXp());
          zombievillagerentity.setChild(villagerentity.isChild());
          zombievillagerentity.setNoAI(villagerentity.isAIDisabled());
@@ -560,6 +568,18 @@ public class ZombieEntity extends MonsterEntity {
 
    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
       super.dropSpecialItems(source, looting, recentlyHitIn);
+      Entity entity = source.getTrueSource();
+      if (entity instanceof CreeperEntity) {
+         CreeperEntity creeperentity = (CreeperEntity)entity;
+         if (creeperentity.ableToCauseSkullDrop()) {
+            creeperentity.incrementDroppedSkulls();
+            ItemStack itemstack = this.getSkullDrop();
+            if (!itemstack.isEmpty()) {
+               this.entityDropItem(itemstack);
+            }
+         }
+      }
+
    }
 
    protected ItemStack getSkullDrop() {
@@ -567,16 +587,16 @@ public class ZombieEntity extends MonsterEntity {
    }
 
    class AttackTurtleEggGoal extends BreakBlockGoal {
-      AttackTurtleEggGoal(CreatureEntity p_i50465_2_, double p_i50465_3_, int p_i50465_5_) {
-         super(Blocks.TURTLE_EGG, p_i50465_2_, p_i50465_3_, p_i50465_5_);
+      AttackTurtleEggGoal(CreatureEntity creatureIn, double speed, int yMax) {
+         super(Blocks.TURTLE_EGG, creatureIn, speed, yMax);
       }
 
-      public void playBreakingSound(IWorld p_203114_1_, BlockPos p_203114_2_) {
-         p_203114_1_.playSound((PlayerEntity)null, p_203114_2_, SoundEvents.ENTITY_ZOMBIE_DESTROY_EGG, SoundCategory.HOSTILE, 0.5F, 0.9F + ZombieEntity.this.rand.nextFloat() * 0.2F);
+      public void playBreakingSound(IWorld worldIn, BlockPos pos) {
+         worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ENTITY_ZOMBIE_DESTROY_EGG, SoundCategory.HOSTILE, 0.5F, 0.9F + ZombieEntity.this.rand.nextFloat() * 0.2F);
       }
 
-      public void playBrokenSound(World p_203116_1_, BlockPos p_203116_2_) {
-         p_203116_1_.playSound((PlayerEntity)null, p_203116_2_, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7F, 0.9F + p_203116_1_.rand.nextFloat() * 0.2F);
+      public void playBrokenSound(World worldIn, BlockPos pos) {
+         worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7F, 0.9F + worldIn.rand.nextFloat() * 0.2F);
       }
 
       public double getTargetDistanceSq() {
@@ -587,8 +607,8 @@ public class ZombieEntity extends MonsterEntity {
    public class GroupData implements ILivingEntityData {
       public final boolean isChild;
 
-      private GroupData(boolean p_i47328_2_) {
-         this.isChild = p_i47328_2_;
+      private GroupData(boolean isChildIn) {
+         this.isChild = isChildIn;
       }
    }
 }

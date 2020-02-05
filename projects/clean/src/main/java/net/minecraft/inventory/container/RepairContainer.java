@@ -271,7 +271,7 @@ public class RepairContainer extends Container {
             }
 
             if (k != i || k == 0) {
-               k2 = func_216977_d(k2);
+               k2 = getNewRepairCost(k2);
             }
 
             itemstack1.setRepairCost(k2);
@@ -283,8 +283,8 @@ public class RepairContainer extends Container {
       }
    }
 
-   public static int func_216977_d(int p_216977_0_) {
-      return p_216977_0_ * 2 + 1;
+   public static int getNewRepairCost(int oldRepairCost) {
+      return oldRepairCost * 2 + 1;
    }
 
    public void onContainerClosed(PlayerEntity playerIn) {
@@ -351,7 +351,7 @@ public class RepairContainer extends Container {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_216976_f() {
+   public int getMaximumCost() {
       return this.maximumCost.get();
    }
 }

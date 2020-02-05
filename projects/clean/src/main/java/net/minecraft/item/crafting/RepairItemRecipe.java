@@ -75,6 +75,6 @@ public class RepairItemRecipe extends SpecialRecipe {
    }
 
    public IRecipeSerializer<?> getSerializer() {
-      return IRecipeSerializer.field_223550_o;
+      return IRecipeSerializer.CRAFTING_SPECIAL_REPAIRITEM;
    }
 }

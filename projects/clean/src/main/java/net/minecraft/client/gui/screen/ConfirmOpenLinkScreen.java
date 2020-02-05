@@ -30,14 +30,14 @@ public class ConfirmOpenLinkScreen extends ConfirmScreen {
       this.buttons.clear();
       this.children.clear();
       this.addButton(new Button(this.width / 2 - 50 - 105, this.height / 6 + 96, 100, 20, this.confirmButtonText, (p_213006_1_) -> {
-         this.field_213003_c.accept(true);
+         this.callbackFunction.accept(true);
       }));
       this.addButton(new Button(this.width / 2 - 50, this.height / 6 + 96, 100, 20, this.copyLinkButtonText, (p_213005_1_) -> {
          this.copyLinkToClipboard();
-         this.field_213003_c.accept(false);
+         this.callbackFunction.accept(false);
       }));
       this.addButton(new Button(this.width / 2 - 50 + 105, this.height / 6 + 96, 100, 20, this.cancelButtonText, (p_213004_1_) -> {
-         this.field_213003_c.accept(false);
+         this.callbackFunction.accept(false);
       }));
    }
 

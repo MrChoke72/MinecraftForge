@@ -162,8 +162,8 @@ public class Advancement {
          return this;
       }
 
-      public Advancement.Builder func_215092_a(ItemStack p_215092_1_, ITextComponent p_215092_2_, ITextComponent p_215092_3_, @Nullable ResourceLocation p_215092_4_, FrameType p_215092_5_, boolean p_215092_6_, boolean p_215092_7_, boolean p_215092_8_) {
-         return this.withDisplay(new DisplayInfo(p_215092_1_, p_215092_2_, p_215092_3_, p_215092_4_, p_215092_5_, p_215092_6_, p_215092_7_, p_215092_8_));
+      public Advancement.Builder withDisplay(ItemStack stack, ITextComponent title, ITextComponent description, @Nullable ResourceLocation background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {
+         return this.withDisplay(new DisplayInfo(stack, title, description, background, frame, showToast, announceToChat, hidden));
       }
 
       public Advancement.Builder withDisplay(IItemProvider itemIn, ITextComponent title, ITextComponent description, @Nullable ResourceLocation background, FrameType frame, boolean showToast, boolean announceToChat, boolean hidden) {

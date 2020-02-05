@@ -55,7 +55,7 @@ public class EndPortalBlock extends ContainerBlock {
       return ItemStack.EMPTY;
    }
 
-   public boolean func_225541_a_(BlockState p_225541_1_, Fluid p_225541_2_) {
+   public boolean isReplaceable(BlockState p_225541_1_, Fluid p_225541_2_) {
       return false;
    }
 }

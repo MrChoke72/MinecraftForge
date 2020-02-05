@@ -80,21 +80,17 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
    }
 
    protected void moveAlongTrack(BlockPos pos, BlockState state) {
+      double d0 = 1.0E-4D;
+      double d1 = 0.001D;
       super.moveAlongTrack(pos, state);
-      double d0 = this.pushX * this.pushX + this.pushZ * this.pushZ;
       Vec3d vec3d = this.getMotion();
-      if (d0 > 1.0E-4D && func_213296_b(vec3d) > 0.001D) {
-         d0 = (double)MathHelper.sqrt(d0);
-         this.pushX /= d0;
-         this.pushZ /= d0;
-         if (this.pushX * vec3d.x + this.pushZ * vec3d.z < 0.0D) {
-            this.pushX = 0.0D;
-            this.pushZ = 0.0D;
-         } else {
-            double d1 = d0 / this.getMaximumSpeed();
-            this.pushX *= d1;
-            this.pushZ *= d1;
-         }
+      double d2 = horizontalMag(vec3d);
+      double d3 = this.pushX * this.pushX + this.pushZ * this.pushZ;
+      if (d3 > 1.0E-4D && d2 > 0.001D) {
+         double d4 = (double)MathHelper.sqrt(d2);
+         double d5 = (double)MathHelper.sqrt(d3);
+         this.pushX = vec3d.x / d4 * d5;
+         this.pushZ = vec3d.z / d4 * d5;
       }
 
    }

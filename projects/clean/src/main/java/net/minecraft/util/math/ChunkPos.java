@@ -34,12 +34,12 @@ public class ChunkPos {
       return (long)x & 4294967295L | ((long)z & 4294967295L) << 32;
    }
 
-   public static int getX(long p_212578_0_) {
-      return (int)(p_212578_0_ & 4294967295L);
+   public static int getX(long chunkAsLong) {
+      return (int)(chunkAsLong & 4294967295L);
    }
 
-   public static int getZ(long p_212579_0_) {
-      return (int)(p_212579_0_ >>> 32 & 4294967295L);
+   public static int getZ(long chunkAsLong) {
+      return (int)(chunkAsLong >>> 32 & 4294967295L);
    }
 
    public int hashCode() {
@@ -103,43 +103,41 @@ public class ChunkPos {
       return new BlockPos(this.x << 4, 0, this.z << 4);
    }
 
-   public int func_226661_a_(ChunkPos p_226661_1_) {
-      return Math.max(Math.abs(this.x - p_226661_1_.x), Math.abs(this.z - p_226661_1_.z));
+   public int getChessboardDistance(ChunkPos chunkPosIn) {
+      return Math.max(Math.abs(this.x - chunkPosIn.x), Math.abs(this.z - chunkPosIn.z));
    }
 
    public static Stream<ChunkPos> getAllInBox(ChunkPos center, int radius) {
       return getAllInBox(new ChunkPos(center.x - radius, center.z - radius), new ChunkPos(center.x + radius, center.z + radius));
    }
 
-   //Ah REFACTOR
-   public static Stream<ChunkPos> getAllInBox(final ChunkPos upLeftChunkPos, final ChunkPos lowRightChunkPos) {
-   //public static Stream<ChunkPos> getAllInBox(final ChunkPos p_222239_0_, final ChunkPos p_222239_1_) {
-      int i = Math.abs(upLeftChunkPos.x - lowRightChunkPos.x) + 1;
-      int j = Math.abs(upLeftChunkPos.z - lowRightChunkPos.z) + 1;
-      final int k = upLeftChunkPos.x < lowRightChunkPos.x ? 1 : -1;
-      final int l = upLeftChunkPos.z < lowRightChunkPos.z ? 1 : -1;
+   public static Stream<ChunkPos> getAllInBox(final ChunkPos start, final ChunkPos end) {
+      int i = Math.abs(start.x - end.x) + 1;
+      int j = Math.abs(start.z - end.z) + 1;
+      final int k = start.x < end.x ? 1 : -1;
+      final int l = start.z < end.z ? 1 : -1;
       return StreamSupport.stream(new AbstractSpliterator<ChunkPos>((long)(i * j), 64) {
          @Nullable
-         private ChunkPos field_222237_e;
+         private ChunkPos current;
 
          public boolean tryAdvance(Consumer<? super ChunkPos> p_tryAdvance_1_) {
-            if (this.field_222237_e == null) {
-               this.field_222237_e = upLeftChunkPos;
+            if (this.current == null) {
+               this.current = start;
             } else {
-               int i1 = this.field_222237_e.x;
-               int j1 = this.field_222237_e.z;
-               if (i1 == lowRightChunkPos.x) {
-                  if (j1 == lowRightChunkPos.z) {
+               int i1 = this.current.x;
+               int j1 = this.current.z;
+               if (i1 == end.x) {
+                  if (j1 == end.z) {
                      return false;
                   }
 
-                  this.field_222237_e = new ChunkPos(upLeftChunkPos.x, j1 + l);
+                  this.current = new ChunkPos(start.x, j1 + l);
                } else {
-                  this.field_222237_e = new ChunkPos(i1 + k, j1);
+                  this.current = new ChunkPos(i1 + k, j1);
                }
             }
 
-            p_tryAdvance_1_.accept(this.field_222237_e);
+            p_tryAdvance_1_.accept(this.current);
             return true;
          }
       }, false);

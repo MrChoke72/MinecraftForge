@@ -155,9 +155,9 @@ public abstract class AbstractSpawner {
       }
    }
 
-   private void func_221409_a(Entity p_221409_1_) {
-      if (this.getWorld().addEntity(p_221409_1_)) {
-         for(Entity entity : p_221409_1_.getPassengers()) {
+   private void func_221409_a(Entity entityIn) {
+      if (this.getWorld().addEntity(entityIn)) {
+         for(Entity entity : entityIn.getPassengers()) {
             this.func_221409_a(entity);
          }
 

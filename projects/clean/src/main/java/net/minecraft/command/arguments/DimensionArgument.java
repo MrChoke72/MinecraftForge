@@ -46,7 +46,7 @@ public class DimensionArgument implements ArgumentType<DimensionType> {
       return new DimensionArgument();
    }
 
-   public static DimensionType func_212592_a(CommandContext<CommandSource> p_212592_0_, String p_212592_1_) {
+   public static DimensionType getDimensionArgument(CommandContext<CommandSource> p_212592_0_, String p_212592_1_) {
       return p_212592_0_.getArgument(p_212592_1_, DimensionType.class);
    }
 }

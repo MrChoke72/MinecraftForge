@@ -21,7 +21,7 @@ public class GoalSelector {
          return false;
       }
    };
-   private final Map<Goal.Flag, PrioritizedGoal> runningFlagGoals = new EnumMap<>(Goal.Flag.class);    //Holds running goals only
+   private final Map<Goal.Flag, PrioritizedGoal> flagGoals = new EnumMap<>(Goal.Flag.class);    //Holds running goals only
    private final Set<PrioritizedGoal> goals = Sets.newLinkedHashSet();
    private final IProfiler profiler;
    private final EnumSet<Goal.Flag> disabledFlags = EnumSet.noneOf(Goal.Flag.class);
@@ -49,9 +49,9 @@ public class GoalSelector {
       this.getRunningGoals().filter((pGoal) -> {
          return !pGoal.isRunning() || pGoal.getMutexFlags().stream().anyMatch(this.disabledFlags::contains) || !pGoal.shouldContinueExecuting();
       }).forEach(Goal::resetTask);
-      this.runningFlagGoals.forEach((flag, pGoal) -> {
+      this.flagGoals.forEach((flag, pGoal) -> {
          if (!pGoal.isRunning()) {
-            this.runningFlagGoals.remove(flag);
+            this.flagGoals.remove(flag);
          }
 
       });
@@ -63,13 +63,13 @@ public class GoalSelector {
          return pGoal.getMutexFlags().stream().noneMatch(this.disabledFlags::contains);
       }).filter((pGoal) -> {
          return pGoal.getMutexFlags().stream().allMatch((flag) -> {
-            return this.runningFlagGoals.getOrDefault(flag, DUMMY).isPreemptedBy(pGoal);
+            return this.flagGoals.getOrDefault(flag, DUMMY).isPreemptedBy(pGoal);
          });
       }).filter(PrioritizedGoal::shouldExecute).forEach((pGoal) -> {
          pGoal.getMutexFlags().forEach((flag) -> {
-            PrioritizedGoal prioritizedgoal = this.runningFlagGoals.getOrDefault(flag, DUMMY);
+            PrioritizedGoal prioritizedgoal = this.flagGoals.getOrDefault(flag, DUMMY);
             prioritizedgoal.resetTask();
-            this.runningFlagGoals.put(flag, pGoal);
+            this.flagGoals.put(flag, pGoal);
          });
          pGoal.startExecuting();
       });

@@ -13,44 +13,44 @@ public class TrackingChunkStatusListener implements IChunkStatusListener {
    private final Long2ObjectOpenHashMap<ChunkStatus> statuses;
    private ChunkPos center = new ChunkPos(0, 0);
    private final int diameter;
-   private final int field_219530_e;
+   private final int positionOffset;
    private final int field_219531_f;
-   private boolean field_219532_g;
+   private boolean tracking;
 
    public TrackingChunkStatusListener(int radius) {
       this.loggingListener = new LoggingChunkStatusListener(radius);
       this.diameter = radius * 2 + 1;
-      this.field_219530_e = radius + ChunkStatus.func_222600_b();
-      this.field_219531_f = this.field_219530_e * 2 + 1;
+      this.positionOffset = radius + ChunkStatus.maxDistance();
+      this.field_219531_f = this.positionOffset * 2 + 1;
       this.statuses = new Long2ObjectOpenHashMap<>();
    }
 
    public void start(ChunkPos center) {
-      if (this.field_219532_g) {
+      if (this.tracking) {
          this.loggingListener.start(center);
          this.center = center;
       }
    }
 
-   public void statusChanged(ChunkPos p_219508_1_, @Nullable ChunkStatus p_219508_2_) {
-      if (this.field_219532_g) {
-         this.loggingListener.statusChanged(p_219508_1_, p_219508_2_);
-         if (p_219508_2_ == null) {
-            this.statuses.remove(p_219508_1_.asLong());
+   public void statusChanged(ChunkPos chunkPosition, @Nullable ChunkStatus newStatus) {
+      if (this.tracking) {
+         this.loggingListener.statusChanged(chunkPosition, newStatus);
+         if (newStatus == null) {
+            this.statuses.remove(chunkPosition.asLong());
          } else {
-            this.statuses.put(p_219508_1_.asLong(), p_219508_2_);
+            this.statuses.put(chunkPosition.asLong(), newStatus);
          }
 
       }
    }
 
-   public void func_219521_a() {
-      this.field_219532_g = true;
+   public void startTracking() {
+      this.tracking = true;
       this.statuses.clear();
    }
 
    public void stop() {
-      this.field_219532_g = false;
+      this.tracking = false;
       this.loggingListener.stop();
    }
 
@@ -67,7 +67,7 @@ public class TrackingChunkStatusListener implements IChunkStatusListener {
    }
 
    @Nullable
-   public ChunkStatus func_219525_a(int p_219525_1_, int p_219525_2_) {
-      return this.statuses.get(ChunkPos.asLong(p_219525_1_ + this.center.x - this.field_219530_e, p_219525_2_ + this.center.z - this.field_219530_e));
+   public ChunkStatus getStatus(int x, int z) {
+      return this.statuses.get(ChunkPos.asLong(x + this.center.x - this.positionOffset, z + this.center.z - this.positionOffset));
    }
 }

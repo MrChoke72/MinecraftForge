@@ -14,5 +14,5 @@ public interface ITickList<T> {
 
    boolean isTickPending(BlockPos pos, T obj);
 
-   void func_219497_a(Stream<NextTickListEntry<T>> p_219497_1_);
+   void addAll(Stream<NextTickListEntry<T>> p_219497_1_);
 }

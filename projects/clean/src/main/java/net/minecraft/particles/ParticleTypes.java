@@ -61,10 +61,10 @@ public class ParticleTypes {
    public static final BasicParticleType DOLPHIN = register("dolphin", false);
    public static final BasicParticleType CAMPFIRE_COSY_SMOKE = register("campfire_cosy_smoke", true);
    public static final BasicParticleType CAMPFIRE_SIGNAL_SMOKE = register("campfire_signal_smoke", true);
-   public static final BasicParticleType field_229427_ag_ = register("dripping_honey", false);
-   public static final BasicParticleType field_229428_ah_ = register("falling_honey", false);
-   public static final BasicParticleType field_229429_ai_ = register("landing_honey", false);
-   public static final BasicParticleType field_229430_aj_ = register("falling_nectar", false);
+   public static final BasicParticleType DRIPPING_HONEY = register("dripping_honey", false);
+   public static final BasicParticleType FALLING_HONEY = register("falling_honey", false);
+   public static final BasicParticleType LANDING_HONEY = register("landing_honey", false);
+   public static final BasicParticleType FALLING_NECTAR = register("falling_nectar", false);
 
    private static BasicParticleType register(String key, boolean alwaysShow) {
       return (BasicParticleType)Registry.<ParticleType<? extends IParticleData>>register(Registry.PARTICLE_TYPE, key, new BasicParticleType(alwaysShow));

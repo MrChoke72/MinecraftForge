@@ -46,9 +46,9 @@ public class LookAtGoal extends Goal {
          }
 
          if (this.watchedClass == PlayerEntity.class) {
-            this.closestEntity = this.entity.world.getClosestPlayer(this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ());
+            this.closestEntity = this.entity.world.getClosestPlayer(this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYEye(), this.entity.getPosZ());
          } else {
-            this.closestEntity = this.entity.world.getClosestEntity(this.watchedClass, this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYPlusEyeHeight(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.maxDistance, 3.0D, (double)this.maxDistance));
+            this.closestEntity = this.entity.world.getClosestEntity(this.watchedClass, this.field_220716_e, this.entity, this.entity.getPosX(), this.entity.getPosYEye(), this.entity.getPosZ(), this.entity.getBoundingBox().grow((double)this.maxDistance, 3.0D, (double)this.maxDistance));
          }
 
          return this.closestEntity != null;
@@ -83,7 +83,8 @@ public class LookAtGoal extends Goal {
       }
        */
 
-      this.entity.getLookController().func_220679_a(this.closestEntity.getPosX(), this.closestEntity.getPosYPlusEyeHeight(), this.closestEntity.getPosZ());
+
+      this.entity.getLookController().setLookPosition(this.closestEntity.getPosX(), this.closestEntity.getPosYEye(), this.closestEntity.getPosZ());
       --this.lookTime;
    }
 }

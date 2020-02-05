@@ -59,7 +59,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class DebugOverlayGui extends AbstractGui {
-   private static final Map<Heightmap.Type, String> field_212923_a = Util.make(new EnumMap<>(Heightmap.Type.class), (p_212918_0_) -> {
+   private static final Map<Heightmap.Type, String> HEIGHTMAP_NAMES = Util.make(new EnumMap<>(Heightmap.Type.class), (p_212918_0_) -> {
       p_212918_0_.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
       p_212918_0_.put(Heightmap.Type.WORLD_SURFACE, "S");
       p_212918_0_.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
@@ -72,44 +72,44 @@ public class DebugOverlayGui extends AbstractGui {
    protected RayTraceResult rayTraceBlock;
    protected RayTraceResult rayTraceFluid;
    @Nullable
-   private ChunkPos field_212924_f;
+   private ChunkPos chunkPos;
    @Nullable
-   private Chunk field_212925_g;
+   private Chunk chunk;
    @Nullable
-   private CompletableFuture<Chunk> field_212926_h;
+   private CompletableFuture<Chunk> futureChunk;
 
    public DebugOverlayGui(Minecraft mc) {
       this.mc = mc;
       this.fontRenderer = mc.fontRenderer;
    }
 
-   public void func_212921_a() {
-      this.field_212926_h = null;
-      this.field_212925_g = null;
+   public void resetChunk() {
+      this.futureChunk = null;
+      this.chunk = null;
    }
 
    public void render() {
       this.mc.getProfiler().startSection("debug");
       RenderSystem.pushMatrix();
       Entity entity = this.mc.getRenderViewEntity();
-      this.rayTraceBlock = entity.func_213324_a(20.0D, 0.0F, false);
-      this.rayTraceFluid = entity.func_213324_a(20.0D, 0.0F, true);
-      this.func_230024_c_();
-      this.func_230025_d_();
+      this.rayTraceBlock = entity.pick(20.0D, 0.0F, false);
+      this.rayTraceFluid = entity.pick(20.0D, 0.0F, true);
+      this.renderDebugInfoLeft();
+      this.renderDebugInfoRight();
       RenderSystem.popMatrix();
       if (this.mc.gameSettings.showLagometer) {
-         int i = this.mc.func_228018_at_().getScaledWidth();
-         this.func_230023_a_(this.mc.getFrameTimer(), 0, i / 2, true);
+         int i = this.mc.getMainWindow().getScaledWidth();
+         this.renderLagometer(this.mc.getFrameTimer(), 0, i / 2, true);
          IntegratedServer integratedserver = this.mc.getIntegratedServer();
          if (integratedserver != null) {
-            this.func_230023_a_(integratedserver.getFrameTimer(), i - Math.min(i / 2, 240), i / 2, false);
+            this.renderLagometer(integratedserver.getFrameTimer(), i - Math.min(i / 2, 240), i / 2, false);
          }
       }
 
       this.mc.getProfiler().endSection();
    }
 
-   protected void func_230024_c_() {
+   protected void renderDebugInfoLeft() {
       List<String> list = this.call();
       list.add("");
       boolean flag = this.mc.getIntegratedServer() != null;
@@ -130,7 +130,7 @@ public class DebugOverlayGui extends AbstractGui {
 
    }
 
-   protected void func_230025_d_() {
+   protected void renderDebugInfoRight() {
       List<String> list = this.getDebugInfoRight();
 
       for(int i = 0; i < list.size(); ++i) {
@@ -138,7 +138,7 @@ public class DebugOverlayGui extends AbstractGui {
          if (!Strings.isNullOrEmpty(s)) {
             int j = 9;
             int k = this.fontRenderer.getStringWidth(s);
-            int l = this.mc.func_228018_at_().getScaledWidth() - 2 - k;
+            int l = this.mc.getMainWindow().getScaledWidth() - 2 - k;
             int i1 = 2 + j * i;
             fill(l - 1, i1 - 1, l + k + 1, i1 + j - 1, -1873784752);
             this.fontRenderer.drawString(s, (float)l, (float)i1, 14737632);
@@ -161,7 +161,7 @@ public class DebugOverlayGui extends AbstractGui {
 
       BlockPos blockpos = new BlockPos(this.mc.getRenderViewEntity());
       if (this.mc.isReducedDebug()) {
-         return Lists.newArrayList("Minecraft " + SharedConstants.getVersion().getName() + " (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.mc.debug, s, this.mc.worldRenderer.getDebugInfoRenders(), this.mc.worldRenderer.getDebugInfoEntities(), "P: " + this.mc.particles.getStatistics() + ". T: " + this.mc.world.func_217425_f(), this.mc.world.getProviderName(), "", String.format("Chunk-relative: %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15));
+         return Lists.newArrayList("Minecraft " + SharedConstants.getVersion().getName() + " (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.mc.debug, s, this.mc.worldRenderer.getDebugInfoRenders(), this.mc.worldRenderer.getDebugInfoEntities(), "P: " + this.mc.particles.getStatistics() + ". T: " + this.mc.world.getCountLoadedEntities(), this.mc.world.getProviderName(), "", String.format("Chunk-relative: %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15));
       } else {
          Entity entity = this.mc.getRenderViewEntity();
          Direction direction = entity.getHorizontalFacing();
@@ -184,15 +184,15 @@ public class DebugOverlayGui extends AbstractGui {
          }
 
          ChunkPos chunkpos = new ChunkPos(blockpos);
-         if (!Objects.equals(this.field_212924_f, chunkpos)) {
-            this.field_212924_f = chunkpos;
-            this.func_212921_a();
+         if (!Objects.equals(this.chunkPos, chunkpos)) {
+            this.chunkPos = chunkpos;
+            this.resetChunk();
          }
 
-         World world = this.func_212922_g();
+         World world = this.getWorld();
          LongSet longset = (LongSet)(world instanceof ServerWorld ? ((ServerWorld)world).getForcedChunks() : LongSets.EMPTY_SET);
-         List<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getVersion().getName() + " (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType()) + ")", this.mc.debug, s, this.mc.worldRenderer.getDebugInfoRenders(), this.mc.worldRenderer.getDebugInfoEntities(), "P: " + this.mc.particles.getStatistics() + ". T: " + this.mc.world.func_217425_f(), this.mc.world.getProviderName());
-         String s2 = this.func_223101_g();
+         List<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getVersion().getName() + " (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType()) + ")", this.mc.debug, s, this.mc.worldRenderer.getDebugInfoRenders(), this.mc.worldRenderer.getDebugInfoEntities(), "P: " + this.mc.particles.getStatistics() + ". T: " + this.mc.world.getCountLoadedEntities(), this.mc.world.getProviderName());
+         String s2 = this.getServerChunkStats();
          if (s2 != null) {
             list.add(s2);
          }
@@ -205,15 +205,15 @@ public class DebugOverlayGui extends AbstractGui {
          list.add(String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, s1, MathHelper.wrapDegrees(entity.rotationYaw), MathHelper.wrapDegrees(entity.rotationPitch)));
          if (this.mc.world != null) {
             if (this.mc.world.isBlockLoaded(blockpos)) {
-               Chunk chunk = this.func_212916_i();
+               Chunk chunk = this.getChunk();
                if (chunk.isEmpty()) {
                   list.add("Waiting for chunk...");
                } else {
-                  int i = this.mc.world.getChunkProvider().getLightManager().func_227470_b_(blockpos, 0);
-                  int j = this.mc.world.getLightLevel(LightType.SKY, blockpos);
-                  int k = this.mc.world.getLightLevel(LightType.BLOCK, blockpos);
+                  int i = this.mc.world.getChunkProvider().getLightManager().getLightSubtracted(blockpos, 0);
+                  int j = this.mc.world.getLightFor(LightType.SKY, blockpos);
+                  int k = this.mc.world.getLightFor(LightType.BLOCK, blockpos);
                   list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
-                  Chunk chunk1 = this.func_212919_h();
+                  Chunk chunk1 = this.getServerChunk();
                   if (chunk1 != null) {
                      WorldLightManager worldlightmanager = world.getChunkProvider().getLightManager();
                      list.add("Server Light: (" + worldlightmanager.getLightEngine(LightType.SKY).getLightFor(blockpos) + " sky, " + worldlightmanager.getLightEngine(LightType.BLOCK).getLightFor(blockpos) + " block)");
@@ -224,8 +224,8 @@ public class DebugOverlayGui extends AbstractGui {
                   StringBuilder stringbuilder = new StringBuilder("CH");
 
                   for(Heightmap.Type heightmap$type : Heightmap.Type.values()) {
-                     if (heightmap$type.func_222681_b()) {
-                        stringbuilder.append(" ").append(field_212923_a.get(heightmap$type)).append(": ").append(chunk.getTopBlockY(heightmap$type, blockpos.getX(), blockpos.getZ()));
+                     if (heightmap$type.isUsageClient()) {
+                        stringbuilder.append(" ").append(HEIGHTMAP_NAMES.get(heightmap$type)).append(": ").append(chunk.getTopBlockY(heightmap$type, blockpos.getX(), blockpos.getZ()));
                      }
                   }
 
@@ -234,8 +234,8 @@ public class DebugOverlayGui extends AbstractGui {
                   stringbuilder.append("SH");
 
                   for(Heightmap.Type heightmap$type1 : Heightmap.Type.values()) {
-                     if (heightmap$type1.func_222683_c()) {
-                        stringbuilder.append(" ").append(field_212923_a.get(heightmap$type1)).append(": ");
+                     if (heightmap$type1.isUsageNotWorldgen()) {
+                        stringbuilder.append(" ").append(HEIGHTMAP_NAMES.get(heightmap$type1)).append(": ");
                         if (chunk1 != null) {
                            stringbuilder.append(chunk1.getTopBlockY(heightmap$type1, blockpos.getX(), blockpos.getZ()));
                         } else {
@@ -246,7 +246,7 @@ public class DebugOverlayGui extends AbstractGui {
 
                   list.add(stringbuilder.toString());
                   if (blockpos.getY() >= 0 && blockpos.getY() < 256) {
-                     list.add("Biome: " + Registry.BIOME.getKey(this.mc.world.func_226691_t_(blockpos)));
+                     list.add("Biome: " + Registry.BIOME.getKey(this.mc.world.getBiome(blockpos)));
                      long l = 0L;
                      float f2 = 0.0F;
                      if (chunk1 != null) {
@@ -286,7 +286,7 @@ public class DebugOverlayGui extends AbstractGui {
    }
 
    @Nullable
-   private String func_223101_g() {
+   private String getServerChunkStats() {
       IntegratedServer integratedserver = this.mc.getIntegratedServer();
       if (integratedserver != null) {
          ServerWorld serverworld = integratedserver.getWorld(this.mc.world.getDimension().getType());
@@ -298,20 +298,20 @@ public class DebugOverlayGui extends AbstractGui {
       return null;
    }
 
-   private World func_212922_g() {
+   private World getWorld() {
       return DataFixUtils.orElse(Optional.ofNullable(this.mc.getIntegratedServer()).map((p_212917_1_) -> {
          return p_212917_1_.getWorld(this.mc.world.dimension.getType());
       }), this.mc.world);
    }
 
    @Nullable
-   private Chunk func_212919_h() {
-      if (this.field_212926_h == null) {
+   private Chunk getServerChunk() {
+      if (this.futureChunk == null) {
          IntegratedServer integratedserver = this.mc.getIntegratedServer();
          if (integratedserver != null) {
             ServerWorld serverworld = integratedserver.getWorld(this.mc.world.dimension.getType());
             if (serverworld != null) {
-               this.field_212926_h = serverworld.getChunkProvider().func_217232_b(this.field_212924_f.x, this.field_212924_f.z, ChunkStatus.FULL, false).thenApply((p_222802_0_) -> {
+               this.futureChunk = serverworld.getChunkProvider().func_217232_b(this.chunkPos.x, this.chunkPos.z, ChunkStatus.FULL, false).thenApply((p_222802_0_) -> {
                   return p_222802_0_.map((p_222803_0_) -> {
                      return (Chunk)p_222803_0_;
                   }, (p_222801_0_) -> {
@@ -321,20 +321,20 @@ public class DebugOverlayGui extends AbstractGui {
             }
          }
 
-         if (this.field_212926_h == null) {
-            this.field_212926_h = CompletableFuture.completedFuture(this.func_212916_i());
+         if (this.futureChunk == null) {
+            this.futureChunk = CompletableFuture.completedFuture(this.getChunk());
          }
       }
 
-      return this.field_212926_h.getNow((Chunk)null);
+      return this.futureChunk.getNow((Chunk)null);
    }
 
-   private Chunk func_212916_i() {
-      if (this.field_212925_g == null) {
-         this.field_212925_g = this.mc.world.getChunk(this.field_212924_f.x, this.field_212924_f.z);
+   private Chunk getChunk() {
+      if (this.chunk == null) {
+         this.chunk = this.mc.world.getChunk(this.chunkPos.x, this.chunkPos.z);
       }
 
-      return this.field_212925_g;
+      return this.chunk;
    }
 
    protected List<String> getDebugInfoRight() {
@@ -342,7 +342,7 @@ public class DebugOverlayGui extends AbstractGui {
       long j = Runtime.getRuntime().totalMemory();
       long k = Runtime.getRuntime().freeMemory();
       long l = j - k;
-      List<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.mc.isJava64bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", l * 100L / i, bytesToMb(l), bytesToMb(i)), String.format("Allocated: % 2d%% %03dMB", j * 100L / i, bytesToMb(j)), "", String.format("CPU: %s", PlatformDescriptors.func_227775_b_()), "", String.format("Display: %dx%d (%s)", Minecraft.getInstance().func_228018_at_().getFramebufferWidth(), Minecraft.getInstance().func_228018_at_().getFramebufferHeight(), PlatformDescriptors.func_227774_a_()), PlatformDescriptors.func_227776_c_(), PlatformDescriptors.func_227777_d_());
+      List<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.mc.isJava64bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", l * 100L / i, bytesToMb(l), bytesToMb(i)), String.format("Allocated: % 2d%% %03dMB", j * 100L / i, bytesToMb(j)), "", String.format("CPU: %s", PlatformDescriptors.getCpuInfo()), "", String.format("Display: %dx%d (%s)", Minecraft.getInstance().getMainWindow().getFramebufferWidth(), Minecraft.getInstance().getMainWindow().getFramebufferHeight(), PlatformDescriptors.getGlVendor()), PlatformDescriptors.getGlRenderer(), PlatformDescriptors.getGlVersion());
       if (this.mc.isReducedDebug()) {
          return list;
       } else {
@@ -402,46 +402,46 @@ public class DebugOverlayGui extends AbstractGui {
       return iproperty.getName() + ": " + s;
    }
 
-   private void func_230023_a_(FrameTimer p_230023_1_, int p_230023_2_, int p_230023_3_, boolean p_230023_4_) {
+   private void renderLagometer(FrameTimer frameTimerIn, int xIn, int widthIn, boolean fpsIn) {
       RenderSystem.disableDepthTest();
-      int i = p_230023_1_.getLastIndex();
-      int j = p_230023_1_.getIndex();
-      long[] along = p_230023_1_.getFrames();
-      int l = p_230023_2_;
-      int i1 = Math.max(0, along.length - p_230023_3_);
+      int i = frameTimerIn.getLastIndex();
+      int j = frameTimerIn.getIndex();
+      long[] along = frameTimerIn.getFrames();
+      int l = xIn;
+      int i1 = Math.max(0, along.length - widthIn);
       int j1 = along.length - i1;
-      int lvt_8_1_ = p_230023_1_.parseIndex(i + i1);
+      int lvt_8_1_ = frameTimerIn.parseIndex(i + i1);
       long k1 = 0L;
       int l1 = Integer.MAX_VALUE;
       int i2 = Integer.MIN_VALUE;
 
       for(int j2 = 0; j2 < j1; ++j2) {
-         int k2 = (int)(along[p_230023_1_.parseIndex(lvt_8_1_ + j2)] / 1000000L);
+         int k2 = (int)(along[frameTimerIn.parseIndex(lvt_8_1_ + j2)] / 1000000L);
          l1 = Math.min(l1, k2);
          i2 = Math.max(i2, k2);
          k1 += (long)k2;
       }
 
-      int k4 = this.mc.func_228018_at_().getScaledHeight();
-      fill(p_230023_2_, k4 - 60, p_230023_2_ + j1, k4, -1873784752);
+      int k4 = this.mc.getMainWindow().getScaledHeight();
+      fill(xIn, k4 - 60, xIn + j1, k4, -1873784752);
       BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
       RenderSystem.enableBlend();
       RenderSystem.disableTexture();
       RenderSystem.defaultBlendFunc();
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
 
-      for(Matrix4f matrix4f = TransformationMatrix.func_227983_a_().func_227988_c_(); lvt_8_1_ != j; lvt_8_1_ = p_230023_1_.parseIndex(lvt_8_1_ + 1)) {
-         int l2 = p_230023_1_.func_219792_a(along[lvt_8_1_], p_230023_4_ ? 30 : 60, p_230023_4_ ? 60 : 20);
-         int i3 = p_230023_4_ ? 100 : 60;
+      for(Matrix4f matrix4f = TransformationMatrix.identity().getMatrix(); lvt_8_1_ != j; lvt_8_1_ = frameTimerIn.parseIndex(lvt_8_1_ + 1)) {
+         int l2 = frameTimerIn.getLineHeight(along[lvt_8_1_], fpsIn ? 30 : 60, fpsIn ? 60 : 20);
+         int i3 = fpsIn ? 100 : 60;
          int j3 = this.getFrameColor(MathHelper.clamp(l2, 0, i3), 0, i3 / 2, i3);
          int k3 = j3 >> 24 & 255;
          int l3 = j3 >> 16 & 255;
          int i4 = j3 >> 8 & 255;
          int j4 = j3 & 255;
-         bufferbuilder.func_227888_a_(matrix4f, (float)(l + 1), (float)k4, 0.0F).func_225586_a_(l3, i4, j4, k3).endVertex();
-         bufferbuilder.func_227888_a_(matrix4f, (float)l, (float)k4, 0.0F).func_225586_a_(l3, i4, j4, k3).endVertex();
-         bufferbuilder.func_227888_a_(matrix4f, (float)l, (float)(k4 - l2 + 1), 0.0F).func_225586_a_(l3, i4, j4, k3).endVertex();
-         bufferbuilder.func_227888_a_(matrix4f, (float)(l + 1), (float)(k4 - l2 + 1), 0.0F).func_225586_a_(l3, i4, j4, k3).endVertex();
+         bufferbuilder.pos(matrix4f, (float)(l + 1), (float)k4, 0.0F).color(l3, i4, j4, k3).endVertex();
+         bufferbuilder.pos(matrix4f, (float)l, (float)k4, 0.0F).color(l3, i4, j4, k3).endVertex();
+         bufferbuilder.pos(matrix4f, (float)l, (float)(k4 - l2 + 1), 0.0F).color(l3, i4, j4, k3).endVertex();
+         bufferbuilder.pos(matrix4f, (float)(l + 1), (float)(k4 - l2 + 1), 0.0F).color(l3, i4, j4, k3).endVertex();
          ++l;
       }
 
@@ -449,32 +449,32 @@ public class DebugOverlayGui extends AbstractGui {
       WorldVertexBufferUploader.draw(bufferbuilder);
       RenderSystem.enableTexture();
       RenderSystem.disableBlend();
-      if (p_230023_4_) {
-         fill(p_230023_2_ + 1, k4 - 30 + 1, p_230023_2_ + 14, k4 - 30 + 10, -1873784752);
-         this.fontRenderer.drawString("60 FPS", (float)(p_230023_2_ + 2), (float)(k4 - 30 + 2), 14737632);
-         this.hLine(p_230023_2_, p_230023_2_ + j1 - 1, k4 - 30, -1);
-         fill(p_230023_2_ + 1, k4 - 60 + 1, p_230023_2_ + 14, k4 - 60 + 10, -1873784752);
-         this.fontRenderer.drawString("30 FPS", (float)(p_230023_2_ + 2), (float)(k4 - 60 + 2), 14737632);
-         this.hLine(p_230023_2_, p_230023_2_ + j1 - 1, k4 - 60, -1);
+      if (fpsIn) {
+         fill(xIn + 1, k4 - 30 + 1, xIn + 14, k4 - 30 + 10, -1873784752);
+         this.fontRenderer.drawString("60 FPS", (float)(xIn + 2), (float)(k4 - 30 + 2), 14737632);
+         this.hLine(xIn, xIn + j1 - 1, k4 - 30, -1);
+         fill(xIn + 1, k4 - 60 + 1, xIn + 14, k4 - 60 + 10, -1873784752);
+         this.fontRenderer.drawString("30 FPS", (float)(xIn + 2), (float)(k4 - 60 + 2), 14737632);
+         this.hLine(xIn, xIn + j1 - 1, k4 - 60, -1);
       } else {
-         fill(p_230023_2_ + 1, k4 - 60 + 1, p_230023_2_ + 14, k4 - 60 + 10, -1873784752);
-         this.fontRenderer.drawString("20 TPS", (float)(p_230023_2_ + 2), (float)(k4 - 60 + 2), 14737632);
-         this.hLine(p_230023_2_, p_230023_2_ + j1 - 1, k4 - 60, -1);
+         fill(xIn + 1, k4 - 60 + 1, xIn + 14, k4 - 60 + 10, -1873784752);
+         this.fontRenderer.drawString("20 TPS", (float)(xIn + 2), (float)(k4 - 60 + 2), 14737632);
+         this.hLine(xIn, xIn + j1 - 1, k4 - 60, -1);
       }
 
-      this.hLine(p_230023_2_, p_230023_2_ + j1 - 1, k4 - 1, -1);
-      this.vLine(p_230023_2_, k4 - 60, k4, -1);
-      this.vLine(p_230023_2_ + j1 - 1, k4 - 60, k4, -1);
-      if (p_230023_4_ && this.mc.gameSettings.framerateLimit > 0 && this.mc.gameSettings.framerateLimit <= 250) {
-         this.hLine(p_230023_2_, p_230023_2_ + j1 - 1, k4 - 1 - (int)(1800.0D / (double)this.mc.gameSettings.framerateLimit), -16711681);
+      this.hLine(xIn, xIn + j1 - 1, k4 - 1, -1);
+      this.vLine(xIn, k4 - 60, k4, -1);
+      this.vLine(xIn + j1 - 1, k4 - 60, k4, -1);
+      if (fpsIn && this.mc.gameSettings.framerateLimit > 0 && this.mc.gameSettings.framerateLimit <= 250) {
+         this.hLine(xIn, xIn + j1 - 1, k4 - 1 - (int)(1800.0D / (double)this.mc.gameSettings.framerateLimit), -16711681);
       }
 
       String s = l1 + " ms min";
       String s1 = k1 / (long)j1 + " ms avg";
       String s2 = i2 + " ms max";
-      this.fontRenderer.drawStringWithShadow(s, (float)(p_230023_2_ + 2), (float)(k4 - 60 - 9), 14737632);
-      this.fontRenderer.drawStringWithShadow(s1, (float)(p_230023_2_ + j1 / 2 - this.fontRenderer.getStringWidth(s1) / 2), (float)(k4 - 60 - 9), 14737632);
-      this.fontRenderer.drawStringWithShadow(s2, (float)(p_230023_2_ + j1 - this.fontRenderer.getStringWidth(s2)), (float)(k4 - 60 - 9), 14737632);
+      this.fontRenderer.drawStringWithShadow(s, (float)(xIn + 2), (float)(k4 - 60 - 9), 14737632);
+      this.fontRenderer.drawStringWithShadow(s1, (float)(xIn + j1 / 2 - this.fontRenderer.getStringWidth(s1) / 2), (float)(k4 - 60 - 9), 14737632);
+      this.fontRenderer.drawStringWithShadow(s2, (float)(xIn + j1 - this.fontRenderer.getStringWidth(s2)), (float)(k4 - 60 - 9), 14737632);
       RenderSystem.enableDepthTest();
    }
 

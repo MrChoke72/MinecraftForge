@@ -66,8 +66,8 @@ public class TurtleEntity extends AnimalEntity {
    private static final DataParameter<Boolean> GOING_HOME = EntityDataManager.createKey(TurtleEntity.class, DataSerializers.BOOLEAN);
    private static final DataParameter<Boolean> TRAVELLING = EntityDataManager.createKey(TurtleEntity.class, DataSerializers.BOOLEAN);
    private int isDigging;
-   public static final Predicate<LivingEntity> TARGET_DRY_BABY = (entity) -> {
-      return entity.isChild() && !entity.isInWater();
+   public static final Predicate<LivingEntity> TARGET_DRY_BABY = (p_213616_0_) -> {
+      return p_213616_0_.isChild() && !p_213616_0_.isInWater();
    };
 
    public TurtleEntity(EntityType<? extends TurtleEntity> type, World worldIn) {
@@ -167,8 +167,8 @@ public class TurtleEntity extends AnimalEntity {
       return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
    }
 
-   public static boolean func_223322_c(EntityType<TurtleEntity> p_223322_0_, IWorld p_223322_1_, SpawnReason p_223322_2_, BlockPos p_223322_3_, Random p_223322_4_) {
-      return p_223322_3_.getY() < p_223322_1_.getSeaLevel() + 4 && p_223322_1_.getBlockState(p_223322_3_.down()).getBlock() == Blocks.SAND && p_223322_1_.func_226659_b_(p_223322_3_, 0) > 8;
+   public static boolean func_223322_c(EntityType<TurtleEntity> p_223322_0_, IWorld p_223322_1_, SpawnReason reason, BlockPos p_223322_3_, Random p_223322_4_) {
+      return p_223322_3_.getY() < p_223322_1_.getSeaLevel() + 4 && p_223322_1_.getBlockState(p_223322_3_.down()).getBlock() == Blocks.SAND && p_223322_1_.getLightSubtracted(p_223322_3_, 0) > 8;
    }
 
    protected void registerGoals() {
@@ -353,13 +353,13 @@ public class TurtleEntity extends AnimalEntity {
 
          if (this.turtle.getNavigator().noPath()) {
             Vec3d vec3d = new Vec3d(blockpos);
-            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardScaled(this.turtle, 16, 3, vec3d, (double)((float)Math.PI / 10F));
+            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardsScaled(this.turtle, 16, 3, vec3d, (double)((float)Math.PI / 10F));
             if (vec3d1 == null) {
-               vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.turtle, 8, 7, vec3d);
+               vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.turtle, 8, 7, vec3d);
             }
 
             if (vec3d1 != null && !flag && this.turtle.world.getBlockState(new BlockPos(vec3d1)).getBlock() != Blocks.WATER) {
-               vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.turtle, 16, 5, vec3d);
+               vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.turtle, 16, 5, vec3d);
             }
 
             if (vec3d1 == null) {
@@ -466,18 +466,18 @@ public class TurtleEntity extends AnimalEntity {
 
       protected void spawnBaby() {
          ServerPlayerEntity serverplayerentity = this.animal.getLoveCause();
-         if (serverplayerentity == null && this.field_75391_e.getLoveCause() != null) {
-            serverplayerentity = this.field_75391_e.getLoveCause();
+         if (serverplayerentity == null && this.targetMate.getLoveCause() != null) {
+            serverplayerentity = this.targetMate.getLoveCause();
          }
 
          if (serverplayerentity != null) {
             serverplayerentity.addStat(Stats.ANIMALS_BRED);
-            CriteriaTriggers.BRED_ANIMALS.trigger(serverplayerentity, this.animal, this.field_75391_e, (AgeableEntity)null);
+            CriteriaTriggers.BRED_ANIMALS.trigger(serverplayerentity, this.animal, this.targetMate, (AgeableEntity)null);
          }
 
          this.turtle.setHasEgg(true);
          this.animal.resetInLove();
-         this.field_75391_e.resetInLove();
+         this.targetMate.resetInLove();
          Random random = this.animal.getRNG();
          if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
             this.world.addEntity(new ExperienceOrbEntity(this.world, this.animal.getPosX(), this.animal.getPosY(), this.animal.getPosZ(), random.nextInt(7) + 1));
@@ -666,9 +666,9 @@ public class TurtleEntity extends AnimalEntity {
       public void tick() {
          if (this.turtle.getNavigator().noPath()) {
             Vec3d vec3d = new Vec3d(this.turtle.getTravelPos());
-            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardScaled(this.turtle, 16, 3, vec3d, (double)((float)Math.PI / 10F));
+            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardsScaled(this.turtle, 16, 3, vec3d, (double)((float)Math.PI / 10F));
             if (vec3d1 == null) {
-               vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.turtle, 8, 7, vec3d);
+               vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.turtle, 8, 7, vec3d);
             }
 
             if (vec3d1 != null) {

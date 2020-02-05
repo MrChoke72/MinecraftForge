@@ -82,33 +82,33 @@ public interface ISuggestionProvider {
       return p_197006_1_.buildFuture();
    }
 
-   static CompletableFuture<Suggestions> suggestIterable(Iterable<ResourceLocation> p_197014_0_, SuggestionsBuilder p_197014_1_) {
-      String s = p_197014_1_.getRemaining().toLowerCase(Locale.ROOT);
+   static CompletableFuture<Suggestions> suggestIterable(Iterable<ResourceLocation> p_197014_0_, SuggestionsBuilder builder) {
+      String s = builder.getRemaining().toLowerCase(Locale.ROOT);
       func_210512_a(p_197014_0_, s, (p_210517_0_) -> {
          return p_210517_0_;
       }, (p_210513_1_) -> {
-         p_197014_1_.suggest(p_210513_1_.toString());
+         builder.suggest(p_210513_1_.toString());
       });
-      return p_197014_1_.buildFuture();
+      return builder.buildFuture();
    }
 
-   static <T> CompletableFuture<Suggestions> func_210514_a(Iterable<T> p_210514_0_, SuggestionsBuilder p_210514_1_, Function<T, ResourceLocation> p_210514_2_, Function<T, Message> p_210514_3_) {
-      String s = p_210514_1_.getRemaining().toLowerCase(Locale.ROOT);
+   static <T> CompletableFuture<Suggestions> func_210514_a(Iterable<T> p_210514_0_, SuggestionsBuilder builder, Function<T, ResourceLocation> p_210514_2_, Function<T, Message> p_210514_3_) {
+      String s = builder.getRemaining().toLowerCase(Locale.ROOT);
       func_210512_a(p_210514_0_, s, p_210514_2_, (p_210515_3_) -> {
-         p_210514_1_.suggest(p_210514_2_.apply(p_210515_3_).toString(), p_210514_3_.apply(p_210515_3_));
+         builder.suggest(p_210514_2_.apply(p_210515_3_).toString(), p_210514_3_.apply(p_210515_3_));
       });
-      return p_210514_1_.buildFuture();
+      return builder.buildFuture();
    }
 
-   static CompletableFuture<Suggestions> func_212476_a(Stream<ResourceLocation> p_212476_0_, SuggestionsBuilder p_212476_1_) {
-      return suggestIterable(p_212476_0_::iterator, p_212476_1_);
+   static CompletableFuture<Suggestions> func_212476_a(Stream<ResourceLocation> p_212476_0_, SuggestionsBuilder builder) {
+      return suggestIterable(p_212476_0_::iterator, builder);
    }
 
-   static <T> CompletableFuture<Suggestions> func_201725_a(Stream<T> p_201725_0_, SuggestionsBuilder p_201725_1_, Function<T, ResourceLocation> p_201725_2_, Function<T, Message> p_201725_3_) {
-      return func_210514_a(p_201725_0_::iterator, p_201725_1_, p_201725_2_, p_201725_3_);
+   static <T> CompletableFuture<Suggestions> func_201725_a(Stream<T> p_201725_0_, SuggestionsBuilder builder, Function<T, ResourceLocation> p_201725_2_, Function<T, Message> p_201725_3_) {
+      return func_210514_a(p_201725_0_::iterator, builder, p_201725_2_, p_201725_3_);
    }
 
-   static CompletableFuture<Suggestions> func_209000_a(String p_209000_0_, Collection<ISuggestionProvider.Coordinates> p_209000_1_, SuggestionsBuilder p_209000_2_, Predicate<String> p_209000_3_) {
+   static CompletableFuture<Suggestions> func_209000_a(String p_209000_0_, Collection<ISuggestionProvider.Coordinates> p_209000_1_, SuggestionsBuilder builder, Predicate<String> p_209000_3_) {
       List<String> list = Lists.newArrayList();
       if (Strings.isNullOrEmpty(p_209000_0_)) {
          for(ISuggestionProvider.Coordinates isuggestionprovider$coordinates : p_209000_1_) {
@@ -139,10 +139,10 @@ public interface ISuggestionProvider {
          }
       }
 
-      return suggest(list, p_209000_2_);
+      return suggest(list, builder);
    }
 
-   static CompletableFuture<Suggestions> func_211269_a(String p_211269_0_, Collection<ISuggestionProvider.Coordinates> p_211269_1_, SuggestionsBuilder p_211269_2_, Predicate<String> p_211269_3_) {
+   static CompletableFuture<Suggestions> func_211269_a(String p_211269_0_, Collection<ISuggestionProvider.Coordinates> p_211269_1_, SuggestionsBuilder builder, Predicate<String> p_211269_3_) {
       List<String> list = Lists.newArrayList();
       if (Strings.isNullOrEmpty(p_211269_0_)) {
          for(ISuggestionProvider.Coordinates isuggestionprovider$coordinates : p_211269_1_) {
@@ -164,39 +164,39 @@ public interface ISuggestionProvider {
          }
       }
 
-      return suggest(list, p_211269_2_);
+      return suggest(list, builder);
    }
 
-   static CompletableFuture<Suggestions> suggest(Iterable<String> p_197005_0_, SuggestionsBuilder p_197005_1_) {
-      String s = p_197005_1_.getRemaining().toLowerCase(Locale.ROOT);
+   static CompletableFuture<Suggestions> suggest(Iterable<String> p_197005_0_, SuggestionsBuilder builder) {
+      String s = builder.getRemaining().toLowerCase(Locale.ROOT);
 
       for(String s1 : p_197005_0_) {
          if (s1.toLowerCase(Locale.ROOT).startsWith(s)) {
-            p_197005_1_.suggest(s1);
+            builder.suggest(s1);
          }
       }
 
-      return p_197005_1_.buildFuture();
+      return builder.buildFuture();
    }
 
-   static CompletableFuture<Suggestions> suggest(Stream<String> p_197013_0_, SuggestionsBuilder p_197013_1_) {
-      String s = p_197013_1_.getRemaining().toLowerCase(Locale.ROOT);
+   static CompletableFuture<Suggestions> suggest(Stream<String> p_197013_0_, SuggestionsBuilder builder) {
+      String s = builder.getRemaining().toLowerCase(Locale.ROOT);
       p_197013_0_.filter((p_197007_1_) -> {
          return p_197007_1_.toLowerCase(Locale.ROOT).startsWith(s);
-      }).forEach(p_197013_1_::suggest);
-      return p_197013_1_.buildFuture();
+      }).forEach(builder::suggest);
+      return builder.buildFuture();
    }
 
-   static CompletableFuture<Suggestions> suggest(String[] p_197008_0_, SuggestionsBuilder p_197008_1_) {
-      String s = p_197008_1_.getRemaining().toLowerCase(Locale.ROOT);
+   static CompletableFuture<Suggestions> suggest(String[] p_197008_0_, SuggestionsBuilder builder) {
+      String s = builder.getRemaining().toLowerCase(Locale.ROOT);
 
       for(String s1 : p_197008_0_) {
          if (s1.toLowerCase(Locale.ROOT).startsWith(s)) {
-            p_197008_1_.suggest(s1);
+            builder.suggest(s1);
          }
       }
 
-      return p_197008_1_.buildFuture();
+      return builder.buildFuture();
    }
 
    public static class Coordinates {
@@ -206,10 +206,10 @@ public interface ISuggestionProvider {
       public final String y;
       public final String z;
 
-      public Coordinates(String p_i49368_1_, String p_i49368_2_, String p_i49368_3_) {
-         this.x = p_i49368_1_;
-         this.y = p_i49368_2_;
-         this.z = p_i49368_3_;
+      public Coordinates(String xIn, String yIn, String zIn) {
+         this.x = xIn;
+         this.y = yIn;
+         this.z = zIn;
       }
    }
 }

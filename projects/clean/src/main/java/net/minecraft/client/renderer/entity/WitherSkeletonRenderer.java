@@ -18,7 +18,7 @@ public class WitherSkeletonRenderer extends SkeletonRenderer {
       return WITHER_SKELETON_TEXTURES;
    }
 
-   protected void func_225620_a_(AbstractSkeletonEntity p_225620_1_, MatrixStack p_225620_2_, float p_225620_3_) {
-      p_225620_2_.func_227862_a_(1.2F, 1.2F, 1.2F);
+   protected void preRenderCallback(AbstractSkeletonEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+      matrixStackIn.scale(1.2F, 1.2F, 1.2F);
    }
 }

@@ -45,10 +45,10 @@ public class SpectatorGui extends AbstractGui implements ISpectatorMenuRecipient
          if (f <= 0.0F) {
             this.menu.exit();
          } else {
-            int i = this.mc.func_228018_at_().getScaledWidth() / 2;
+            int i = this.mc.getMainWindow().getScaledWidth() / 2;
             int j = this.getBlitOffset();
             this.setBlitOffset(-90);
-            int k = MathHelper.floor((float)this.mc.func_228018_at_().getScaledHeight() - 22.0F * f);
+            int k = MathHelper.floor((float)this.mc.getMainWindow().getScaledHeight() - 22.0F * f);
             SpectatorDetails spectatordetails = this.menu.getCurrentPage();
             this.func_214456_a(f, i, k, spectatordetails);
             this.setBlitOffset(j);
@@ -68,7 +68,7 @@ public class SpectatorGui extends AbstractGui implements ISpectatorMenuRecipient
       }
 
       for(int i = 0; i < 9; ++i) {
-         this.renderSlot(i, this.mc.func_228018_at_().getScaledWidth() / 2 - 90 + i * 20 + 2, (float)(p_214456_3_ + 3), p_214456_1_, p_214456_4_.getObject(i));
+         this.renderSlot(i, this.mc.getMainWindow().getScaledWidth() / 2 - 90 + i * 20 + 2, (float)(p_214456_3_ + 3), p_214456_1_, p_214456_4_.getObject(i));
       }
 
       RenderSystem.disableRescaleNormal();
@@ -99,8 +99,8 @@ public class SpectatorGui extends AbstractGui implements ISpectatorMenuRecipient
          ISpectatorMenuObject ispectatormenuobject = this.menu.getSelectedItem();
          String s = ispectatormenuobject == SpectatorMenu.EMPTY_SLOT ? this.menu.getSelectedCategory().getPrompt().getFormattedText() : ispectatormenuobject.getSpectatorName().getFormattedText();
          if (s != null) {
-            int j = (this.mc.func_228018_at_().getScaledWidth() - this.mc.fontRenderer.getStringWidth(s)) / 2;
-            int k = this.mc.func_228018_at_().getScaledHeight() - 35;
+            int j = (this.mc.getMainWindow().getScaledWidth() - this.mc.fontRenderer.getStringWidth(s)) / 2;
+            int k = this.mc.getMainWindow().getScaledHeight() - 35;
             RenderSystem.pushMatrix();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();

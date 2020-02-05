@@ -907,8 +907,8 @@ public final class ItemStack {
       this.grow(-count);
    }
 
-   public void func_222121_b(World p_222121_1_, LivingEntity p_222121_2_, int p_222121_3_) {
-      this.getItem().func_219972_a(p_222121_1_, p_222121_2_, this, p_222121_3_);
+   public void func_222121_b(World worldIn, LivingEntity livingEntityIn, int countIn) {
+      this.getItem().func_219972_a(worldIn, livingEntityIn, this, countIn);
    }
 
    public boolean isFood() {

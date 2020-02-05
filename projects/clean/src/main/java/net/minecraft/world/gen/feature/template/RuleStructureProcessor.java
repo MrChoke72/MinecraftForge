@@ -24,17 +24,17 @@ public class RuleStructureProcessor extends StructureProcessor {
    }
 
    @Nullable
-   public Template.BlockInfo process(IWorldReader p_215194_1_, BlockPos p_215194_2_, Template.BlockInfo p_215194_3_, Template.BlockInfo p_215194_4_, PlacementSettings p_215194_5_) {
-      Random random = new Random(MathHelper.getPositionRandom(p_215194_4_.pos));
-      BlockState blockstate = p_215194_1_.getBlockState(p_215194_4_.pos);
+   public Template.BlockInfo process(IWorldReader worldReaderIn, BlockPos pos, Template.BlockInfo p_215194_3_, Template.BlockInfo blockInfo, PlacementSettings placementSettingsIn) {
+      Random random = new Random(MathHelper.getPositionRandom(blockInfo.pos));
+      BlockState blockstate = worldReaderIn.getBlockState(blockInfo.pos);
 
       for(RuleEntry ruleentry : this.rules) {
-         if (ruleentry.test(p_215194_4_.state, blockstate, random)) {
-            return new Template.BlockInfo(p_215194_4_.pos, ruleentry.getOutputState(), ruleentry.getOutputNbt());
+         if (ruleentry.test(blockInfo.state, blockstate, random)) {
+            return new Template.BlockInfo(blockInfo.pos, ruleentry.getOutputState(), ruleentry.getOutputNbt());
          }
       }
 
-      return p_215194_4_;
+      return blockInfo;
    }
 
    protected IStructureProcessorType getType() {

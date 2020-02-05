@@ -33,20 +33,20 @@ public class ShareItemsTask extends Task<VillagerEntity> {
 
    protected void startExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
       VillagerEntity villagerentity = (VillagerEntity)entityIn.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get();
-      BrainUtil.func_220618_a(entityIn, villagerentity);
+      BrainUtil.lookApproachEachOther(entityIn, villagerentity);
       this.field_220588_a = func_220585_a(entityIn, villagerentity);
    }
 
    protected void updateTask(ServerWorld worldIn, VillagerEntity owner, long gameTime) {
       VillagerEntity villagerentity = (VillagerEntity)owner.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get();
       if (!(owner.getDistanceSq(villagerentity) > 5.0D)) {
-         BrainUtil.func_220618_a(owner, villagerentity);
+         BrainUtil.lookApproachEachOther(owner, villagerentity);
          owner.func_213746_a(villagerentity, gameTime);
          if (owner.canAbondonItems() && (owner.getVillagerData().getProfession() == VillagerProfession.FARMER || villagerentity.wantsMoreFood())) {
-            func_220586_a(owner, VillagerEntity.foodNeedMap.keySet(), villagerentity);
+            func_220586_a(owner, VillagerEntity.FOOD_VALUES.keySet(), villagerentity);
          }
 
-         if (!this.field_220588_a.isEmpty() && owner.getInventory().hasAny(this.field_220588_a)) {
+         if (!this.field_220588_a.isEmpty() && owner.getVillagerInventory().hasAny(this.field_220588_a)) {
             func_220586_a(owner, this.field_220588_a, villagerentity);
          }
 
@@ -58,15 +58,15 @@ public class ShareItemsTask extends Task<VillagerEntity> {
    }
 
    private static Set<Item> func_220585_a(VillagerEntity p_220585_0_, VillagerEntity p_220585_1_) {
-      ImmutableSet<Item> immutableset = p_220585_1_.getVillagerData().getProfession().getItemSet();
-      ImmutableSet<Item> immutableset1 = p_220585_0_.getVillagerData().getProfession().getItemSet();
+      ImmutableSet<Item> immutableset = p_220585_1_.getVillagerData().getProfession().getSpecificItems();
+      ImmutableSet<Item> immutableset1 = p_220585_0_.getVillagerData().getProfession().getSpecificItems();
       return immutableset.stream().filter((p_220587_1_) -> {
          return !immutableset1.contains(p_220587_1_);
       }).collect(Collectors.toSet());
    }
 
    private static void func_220586_a(VillagerEntity p_220586_0_, Set<Item> p_220586_1_, LivingEntity p_220586_2_) {
-      Inventory inventory = p_220586_0_.getInventory();
+      Inventory inventory = p_220586_0_.getVillagerInventory();
       ItemStack itemstack = ItemStack.EMPTY;
       int i = 0;
 

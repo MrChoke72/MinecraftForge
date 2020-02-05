@@ -22,8 +22,8 @@ import org.lwjgl.glfw.GLFWScrollCallbackI;
 @OnlyIn(Dist.CLIENT)
 public class InputMappings {
    @Nullable
-   private static final MethodHandle field_224792_b;
-   private static final int field_224793_c;
+   private static final MethodHandle GLFW_RAW_MOUSE_SUPPORTED;
+   private static final int GLFW_RAW_MOUSE;
    public static final InputMappings.Input INPUT_INVALID;
 
    public static InputMappings.Input getInputByCode(int keyCode, int scanCode) {
@@ -49,44 +49,44 @@ public class InputMappings {
       return GLFW.glfwGetKey(p_216506_0_, p_216506_2_) == 1;
    }
 
-   public static void func_216505_a(long p_216505_0_, GLFWKeyCallbackI p_216505_2_, GLFWCharModsCallbackI p_216505_3_) {
+   public static void setKeyCallbacks(long p_216505_0_, GLFWKeyCallbackI p_216505_2_, GLFWCharModsCallbackI p_216505_3_) {
       GLFW.glfwSetKeyCallback(p_216505_0_, p_216505_2_);
       GLFW.glfwSetCharModsCallback(p_216505_0_, p_216505_3_);
    }
 
-   public static void func_216503_a(long p_216503_0_, GLFWCursorPosCallbackI p_216503_2_, GLFWMouseButtonCallbackI p_216503_3_, GLFWScrollCallbackI p_216503_4_) {
+   public static void setMouseCallbacks(long p_216503_0_, GLFWCursorPosCallbackI p_216503_2_, GLFWMouseButtonCallbackI p_216503_3_, GLFWScrollCallbackI p_216503_4_) {
       GLFW.glfwSetCursorPosCallback(p_216503_0_, p_216503_2_);
       GLFW.glfwSetMouseButtonCallback(p_216503_0_, p_216503_3_);
       GLFW.glfwSetScrollCallback(p_216503_0_, p_216503_4_);
    }
 
-   public static void func_216504_a(long p_216504_0_, int p_216504_2_, double p_216504_3_, double p_216504_5_) {
+   public static void setCursorPosAndMode(long p_216504_0_, int p_216504_2_, double p_216504_3_, double p_216504_5_) {
       GLFW.glfwSetCursorPos(p_216504_0_, p_216504_3_, p_216504_5_);
       GLFW.glfwSetInputMode(p_216504_0_, 208897, p_216504_2_);
    }
 
    public static boolean func_224790_a() {
       try {
-         return field_224792_b != null && (boolean)field_224792_b.invokeExact();
+         return GLFW_RAW_MOUSE_SUPPORTED != null && (boolean)GLFW_RAW_MOUSE_SUPPORTED.invokeExact();
       } catch (Throwable throwable) {
          throw new RuntimeException(throwable);
       }
    }
 
-   public static void func_224791_a(long p_224791_0_, boolean p_224791_2_) {
+   public static void setRawMouseInput(long p_224791_0_, boolean p_224791_2_) {
       if (func_224790_a()) {
-         GLFW.glfwSetInputMode(p_224791_0_, field_224793_c, p_224791_2_ ? 1 : 0);
+         GLFW.glfwSetInputMode(p_224791_0_, GLFW_RAW_MOUSE, p_224791_2_ ? 1 : 0);
       }
 
    }
 
    @Nullable
-   public static String func_216507_a(int p_216507_0_) {
+   public static String getKeynameFromKeycode(int p_216507_0_) {
       return GLFW.glfwGetKeyName(p_216507_0_, -1);
    }
 
    @Nullable
-   public static String func_216502_b(int p_216502_0_) {
+   public static String getKeyNameFromScanCode(int p_216502_0_) {
       return GLFW.glfwGetKeyName(-1, p_216502_0_);
    }
 
@@ -106,8 +106,8 @@ public class InputMappings {
          throw new RuntimeException(throwable);
       }
 
-      field_224792_b = methodhandle;
-      field_224793_c = i;
+      GLFW_RAW_MOUSE_SUPPORTED = methodhandle;
+      GLFW_RAW_MOUSE = i;
       INPUT_INVALID = InputMappings.Type.KEYSYM.getOrMakeInput(-1);
    }
 
@@ -163,7 +163,7 @@ public class InputMappings {
       SCANCODE("scancode"),
       MOUSE("key.mouse");
 
-      private static final String[] field_197950_d = new String[]{"left", "middle", "right"};
+      private static final String[] MOUSE_BUTTONS = new String[]{"left", "middle", "right"};
       private final Int2ObjectMap<InputMappings.Input> inputs = new Int2ObjectOpenHashMap<>();
       private final String name;
 
@@ -183,7 +183,7 @@ public class InputMappings {
             String s;
             if (this == MOUSE) {
                if (keyCode <= 2) {
-                  s = "." + field_197950_d[keyCode];
+                  s = "." + MOUSE_BUTTONS[keyCode];
                } else {
                   s = "." + (keyCode + 1);
                }
@@ -197,7 +197,7 @@ public class InputMappings {
          }
       }
 
-      public String func_216500_a() {
+      public String getName() {
          return this.name;
       }
 

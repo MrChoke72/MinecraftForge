@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 @OnlyIn(Dist.CLIENT)
 public class ShaderInstance implements IShaderManager, AutoCloseable {
-   private static final Logger field_216545_a = LogManager.getLogger();
+   private static final Logger LOGGER = LogManager.getLogger();
    private static final ShaderDefault field_216546_b = new ShaderDefault();
    private static ShaderInstance field_216547_c;
    private static int field_216548_d = -1;
@@ -229,8 +229,8 @@ public class ShaderInstance implements IShaderManager, AutoCloseable {
 
       for(int i = 0; i < this.field_216551_g.size(); ++i) {
          if (this.field_216549_e.get(this.field_216550_f.get(i)) != null) {
-            GlStateManager.func_227756_r_('\u84c0' + i);
-            GlStateManager.func_227760_t_(0);
+            GlStateManager.activeTexture('\u84c0' + i);
+            GlStateManager.bindTexture(0);
          }
       }
 
@@ -303,7 +303,7 @@ public class ShaderInstance implements IShaderManager, AutoCloseable {
          String s = this.field_216550_f.get(i);
          int k = ShaderUniform.func_227806_a_(this.field_216555_k, s);
          if (k == -1) {
-            field_216545_a.warn("Shader {}could not find sampler named {} in the specified shader program.", this.field_216556_l, s);
+            LOGGER.warn("Shader {}could not find sampler named {} in the specified shader program.", this.field_216556_l, s);
             this.field_216549_e.remove(s);
             this.field_216550_f.remove(j);
             --j;
@@ -318,7 +318,7 @@ public class ShaderInstance implements IShaderManager, AutoCloseable {
          String s1 = shaderuniform.getShaderName();
          int l = ShaderUniform.func_227806_a_(this.field_216555_k, s1);
          if (l == -1) {
-            field_216545_a.warn("Could not find uniform named {} in the specified shader program.", (Object)s1);
+            LOGGER.warn("Could not find uniform named {} in the specified shader program.", (Object)s1);
          } else {
             this.field_216553_i.add(l);
             shaderuniform.setUniformLocation(l);

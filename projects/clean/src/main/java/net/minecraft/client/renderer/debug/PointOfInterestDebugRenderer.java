@@ -39,7 +39,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.IDebugRendere
       this.client = client;
    }
 
-   public void func_217675_a() {
+   public void clear() {
       this.field_217713_c.clear();
       this.field_217714_d.clear();
       this.field_217715_e.clear();
@@ -75,12 +75,12 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.IDebugRendere
       this.field_217715_e.put(p_217692_1_.field_217747_a, p_217692_1_);
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       RenderSystem.pushMatrix();
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
       RenderSystem.disableTexture();
-      this.func_229035_a_(p_225619_3_, p_225619_5_, p_225619_7_);
+      this.func_229035_a_(camX, camY, camZ);
       RenderSystem.enableTexture();
       RenderSystem.disableBlend();
       RenderSystem.popMatrix();
@@ -130,21 +130,21 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.IDebugRendere
       BlockPos blockpos = p_217702_0_.getCenter();
       BlockPos blockpos1 = blockpos.add(-1.0D, -1.0D, -1.0D);
       BlockPos blockpos2 = blockpos.add(1.0D, 1.0D, 1.0D);
-      DebugRenderer.func_217735_a(blockpos1, blockpos2, 0.2F, 1.0F, 0.2F, 0.15F);
+      DebugRenderer.renderBox(blockpos1, blockpos2, 0.2F, 1.0F, 0.2F, 0.15F);
    }
 
    private static void func_217699_b(BlockPos p_217699_0_) {
       float f = 0.05F;
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
-      DebugRenderer.func_217736_a(p_217699_0_, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
+      DebugRenderer.renderBox(p_217699_0_, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
    }
 
    private void func_222921_a(BlockPos p_222921_1_, List<String> p_222921_2_) {
       float f = 0.05F;
       RenderSystem.enableBlend();
       RenderSystem.defaultBlendFunc();
-      DebugRenderer.func_217736_a(p_222921_1_, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
+      DebugRenderer.renderBox(p_222921_1_, 0.05F, 0.2F, 0.2F, 1.0F, 0.3F);
       func_222923_a("" + p_222921_2_, p_222921_1_, 0, -256);
       func_222923_a("Ghost POI", p_222921_1_, 1, -65536);
    }
@@ -240,7 +240,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.IDebugRendere
       double d2 = (double)p_222923_1_.getX() + 0.5D;
       double d3 = (double)p_222923_1_.getY() + 1.3D + (double)p_222923_2_ * 0.2D;
       double d4 = (double)p_222923_1_.getZ() + 0.5D;
-      DebugRenderer.func_217734_a(p_222923_0_, d2, d3, d4, p_222923_3_, 0.02F, true, 0.0F, true);
+      DebugRenderer.renderText(p_222923_0_, d2, d3, d4, p_222923_3_, 0.02F, true, 0.0F, true);
    }
 
    private static void func_217693_a(IPosition p_217693_0_, int p_217693_1_, String p_217693_2_, int p_217693_3_, float p_217693_4_) {
@@ -251,7 +251,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.IDebugRendere
       double d3 = p_217693_0_.getY() + 2.4D + (double)p_217693_1_ * 0.25D;
       double d4 = (double)blockpos.getZ() + 0.5D;
       float f = 0.5F;
-      DebugRenderer.func_217734_a(p_217693_2_, d2, d3, d4, p_217693_3_, p_217693_4_, false, 0.5F, true);
+      DebugRenderer.renderText(p_217693_2_, d2, d3, d4, p_217693_3_, p_217693_4_, false, 0.5F, true);
    }
 
    private Set<String> func_217696_c(PointOfInterestDebugRenderer.POIInfo p_217696_1_) {
@@ -296,7 +296,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.IDebugRendere
    }
 
    private void func_217710_d() {
-      DebugRenderer.func_217728_a(this.client.getRenderViewEntity(), 8).ifPresent((p_217707_1_) -> {
+      DebugRenderer.getTargetEntity(this.client.getRenderViewEntity(), 8).ifPresent((p_217707_1_) -> {
          this.field_217716_f = p_217707_1_.getUniqueID();
       });
    }

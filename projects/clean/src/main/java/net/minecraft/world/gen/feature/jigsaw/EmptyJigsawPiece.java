@@ -20,11 +20,11 @@ public class EmptyJigsawPiece extends JigsawPiece {
       super(JigsawPattern.PlacementBehaviour.TERRAIN_MATCHING);
    }
 
-   public List<Template.BlockInfo> func_214849_a(TemplateManager p_214849_1_, BlockPos p_214849_2_, Rotation p_214849_3_, Random p_214849_4_) {
+   public List<Template.BlockInfo> getJigsawBlocks(TemplateManager templateManagerIn, BlockPos pos, Rotation rotationIn, Random rand) {
       return Collections.emptyList();
    }
 
-   public MutableBoundingBox func_214852_a(TemplateManager p_214852_1_, BlockPos p_214852_2_, Rotation p_214852_3_) {
+   public MutableBoundingBox getBoundingBox(TemplateManager templateManagerIn, BlockPos pos, Rotation rotationIn) {
       return MutableBoundingBox.getNewBoundingBox();
    }
 
@@ -36,8 +36,8 @@ public class EmptyJigsawPiece extends JigsawPiece {
       return IJigsawDeserializer.EMPTY_POOL_ELEMENT;
    }
 
-   public <T> Dynamic<T> serialize0(DynamicOps<T> p_214851_1_) {
-      return new Dynamic<>(p_214851_1_, p_214851_1_.emptyMap());
+   public <T> Dynamic<T> serialize0(DynamicOps<T> ops) {
+      return new Dynamic<>(ops, ops.emptyMap());
    }
 
    public String toString() {

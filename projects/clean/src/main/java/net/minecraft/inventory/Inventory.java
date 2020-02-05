@@ -49,9 +49,7 @@ public class Inventory implements IInventory, IRecipeHelperPopulator {
       return itemstack;
    }
 
-   //AH REFACTOR
    public ItemStack growItemToCount(Item item, int count) {
-   //public ItemStack func_223374_a(Item p_223374_1_, int p_223374_2_) {
       ItemStack itemstack = new ItemStack(item, 0);
 
       for(int i = this.slotsCount - 1; i >= 0; --i) {
@@ -148,9 +146,7 @@ public class Inventory implements IInventory, IRecipeHelperPopulator {
       }).collect(Collectors.toList()).toString();
    }
 
-   //AH REFACTOR
    private void addToEmptySlot(ItemStack stack) {
-   //private void func_223375_b(ItemStack p_223375_1_) {
       for(int i = 0; i < this.slotsCount; ++i) {
          ItemStack itemstack = this.getStackInSlot(i);
          if (itemstack.isEmpty()) {
@@ -162,14 +158,12 @@ public class Inventory implements IInventory, IRecipeHelperPopulator {
 
    }
 
-   //AH REFACTOR
-   private void addToExistingStack(ItemStack stackIn) {
-   //private void func_223372_c(ItemStack p_223372_1_) {
+   private void addToExistingStack(ItemStack p_223372_1_) {
       for(int i = 0; i < this.slotsCount; ++i) {
          ItemStack itemstack = this.getStackInSlot(i);
-         if (ItemStack.areItemsEqual(itemstack, stackIn)) {
-            this.mergeStacks(stackIn, itemstack);
-            if (stackIn.isEmpty()) {
+         if (ItemStack.areItemsEqual(itemstack, p_223372_1_)) {
+            this.mergeStacks(p_223372_1_, itemstack);
+            if (p_223372_1_.isEmpty()) {
                return;
             }
          }
@@ -177,9 +171,7 @@ public class Inventory implements IInventory, IRecipeHelperPopulator {
 
    }
 
-   //Ah REFACTOR
    private void mergeStacks(ItemStack currStack, ItemStack newStack) {
-   //private void func_223373_a(ItemStack p_223373_1_, ItemStack p_223373_2_) {
       int i = Math.min(this.getInventoryStackLimit(), newStack.getMaxStackSize());
       int j = Math.min(currStack.getCount(), i - newStack.getCount());
       if (j > 0) {

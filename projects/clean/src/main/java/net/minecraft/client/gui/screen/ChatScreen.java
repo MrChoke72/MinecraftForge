@@ -19,7 +19,7 @@ public class ChatScreen extends Screen {
    private CommandSuggestionHelper field_228174_e_;
 
    public ChatScreen(String defaultText) {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
       this.defaultInputFieldText = defaultText;
    }
 
@@ -34,11 +34,11 @@ public class ChatScreen extends Screen {
       this.inputField.setMaxStringLength(256);
       this.inputField.setEnableBackgroundDrawing(false);
       this.inputField.setText(this.defaultInputFieldText);
-      this.inputField.func_212954_a(this::func_212997_a);
+      this.inputField.setResponder(this::func_212997_a);
       this.children.add(this.inputField);
       this.field_228174_e_ = new CommandSuggestionHelper(this.minecraft, this, this.inputField, this.font, false, false, 1, 10, true, -805306368);
       this.field_228174_e_.func_228111_a_();
-      this.func_212928_a(this.inputField);
+      this.setFocusedDefault(this.inputField);
    }
 
    public void resize(Minecraft p_resize_1_, int p_resize_2_, int p_resize_3_) {
@@ -79,10 +79,10 @@ public class ChatScreen extends Screen {
             this.getSentHistory(1);
             return true;
          } else if (p_keyPressed_1_ == 266) {
-            this.minecraft.ingameGUI.getChatGUI().func_194813_a((double)(this.minecraft.ingameGUI.getChatGUI().getLineCount() - 1));
+            this.minecraft.ingameGUI.getChatGUI().addScrollPos((double)(this.minecraft.ingameGUI.getChatGUI().getLineCount() - 1));
             return true;
          } else if (p_keyPressed_1_ == 267) {
-            this.minecraft.ingameGUI.getChatGUI().func_194813_a((double)(-this.minecraft.ingameGUI.getChatGUI().getLineCount() + 1));
+            this.minecraft.ingameGUI.getChatGUI().addScrollPos((double)(-this.minecraft.ingameGUI.getChatGUI().getLineCount() + 1));
             return true;
          } else {
             return false;
@@ -114,7 +114,7 @@ public class ChatScreen extends Screen {
             p_mouseScrolled_5_ *= 7.0D;
          }
 
-         this.minecraft.ingameGUI.getChatGUI().func_194813_a(p_mouseScrolled_5_);
+         this.minecraft.ingameGUI.getChatGUI().addScrollPos(p_mouseScrolled_5_);
          return true;
       }
    }
@@ -166,7 +166,7 @@ public class ChatScreen extends Screen {
    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
       this.setFocused(this.inputField);
       this.inputField.setFocused2(true);
-      fill(2, this.height - 14, this.width - 2, this.height - 2, this.minecraft.gameSettings.func_216839_a(Integer.MIN_VALUE));
+      fill(2, this.height - 14, this.width - 2, this.height - 2, this.minecraft.gameSettings.getChatBackgroundColor(Integer.MIN_VALUE));
       this.inputField.render(p_render_1_, p_render_2_, p_render_3_);
       this.field_228174_e_.func_228114_a_(p_render_1_, p_render_2_);
       ITextComponent itextcomponent = this.minecraft.ingameGUI.getChatGUI().getTextComponent((double)p_render_1_, (double)p_render_2_);

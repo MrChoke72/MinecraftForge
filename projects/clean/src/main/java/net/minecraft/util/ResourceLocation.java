@@ -24,9 +24,9 @@ public class ResourceLocation implements Comparable<ResourceLocation> {
    protected ResourceLocation(String[] resourceParts) {
       this.namespace = org.apache.commons.lang3.StringUtils.isEmpty(resourceParts[0]) ? "minecraft" : resourceParts[0];
       this.path = resourceParts[1];
-      if (!func_217858_d(this.namespace)) {
+      if (!isValidNamespace(this.namespace)) {
          throw new ResourceLocationException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ':' + this.path);
-      } else if (!func_217856_c(this.path)) {
+      } else if (!isPathValid(this.path)) {
          throw new ResourceLocationException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ':' + this.path);
       }
    }
@@ -122,22 +122,22 @@ public class ResourceLocation implements Comparable<ResourceLocation> {
       return charIn >= '0' && charIn <= '9' || charIn >= 'a' && charIn <= 'z' || charIn == '_' || charIn == ':' || charIn == '/' || charIn == '.' || charIn == '-';
    }
 
-   private static boolean func_217856_c(String pathIn) {
+   private static boolean isPathValid(String pathIn) {
       return pathIn.chars().allMatch((p_217857_0_) -> {
          return p_217857_0_ == 95 || p_217857_0_ == 45 || p_217857_0_ >= 97 && p_217857_0_ <= 122 || p_217857_0_ >= 48 && p_217857_0_ <= 57 || p_217857_0_ == 47 || p_217857_0_ == 46;
       });
    }
 
-   private static boolean func_217858_d(String namespaceIn) {
+   private static boolean isValidNamespace(String namespaceIn) {
       return namespaceIn.chars().allMatch((p_217859_0_) -> {
          return p_217859_0_ == 95 || p_217859_0_ == 45 || p_217859_0_ >= 97 && p_217859_0_ <= 122 || p_217859_0_ >= 48 && p_217859_0_ <= 57 || p_217859_0_ == 46;
       });
    }
 
    @OnlyIn(Dist.CLIENT)
-   public static boolean func_217855_b(String p_217855_0_) {
-      String[] astring = decompose(p_217855_0_, ':');
-      return func_217858_d(org.apache.commons.lang3.StringUtils.isEmpty(astring[0]) ? "minecraft" : astring[0]) && func_217856_c(astring[1]);
+   public static boolean isResouceNameValid(String resourceName) {
+      String[] astring = decompose(resourceName, ':');
+      return isValidNamespace(org.apache.commons.lang3.StringUtils.isEmpty(astring[0]) ? "minecraft" : astring[0]) && isPathValid(astring[1]);
    }
 
    public static class Serializer implements JsonDeserializer<ResourceLocation>, JsonSerializer<ResourceLocation> {

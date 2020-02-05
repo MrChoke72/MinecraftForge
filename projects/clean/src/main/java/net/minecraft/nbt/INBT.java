@@ -17,7 +17,7 @@ public interface INBT {
 
    byte getId();
 
-   INBTType<?> func_225647_b_();
+   INBTType<?> getType();
 
    INBT copy();
 

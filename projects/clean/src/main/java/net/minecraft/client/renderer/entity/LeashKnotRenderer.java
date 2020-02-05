@@ -19,14 +19,14 @@ public class LeashKnotRenderer extends EntityRenderer<LeashKnotEntity> {
       super(renderManagerIn);
    }
 
-   public void func_225623_a_(LeashKnotEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      p_225623_4_.func_227860_a_();
-      p_225623_4_.func_227862_a_(-1.0F, -1.0F, 1.0F);
-      this.leashKnotModel.func_225597_a_(p_225623_1_, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-      IVertexBuilder ivertexbuilder = p_225623_5_.getBuffer(this.leashKnotModel.func_228282_a_(LEASH_KNOT_TEXTURES));
-      this.leashKnotModel.func_225598_a_(p_225623_4_, ivertexbuilder, p_225623_6_, OverlayTexture.field_229196_a_, 1.0F, 1.0F, 1.0F, 1.0F);
-      p_225623_4_.func_227865_b_();
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+   public void render(LeashKnotEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      matrixStackIn.push();
+      matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
+      this.leashKnotModel.render(entityIn, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(this.leashKnotModel.getRenderType(LEASH_KNOT_TEXTURES));
+      this.leashKnotModel.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_LIGHT, 1.0F, 1.0F, 1.0F, 1.0F);
+      matrixStackIn.pop();
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
    public ResourceLocation getEntityTexture(LeashKnotEntity entity) {

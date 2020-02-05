@@ -254,7 +254,7 @@ public class ShulkerBulletEntity extends Entity {
             this.setMotion(vec3d.add((this.targetDeltaX - vec3d.x) * 0.2D, (this.targetDeltaY - vec3d.y) * 0.2D, (this.targetDeltaZ - vec3d.z) * 0.2D));
          }
 
-         RayTraceResult raytraceresult = ProjectileHelper.func_221266_a(this, true, false, this.owner, RayTraceContext.BlockMode.COLLIDER);
+         RayTraceResult raytraceresult = ProjectileHelper.rayTrace(this, true, false, this.owner, RayTraceContext.BlockMode.COLLIDER);
          if (raytraceresult.getType() != RayTraceResult.Type.MISS) {
             this.bulletHit(raytraceresult);
          }
@@ -276,7 +276,7 @@ public class ShulkerBulletEntity extends Entity {
          if (this.direction != null) {
             BlockPos blockpos1 = new BlockPos(this);
             Direction.Axis direction$axis = this.direction.getAxis();
-            if (this.world.func_217400_a(blockpos1.offset(this.direction), this)) {
+            if (this.world.isTopSolid(blockpos1.offset(this.direction), this)) {
                this.selectNextMoveDirection(direction$axis);
             } else {
                BlockPos blockpos = new BlockPos(this.target);

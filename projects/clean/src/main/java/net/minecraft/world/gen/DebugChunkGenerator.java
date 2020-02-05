@@ -58,7 +58,7 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugGenerationSettings>
    public void makeBase(IWorld worldIn, IChunk chunkIn) {
    }
 
-   public int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type p_222529_3_) {
+   public int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type heightmapType) {
       return 0;
    }
 

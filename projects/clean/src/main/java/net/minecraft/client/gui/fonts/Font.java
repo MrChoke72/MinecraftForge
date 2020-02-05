@@ -23,17 +23,17 @@ import org.apache.logging.log4j.Logger;
 @OnlyIn(Dist.CLIENT)
 public class Font implements AutoCloseable {
    private static final Logger LOGGER = LogManager.getLogger();
-   private static final EmptyGlyph field_212460_b = new EmptyGlyph();
-   private static final IGlyph field_212461_c = () -> {
+   private static final EmptyGlyph EMPTY_GLYPH = new EmptyGlyph();
+   private static final IGlyph GLYPH_ADVANCE_SPACE = () -> {
       return 4.0F;
    };
    private static final Random RANDOM = new Random();
    private final TextureManager textureManager;
    private final ResourceLocation id;
    private TexturedGlyph fallbackGlyph;
-   private TexturedGlyph field_228156_h_;
+   private TexturedGlyph whiteGlyph;
    private final List<IGlyphProvider> glyphProviders = Lists.newArrayList();
-   private final Char2ObjectMap<TexturedGlyph> field_212463_j = new Char2ObjectOpenHashMap<>();
+   private final Char2ObjectMap<TexturedGlyph> mapTexturedGlyphs = new Char2ObjectOpenHashMap<>();
    private final Char2ObjectMap<IGlyph> glyphs = new Char2ObjectOpenHashMap<>();
    private final Int2ObjectMap<CharList> glyphsByWidth = new Int2ObjectOpenHashMap<>();
    private final List<FontTexture> textures = Lists.newArrayList();
@@ -44,25 +44,20 @@ public class Font implements AutoCloseable {
    }
 
    public void setGlyphProviders(List<IGlyphProvider> glyphProvidersIn) {
-      for(IGlyphProvider iglyphprovider : this.glyphProviders) {
-         iglyphprovider.close();
-      }
-
-      this.glyphProviders.clear();
+      this.func_230154_b_();
       this.deleteTextures();
-      this.textures.clear();
-      this.field_212463_j.clear();
+      this.mapTexturedGlyphs.clear();
       this.glyphs.clear();
       this.glyphsByWidth.clear();
       this.fallbackGlyph = this.createTexturedGlyph(DefaultGlyph.INSTANCE);
-      this.field_228156_h_ = this.createTexturedGlyph(WhiteGlyph.INSTANCE);
+      this.whiteGlyph = this.createTexturedGlyph(WhiteGlyph.INSTANCE);
       Set<IGlyphProvider> set = Sets.newHashSet();
 
       for(char c0 = 0; c0 < '\uffff'; ++c0) {
-         for(IGlyphProvider iglyphprovider1 : glyphProvidersIn) {
-            IGlyph iglyph = (IGlyph)(c0 == ' ' ? field_212461_c : iglyphprovider1.func_212248_a(c0));
+         for(IGlyphProvider iglyphprovider : glyphProvidersIn) {
+            IGlyph iglyph = (IGlyph)(c0 == ' ' ? GLYPH_ADVANCE_SPACE : iglyphprovider.getGlyphInfo(c0));
             if (iglyph != null) {
-               set.add(iglyphprovider1);
+               set.add(iglyphprovider);
                if (iglyph != DefaultGlyph.INSTANCE) {
                   this.glyphsByWidth.computeIfAbsent(MathHelper.ceil(iglyph.getAdvance(false)), (p_212456_0_) -> {
                      return new CharArrayList();
@@ -77,25 +72,35 @@ public class Font implements AutoCloseable {
    }
 
    public void close() {
+      this.func_230154_b_();
       this.deleteTextures();
    }
 
-   public void deleteTextures() {
+   private void func_230154_b_() {
+      for(IGlyphProvider iglyphprovider : this.glyphProviders) {
+         iglyphprovider.close();
+      }
+
+      this.glyphProviders.clear();
+   }
+
+   private void deleteTextures() {
       for(FontTexture fonttexture : this.textures) {
          fonttexture.close();
       }
 
+      this.textures.clear();
    }
 
    public IGlyph findGlyph(char charIn) {
       return this.glyphs.computeIfAbsent(charIn, (p_212457_1_) -> {
-         return (IGlyph)(p_212457_1_ == 32 ? field_212461_c : this.func_212455_c((char)p_212457_1_));
+         return (IGlyph)(p_212457_1_ == 32 ? GLYPH_ADVANCE_SPACE : this.getGlyphInfo((char)p_212457_1_));
       });
    }
 
-   private IGlyphInfo func_212455_c(char p_212455_1_) {
+   private IGlyphInfo getGlyphInfo(char p_212455_1_) {
       for(IGlyphProvider iglyphprovider : this.glyphProviders) {
-         IGlyphInfo iglyphinfo = iglyphprovider.func_212248_a(p_212455_1_);
+         IGlyphInfo iglyphinfo = iglyphprovider.getGlyphInfo(p_212455_1_);
          if (iglyphinfo != null) {
             return iglyphinfo;
          }
@@ -105,8 +110,8 @@ public class Font implements AutoCloseable {
    }
 
    public TexturedGlyph getGlyph(char character) {
-      return this.field_212463_j.computeIfAbsent(character, (p_212458_1_) -> {
-         return (TexturedGlyph)(p_212458_1_ == 32 ? field_212460_b : this.createTexturedGlyph(this.func_212455_c((char)p_212458_1_)));
+      return this.mapTexturedGlyphs.computeIfAbsent(character, (p_212458_1_) -> {
+         return (TexturedGlyph)(p_212458_1_ == 32 ? EMPTY_GLYPH : this.createTexturedGlyph(this.getGlyphInfo((char)p_212458_1_)));
       });
    }
 
@@ -120,7 +125,7 @@ public class Font implements AutoCloseable {
 
       FontTexture fonttexture1 = new FontTexture(new ResourceLocation(this.id.getNamespace(), this.id.getPath() + "/" + this.textures.size()), glyphInfoIn.isColored());
       this.textures.add(fonttexture1);
-      this.textureManager.func_229263_a_(fonttexture1.getTextureLocation(), fonttexture1);
+      this.textureManager.loadTexture(fonttexture1.getTextureLocation(), fonttexture1);
       TexturedGlyph texturedglyph1 = fonttexture1.createTexturedGlyph(glyphInfoIn);
       return texturedglyph1 == null ? this.fallbackGlyph : texturedglyph1;
    }
@@ -130,7 +135,7 @@ public class Font implements AutoCloseable {
       return charlist != null && !charlist.isEmpty() ? this.getGlyph(charlist.get(RANDOM.nextInt(charlist.size()))) : this.fallbackGlyph;
    }
 
-   public TexturedGlyph func_228157_b_() {
-      return this.field_228156_h_;
+   public TexturedGlyph getWhiteGlyph() {
+      return this.whiteGlyph;
    }
 }

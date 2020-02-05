@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import net.minecraft.util.registry.Registry;
 
+//AH REFACTOR Class refactor
 public class Schedule {
    public static final Schedule EMPTY = register("empty").add(0, Activity.IDLE).build();
    public static final Schedule SIMPLE = register("simple").add(5000, Activity.WORK).add(11000, Activity.REST).build();

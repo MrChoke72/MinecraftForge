@@ -24,12 +24,12 @@ public class KelpBlock extends Block implements ILiquidContainer {
       return Fluids.WATER.getStillFluidState(false);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!p_225534_1_.isValidPosition(p_225534_2_, p_225534_3_)) {
-         p_225534_2_.destroyBlock(p_225534_3_, true);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!state.isValidPosition(worldIn, pos)) {
+         worldIn.destroyBlock(pos, true);
       }
 
-      super.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
+      super.tick(state, worldIn, pos, rand);
    }
 
    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
@@ -52,7 +52,7 @@ public class KelpBlock extends Block implements ILiquidContainer {
       BlockPos blockpos = pos.down();
       BlockState blockstate = worldIn.getBlockState(blockpos);
       Block block = blockstate.getBlock();
-      return block != Blocks.MAGMA_BLOCK && (block == this || blockstate.func_224755_d(worldIn, blockpos, Direction.UP));
+      return block != Blocks.MAGMA_BLOCK && (block == this || blockstate.isSolidSide(worldIn, blockpos, Direction.UP));
    }
 
    public ItemStack getItem(IBlockReader worldIn, BlockPos pos, BlockState state) {

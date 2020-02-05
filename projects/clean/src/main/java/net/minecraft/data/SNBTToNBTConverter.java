@@ -104,7 +104,7 @@ public class SNBTToNBTConverter implements IDataProvider {
             }
          }
 
-         p_229444_1_.func_208316_a(path, p_229444_2_.field_229451_c_);
+         p_229444_1_.recordHash(path, p_229444_2_.field_229451_c_);
       } catch (IOException ioexception) {
          LOGGER.error("Couldn't write structure {} at {}", p_229444_2_.field_229449_a_, path, ioexception);
       }

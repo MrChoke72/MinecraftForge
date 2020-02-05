@@ -81,14 +81,14 @@ public enum Rotation {
       }
    }
 
-   public static Rotation func_222466_a(Random p_222466_0_) {
+   public static Rotation randomRotation(Random rand) {
       Rotation[] arotation = values();
-      return arotation[p_222466_0_.nextInt(arotation.length)];
+      return arotation[rand.nextInt(arotation.length)];
    }
 
-   public static List<Rotation> func_222467_b(Random p_222467_0_) {
+   public static List<Rotation> shuffledRotations(Random rand) {
       List<Rotation> list = Lists.newArrayList(values());
-      Collections.shuffle(list, p_222467_0_);
+      Collections.shuffle(list, rand);
       return list;
    }
 }

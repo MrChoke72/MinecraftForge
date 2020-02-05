@@ -20,9 +20,9 @@ public class EndBiomeProvider extends BiomeProvider {
       this.generator = new SimplexNoiseGenerator(this.random);
    }
 
-   public Biome func_225526_b_(int p_225526_1_, int p_225526_2_, int p_225526_3_) {
-      int i = p_225526_1_ >> 2;
-      int j = p_225526_3_ >> 2;
+   public Biome getNoiseBiome(int x, int y, int z) {
+      int i = x >> 2;
+      int j = z >> 2;
       if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
          return Biomes.THE_END;
       } else {

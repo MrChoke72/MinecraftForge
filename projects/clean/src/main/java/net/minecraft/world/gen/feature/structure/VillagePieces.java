@@ -12,18 +12,18 @@ import net.minecraft.world.gen.feature.jigsaw.JigsawPiece;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
 public class VillagePieces {
-   public static void func_214838_a(ChunkGenerator<?> p_214838_0_, TemplateManager p_214838_1_, BlockPos p_214838_2_, List<StructurePiece> p_214838_3_, SharedSeedRandom p_214838_4_, VillageConfig p_214838_5_) {
+   public static void func_214838_a(ChunkGenerator<?> chunkGeneratorIn, TemplateManager templateManagerIn, BlockPos p_214838_2_, List<StructurePiece> structurePieces, SharedSeedRandom sharedSeedRandomIn, VillageConfig villageConfigIn) {
       PlainsVillagePools.init();
       SnowyVillagePools.init();
       SavannaVillagePools.init();
       DesertVillagePools.init();
       TaigaVillagePools.init();
-      JigsawManager.func_214889_a(p_214838_5_.startPool, p_214838_5_.size, VillagePieces.Village::new, p_214838_0_, p_214838_1_, p_214838_2_, p_214838_3_, p_214838_4_);
+      JigsawManager.func_214889_a(villageConfigIn.startPool, villageConfigIn.size, VillagePieces.Village::new, chunkGeneratorIn, templateManagerIn, p_214838_2_, structurePieces, sharedSeedRandomIn);
    }
 
    public static class Village extends AbstractVillagePiece {
-      public Village(TemplateManager p_i50890_1_, JigsawPiece p_i50890_2_, BlockPos p_i50890_3_, int p_i50890_4_, Rotation p_i50890_5_, MutableBoundingBox p_i50890_6_) {
-         super(IStructurePieceType.NVI, p_i50890_1_, p_i50890_2_, p_i50890_3_, p_i50890_4_, p_i50890_5_, p_i50890_6_);
+      public Village(TemplateManager templateManagerIn, JigsawPiece jigsawPieceIn, BlockPos posIn, int groundLevelDelta, Rotation rotationIn, MutableBoundingBox boundsIn) {
+         super(IStructurePieceType.NVI, templateManagerIn, jigsawPieceIn, posIn, groundLevelDelta, rotationIn, boundsIn);
       }
 
       public Village(TemplateManager p_i50891_1_, CompoundNBT p_i50891_2_) {

@@ -216,8 +216,8 @@ public class CreativeScreen extends DisplayEffectsScreen<CreativeScreen.Creative
 
    }
 
-   private boolean hasTmpInventory(@Nullable Slot p_208018_1_) {
-      return p_208018_1_ != null && p_208018_1_.inventory == TMP_INVENTORY;
+   private boolean hasTmpInventory(@Nullable Slot slotIn) {
+      return slotIn != null && slotIn.inventory == TMP_INVENTORY;
    }
 
    protected void updateActivePotionEffects() {
@@ -319,9 +319,9 @@ public class CreativeScreen extends DisplayEffectsScreen<CreativeScreen.Creative
       }
    }
 
-   public boolean keyReleased(int p_223281_1_, int p_223281_2_, int p_223281_3_) {
+   public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
       this.field_195377_F = false;
-      return super.keyReleased(p_223281_1_, p_223281_2_, p_223281_3_);
+      return super.keyReleased(keyCode, scanCode, modifiers);
    }
 
    private void updateCreativeSearch() {
@@ -336,10 +336,10 @@ public class CreativeScreen extends DisplayEffectsScreen<CreativeScreen.Creative
          ISearchTree<ItemStack> isearchtree;
          if (s.startsWith("#")) {
             s = s.substring(1);
-            isearchtree = this.minecraft.func_213253_a(SearchTreeManager.field_215360_b);
+            isearchtree = this.minecraft.getSearchTree(SearchTreeManager.TAGS);
             this.searchTags(s);
          } else {
-            isearchtree = this.minecraft.func_213253_a(SearchTreeManager.field_215359_a);
+            isearchtree = this.minecraft.getSearchTree(SearchTreeManager.ITEMS);
          }
 
          (this.container).itemList.addAll(isearchtree.search(s.toLowerCase(Locale.ROOT)));
@@ -532,9 +532,9 @@ public class CreativeScreen extends DisplayEffectsScreen<CreativeScreen.Creative
       }
    }
 
-   protected boolean hasClickedOutside(double p_195361_1_, double p_195361_3_, int p_195361_5_, int p_195361_6_, int p_195361_7_) {
-      boolean flag = p_195361_1_ < (double)p_195361_5_ || p_195361_3_ < (double)p_195361_6_ || p_195361_1_ >= (double)(p_195361_5_ + this.xSize) || p_195361_3_ >= (double)(p_195361_6_ + this.ySize);
-      this.field_199506_G = flag && !this.isMouseOverGroup(ItemGroup.GROUPS[selectedTabIndex], p_195361_1_, p_195361_3_);
+   protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeftIn, int guiTopIn, int mouseButton) {
+      boolean flag = mouseX < (double)guiLeftIn || mouseY < (double)guiTopIn || mouseX >= (double)(guiLeftIn + this.xSize) || mouseY >= (double)(guiTopIn + this.ySize);
+      this.field_199506_G = flag && !this.isMouseOverGroup(ItemGroup.GROUPS[selectedTabIndex], mouseX, mouseY);
       return this.field_199506_G;
    }
 
@@ -900,8 +900,8 @@ public class CreativeScreen extends DisplayEffectsScreen<CreativeScreen.Creative
 
    @OnlyIn(Dist.CLIENT)
    static class LockedSlot extends Slot {
-      public LockedSlot(IInventory p_i47453_1_, int p_i47453_2_, int p_i47453_3_, int p_i47453_4_) {
-         super(p_i47453_1_, p_i47453_2_, p_i47453_3_, p_i47453_4_);
+      public LockedSlot(IInventory inventoryIn, int index, int xPosition, int yPosition) {
+         super(inventoryIn, index, xPosition, yPosition);
       }
 
       public boolean canTakeStack(PlayerEntity playerIn) {

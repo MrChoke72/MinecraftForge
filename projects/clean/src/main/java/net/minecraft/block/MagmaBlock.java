@@ -35,12 +35,12 @@ public class MagmaBlock extends Block {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public boolean func_225543_m_(BlockState p_225543_1_) {
+   public boolean isEmissiveRendering(BlockState p_225543_1_) {
       return true;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      BubbleColumnBlock.placeBubbleColumn(p_225534_2_, p_225534_3_.up(), true);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      BubbleColumnBlock.placeBubbleColumn(worldIn, pos.up(), true);
    }
 
    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
@@ -51,11 +51,11 @@ public class MagmaBlock extends Block {
       return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
    }
 
-   public void func_225542_b_(BlockState p_225542_1_, ServerWorld p_225542_2_, BlockPos p_225542_3_, Random p_225542_4_) {
-      BlockPos blockpos = p_225542_3_.up();
-      if (p_225542_2_.getFluidState(p_225542_3_).isTagged(FluidTags.WATER)) {
-         p_225542_2_.playSound((PlayerEntity)null, p_225542_3_, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (p_225542_2_.rand.nextFloat() - p_225542_2_.rand.nextFloat()) * 0.8F);
-         p_225542_2_.spawnParticle(ParticleTypes.LARGE_SMOKE, (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.25D, (double)blockpos.getZ() + 0.5D, 8, 0.5D, 0.25D, 0.5D, 0.0D);
+   public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
+      BlockPos blockpos = pos.up();
+      if (worldIn.getFluidState(pos).isTagged(FluidTags.WATER)) {
+         worldIn.playSound((PlayerEntity)null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F);
+         worldIn.spawnParticle(ParticleTypes.LARGE_SMOKE, (double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.25D, (double)blockpos.getZ() + 0.5D, 8, 0.5D, 0.25D, 0.5D, 0.0D);
       }
 
    }

@@ -55,26 +55,26 @@ import org.apache.logging.log4j.Logger;
 @OnlyIn(Dist.CLIENT)
 public class ChunkRenderDispatcher {
    private static final Logger LOGGER = LogManager.getLogger();
-   private final PriorityQueue<ChunkRenderDispatcher.ChunkRender.ChunkRenderTask> field_228885_b_ = Queues.newPriorityQueue();
-   private final Queue<RegionRenderCacheBuilder> field_228886_c_;
-   private final Queue<Runnable> field_228887_d_ = Queues.newConcurrentLinkedQueue();
-   private volatile int field_228888_e_;
-   private volatile int field_228889_f_;
-   private final RegionRenderCacheBuilder field_228890_g_;
-   private final DelegatedTaskExecutor<Runnable> field_228891_h_;
-   private final Executor field_228892_i_;
-   private World field_228893_j_;
-   private final WorldRenderer field_228894_k_;
-   private Vec3d field_217672_l = Vec3d.ZERO;
+   private final PriorityQueue<ChunkRenderDispatcher.ChunkRender.ChunkRenderTask> renderTasks = Queues.newPriorityQueue();
+   private final Queue<RegionRenderCacheBuilder> freeBuilders;
+   private final Queue<Runnable> uploadTasks = Queues.newConcurrentLinkedQueue();
+   private volatile int countRenderTasks;
+   private volatile int countFreeBuilders;
+   private final RegionRenderCacheBuilder fixedBuilder;
+   private final DelegatedTaskExecutor<Runnable> delegatedTaskExecutor;
+   private final Executor executor;
+   private World world;
+   private final WorldRenderer worldRenderer;
+   private Vec3d renderPosition = Vec3d.ZERO;
 
-   public ChunkRenderDispatcher(World p_i226020_1_, WorldRenderer p_i226020_2_, Executor p_i226020_3_, boolean p_i226020_4_, RegionRenderCacheBuilder p_i226020_5_) {
-      this.field_228893_j_ = p_i226020_1_;
-      this.field_228894_k_ = p_i226020_2_;
-      int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3D) / (RenderType.func_228661_n_().stream().mapToInt(RenderType::func_228662_o_).sum() * 4) - 1);
+   public ChunkRenderDispatcher(World worldIn, WorldRenderer worldRendererIn, Executor executorIn, boolean java64bit, RegionRenderCacheBuilder fixedBuilderIn) {
+      this.world = worldIn;
+      this.worldRenderer = worldRendererIn;
+      int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3D) / (RenderType.getBlockRenderTypes().stream().mapToInt(RenderType::defaultBufferSize).sum() * 4) - 1);
       int j = Runtime.getRuntime().availableProcessors();
-      int k = p_i226020_4_ ? j : Math.min(j, 4);
+      int k = java64bit ? j : Math.min(j, 4);
       int l = Math.max(1, Math.min(k, i));
-      this.field_228890_g_ = p_i226020_5_;
+      this.fixedBuilder = fixedBuilderIn;
       List<RegionRenderCacheBuilder> list = Lists.newArrayListWithExpectedSize(l);
 
       try {
@@ -92,128 +92,128 @@ public class ChunkRenderDispatcher {
          System.gc();
       }
 
-      this.field_228886_c_ = Queues.newArrayDeque(list);
-      this.field_228889_f_ = this.field_228886_c_.size();
-      this.field_228892_i_ = p_i226020_3_;
-      this.field_228891_h_ = DelegatedTaskExecutor.create(p_i226020_3_, "Chunk Renderer");
-      this.field_228891_h_.enqueue(this::func_228909_h_);
+      this.freeBuilders = Queues.newArrayDeque(list);
+      this.countFreeBuilders = this.freeBuilders.size();
+      this.executor = executorIn;
+      this.delegatedTaskExecutor = DelegatedTaskExecutor.create(executorIn, "Chunk Renderer");
+      this.delegatedTaskExecutor.enqueue(this::runTask);
    }
 
-   public void func_228895_a_(World p_228895_1_) {
-      this.field_228893_j_ = p_228895_1_;
+   public void setWorld(World worldIn) {
+      this.world = worldIn;
    }
 
-   private void func_228909_h_() {
-      if (!this.field_228886_c_.isEmpty()) {
-         ChunkRenderDispatcher.ChunkRender.ChunkRenderTask chunkrenderdispatcher$chunkrender$chunkrendertask = this.field_228885_b_.poll();
+   private void runTask() {
+      if (!this.freeBuilders.isEmpty()) {
+         ChunkRenderDispatcher.ChunkRender.ChunkRenderTask chunkrenderdispatcher$chunkrender$chunkrendertask = this.renderTasks.poll();
          if (chunkrenderdispatcher$chunkrender$chunkrendertask != null) {
-            RegionRenderCacheBuilder regionrendercachebuilder = this.field_228886_c_.poll();
-            this.field_228888_e_ = this.field_228885_b_.size();
-            this.field_228889_f_ = this.field_228886_c_.size();
+            RegionRenderCacheBuilder regionrendercachebuilder = this.freeBuilders.poll();
+            this.countRenderTasks = this.renderTasks.size();
+            this.countFreeBuilders = this.freeBuilders.size();
             CompletableFuture.runAsync(() -> {
-            }, this.field_228892_i_).thenCompose((p_228901_2_) -> {
-               return chunkrenderdispatcher$chunkrender$chunkrendertask.func_225618_a_(regionrendercachebuilder);
+            }, this.executor).thenCompose((p_228901_2_) -> {
+               return chunkrenderdispatcher$chunkrender$chunkrendertask.execute(regionrendercachebuilder);
             }).whenComplete((p_228898_2_, p_228898_3_) -> {
-               this.field_228891_h_.enqueue(() -> {
-                  if (p_228898_2_ == ChunkRenderDispatcher.ChunkTaskResult.SUCCESSFUL) {
-                     regionrendercachebuilder.func_228365_a_();
-                  } else {
-                     regionrendercachebuilder.func_228367_b_();
-                  }
-
-                  this.field_228886_c_.add(regionrendercachebuilder);
-                  this.field_228889_f_ = this.field_228886_c_.size();
-                  this.func_228909_h_();
-               });
                if (p_228898_3_ != null) {
                   CrashReport crashreport = CrashReport.makeCrashReport(p_228898_3_, "Batching chunks");
                   Minecraft.getInstance().crashed(Minecraft.getInstance().addGraphicsAndWorldToCrashReport(crashreport));
-               }
+               } else {
+                  this.delegatedTaskExecutor.enqueue(() -> {
+                     if (p_228898_2_ == ChunkRenderDispatcher.ChunkTaskResult.SUCCESSFUL) {
+                        regionrendercachebuilder.resetBuilders();
+                     } else {
+                        regionrendercachebuilder.discardBuilders();
+                     }
 
+                     this.freeBuilders.add(regionrendercachebuilder);
+                     this.countFreeBuilders = this.freeBuilders.size();
+                     this.runTask();
+                  });
+               }
             });
          }
       }
    }
 
    public String getDebugInfo() {
-      return String.format("pC: %03d, pU: %02d, aB: %02d", this.field_228888_e_, this.field_228887_d_.size(), this.field_228889_f_);
+      return String.format("pC: %03d, pU: %02d, aB: %02d", this.countRenderTasks, this.uploadTasks.size(), this.countFreeBuilders);
    }
 
-   public void func_217669_a(Vec3d p_217669_1_) {
-      this.field_217672_l = p_217669_1_;
+   public void setRenderPosition(Vec3d posIn) {
+      this.renderPosition = posIn;
    }
 
-   public Vec3d func_217671_b() {
-      return this.field_217672_l;
+   public Vec3d getRenderPosition() {
+      return this.renderPosition;
    }
 
-   public boolean func_228908_d_() {
+   public boolean runChunkUploads() {
       boolean flag;
       Runnable runnable;
-      for(flag = false; (runnable = this.field_228887_d_.poll()) != null; flag = true) {
+      for(flag = false; (runnable = this.uploadTasks.poll()) != null; flag = true) {
          runnable.run();
       }
 
       return flag;
    }
 
-   public void func_228902_a_(ChunkRenderDispatcher.ChunkRender p_228902_1_) {
-      p_228902_1_.func_228936_k_();
+   public void rebuildChunk(ChunkRenderDispatcher.ChunkRender chunkRenderIn) {
+      chunkRenderIn.rebuildChunk();
    }
 
    public void stopChunkUpdates() {
       this.clearChunkUpdates();
    }
 
-   public void func_228900_a_(ChunkRenderDispatcher.ChunkRender.ChunkRenderTask p_228900_1_) {
-      this.field_228891_h_.enqueue(() -> {
-         this.field_228885_b_.offer(p_228900_1_);
-         this.field_228888_e_ = this.field_228885_b_.size();
-         this.func_228909_h_();
+   public void schedule(ChunkRenderDispatcher.ChunkRender.ChunkRenderTask renderTaskIn) {
+      this.delegatedTaskExecutor.enqueue(() -> {
+         this.renderTasks.offer(renderTaskIn);
+         this.countRenderTasks = this.renderTasks.size();
+         this.runTask();
       });
    }
 
-   public CompletableFuture<Void> func_228896_a_(BufferBuilder p_228896_1_, VertexBuffer p_228896_2_) {
+   public CompletableFuture<Void> uploadChunkLayer(BufferBuilder bufferBuilderIn, VertexBuffer vertexBufferIn) {
       return CompletableFuture.runAsync(() -> {
-      }, this.field_228887_d_::add).thenCompose((p_228897_3_) -> {
-         return this.func_228904_b_(p_228896_1_, p_228896_2_);
+      }, this.uploadTasks::add).thenCompose((p_228897_3_) -> {
+         return this.uploadChunkLayerRaw(bufferBuilderIn, vertexBufferIn);
       });
    }
 
-   private CompletableFuture<Void> func_228904_b_(BufferBuilder p_228904_1_, VertexBuffer p_228904_2_) {
-      return p_228904_2_.func_227878_b_(p_228904_1_);
+   private CompletableFuture<Void> uploadChunkLayerRaw(BufferBuilder bufferBuilderIn, VertexBuffer vertexBufferIn) {
+      return vertexBufferIn.uploadLater(bufferBuilderIn);
    }
 
    private void clearChunkUpdates() {
-      while(!this.field_228885_b_.isEmpty()) {
-         ChunkRenderDispatcher.ChunkRender.ChunkRenderTask chunkrenderdispatcher$chunkrender$chunkrendertask = this.field_228885_b_.poll();
+      while(!this.renderTasks.isEmpty()) {
+         ChunkRenderDispatcher.ChunkRender.ChunkRenderTask chunkrenderdispatcher$chunkrender$chunkrendertask = this.renderTasks.poll();
          if (chunkrenderdispatcher$chunkrender$chunkrendertask != null) {
-            chunkrenderdispatcher$chunkrender$chunkrendertask.func_225617_a_();
+            chunkrenderdispatcher$chunkrender$chunkrendertask.cancel();
          }
       }
 
-      this.field_228888_e_ = 0;
+      this.countRenderTasks = 0;
    }
 
    public boolean hasNoChunkUpdates() {
-      return this.field_228888_e_ == 0 && this.field_228887_d_.isEmpty();
+      return this.countRenderTasks == 0 && this.uploadTasks.isEmpty();
    }
 
    public void stopWorkerThreads() {
       this.clearChunkUpdates();
-      this.field_228891_h_.close();
-      this.field_228886_c_.clear();
+      this.delegatedTaskExecutor.close();
+      this.freeBuilders.clear();
    }
 
    @OnlyIn(Dist.CLIENT)
    public class ChunkRender {
       public final AtomicReference<ChunkRenderDispatcher.CompiledChunk> compiledChunk = new AtomicReference<>(ChunkRenderDispatcher.CompiledChunk.DUMMY);
       @Nullable
-      private ChunkRenderDispatcher.ChunkRender.RebuildTask field_228921_d_;
+      private ChunkRenderDispatcher.ChunkRender.RebuildTask lastRebuildTask;
       @Nullable
-      private ChunkRenderDispatcher.ChunkRender.SortTransparencyTask field_228922_e_;
+      private ChunkRenderDispatcher.ChunkRender.SortTransparencyTask lastResortTransparencyTask;
       private final Set<TileEntity> setTileEntities = Sets.newHashSet();
-      private final Map<RenderType, VertexBuffer> vertexBuffers = RenderType.func_228661_n_().stream().collect(Collectors.toMap((p_228934_0_) -> {
+      private final Map<RenderType, VertexBuffer> vertexBuffers = RenderType.getBlockRenderTypes().stream().collect(Collectors.toMap((p_228934_0_) -> {
          return p_228934_0_;
       }, (p_228933_0_) -> {
          return new VertexBuffer(DefaultVertexFormats.BLOCK);
@@ -230,8 +230,8 @@ public class ChunkRenderDispatcher {
       });
       private boolean needsImmediateUpdate;
 
-      private boolean func_228930_a_(BlockPos p_228930_1_) {
-         return ChunkRenderDispatcher.this.field_228893_j_.getChunk(p_228930_1_.getX() >> 4, p_228930_1_.getZ() >> 4, ChunkStatus.FULL, false) != null;
+      private boolean isChunkLoaded(BlockPos blockPosIn) {
+         return ChunkRenderDispatcher.this.world.getChunk(blockPosIn.getX() >> 4, blockPosIn.getZ() >> 4, ChunkStatus.FULL, false) != null;
       }
 
       public boolean shouldStayLoaded() {
@@ -239,7 +239,7 @@ public class ChunkRenderDispatcher {
          if (!(this.getDistanceSq() > 576.0D)) {
             return true;
          } else {
-            return this.func_228930_a_(this.mapEnumFacing[Direction.WEST.ordinal()]) && this.func_228930_a_(this.mapEnumFacing[Direction.NORTH.ordinal()]) && this.func_228930_a_(this.mapEnumFacing[Direction.EAST.ordinal()]) && this.func_228930_a_(this.mapEnumFacing[Direction.SOUTH.ordinal()]);
+            return this.isChunkLoaded(this.mapEnumFacing[Direction.WEST.ordinal()]) && this.isChunkLoaded(this.mapEnumFacing[Direction.NORTH.ordinal()]) && this.isChunkLoaded(this.mapEnumFacing[Direction.EAST.ordinal()]) && this.isChunkLoaded(this.mapEnumFacing[Direction.SOUTH.ordinal()]);
          }
       }
 
@@ -252,8 +252,8 @@ public class ChunkRenderDispatcher {
          }
       }
 
-      public VertexBuffer func_228924_a_(RenderType p_228924_1_) {
-         return this.vertexBuffers.get(p_228924_1_);
+      public VertexBuffer getVertexBuffer(RenderType renderTypeIn) {
+         return this.vertexBuffers.get(renderTypeIn);
       }
 
       public void setPosition(int x, int y, int z) {
@@ -277,8 +277,8 @@ public class ChunkRenderDispatcher {
          return d0 * d0 + d1 * d1 + d2 * d2;
       }
 
-      private void func_228923_a_(BufferBuilder p_228923_1_) {
-         p_228923_1_.begin(7, DefaultVertexFormats.BLOCK);
+      private void beginLayer(BufferBuilder bufferBuilderIn) {
+         bufferBuilderIn.begin(7, DefaultVertexFormats.BLOCK);
       }
 
       public ChunkRenderDispatcher.CompiledChunk getCompiledChunk() {
@@ -286,7 +286,7 @@ public class ChunkRenderDispatcher {
       }
 
       private void stopCompileTask() {
-         this.func_228935_i_();
+         this.stopTasks();
          this.compiledChunk.set(ChunkRenderDispatcher.CompiledChunk.DUMMY);
          this.needsUpdate = true;
       }
@@ -323,61 +323,61 @@ public class ChunkRenderDispatcher {
          return this.mapEnumFacing[facing.ordinal()];
       }
 
-      public boolean func_228925_a_(RenderType p_228925_1_, ChunkRenderDispatcher p_228925_2_) {
+      public boolean resortTransparency(RenderType renderTypeIn, ChunkRenderDispatcher renderDispatcherIn) {
          ChunkRenderDispatcher.CompiledChunk chunkrenderdispatcher$compiledchunk = this.getCompiledChunk();
-         if (this.field_228922_e_ != null) {
-            this.field_228922_e_.func_225617_a_();
+         if (this.lastResortTransparencyTask != null) {
+            this.lastResortTransparencyTask.cancel();
          }
 
-         if (!chunkrenderdispatcher$compiledchunk.layersStarted.contains(p_228925_1_)) {
+         if (!chunkrenderdispatcher$compiledchunk.layersStarted.contains(renderTypeIn)) {
             return false;
          } else {
-            this.field_228922_e_ = new ChunkRenderDispatcher.ChunkRender.SortTransparencyTask(this.getDistanceSq(), chunkrenderdispatcher$compiledchunk);
-            p_228925_2_.func_228900_a_(this.field_228922_e_);
+            this.lastResortTransparencyTask = new ChunkRenderDispatcher.ChunkRender.SortTransparencyTask(this.getDistanceSq(), chunkrenderdispatcher$compiledchunk);
+            renderDispatcherIn.schedule(this.lastResortTransparencyTask);
             return true;
          }
       }
 
-      protected void func_228935_i_() {
-         if (this.field_228921_d_ != null) {
-            this.field_228921_d_.func_225617_a_();
-            this.field_228921_d_ = null;
+      protected void stopTasks() {
+         if (this.lastRebuildTask != null) {
+            this.lastRebuildTask.cancel();
+            this.lastRebuildTask = null;
          }
 
-         if (this.field_228922_e_ != null) {
-            this.field_228922_e_.func_225617_a_();
-            this.field_228922_e_ = null;
+         if (this.lastResortTransparencyTask != null) {
+            this.lastResortTransparencyTask.cancel();
+            this.lastResortTransparencyTask = null;
          }
 
       }
 
       public ChunkRenderDispatcher.ChunkRender.ChunkRenderTask makeCompileTaskChunk() {
-         this.func_228935_i_();
+         this.stopTasks();
          BlockPos blockpos = this.position.toImmutable();
          int i = 1;
-         ChunkRenderCache chunkrendercache = ChunkRenderCache.generateCache(ChunkRenderDispatcher.this.field_228893_j_, blockpos.add(-1, -1, -1), blockpos.add(16, 16, 16), 1);
-         this.field_228921_d_ = new ChunkRenderDispatcher.ChunkRender.RebuildTask(this.getDistanceSq(), chunkrendercache);
-         return this.field_228921_d_;
+         ChunkRenderCache chunkrendercache = ChunkRenderCache.generateCache(ChunkRenderDispatcher.this.world, blockpos.add(-1, -1, -1), blockpos.add(16, 16, 16), 1);
+         this.lastRebuildTask = new ChunkRenderDispatcher.ChunkRender.RebuildTask(this.getDistanceSq(), chunkrendercache);
+         return this.lastRebuildTask;
       }
 
-      public void func_228929_a_(ChunkRenderDispatcher p_228929_1_) {
+      public void rebuildChunkLater(ChunkRenderDispatcher dispatcherIn) {
          ChunkRenderDispatcher.ChunkRender.ChunkRenderTask chunkrenderdispatcher$chunkrender$chunkrendertask = this.makeCompileTaskChunk();
-         p_228929_1_.func_228900_a_(chunkrenderdispatcher$chunkrender$chunkrendertask);
+         dispatcherIn.schedule(chunkrenderdispatcher$chunkrender$chunkrendertask);
       }
 
-      private void func_228931_a_(Set<TileEntity> p_228931_1_) {
-         Set<TileEntity> set = Sets.newHashSet(p_228931_1_);
+      private void updateGlobalTileEntities(Set<TileEntity> globalEntitiesIn) {
+         Set<TileEntity> set = Sets.newHashSet(globalEntitiesIn);
          Set<TileEntity> set1 = Sets.newHashSet(this.setTileEntities);
          set.removeAll(this.setTileEntities);
-         set1.removeAll(p_228931_1_);
+         set1.removeAll(globalEntitiesIn);
          this.setTileEntities.clear();
-         this.setTileEntities.addAll(p_228931_1_);
-         ChunkRenderDispatcher.this.field_228894_k_.updateTileEntities(set1, set);
+         this.setTileEntities.addAll(globalEntitiesIn);
+         ChunkRenderDispatcher.this.worldRenderer.updateTileEntities(set1, set);
       }
 
-      public void func_228936_k_() {
+      public void rebuildChunk() {
          ChunkRenderDispatcher.ChunkRender.ChunkRenderTask chunkrenderdispatcher$chunkrender$chunkrendertask = this.makeCompileTaskChunk();
-         chunkrenderdispatcher$chunkrender$chunkrendertask.func_225618_a_(ChunkRenderDispatcher.this.field_228890_g_);
+         chunkrenderdispatcher$chunkrender$chunkrendertask.execute(ChunkRenderDispatcher.this.fixedBuilder);
       }
 
       @OnlyIn(Dist.CLIENT)
@@ -385,13 +385,13 @@ public class ChunkRenderDispatcher {
          protected final double distanceSq;
          protected final AtomicBoolean finished = new AtomicBoolean(false);
 
-         public ChunkRenderTask(double p_i226023_2_) {
-            this.distanceSq = p_i226023_2_;
+         public ChunkRenderTask(double distanceSqIn) {
+            this.distanceSq = distanceSqIn;
          }
 
-         public abstract CompletableFuture<ChunkRenderDispatcher.ChunkTaskResult> func_225618_a_(RegionRenderCacheBuilder p_225618_1_);
+         public abstract CompletableFuture<ChunkRenderDispatcher.ChunkTaskResult> execute(RegionRenderCacheBuilder builderIn);
 
-         public abstract void func_225617_a_();
+         public abstract void cancel();
 
          public int compareTo(ChunkRenderDispatcher.ChunkRender.ChunkRenderTask p_compareTo_1_) {
             return Doubles.compare(this.distanceSq, p_compareTo_1_.distanceSq);
@@ -401,37 +401,37 @@ public class ChunkRenderDispatcher {
       @OnlyIn(Dist.CLIENT)
       class RebuildTask extends ChunkRenderDispatcher.ChunkRender.ChunkRenderTask {
          @Nullable
-         protected ChunkRenderCache field_228938_d_;
+         protected ChunkRenderCache chunkRenderCache;
 
-         public RebuildTask(double p_i226024_2_, @Nullable ChunkRenderCache p_i226024_4_) {
-            super(p_i226024_2_);
-            this.field_228938_d_ = p_i226024_4_;
+         public RebuildTask(double distanceSqIn, @Nullable ChunkRenderCache renderCacheIn) {
+            super(distanceSqIn);
+            this.chunkRenderCache = renderCacheIn;
          }
 
-         public CompletableFuture<ChunkRenderDispatcher.ChunkTaskResult> func_225618_a_(RegionRenderCacheBuilder p_225618_1_) {
+         public CompletableFuture<ChunkRenderDispatcher.ChunkTaskResult> execute(RegionRenderCacheBuilder builderIn) {
             if (this.finished.get()) {
                return CompletableFuture.completedFuture(ChunkRenderDispatcher.ChunkTaskResult.CANCELLED);
             } else if (!ChunkRender.this.shouldStayLoaded()) {
-               this.field_228938_d_ = null;
+               this.chunkRenderCache = null;
                ChunkRender.this.setNeedsUpdate(false);
                this.finished.set(true);
                return CompletableFuture.completedFuture(ChunkRenderDispatcher.ChunkTaskResult.CANCELLED);
             } else if (this.finished.get()) {
                return CompletableFuture.completedFuture(ChunkRenderDispatcher.ChunkTaskResult.CANCELLED);
             } else {
-               Vec3d vec3d = ChunkRenderDispatcher.this.func_217671_b();
+               Vec3d vec3d = ChunkRenderDispatcher.this.getRenderPosition();
                float f = (float)vec3d.x;
                float f1 = (float)vec3d.y;
                float f2 = (float)vec3d.z;
                ChunkRenderDispatcher.CompiledChunk chunkrenderdispatcher$compiledchunk = new ChunkRenderDispatcher.CompiledChunk();
-               Set<TileEntity> set = this.func_228940_a_(f, f1, f2, chunkrenderdispatcher$compiledchunk, p_225618_1_);
-               ChunkRender.this.func_228931_a_(set);
+               Set<TileEntity> set = this.compile(f, f1, f2, chunkrenderdispatcher$compiledchunk, builderIn);
+               ChunkRender.this.updateGlobalTileEntities(set);
                if (this.finished.get()) {
                   return CompletableFuture.completedFuture(ChunkRenderDispatcher.ChunkTaskResult.CANCELLED);
                } else {
                   List<CompletableFuture<Void>> list = Lists.newArrayList();
                   chunkrenderdispatcher$compiledchunk.layersStarted.forEach((p_228943_3_) -> {
-                     list.add(ChunkRenderDispatcher.this.func_228896_a_(p_225618_1_.func_228366_a_(p_228943_3_), ChunkRender.this.func_228924_a_(p_228943_3_)));
+                     list.add(ChunkRenderDispatcher.this.uploadChunkLayer(builderIn.getBuilder(p_228943_3_), ChunkRender.this.getVertexBuffer(p_228943_3_)));
                   });
                   return Util.gather(list).handle((p_228941_2_, p_228941_3_) -> {
                      if (p_228941_3_ != null && !(p_228941_3_ instanceof CancellationException) && !(p_228941_3_ instanceof InterruptedException)) {
@@ -449,14 +449,14 @@ public class ChunkRenderDispatcher {
             }
          }
 
-         private Set<TileEntity> func_228940_a_(float p_228940_1_, float p_228940_2_, float p_228940_3_, ChunkRenderDispatcher.CompiledChunk p_228940_4_, RegionRenderCacheBuilder p_228940_5_) {
+         private Set<TileEntity> compile(float xIn, float yIn, float zIn, ChunkRenderDispatcher.CompiledChunk compiledChunkIn, RegionRenderCacheBuilder builderIn) {
             int i = 1;
             BlockPos blockpos = ChunkRender.this.position.toImmutable();
             BlockPos blockpos1 = blockpos.add(15, 15, 15);
             VisGraph visgraph = new VisGraph();
             Set<TileEntity> set = Sets.newHashSet();
-            ChunkRenderCache chunkrendercache = this.field_228938_d_;
-            this.field_228938_d_ = null;
+            ChunkRenderCache chunkrendercache = this.chunkRenderCache;
+            this.chunkRenderCache = null;
             MatrixStack matrixstack = new MatrixStack();
             if (chunkrendercache != null) {
                BlockModelRenderer.enableCache();
@@ -473,69 +473,69 @@ public class ChunkRenderDispatcher {
                   if (block.hasTileEntity()) {
                      TileEntity tileentity = chunkrendercache.getTileEntity(blockpos2, Chunk.CreateEntityType.CHECK);
                      if (tileentity != null) {
-                        this.func_228942_a_(p_228940_4_, set, tileentity);
+                        this.handleTileEntity(compiledChunkIn, set, tileentity);
                      }
                   }
 
                   IFluidState ifluidstate = chunkrendercache.getFluidState(blockpos2);
                   if (!ifluidstate.isEmpty()) {
-                     RenderType rendertype = RenderTypeLookup.func_228391_a_(ifluidstate);
-                     BufferBuilder bufferbuilder = p_228940_5_.func_228366_a_(rendertype);
-                     if (p_228940_4_.layersStarted.add(rendertype)) {
-                        ChunkRender.this.func_228923_a_(bufferbuilder);
+                     RenderType rendertype = RenderTypeLookup.getRenderType(ifluidstate);
+                     BufferBuilder bufferbuilder = builderIn.getBuilder(rendertype);
+                     if (compiledChunkIn.layersStarted.add(rendertype)) {
+                        ChunkRender.this.beginLayer(bufferbuilder);
                      }
 
-                     if (blockrendererdispatcher.func_228794_a_(blockpos2, chunkrendercache, bufferbuilder, ifluidstate)) {
-                        p_228940_4_.empty = false;
-                        p_228940_4_.layersUsed.add(rendertype);
+                     if (blockrendererdispatcher.renderFluid(blockpos2, chunkrendercache, bufferbuilder, ifluidstate)) {
+                        compiledChunkIn.empty = false;
+                        compiledChunkIn.layersUsed.add(rendertype);
                      }
                   }
 
                   if (blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
-                     RenderType rendertype1 = RenderTypeLookup.func_228390_a_(blockstate);
-                     BufferBuilder bufferbuilder2 = p_228940_5_.func_228366_a_(rendertype1);
-                     if (p_228940_4_.layersStarted.add(rendertype1)) {
-                        ChunkRender.this.func_228923_a_(bufferbuilder2);
+                     RenderType rendertype1 = RenderTypeLookup.getChunkRenderType(blockstate);
+                     BufferBuilder bufferbuilder2 = builderIn.getBuilder(rendertype1);
+                     if (compiledChunkIn.layersStarted.add(rendertype1)) {
+                        ChunkRender.this.beginLayer(bufferbuilder2);
                      }
 
-                     matrixstack.func_227860_a_();
-                     matrixstack.func_227861_a_((double)(blockpos2.getX() & 15), (double)(blockpos2.getY() & 15), (double)(blockpos2.getZ() & 15));
-                     if (blockrendererdispatcher.func_228793_a_(blockstate, blockpos2, chunkrendercache, matrixstack, bufferbuilder2, true, random)) {
-                        p_228940_4_.empty = false;
-                        p_228940_4_.layersUsed.add(rendertype1);
+                     matrixstack.push();
+                     matrixstack.translate((double)(blockpos2.getX() & 15), (double)(blockpos2.getY() & 15), (double)(blockpos2.getZ() & 15));
+                     if (blockrendererdispatcher.renderModel(blockstate, blockpos2, chunkrendercache, matrixstack, bufferbuilder2, true, random)) {
+                        compiledChunkIn.empty = false;
+                        compiledChunkIn.layersUsed.add(rendertype1);
                      }
 
-                     matrixstack.func_227865_b_();
+                     matrixstack.pop();
                   }
                }
 
-               if (p_228940_4_.layersUsed.contains(RenderType.func_228645_f_())) {
-                  BufferBuilder bufferbuilder1 = p_228940_5_.func_228366_a_(RenderType.func_228645_f_());
-                  bufferbuilder1.sortVertexData(p_228940_1_ - (float)blockpos.getX(), p_228940_2_ - (float)blockpos.getY(), p_228940_3_ - (float)blockpos.getZ());
-                  p_228940_4_.state = bufferbuilder1.getVertexState();
+               if (compiledChunkIn.layersUsed.contains(RenderType.translucent())) {
+                  BufferBuilder bufferbuilder1 = builderIn.getBuilder(RenderType.translucent());
+                  bufferbuilder1.sortVertexData(xIn - (float)blockpos.getX(), yIn - (float)blockpos.getY(), zIn - (float)blockpos.getZ());
+                  compiledChunkIn.state = bufferbuilder1.getVertexState();
                }
 
-               p_228940_4_.layersStarted.stream().map(p_228940_5_::func_228366_a_).forEach(BufferBuilder::finishDrawing);
+               compiledChunkIn.layersStarted.stream().map(builderIn::getBuilder).forEach(BufferBuilder::finishDrawing);
                BlockModelRenderer.disableCache();
             }
 
-            p_228940_4_.setVisibility = visgraph.computeVisibility();
+            compiledChunkIn.setVisibility = visgraph.computeVisibility();
             return set;
          }
 
-         private <E extends TileEntity> void func_228942_a_(ChunkRenderDispatcher.CompiledChunk p_228942_1_, Set<TileEntity> p_228942_2_, E p_228942_3_) {
-            TileEntityRenderer<E> tileentityrenderer = TileEntityRendererDispatcher.instance.getRenderer(p_228942_3_);
+         private <E extends TileEntity> void handleTileEntity(ChunkRenderDispatcher.CompiledChunk compiledChunkIn, Set<TileEntity> tileEntitiesIn, E tileEntityIn) {
+            TileEntityRenderer<E> tileentityrenderer = TileEntityRendererDispatcher.instance.getRenderer(tileEntityIn);
             if (tileentityrenderer != null) {
-               p_228942_1_.tileEntities.add(p_228942_3_);
-               if (tileentityrenderer.isGlobalRenderer(p_228942_3_)) {
-                  p_228942_2_.add(p_228942_3_);
+               compiledChunkIn.tileEntities.add(tileEntityIn);
+               if (tileentityrenderer.isGlobalRenderer(tileEntityIn)) {
+                  tileEntitiesIn.add(tileEntityIn);
                }
             }
 
          }
 
-         public void func_225617_a_() {
-            this.field_228938_d_ = null;
+         public void cancel() {
+            this.chunkRenderCache = null;
             if (this.finished.compareAndSet(false, true)) {
                ChunkRender.this.setNeedsUpdate(false);
             }
@@ -545,14 +545,14 @@ public class ChunkRenderDispatcher {
 
       @OnlyIn(Dist.CLIENT)
       class SortTransparencyTask extends ChunkRenderDispatcher.ChunkRender.ChunkRenderTask {
-         private final ChunkRenderDispatcher.CompiledChunk field_228945_e_;
+         private final ChunkRenderDispatcher.CompiledChunk sortCompiledChunk;
 
-         public SortTransparencyTask(double p_i226025_2_, ChunkRenderDispatcher.CompiledChunk p_i226025_4_) {
-            super(p_i226025_2_);
-            this.field_228945_e_ = p_i226025_4_;
+         public SortTransparencyTask(double distanceSqIn, ChunkRenderDispatcher.CompiledChunk compiledChunkIn) {
+            super(distanceSqIn);
+            this.sortCompiledChunk = compiledChunkIn;
          }
 
-         public CompletableFuture<ChunkRenderDispatcher.ChunkTaskResult> func_225618_a_(RegionRenderCacheBuilder p_225618_1_) {
+         public CompletableFuture<ChunkRenderDispatcher.ChunkTaskResult> execute(RegionRenderCacheBuilder builderIn) {
             if (this.finished.get()) {
                return CompletableFuture.completedFuture(ChunkRenderDispatcher.ChunkTaskResult.CANCELLED);
             } else if (!ChunkRender.this.shouldStayLoaded()) {
@@ -561,22 +561,22 @@ public class ChunkRenderDispatcher {
             } else if (this.finished.get()) {
                return CompletableFuture.completedFuture(ChunkRenderDispatcher.ChunkTaskResult.CANCELLED);
             } else {
-               Vec3d vec3d = ChunkRenderDispatcher.this.func_217671_b();
+               Vec3d vec3d = ChunkRenderDispatcher.this.getRenderPosition();
                float f = (float)vec3d.x;
                float f1 = (float)vec3d.y;
                float f2 = (float)vec3d.z;
-               BufferBuilder.State bufferbuilder$state = this.field_228945_e_.state;
-               if (bufferbuilder$state != null && this.field_228945_e_.layersUsed.contains(RenderType.func_228645_f_())) {
-                  BufferBuilder bufferbuilder = p_225618_1_.func_228366_a_(RenderType.func_228645_f_());
-                  ChunkRender.this.func_228923_a_(bufferbuilder);
+               BufferBuilder.State bufferbuilder$state = this.sortCompiledChunk.state;
+               if (bufferbuilder$state != null && this.sortCompiledChunk.layersUsed.contains(RenderType.translucent())) {
+                  BufferBuilder bufferbuilder = builderIn.getBuilder(RenderType.translucent());
+                  ChunkRender.this.beginLayer(bufferbuilder);
                   bufferbuilder.setVertexState(bufferbuilder$state);
                   bufferbuilder.sortVertexData(f - (float)ChunkRender.this.position.getX(), f1 - (float)ChunkRender.this.position.getY(), f2 - (float)ChunkRender.this.position.getZ());
-                  this.field_228945_e_.state = bufferbuilder.getVertexState();
+                  this.sortCompiledChunk.state = bufferbuilder.getVertexState();
                   bufferbuilder.finishDrawing();
                   if (this.finished.get()) {
                      return CompletableFuture.completedFuture(ChunkRenderDispatcher.ChunkTaskResult.CANCELLED);
                   } else {
-                     CompletableFuture<ChunkRenderDispatcher.ChunkTaskResult> completablefuture = ChunkRenderDispatcher.this.func_228896_a_(p_225618_1_.func_228366_a_(RenderType.func_228645_f_()), ChunkRender.this.func_228924_a_(RenderType.func_228645_f_())).thenApply((p_228947_0_) -> {
+                     CompletableFuture<ChunkRenderDispatcher.ChunkTaskResult> completablefuture = ChunkRenderDispatcher.this.uploadChunkLayer(builderIn.getBuilder(RenderType.translucent()), ChunkRender.this.getVertexBuffer(RenderType.translucent())).thenApply((p_228947_0_) -> {
                         return ChunkRenderDispatcher.ChunkTaskResult.CANCELLED;
                      });
                      return completablefuture.handle((p_228946_1_, p_228946_2_) -> {
@@ -593,7 +593,7 @@ public class ChunkRenderDispatcher {
             }
          }
 
-         public void func_225617_a_() {
+         public void cancel() {
             this.finished.set(true);
          }
       }
@@ -624,8 +624,8 @@ public class ChunkRenderDispatcher {
          return this.empty;
       }
 
-      public boolean func_228912_a_(RenderType p_228912_1_) {
-         return !this.layersUsed.contains(p_228912_1_);
+      public boolean isLayerEmpty(RenderType renderTypeIn) {
+         return !this.layersUsed.contains(renderTypeIn);
       }
 
       public List<TileEntity> getTileEntities() {

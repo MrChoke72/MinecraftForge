@@ -27,14 +27,14 @@ public class ShaderLoader {
    public void attachShader(IShaderManager manager) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
       ++this.shaderAttachCount;
-      GlStateManager.func_227704_d_(manager.getProgram(), this.shader);
+      GlStateManager.attachShader(manager.getProgram(), this.shader);
    }
 
    public void detachShader() {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
       --this.shaderAttachCount;
       if (this.shaderAttachCount <= 0) {
-         GlStateManager.func_227703_d_(this.shader);
+         GlStateManager.deleteShader(this.shader);
          this.shaderType.getLoadedShaders().remove(this.shaderFilename);
       }
 
@@ -46,15 +46,15 @@ public class ShaderLoader {
 
    public static ShaderLoader func_216534_a(ShaderLoader.ShaderType p_216534_0_, String p_216534_1_, InputStream p_216534_2_) throws IOException {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-      String s = TextureUtil.func_225687_b_(p_216534_2_);
+      String s = TextureUtil.readResourceAsString(p_216534_2_);
       if (s == null) {
          throw new IOException("Could not load program " + p_216534_0_.getShaderName());
       } else {
-         int i = GlStateManager.func_227711_e_(p_216534_0_.getShaderMode());
-         GlStateManager.func_227654_a_(i, s);
-         GlStateManager.func_227717_f_(i);
-         if (GlStateManager.func_227712_e_(i, 35713) == 0) {
-            String s1 = StringUtils.trim(GlStateManager.func_227733_j_(i, 32768));
+         int i = GlStateManager.createShader(p_216534_0_.getShaderMode());
+         GlStateManager.shaderSource(i, s);
+         GlStateManager.compileShader(i);
+         if (GlStateManager.getShader(i, 35713) == 0) {
+            String s1 = StringUtils.trim(GlStateManager.getShaderInfoLog(i, 32768));
             throw new IOException("Couldn't compile " + p_216534_0_.getShaderName() + " program: " + s1);
          } else {
             ShaderLoader shaderloader = new ShaderLoader(p_216534_0_, i, p_216534_1_);

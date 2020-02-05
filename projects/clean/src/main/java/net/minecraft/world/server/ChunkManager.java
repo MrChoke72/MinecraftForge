@@ -93,50 +93,50 @@ import org.apache.logging.log4j.Logger;
 
 public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProvider {
    private static final Logger LOGGER = LogManager.getLogger();
-   public static final int MAX_LOADED_LEVEL = 33 + ChunkStatus.func_222600_b();
-   private final Long2ObjectLinkedOpenHashMap<ChunkHolder> field_219251_e = new Long2ObjectLinkedOpenHashMap<>();
-   private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> field_219252_f = this.field_219251_e.clone();
+   public static final int MAX_LOADED_LEVEL = 33 + ChunkStatus.maxDistance();
+   private final Long2ObjectLinkedOpenHashMap<ChunkHolder> loadedChunks = new Long2ObjectLinkedOpenHashMap<>();
+   private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> immutableLoadedChunks = this.loadedChunks.clone();
    private final Long2ObjectLinkedOpenHashMap<ChunkHolder> chunksToUnload = new Long2ObjectLinkedOpenHashMap<>();
-   private final LongSet field_219254_h = new LongOpenHashSet();
+   private final LongSet loadedPositions = new LongOpenHashSet();
    private final ServerWorld world;
    private final ServerWorldLightManager lightManager;
    private final ThreadTaskExecutor<Runnable> mainThread;
    private final ChunkGenerator<?> generator;
    private final Supplier<DimensionSavedDataManager> field_219259_m;
-   private final PointOfInterestManager poiMgr;
+   private final PointOfInterestManager pointOfInterestManager;
    private final LongSet field_219261_o = new LongOpenHashSet();
-   private boolean field_219262_p;
+   private boolean immutableLoadedChunksDirty;
    private final ChunkTaskPriorityQueueSorter field_219263_q;
    private final ITaskExecutor<ChunkTaskPriorityQueueSorter.FunctionEntry<Runnable>> field_219264_r;
    private final ITaskExecutor<ChunkTaskPriorityQueueSorter.FunctionEntry<Runnable>> field_219265_s;
    private final IChunkStatusListener field_219266_t;
    private final ChunkManager.ProxyTicketManager ticketManager;
    private final AtomicInteger field_219268_v = new AtomicInteger();
-   private final TemplateManager field_219269_w;
+   private final TemplateManager templateManager;
    private final File field_219270_x;
    private final PlayerGenerationTracker playerGenerationTracker = new PlayerGenerationTracker();
    private final Int2ObjectMap<ChunkManager.EntityTracker> entities = new Int2ObjectOpenHashMap<>();
    private final Queue<Runnable> saveTasks = Queues.newConcurrentLinkedQueue();
    private int viewDistance;
 
-   public ChunkManager(ServerWorld p_i51538_1_, File p_i51538_2_, DataFixer p_i51538_3_, TemplateManager p_i51538_4_, Executor p_i51538_5_, ThreadTaskExecutor<Runnable> p_i51538_6_, IChunkLightProvider p_i51538_7_, ChunkGenerator<?> p_i51538_8_, IChunkStatusListener p_i51538_9_, Supplier<DimensionSavedDataManager> p_i51538_10_, int p_i51538_11_) {
-      super(new File(p_i51538_1_.getDimension().getType().getDirectory(p_i51538_2_), "region"), p_i51538_3_);
-      this.field_219269_w = p_i51538_4_;
-      this.field_219270_x = p_i51538_1_.getDimension().getType().getDirectory(p_i51538_2_);
-      this.world = p_i51538_1_;
-      this.generator = p_i51538_8_;
-      this.mainThread = p_i51538_6_;
+   public ChunkManager(ServerWorld worldIn, File worldDirectory, DataFixer p_i51538_3_, TemplateManager p_i51538_4_, Executor p_i51538_5_, ThreadTaskExecutor<Runnable> mainThreadIn, IChunkLightProvider p_i51538_7_, ChunkGenerator<?> generatorIn, IChunkStatusListener p_i51538_9_, Supplier<DimensionSavedDataManager> p_i51538_10_, int p_i51538_11_) {
+      super(new File(worldIn.getDimension().getType().getDirectory(worldDirectory), "region"), p_i51538_3_);
+      this.templateManager = p_i51538_4_;
+      this.field_219270_x = worldIn.getDimension().getType().getDirectory(worldDirectory);
+      this.world = worldIn;
+      this.generator = generatorIn;
+      this.mainThread = mainThreadIn;
       DelegatedTaskExecutor<Runnable> delegatedtaskexecutor = DelegatedTaskExecutor.create(p_i51538_5_, "worldgen");
-      ITaskExecutor<Runnable> itaskexecutor = ITaskExecutor.inline("main", p_i51538_6_::enqueue);
+      ITaskExecutor<Runnable> itaskexecutor = ITaskExecutor.inline("main", mainThreadIn::enqueue);
       this.field_219266_t = p_i51538_9_;
       DelegatedTaskExecutor<Runnable> delegatedtaskexecutor1 = DelegatedTaskExecutor.create(p_i51538_5_, "light");
       this.field_219263_q = new ChunkTaskPriorityQueueSorter(ImmutableList.of(delegatedtaskexecutor, itaskexecutor, delegatedtaskexecutor1), p_i51538_5_, Integer.MAX_VALUE);
       this.field_219264_r = this.field_219263_q.func_219087_a(delegatedtaskexecutor, false);
       this.field_219265_s = this.field_219263_q.func_219087_a(itaskexecutor, false);
       this.lightManager = new ServerWorldLightManager(p_i51538_7_, this, this.world.getDimension().hasSkyLight(), delegatedtaskexecutor1, this.field_219263_q.func_219087_a(delegatedtaskexecutor1, false));
-      this.ticketManager = new ChunkManager.ProxyTicketManager(p_i51538_5_, p_i51538_6_);
+      this.ticketManager = new ChunkManager.ProxyTicketManager(p_i51538_5_, mainThreadIn);
       this.field_219259_m = p_i51538_10_;
-      this.poiMgr = new PointOfInterestManager(new File(this.field_219270_x, "poi"), p_i51538_3_);
+      this.pointOfInterestManager = new PointOfInterestManager(new File(this.field_219270_x, "poi"), p_i51538_3_);
       this.setViewDistance(p_i51538_11_);
    }
 
@@ -148,19 +148,19 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       return d2 * d2 + d3 * d3;
    }
 
-   private static int func_219215_b(ChunkPos p_219215_0_, ServerPlayerEntity p_219215_1_, boolean p_219215_2_) {
+   private static int func_219215_b(ChunkPos pos, ServerPlayerEntity player, boolean p_219215_2_) {
       int i;
       int j;
       if (p_219215_2_) {
-         SectionPos sectionpos = p_219215_1_.getManagedSectionPos();
+         SectionPos sectionpos = player.getManagedSectionPos();
          i = sectionpos.getSectionX();
          j = sectionpos.getSectionZ();
       } else {
-         i = MathHelper.floor(p_219215_1_.getPosX() / 16.0D);
-         j = MathHelper.floor(p_219215_1_.getPosZ() / 16.0D);
+         i = MathHelper.floor(player.getPosX() / 16.0D);
+         j = MathHelper.floor(player.getPosZ() / 16.0D);
       }
 
-      return getChunkDistance(p_219215_0_, i, j);
+      return getChunkDistance(pos, i, j);
    }
 
    private static int getChunkDistance(ChunkPos chunkPosIn, int x, int y) {
@@ -174,25 +174,25 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    }
 
    @Nullable
-   protected ChunkHolder func_219220_a(long p_219220_1_) {
-      return this.field_219251_e.get(p_219220_1_);
+   protected ChunkHolder func_219220_a(long chunkPosIn) {
+      return this.loadedChunks.get(chunkPosIn);
    }
 
    @Nullable
    protected ChunkHolder func_219219_b(long chunkPosIn) {
-      return this.field_219252_f.get(chunkPosIn);
+      return this.immutableLoadedChunks.get(chunkPosIn);
    }
 
-   protected IntSupplier func_219191_c(long p_219191_1_) {
+   protected IntSupplier func_219191_c(long chunkPosIn) {
       return () -> {
-         ChunkHolder chunkholder = this.func_219219_b(p_219191_1_);
+         ChunkHolder chunkholder = this.func_219219_b(chunkPosIn);
          return chunkholder == null ? ChunkTaskPriorityQueue.field_219419_a - 1 : Math.min(chunkholder.func_219281_j(), ChunkTaskPriorityQueue.field_219419_a - 1);
       };
    }
 
    @OnlyIn(Dist.CLIENT)
-   public String func_219170_a(ChunkPos p_219170_1_) {
-      ChunkHolder chunkholder = this.func_219219_b(p_219170_1_.asLong());
+   public String func_219170_a(ChunkPos pos) {
+      ChunkHolder chunkholder = this.func_219219_b(pos.asLong());
       if (chunkholder == null) {
          return "null";
       } else {
@@ -213,10 +213,10 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       }
    }
 
-   private CompletableFuture<Either<List<IChunk>, ChunkHolder.IChunkLoadingError>> func_219236_a(ChunkPos p_219236_1_, int p_219236_2_, IntFunction<ChunkStatus> p_219236_3_) {
+   private CompletableFuture<Either<List<IChunk>, ChunkHolder.IChunkLoadingError>> func_219236_a(ChunkPos pos, int p_219236_2_, IntFunction<ChunkStatus> p_219236_3_) {
       List<CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>>> list = Lists.newArrayList();
-      int i = p_219236_1_.x;
-      int j = p_219236_1_.z;
+      int i = pos.x;
+      int j = pos.z;
 
       for(int k = -p_219236_2_; k <= p_219236_2_; ++k) {
          for(int l = -p_219236_2_; l <= p_219236_2_; ++l) {
@@ -297,8 +297,8 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
                p_219213_4_ = new ChunkHolder(new ChunkPos(p_219213_1_), p_219213_3_, this.lightManager, this.field_219263_q, this);
             }
 
-            this.field_219251_e.put(p_219213_1_, p_219213_4_);
-            this.field_219262_p = true;
+            this.loadedChunks.put(p_219213_1_, p_219213_4_);
+            this.immutableLoadedChunksDirty = true;
          }
 
          return p_219213_4_;
@@ -308,7 +308,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    public void close() throws IOException {
       try {
          this.field_219263_q.close();
-         this.poiMgr.close();
+         this.pointOfInterestManager.close();
       } finally {
          super.close();
       }
@@ -317,7 +317,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
 
    protected void save(boolean flush) {
       if (flush) {
-         List<ChunkHolder> list = this.field_219252_f.values().stream().filter(ChunkHolder::func_219289_k).peek(ChunkHolder::func_219303_l).collect(Collectors.toList());
+         List<ChunkHolder> list = this.immutableLoadedChunks.values().stream().filter(ChunkHolder::isAccessible).peek(ChunkHolder::updateAccessible).collect(Collectors.toList());
          MutableBoolean mutableboolean = new MutableBoolean();
 
          while(true) {
@@ -349,11 +349,11 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
          this.func_227079_i_();
          LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object)this.field_219270_x.getName());
       } else {
-         this.field_219252_f.values().stream().filter(ChunkHolder::func_219289_k).forEach((p_222965_1_) -> {
+         this.immutableLoadedChunks.values().stream().filter(ChunkHolder::isAccessible).forEach((p_222965_1_) -> {
             IChunk ichunk = p_222965_1_.func_219302_f().getNow((IChunk)null);
             if (ichunk instanceof ChunkPrimerWrapper || ichunk instanceof Chunk) {
                this.func_219229_a(ichunk);
-               p_222965_1_.func_219303_l();
+               p_222965_1_.updateAccessible();
             }
 
          });
@@ -364,7 +364,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    protected void tick(BooleanSupplier hasMoreTime) {
       IProfiler iprofiler = this.world.getProfiler();
       iprofiler.startSection("poi");
-      this.poiMgr.func_219115_a(hasMoreTime);
+      this.pointOfInterestManager.func_219115_a(hasMoreTime);
       iprofiler.endStartSection("chunk_unload");
       if (!this.world.isSaveDisabled()) {
          this.scheduleUnloads(hasMoreTime);
@@ -373,22 +373,22 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       iprofiler.endSection();
    }
 
-   private void scheduleUnloads(BooleanSupplier p_223155_1_) {
+   private void scheduleUnloads(BooleanSupplier hasMoreTime) {
       LongIterator longiterator = this.field_219261_o.iterator();
 
-      for(int i = 0; longiterator.hasNext() && (p_223155_1_.getAsBoolean() || i < 200 || this.field_219261_o.size() > 2000); longiterator.remove()) {
+      for(int i = 0; longiterator.hasNext() && (hasMoreTime.getAsBoolean() || i < 200 || this.field_219261_o.size() > 2000); longiterator.remove()) {
          long j = longiterator.nextLong();
-         ChunkHolder chunkholder = this.field_219251_e.remove(j);
+         ChunkHolder chunkholder = this.loadedChunks.remove(j);
          if (chunkholder != null) {
             this.chunksToUnload.put(j, chunkholder);
-            this.field_219262_p = true;
+            this.immutableLoadedChunksDirty = true;
             ++i;
             this.scheduleSave(j, chunkholder);
          }
       }
 
       Runnable runnable;
-      while((p_223155_1_.getAsBoolean() || this.saveTasks.size() > 2000) && (runnable = this.saveTasks.poll()) != null) {
+      while((hasMoreTime.getAsBoolean() || this.saveTasks.size() > 2000) && (runnable = this.saveTasks.poll()) != null) {
          runnable.run();
       }
 
@@ -407,7 +407,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
                }
 
                this.func_219229_a(p_219185_5_);
-               if (this.field_219254_h.remove(chunkPosIn) && p_219185_5_ instanceof Chunk) {
+               if (this.loadedPositions.remove(chunkPosIn) && p_219185_5_ instanceof Chunk) {
                   Chunk chunk = (Chunk)p_219185_5_;
                   this.world.onChunkUnloading(chunk);
                }
@@ -426,12 +426,12 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       });
    }
 
-   protected boolean func_219245_b() {
-      if (!this.field_219262_p) {
+   protected boolean refreshOffThreadCache() {
+      if (!this.immutableLoadedChunksDirty) {
          return false;
       } else {
-         this.field_219252_f = this.field_219251_e.clone();
-         this.field_219262_p = false;
+         this.immutableLoadedChunks = this.loadedChunks.clone();
+         this.immutableLoadedChunksDirty = false;
          return true;
       }
    }
@@ -448,7 +448,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
                return CompletableFuture.completedFuture(p_223180_4_);
             } else {
                if (p_219244_2_ == ChunkStatus.LIGHT) {
-                  this.ticketManager.registerWithLevel(TicketType.LIGHT, chunkpos, 33 + ChunkStatus.func_222599_a(ChunkStatus.FEATURES), chunkpos);
+                  this.ticketManager.registerWithLevel(TicketType.LIGHT, chunkpos, 33 + ChunkStatus.getDistance(ChunkStatus.FEATURES), chunkpos);
                }
 
                IChunk ichunk = optional.get();
@@ -457,7 +457,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
                   if (p_219244_2_ == ChunkStatus.LIGHT) {
                      completablefuture1 = this.func_223156_b(p_219244_1_, p_219244_2_);
                   } else {
-                     completablefuture1 = p_219244_2_.func_223201_a(this.world, this.field_219269_w, this.lightManager, (p_223175_2_) -> {
+                     completablefuture1 = p_219244_2_.doLoadingWork(this.world, this.templateManager, this.lightManager, (p_223175_2_) -> {
                         return this.func_219200_b(p_219244_1_);
                      }, ichunk);
                   }
@@ -475,11 +475,12 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    private CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> func_223172_f(ChunkPos p_223172_1_) {
       return CompletableFuture.supplyAsync(() -> {
          try {
+            this.world.getProfiler().func_230035_c_("chunkLoad");
             CompoundNBT compoundnbt = this.loadChunkData(p_223172_1_);
             if (compoundnbt != null) {
                boolean flag = compoundnbt.contains("Level", 10) && compoundnbt.getCompound("Level").contains("Status", 8);
                if (flag) {
-                  IChunk ichunk = ChunkSerializer.read(this.world, this.field_219269_w, this.poiMgr, p_223172_1_, compoundnbt);
+                  IChunk ichunk = ChunkSerializer.read(this.world, this.templateManager, this.pointOfInterestManager, p_223172_1_, compoundnbt);
                   ichunk.setLastSaveTime(this.world.getGameTime());
                   return Either.left(ichunk);
                }
@@ -506,10 +507,13 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       CompletableFuture<Either<List<IChunk>, ChunkHolder.IChunkLoadingError>> completablefuture = this.func_219236_a(chunkpos, p_223156_2_.getTaskRange(), (p_219195_2_) -> {
          return this.func_219205_a(p_223156_2_, p_219195_2_);
       });
+      this.world.getProfiler().func_230036_c_(() -> {
+         return "chunkGenerate " + p_223156_2_.getName();
+      });
       return completablefuture.thenComposeAsync((p_219235_4_) -> {
          return p_219235_4_.map((p_223148_4_) -> {
             try {
-               CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> completablefuture1 = p_223156_2_.func_223198_a(this.world, this.generator, this.field_219269_w, this.lightManager, (p_222954_2_) -> {
+               CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> completablefuture1 = p_223156_2_.doGenerationWork(this.world, this.generator, this.templateManager, this.lightManager, (p_222954_2_) -> {
                   return this.func_219200_b(p_223156_1_);
                }, p_223148_4_);
                this.field_219266_t.statusChanged(chunkpos, p_223156_2_);
@@ -533,7 +537,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
 
    protected void func_219209_c(ChunkPos p_219209_1_) {
       this.mainThread.enqueue(Util.namedRunnable(() -> {
-         this.ticketManager.releaseWithLevel(TicketType.LIGHT, p_219209_1_, 33 + ChunkStatus.func_222599_a(ChunkStatus.FEATURES), p_219209_1_);
+         this.ticketManager.releaseWithLevel(TicketType.LIGHT, p_219209_1_, 33 + ChunkStatus.getDistance(ChunkStatus.FEATURES), p_219209_1_);
       }, () -> {
          return "release light ticket " + p_219209_1_;
       }));
@@ -544,7 +548,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       if (p_219205_2_ == 0) {
          chunkstatus = p_219205_1_.getParent();
       } else {
-         chunkstatus = ChunkStatus.func_222581_a(ChunkStatus.func_222599_a(p_219205_1_) + p_219205_2_);
+         chunkstatus = ChunkStatus.getStatus(ChunkStatus.getDistance(p_219205_1_) + p_219205_2_);
       }
 
       return chunkstatus;
@@ -564,11 +568,11 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
                p_219200_1_.func_219294_a(new ChunkPrimerWrapper(chunk));
             }
 
-            chunk.func_217314_a(() -> {
+            chunk.setLocationType(() -> {
                return ChunkHolder.func_219286_c(p_219200_1_.func_219299_i());
             });
-            chunk.func_217318_w();
-            if (this.field_219254_h.add(chunkpos.asLong())) {
+            chunk.postLoad();
+            if (this.loadedPositions.add(chunkpos.asLong())) {
                chunk.setLoaded(true);
                this.world.addTileEntities(chunk.getTileEntityMap().values());
                List<Entity> list = null;
@@ -632,7 +636,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       return p_222961_1_.func_219276_a(ChunkStatus.FULL, this).thenApplyAsync((p_222976_0_) -> {
          return p_222976_0_.mapLeft((p_222955_0_) -> {
             Chunk chunk = (Chunk)p_222955_0_;
-            chunk.func_222879_B();
+            chunk.rescheduleTicks();
             return chunk;
          });
       }, (p_222962_2_) -> {
@@ -645,7 +649,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    }
 
    private boolean func_219229_a(IChunk chunkIn) {
-      this.poiMgr.saveIfDirty(chunkIn.getPos());
+      this.pointOfInterestManager.saveIfDirty(chunkIn.getPos());
       if (!chunkIn.isModified()) {
          return false;
       } else {
@@ -673,6 +677,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
                }
             }
 
+            this.world.getProfiler().func_230035_c_("chunkSave");
             CompoundNBT compoundnbt1 = ChunkSerializer.write(this.world, chunkIn);
             this.writeChunk(chunkpos, compoundnbt1);
             return true;
@@ -690,7 +695,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
          this.viewDistance = i;
          this.ticketManager.setViewDistance(this.viewDistance);
 
-         for(ChunkHolder chunkholder : this.field_219251_e.values()) {
+         for(ChunkHolder chunkholder : this.loadedChunks.values()) {
             ChunkPos chunkpos = chunkholder.getPosition();
             IPacket<?>[] ipacket = new IPacket[2];
             this.getTrackingPlayers(chunkpos, false).forEach((p_219224_4_) -> {
@@ -709,12 +714,12 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
          if (load && !wasLoaded) {
             ChunkHolder chunkholder = this.func_219219_b(chunkPosIn.asLong());
             if (chunkholder != null) {
-               Chunk chunk = chunkholder.func_219298_c();
+               Chunk chunk = chunkholder.getChunkIfComplete();
                if (chunk != null) {
                   this.sendChunkData(player, packetCache, chunk);
                }
 
-               DebugPacketSender.func_218802_a(this.world, chunkPosIn);
+               DebugPacketSender.sendChuckPos(this.world, chunkPosIn);
             }
          }
 
@@ -726,28 +731,28 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
    }
 
    public int getLoadedChunkCount() {
-      return this.field_219252_f.size();
+      return this.immutableLoadedChunks.size();
    }
 
-   protected ChunkManager.ProxyTicketManager func_219246_e() {
+   protected ChunkManager.ProxyTicketManager getTicketManager() {
       return this.ticketManager;
    }
 
-   protected Iterable<ChunkHolder> func_223491_f() {
-      return Iterables.unmodifiableIterable(this.field_219252_f.values());
+   protected Iterable<ChunkHolder> getLoadedChunksIterable() {
+      return Iterables.unmodifiableIterable(this.immutableLoadedChunks.values());
    }
 
    void func_225406_a(Writer p_225406_1_) throws IOException {
       CSVWriter csvwriter = CSVWriter.func_225428_a().func_225423_a("x").func_225423_a("z").func_225423_a("level").func_225423_a("in_memory").func_225423_a("status").func_225423_a("full_status").func_225423_a("accessible_ready").func_225423_a("ticking_ready").func_225423_a("entity_ticking_ready").func_225423_a("ticket").func_225423_a("spawning").func_225423_a("entity_count").func_225423_a("block_entity_count").func_225422_a(p_225406_1_);
 
-      for(Entry<ChunkHolder> entry : this.field_219252_f.long2ObjectEntrySet()) {
+      for(Entry<ChunkHolder> entry : this.immutableLoadedChunks.long2ObjectEntrySet()) {
          ChunkPos chunkpos = new ChunkPos(entry.getLongKey());
          ChunkHolder chunkholder = entry.getValue();
          Optional<IChunk> optional = Optional.ofNullable(chunkholder.func_219287_e());
          Optional<Chunk> optional1 = optional.flatMap((p_225407_0_) -> {
             return p_225407_0_ instanceof Chunk ? Optional.of((Chunk)p_225407_0_) : Optional.empty();
          });
-         csvwriter.func_225426_a(chunkpos.x, chunkpos.z, chunkholder.func_219299_i(), optional.isPresent(), optional.map(IChunk::getStatus).orElse((ChunkStatus)null), optional1.map(Chunk::func_217321_u).orElse((ChunkHolder.LocationType)null), func_225402_a(chunkholder.func_223492_c()), func_225402_a(chunkholder.func_219296_a()), func_225402_a(chunkholder.func_219297_b()), this.ticketManager.func_225413_c(entry.getLongKey()), !this.isOutsideSpawningRadius(chunkpos), optional1.map((p_225401_0_) -> {
+         csvwriter.func_225426_a(chunkpos.x, chunkpos.z, chunkholder.func_219299_i(), optional.isPresent(), optional.map(IChunk::getStatus).orElse((ChunkStatus)null), optional1.map(Chunk::getLocationType).orElse((ChunkHolder.LocationType)null), func_225402_a(chunkholder.func_223492_c()), func_225402_a(chunkholder.func_219296_a()), func_225402_a(chunkholder.func_219297_b()), this.ticketManager.func_225413_c(entry.getLongKey()), !this.isOutsideSpawningRadius(chunkpos), optional1.map((p_225401_0_) -> {
             return Stream.of(p_225401_0_.getEntityLists()).mapToInt(ClassInheritanceMultiMap::size).sum();
          }).orElse(0), optional1.map((p_225405_0_) -> {
             return p_225405_0_.getTileEntityMap().size();
@@ -773,7 +778,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
 
    @Nullable
    private CompoundNBT loadChunkData(ChunkPos pos) throws IOException {
-      CompoundNBT compoundnbt = this.func_227078_e_(pos);
+      CompoundNBT compoundnbt = this.readChunk(pos);
       return compoundnbt == null ? null : this.updateChunkData(this.world.getDimension().getType(), this.field_219259_m, compoundnbt);
    }
 
@@ -920,7 +925,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
             int i = entitytype.getTrackingRange() * 16;
             int j = entitytype.getUpdateFrequency();
             if (this.entities.containsKey(entityIn.getEntityId())) {
-               throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("Entity is already tracked!"));
+               throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("Entity is already tracked!"));
             } else {
                ChunkManager.EntityTracker chunkmanager$entitytracker = new ChunkManager.EntityTracker(entityIn, i, j, entitytype.shouldSendVelocityUpdates());
                this.entities.put(entityIn.getEntityId(), chunkmanager$entitytracker);
@@ -1009,7 +1014,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
       }
 
       player.sendChunkLoad(chunkIn.getPos(), packetCache[0], packetCache[1]);
-      DebugPacketSender.func_218802_a(this.world, chunkIn.getPos());
+      DebugPacketSender.sendChuckPos(this.world, chunkIn.getPos());
       List<Entity> list = Lists.newArrayList();
       List<Entity> list1 = Lists.newArrayList();
 
@@ -1041,13 +1046,13 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
 
    }
 
-   protected PointOfInterestManager getPoiMgr() {
-      return this.poiMgr;
+   protected PointOfInterestManager getPointOfInterestManager() {
+      return this.pointOfInterestManager;
    }
 
    public CompletableFuture<Void> func_222973_a(Chunk p_222973_1_) {
       return this.mainThread.runAsync(() -> {
-         p_222973_1_.func_222880_a(this.world);
+         p_222973_1_.saveScheduledTicks(this.world);
       });
    }
 
@@ -1116,7 +1121,7 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
                if (!flag1) {
                   ChunkPos chunkpos = new ChunkPos(this.entity.chunkCoordX, this.entity.chunkCoordZ);
                   ChunkHolder chunkholder = ChunkManager.this.func_219219_b(chunkpos.asLong());
-                  if (chunkholder != null && chunkholder.func_219298_c() != null) {
+                  if (chunkholder != null && chunkholder.getChunkIfComplete() != null) {
                      flag1 = ChunkManager.func_219215_b(chunkpos, p_219400_1_, false) <= ChunkManager.this.viewDistance;
                   }
                }
@@ -1158,13 +1163,13 @@ public class ChunkManager extends ChunkLoader implements ChunkHolder.IPlayerProv
          super(p_i50469_2_, p_i50469_3_);
       }
 
-      protected boolean func_219371_a(long p_219371_1_) {
+      protected boolean contains(long p_219371_1_) {
          return ChunkManager.this.field_219261_o.contains(p_219371_1_);
       }
 
       @Nullable
-      protected ChunkHolder func_219335_b(long p_219335_1_) {
-         return ChunkManager.this.func_219220_a(p_219335_1_);
+      protected ChunkHolder func_219335_b(long chunkPosIn) {
+         return ChunkManager.this.func_219220_a(chunkPosIn);
       }
 
       @Nullable

@@ -78,7 +78,7 @@ public class SquidEntity extends WaterMobEntity {
       return 0.4F;
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -123,7 +123,7 @@ public class SquidEntity extends WaterMobEntity {
          }
 
          Vec3d vec3d = this.getMotion();
-         float f1 = MathHelper.sqrt(func_213296_b(vec3d));
+         float f1 = MathHelper.sqrt(horizontalMag(vec3d));
          this.renderYawOffset += (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180F / (float)Math.PI) - this.renderYawOffset) * 0.1F;
          this.rotationYaw = this.renderYawOffset;
          this.squidYaw = (float)((double)this.squidYaw + Math.PI * (double)this.rotateSpeed * 1.5D);
@@ -177,7 +177,7 @@ public class SquidEntity extends WaterMobEntity {
       this.move(MoverType.SELF, this.getMotion());
    }
 
-   public static boolean func_223365_b(EntityType<SquidEntity> p_223365_0_, IWorld p_223365_1_, SpawnReason p_223365_2_, BlockPos p_223365_3_, Random p_223365_4_) {
+   public static boolean func_223365_b(EntityType<SquidEntity> p_223365_0_, IWorld p_223365_1_, SpawnReason reason, BlockPos p_223365_3_, Random p_223365_4_) {
       return p_223365_3_.getY() > 45 && p_223365_3_.getY() < p_223365_1_.getSeaLevel();
    }
 

@@ -20,7 +20,7 @@ public interface IRecipeSerializer<T extends IRecipe<?>> {
    SpecialRecipeSerializer<ShieldRecipes> CRAFTING_SPECIAL_SHIELD = register("crafting_special_shielddecoration", new SpecialRecipeSerializer<>(ShieldRecipes::new));
    SpecialRecipeSerializer<ShulkerBoxColoringRecipe> CRAFTING_SPECIAL_SHULKERBOXCOLORING = register("crafting_special_shulkerboxcoloring", new SpecialRecipeSerializer<>(ShulkerBoxColoringRecipe::new));
    SpecialRecipeSerializer<SuspiciousStewRecipe> CRAFTING_SPECIAL_SUSPICIOUSSTEW = register("crafting_special_suspiciousstew", new SpecialRecipeSerializer<>(SuspiciousStewRecipe::new));
-   SpecialRecipeSerializer<RepairItemRecipe> field_223550_o = register("crafting_special_repairitem", new SpecialRecipeSerializer<>(RepairItemRecipe::new));
+   SpecialRecipeSerializer<RepairItemRecipe> CRAFTING_SPECIAL_REPAIRITEM = register("crafting_special_repairitem", new SpecialRecipeSerializer<>(RepairItemRecipe::new));
    CookingRecipeSerializer<FurnaceRecipe> SMELTING = register("smelting", new CookingRecipeSerializer<>(FurnaceRecipe::new, 200));
    CookingRecipeSerializer<BlastingRecipe> BLASTING = register("blasting", new CookingRecipeSerializer<>(BlastingRecipe::new, 100));
    CookingRecipeSerializer<SmokingRecipe> SMOKING = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));

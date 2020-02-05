@@ -18,5 +18,5 @@ public abstract class SimplePlacement<DC extends IPlacementConfig> extends Place
       return this.getPositions(random, configIn, pos);
    }
 
-   protected abstract Stream<BlockPos> getPositions(Random p_212852_1_, DC p_212852_2_, BlockPos p_212852_3_);
+   protected abstract Stream<BlockPos> getPositions(Random random, DC p_212852_2_, BlockPos pos);
 }

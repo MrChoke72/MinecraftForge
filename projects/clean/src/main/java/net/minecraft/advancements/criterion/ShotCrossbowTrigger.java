@@ -20,31 +20,31 @@ public class ShotCrossbowTrigger extends AbstractCriterionTrigger<ShotCrossbowTr
       return new ShotCrossbowTrigger.Instance(itempredicate);
    }
 
-   public void func_215111_a(ServerPlayerEntity p_215111_1_, ItemStack p_215111_2_) {
-      this.func_227070_a_(p_215111_1_.getAdvancements(), (p_227037_1_) -> {
-         return p_227037_1_.func_215121_a(p_215111_2_);
+   public void func_215111_a(ServerPlayerEntity shooter, ItemStack stack) {
+      this.func_227070_a_(shooter.getAdvancements(), (p_227037_1_) -> {
+         return p_227037_1_.func_215121_a(stack);
       });
    }
 
    public static class Instance extends CriterionInstance {
-      private final ItemPredicate field_215123_a;
+      private final ItemPredicate itemPredicate;
 
-      public Instance(ItemPredicate p_i50604_1_) {
+      public Instance(ItemPredicate itemPredicateIn) {
          super(ShotCrossbowTrigger.ID);
-         this.field_215123_a = p_i50604_1_;
+         this.itemPredicate = itemPredicateIn;
       }
 
-      public static ShotCrossbowTrigger.Instance func_215122_a(IItemProvider p_215122_0_) {
-         return new ShotCrossbowTrigger.Instance(ItemPredicate.Builder.create().item(p_215122_0_).build());
+      public static ShotCrossbowTrigger.Instance create(IItemProvider itemProvider) {
+         return new ShotCrossbowTrigger.Instance(ItemPredicate.Builder.create().item(itemProvider).build());
       }
 
       public boolean func_215121_a(ItemStack p_215121_1_) {
-         return this.field_215123_a.test(p_215121_1_);
+         return this.itemPredicate.test(p_215121_1_);
       }
 
       public JsonElement serialize() {
          JsonObject jsonobject = new JsonObject();
-         jsonobject.add("item", this.field_215123_a.serialize());
+         jsonobject.add("item", this.itemPredicate.serialize());
          return jsonobject;
       }
    }

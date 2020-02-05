@@ -94,7 +94,7 @@ public class PointOfInterestData implements IDynamicSerializable {
          if (pointofinteresttype.equals(pointofinterest.getType())) {
             return false;
          } else {
-            throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("POI data mismatch: already registered at " + blockpos));
+            throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("POI data mismatch: already registered at " + blockpos));
          }
       } else {
          this.poiLocationMap.put(short1, poi);
@@ -123,7 +123,7 @@ public class PointOfInterestData implements IDynamicSerializable {
    //public boolean func_218251_c(BlockPos p_218251_1_) {
       PointOfInterest pointofinterest = this.poiLocationMap.get(SectionPos.toRelativeOffset(pos));
       if (pointofinterest == null) {
-         throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("POI never registered at " + pos));
+         throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("POI never registered at " + pos));
       } else {
          boolean flag = pointofinterest.release();
          this.onChange.run();

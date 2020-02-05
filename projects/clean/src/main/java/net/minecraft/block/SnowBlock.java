@@ -48,7 +48,7 @@ public class SnowBlock extends Block {
       return SHAPES[state.get(LAYERS) - 1];
    }
 
-   public boolean func_220074_n(BlockState state) {
+   public boolean isTransparent(BlockState state) {
       return true;
    }
 
@@ -70,10 +70,10 @@ public class SnowBlock extends Block {
       return !stateIn.isValidPosition(worldIn, currentPos) ? Blocks.AIR.getDefaultState() : super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (p_225534_2_.getLightLevel(LightType.BLOCK, p_225534_3_) > 11) {
-         spawnDrops(p_225534_1_, p_225534_2_, p_225534_3_);
-         p_225534_2_.removeBlock(p_225534_3_, false);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (worldIn.getLightFor(LightType.BLOCK, pos) > 11) {
+         spawnDrops(state, worldIn, pos);
+         worldIn.removeBlock(pos, false);
       }
 
    }

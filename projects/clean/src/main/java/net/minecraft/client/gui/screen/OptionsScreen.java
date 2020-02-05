@@ -58,10 +58,10 @@ public class OptionsScreen extends Screen {
             this.difficultyButton.active = false;
          }
       } else {
-         this.addButton(new OptionButton(this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, AbstractOption.REALMS_NOTIFICATIONS, AbstractOption.REALMS_NOTIFICATIONS.func_216743_c(this.settings), (p_213057_1_) -> {
-            AbstractOption.REALMS_NOTIFICATIONS.func_216740_a(this.settings);
+         this.addButton(new OptionButton(this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, AbstractOption.REALMS_NOTIFICATIONS, AbstractOption.REALMS_NOTIFICATIONS.getText(this.settings), (p_213057_1_) -> {
+            AbstractOption.REALMS_NOTIFICATIONS.nextValue(this.settings);
             this.settings.saveOptions();
-            p_213057_1_.setMessage(AbstractOption.REALMS_NOTIFICATIONS.func_216743_c(this.settings));
+            p_213057_1_.setMessage(AbstractOption.REALMS_NOTIFICATIONS.getText(this.settings));
          }));
       }
 

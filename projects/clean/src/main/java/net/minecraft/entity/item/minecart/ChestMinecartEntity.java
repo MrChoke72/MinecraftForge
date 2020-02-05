@@ -45,7 +45,7 @@ public class ChestMinecartEntity extends ContainerMinecartEntity {
       return 8;
    }
 
-   public Container func_213968_a(int p_213968_1_, PlayerInventory p_213968_2_) {
-      return ChestContainer.createGeneric9X3(p_213968_1_, p_213968_2_, this);
+   public Container createContainer(int id, PlayerInventory playerInventoryIn) {
+      return ChestContainer.createGeneric9X3(id, playerInventoryIn, this);
    }
 }

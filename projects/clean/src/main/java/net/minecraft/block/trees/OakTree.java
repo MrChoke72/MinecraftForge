@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class OakTree extends Tree {
    @Nullable
-   protected ConfiguredFeature<TreeFeatureConfig, ?> func_225546_b_(Random p_225546_1_) {
-      return p_225546_1_.nextInt(10) == 0 ? Feature.FANCY_TREE.func_225566_b_(DefaultBiomeFeatures.field_226815_j_) : Feature.NORMAL_TREE.func_225566_b_(DefaultBiomeFeatures.field_226739_a_);
+   protected ConfiguredFeature<TreeFeatureConfig, ?> func_225546_b_(Random p_225546_1_, boolean p_225546_2_) {
+      return p_225546_1_.nextInt(10) == 0 ? Feature.FANCY_TREE.withConfiguration(p_225546_2_ ? DefaultBiomeFeatures.field_226817_l_ : DefaultBiomeFeatures.field_226815_j_) : Feature.NORMAL_TREE.withConfiguration(p_225546_2_ ? DefaultBiomeFeatures.field_226816_k_ : DefaultBiomeFeatures.field_226739_a_);
    }
 }

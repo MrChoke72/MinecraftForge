@@ -83,7 +83,7 @@ public abstract class LevelBasedGraph {
    }
 
    public void func_227465_a_(LongPredicate p_227465_1_) {
-      LongList longlist = new LongArrayList(0);
+      LongList longlist = new LongArrayList();
       this.propagationLevels.keySet().forEach((long p_229982_2_) -> {
          if (p_227465_1_.test(p_229982_2_)) {
             longlist.add(p_229982_2_);

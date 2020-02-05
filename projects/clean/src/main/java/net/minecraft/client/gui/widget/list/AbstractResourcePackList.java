@@ -87,7 +87,7 @@ public abstract class AbstractResourcePackList extends ExtendedList<AbstractReso
       }
 
       protected String func_214416_d() {
-         return this.field_214431_d.func_195789_b().getFormattedText();
+         return this.field_214431_d.getTitle().getFormattedText();
       }
 
       public ClientResourcePackInfo func_214418_e() {
@@ -96,7 +96,7 @@ public abstract class AbstractResourcePackList extends ExtendedList<AbstractReso
 
       public void render(int p_render_1_, int p_render_2_, int p_render_3_, int p_render_4_, int p_render_5_, int p_render_6_, int p_render_7_, boolean p_render_8_, float p_render_9_) {
          PackCompatibility packcompatibility = this.func_214423_b();
-         if (!packcompatibility.func_198968_a()) {
+         if (!packcompatibility.isCompatible()) {
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             AbstractGui.fill(p_render_3_ - 1, p_render_2_ - 1, p_render_3_ + p_render_4_ - 9, p_render_2_ + p_render_5_ + 1, -8978432);
          }
@@ -112,9 +112,9 @@ public abstract class AbstractResourcePackList extends ExtendedList<AbstractReso
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             int i = p_render_6_ - p_render_3_;
             int j = p_render_7_ - p_render_2_;
-            if (!packcompatibility.func_198968_a()) {
+            if (!packcompatibility.isCompatible()) {
                s = AbstractResourcePackList.field_214368_c.getFormattedText();
-               s1 = packcompatibility.func_198967_b().getFormattedText();
+               s1 = packcompatibility.getDescription().getFormattedText();
             }
 
             if (this.func_214425_g()) {
@@ -195,10 +195,10 @@ public abstract class AbstractResourcePackList extends ExtendedList<AbstractReso
             if (this.func_214425_g()) {
                this.func_214415_k().markChanged();
                PackCompatibility packcompatibility = this.func_214423_b();
-               if (packcompatibility.func_198968_a()) {
+               if (packcompatibility.isCompatible()) {
                   this.func_214415_k().func_214300_a(this);
                } else {
-                  ITextComponent itextcomponent = packcompatibility.func_198971_c();
+                  ITextComponent itextcomponent = packcompatibility.getConfirmMessage();
                   this.field_214428_a.displayGuiScreen(new ConfirmScreen((p_214417_1_) -> {
                      this.field_214428_a.displayGuiScreen(this.func_214415_k());
                      if (p_214417_1_) {

@@ -36,8 +36,8 @@ public class TextureGlyphProvider implements IGlyphProvider {
    }
 
    @Nullable
-   public IGlyphInfo func_212248_a(char p_212248_1_) {
-      return this.glyphInfos.get(p_212248_1_);
+   public IGlyphInfo getGlyphInfo(char character) {
+      return this.glyphInfos.get(character);
    }
 
    @OnlyIn(Dist.CLIENT)
@@ -136,7 +136,7 @@ public class TextureGlyphProvider implements IGlyphProvider {
 
    @OnlyIn(Dist.CLIENT)
    static final class GlyphInfo implements IGlyphInfo {
-      private final float field_211582_a;
+      private final float scale;
       private final NativeImage texture;
       private final int unpackSkipPixels;
       private final int unpackSkipRows;
@@ -146,7 +146,7 @@ public class TextureGlyphProvider implements IGlyphProvider {
       private final int ascent;
 
       private GlyphInfo(float p_i49748_1_, NativeImage p_i49748_2_, int p_i49748_3_, int p_i49748_4_, int p_i49748_5_, int p_i49748_6_, int p_i49748_7_, int p_i49748_8_) {
-         this.field_211582_a = p_i49748_1_;
+         this.scale = p_i49748_1_;
          this.texture = p_i49748_2_;
          this.unpackSkipPixels = p_i49748_3_;
          this.unpackSkipRows = p_i49748_4_;
@@ -157,7 +157,7 @@ public class TextureGlyphProvider implements IGlyphProvider {
       }
 
       public float getOversample() {
-         return 1.0F / this.field_211582_a;
+         return 1.0F / this.scale;
       }
 
       public int getWidth() {
@@ -177,7 +177,7 @@ public class TextureGlyphProvider implements IGlyphProvider {
       }
 
       public void uploadGlyph(int xOffset, int yOffset) {
-         this.texture.func_227788_a_(0, xOffset, yOffset, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false, false);
+         this.texture.uploadTextureSub(0, xOffset, yOffset, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false, false);
       }
 
       public boolean isColored() {

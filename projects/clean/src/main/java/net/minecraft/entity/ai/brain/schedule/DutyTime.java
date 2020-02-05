@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.brain.schedule;
 
+//AH REFACTOR Class refactor
 public class DutyTime {
    private final int startTime;
    private final float durationForActivity; //1=duty duration for activity duration associated with this object.   0, another activity at another duration.

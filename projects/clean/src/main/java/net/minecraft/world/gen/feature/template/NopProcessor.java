@@ -13,8 +13,8 @@ public class NopProcessor extends StructureProcessor {
    }
 
    @Nullable
-   public Template.BlockInfo process(IWorldReader p_215194_1_, BlockPos p_215194_2_, Template.BlockInfo p_215194_3_, Template.BlockInfo p_215194_4_, PlacementSettings p_215194_5_) {
-      return p_215194_4_;
+   public Template.BlockInfo process(IWorldReader worldReaderIn, BlockPos pos, Template.BlockInfo p_215194_3_, Template.BlockInfo blockInfo, PlacementSettings placementSettingsIn) {
+      return blockInfo;
    }
 
    protected IStructureProcessorType getType() {

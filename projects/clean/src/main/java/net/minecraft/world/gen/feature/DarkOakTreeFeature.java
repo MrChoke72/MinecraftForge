@@ -16,7 +16,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<HugeTreeFeatureConfi
    }
 
    public boolean func_225557_a_(IWorldGenerationReader p_225557_1_, Random p_225557_2_, BlockPos p_225557_3_, Set<BlockPos> p_225557_4_, Set<BlockPos> p_225557_5_, MutableBoundingBox p_225557_6_, HugeTreeFeatureConfig p_225557_7_) {
-      int i = p_225557_2_.nextInt(3) + p_225557_2_.nextInt(2) + p_225557_7_.field_227371_p_;
+      int i = p_225557_2_.nextInt(3) + p_225557_2_.nextInt(2) + p_225557_7_.baseHeight;
       int j = p_225557_3_.getX();
       int k = p_225557_3_.getY();
       int l = p_225557_3_.getZ();

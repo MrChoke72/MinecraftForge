@@ -66,7 +66,7 @@ public class MerchantOffer {
       this.demand = p_i51550_8_;
    }
 
-   public ItemStack func_222218_a() {
+   public ItemStack getBuyingStackFirst() {
       return this.buyingStackFirst;
    }
 
@@ -78,31 +78,27 @@ public class MerchantOffer {
       return itemstack;
    }
 
-   public ItemStack func_222202_c() {
+   public ItemStack getBuyingStackSecond() {
       return this.buyingStackSecond;
    }
 
-   public ItemStack func_222200_d() {
+   public ItemStack getSellingStack() {
       return this.sellingStack;
    }
 
-   //AH REFACTOR
-   public void setDemand() {
-   //public void func_222222_e() {
+   public void calculateDemand() {
       this.demand = this.demand + this.uses - (this.maxUses - this.uses);
    }
 
-   //AH REFACTOR
-   public ItemStack getSellingStock() {
-   //public ItemStack func_222206_f() {
+   public ItemStack getCopyOfSellingStack() {
       return this.sellingStack.copy();
    }
 
-   public int func_222213_g() {
+   public int getUses() {
       return this.uses;
    }
 
-   public void func_222203_h() {
+   public void resetUses() {
       this.uses = 0;
    }
 
@@ -110,7 +106,7 @@ public class MerchantOffer {
       return this.maxUses;
    }
 
-   public void func_222219_j() {
+   public void increaseUses() {
       ++this.uses;
    }
 
@@ -118,35 +114,35 @@ public class MerchantOffer {
       return this.demand;
    }
 
-   public void func_222207_a(int p_222207_1_) {
-      this.specialPrice += p_222207_1_;
+   public void increaseSpecialPrice(int add) {
+      this.specialPrice += add;
    }
 
-   public void func_222220_k() {
+   public void resetSpecialPrice() {
       this.specialPrice = 0;
    }
 
-   public int func_222212_l() {
+   public int getSpecialPrice() {
       return this.specialPrice;
    }
 
-   public void func_222209_b(int p_222209_1_) {
-      this.specialPrice = p_222209_1_;
+   public void setSpecialPrice(int price) {
+      this.specialPrice = price;
    }
 
-   public float func_222211_m() {
+   public float getPriceMultiplier() {
       return this.priceMultiplier;
    }
 
-   public int func_222210_n() {
+   public int getGivenExp() {
       return this.givenEXP;
    }
 
-   public boolean func_222217_o() {
+   public boolean hasNoUsesLeft() {
       return this.uses >= this.maxUses;
    }
 
-   public void func_222216_p() {
+   public void getMaxUses() {
       this.uses = this.maxUses;
    }
 
@@ -154,11 +150,11 @@ public class MerchantOffer {
       return this.uses > 0;
    }
 
-   public boolean func_222221_q() {
+   public boolean getDoesRewardExp() {
       return this.doesRewardEXP;
    }
 
-   public CompoundNBT func_222208_r() {
+   public CompoundNBT write() {
       CompoundNBT compoundnbt = new CompoundNBT();
       compoundnbt.put("buy", this.buyingStackFirst.write(new CompoundNBT()));
       compoundnbt.put("sell", this.sellingStack.write(new CompoundNBT()));
@@ -173,30 +169,30 @@ public class MerchantOffer {
       return compoundnbt;
    }
 
-   public boolean func_222204_a(ItemStack p_222204_1_, ItemStack p_222204_2_) {
-      return this.func_222201_c(p_222204_1_, this.func_222205_b()) && p_222204_1_.getCount() >= this.func_222205_b().getCount() && this.func_222201_c(p_222204_2_, this.buyingStackSecond) && p_222204_2_.getCount() >= this.buyingStackSecond.getCount();
+   public boolean matches(ItemStack p_222204_1_, ItemStack p_222204_2_) {
+      return this.equalIgnoringDamage(p_222204_1_, this.func_222205_b()) && p_222204_1_.getCount() >= this.func_222205_b().getCount() && this.equalIgnoringDamage(p_222204_2_, this.buyingStackSecond) && p_222204_2_.getCount() >= this.buyingStackSecond.getCount();
    }
 
-   private boolean func_222201_c(ItemStack p_222201_1_, ItemStack p_222201_2_) {
-      if (p_222201_2_.isEmpty() && p_222201_1_.isEmpty()) {
+   private boolean equalIgnoringDamage(ItemStack left, ItemStack right) {
+      if (right.isEmpty() && left.isEmpty()) {
          return true;
       } else {
-         ItemStack itemstack = p_222201_1_.copy();
+         ItemStack itemstack = left.copy();
          if (itemstack.getItem().isDamageable()) {
             itemstack.setDamage(itemstack.getDamage());
          }
 
-         return ItemStack.areItemsEqual(itemstack, p_222201_2_) && (!p_222201_2_.hasTag() || itemstack.hasTag() && NBTUtil.areNBTEquals(p_222201_2_.getTag(), itemstack.getTag(), false));
+         return ItemStack.areItemsEqual(itemstack, right) && (!right.hasTag() || itemstack.hasTag() && NBTUtil.areNBTEquals(right.getTag(), itemstack.getTag(), false));
       }
    }
 
-   public boolean func_222215_b(ItemStack p_222215_1_, ItemStack p_222215_2_) {
-      if (!this.func_222204_a(p_222215_1_, p_222215_2_)) {
+   public boolean doTransaction(ItemStack p_222215_1_, ItemStack p_222215_2_) {
+      if (!this.matches(p_222215_1_, p_222215_2_)) {
          return false;
       } else {
          p_222215_1_.shrink(this.func_222205_b().getCount());
-         if (!this.func_222202_c().isEmpty()) {
-            p_222215_2_.shrink(this.func_222202_c().getCount());
+         if (!this.getBuyingStackSecond().isEmpty()) {
+            p_222215_2_.shrink(this.getBuyingStackSecond().getCount());
          }
 
          return true;

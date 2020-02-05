@@ -62,12 +62,12 @@ public class WorldGenRegion implements IWorld {
    private final ITickList<Fluid> pendingFluidTickList = new WorldGenTickList<>((p_205334_1_) -> {
       return this.getChunk(p_205334_1_).getFluidsToBeTicked();
    });
-   private final BiomeManager field_229862_o_;
+   private final BiomeManager biomeManager;
 
    public WorldGenRegion(ServerWorld p_i50698_1_, List<IChunk> p_i50698_2_) {
       int i = MathHelper.floor(Math.sqrt((double)p_i50698_2_.size()));
       if (i * i != p_i50698_2_.size()) {
-         throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("Cache size is not a square."));
+         throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("Cache size is not a square."));
       } else {
          ChunkPos chunkpos = p_i50698_2_.get(p_i50698_2_.size() / 2).getPos();
          this.chunkPrimers = p_i50698_2_;
@@ -81,7 +81,7 @@ public class WorldGenRegion implements IWorld {
          this.worldInfo = p_i50698_1_.getWorldInfo();
          this.random = p_i50698_1_.getRandom();
          this.dimension = p_i50698_1_.getDimension();
-         this.field_229862_o_ = new BiomeManager(this, WorldInfo.func_227498_c_(this.seed), this.dimension.getType().func_227176_e_());
+         this.biomeManager = new BiomeManager(this, WorldInfo.byHashing(this.seed), this.dimension.getType().getMagnifier());
       }
    }
 
@@ -120,9 +120,9 @@ public class WorldGenRegion implements IWorld {
          LOGGER.error("Requested chunk : {} {}", x, z);
          LOGGER.error("Region bounds : {} {} | {} {}", ichunk1.getPos().x, ichunk1.getPos().z, ichunk2.getPos().x, ichunk2.getPos().z);
          if (ichunk != null) {
-            throw (RuntimeException)Util.func_229757_c_(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", requiredStatus, ichunk.getStatus(), x, z)));
+            throw (RuntimeException)Util.spinlockIfDevMode(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", requiredStatus, ichunk.getStatus(), x, z)));
          } else {
-            throw (RuntimeException)Util.func_229757_c_(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", x, z)));
+            throw (RuntimeException)Util.spinlockIfDevMode(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", x, z)));
          }
       }
    }
@@ -150,16 +150,16 @@ public class WorldGenRegion implements IWorld {
       return 0;
    }
 
-   public BiomeManager func_225523_d_() {
-      return this.field_229862_o_;
+   public BiomeManager getBiomeManager() {
+      return this.biomeManager;
    }
 
-   public Biome func_225604_a_(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
-      return this.world.func_225604_a_(p_225604_1_, p_225604_2_, p_225604_3_);
+   public Biome getNoiseBiomeRaw(int x, int y, int z) {
+      return this.world.getNoiseBiomeRaw(x, y, z);
    }
 
-   public WorldLightManager getLightMgr() {
-      return this.world.getLightMgr();
+   public WorldLightManager getLightManager() {
+      return this.world.getLightManager();
    }
 
    public boolean func_225521_a_(BlockPos p_225521_1_, boolean p_225521_2_, @Nullable Entity p_225521_3_) {
@@ -214,7 +214,7 @@ public class WorldGenRegion implements IWorld {
       IChunk ichunk = this.getChunk(pos);
       BlockState blockstate = ichunk.setBlockState(pos, newState, false);
       if (blockstate != null) {
-         this.world.updatePoiMgr(pos, blockstate, newState);
+         this.world.onBlockStateChange(pos, blockstate, newState);
       }
 
       Block block = newState.getBlock();

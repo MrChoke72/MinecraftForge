@@ -25,7 +25,7 @@ public class CollisionBoxDebugRenderer implements DebugRenderer.IDebugRenderer {
       this.minecraft = minecraftIn;
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       double d0 = (double)Util.nanoTime();
       if (d0 - this.lastUpdate > 1.0E8D) {
          this.lastUpdate = d0;
@@ -33,10 +33,10 @@ public class CollisionBoxDebugRenderer implements DebugRenderer.IDebugRenderer {
          this.collisionData = entity.world.func_226667_c_(entity, entity.getBoundingBox().grow(6.0D), Collections.emptySet()).collect(Collectors.toList());
       }
 
-      IVertexBuilder ivertexbuilder = p_225619_2_.getBuffer(RenderType.func_228659_m_());
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.lines());
 
       for(VoxelShape voxelshape : this.collisionData) {
-         WorldRenderer.func_228431_a_(p_225619_1_, ivertexbuilder, voxelshape, -p_225619_3_, -p_225619_5_, -p_225619_7_, 1.0F, 1.0F, 1.0F, 1.0F);
+         WorldRenderer.drawVoxelShapeParts(matrixStackIn, ivertexbuilder, voxelshape, -camX, -camY, -camZ, 1.0F, 1.0F, 1.0F, 1.0F);
       }
 
    }

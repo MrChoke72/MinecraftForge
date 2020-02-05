@@ -33,11 +33,11 @@ public final class BinomialRange implements IRandomRange {
       return i;
    }
 
-   public static BinomialRange func_215838_a(int p_215838_0_, float p_215838_1_) {
-      return new BinomialRange(p_215838_0_, p_215838_1_);
+   public static BinomialRange of(int nIn, float pIn) {
+      return new BinomialRange(nIn, pIn);
    }
 
-   public ResourceLocation getLocation() {
+   public ResourceLocation getType() {
       return BINOMIAL;
    }
 

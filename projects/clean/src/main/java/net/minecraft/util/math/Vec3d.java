@@ -83,7 +83,7 @@ public class Vec3d implements IPosition {
       return this.mul(factor, factor, factor);
    }
 
-   public Vec3d func_216371_e() {
+   public Vec3d inverse() {
       return this.scale(-1.0D);
    }
 

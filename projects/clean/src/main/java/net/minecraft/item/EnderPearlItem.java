@@ -20,7 +20,7 @@ public class EnderPearlItem extends Item {
       playerIn.getCooldownTracker().setCooldown(this, 20);
       if (!worldIn.isRemote) {
          EnderPearlEntity enderpearlentity = new EnderPearlEntity(worldIn, playerIn);
-         enderpearlentity.func_213884_b(itemstack);
+         enderpearlentity.setItem(itemstack);
          enderpearlentity.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, 1.5F, 1.0F);
          worldIn.addEntity(enderpearlentity);
       }

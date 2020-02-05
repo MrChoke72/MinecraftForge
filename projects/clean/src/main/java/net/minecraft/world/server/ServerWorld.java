@@ -164,30 +164,30 @@ public class ServerWorld extends World {
    @Nullable
    private final WanderingTraderSpawner wanderingTraderSpawner;
 
-   public ServerWorld(MinecraftServer p_i50703_1_, Executor p_i50703_2_, SaveHandler p_i50703_3_, WorldInfo p_i50703_4_, DimensionType p_i50703_5_, IProfiler p_i50703_6_, IChunkStatusListener p_i50703_7_) {
-      super(p_i50703_4_, p_i50703_5_, (p_217442_4_, p_217442_5_) -> {
-         return new ServerChunkProvider((ServerWorld)p_217442_4_, p_i50703_3_.getWorldDirectory(), p_i50703_3_.getFixer(), p_i50703_3_.getStructureTemplateManager(), p_i50703_2_, p_217442_5_.createChunkGenerator(), p_i50703_1_.getPlayerList().getViewDistance(), p_i50703_7_, () -> {
-            return p_i50703_1_.getWorld(DimensionType.OVERWORLD).getSavedData();
+   public ServerWorld(MinecraftServer serverIn, Executor p_i50703_2_, SaveHandler p_i50703_3_, WorldInfo p_i50703_4_, DimensionType dimType, IProfiler p_i50703_6_, IChunkStatusListener p_i50703_7_) {
+      super(p_i50703_4_, dimType, (p_217442_4_, p_217442_5_) -> {
+         return new ServerChunkProvider((ServerWorld)p_217442_4_, p_i50703_3_.getWorldDirectory(), p_i50703_3_.getFixer(), p_i50703_3_.getStructureTemplateManager(), p_i50703_2_, p_217442_5_.createChunkGenerator(), serverIn.getPlayerList().getViewDistance(), p_i50703_7_, () -> {
+            return serverIn.getWorld(DimensionType.OVERWORLD).getSavedData();
          });
       }, p_i50703_6_, false);
       this.saveHandler = p_i50703_3_;
-      this.server = p_i50703_1_;
+      this.server = serverIn;
       this.worldTeleporter = new Teleporter(this);
       this.calculateInitialSkylight();
       this.calculateInitialWeather();
-      this.getWorldBorder().setSize(p_i50703_1_.getMaxWorldSize());
+      this.getWorldBorder().setSize(serverIn.getMaxWorldSize());
       this.raids = this.getSavedData().getOrCreate(() -> {
          return new RaidManager(this);
       }, RaidManager.func_215172_a(this.dimension));
-      if (!p_i50703_1_.isSinglePlayer()) {
-         this.getWorldInfo().setGameType(p_i50703_1_.getGameType());
+      if (!serverIn.isSinglePlayer()) {
+         this.getWorldInfo().setGameType(serverIn.getGameType());
       }
 
       this.wanderingTraderSpawner = this.dimension.getType() == DimensionType.OVERWORLD ? new WanderingTraderSpawner(this) : null;
    }
 
-   public Biome func_225604_a_(int p_225604_1_, int p_225604_2_, int p_225604_3_) {
-      return this.getChunkProvider().getChunkGenerator().getBiomeProvider().func_225526_b_(p_225604_1_, p_225604_2_, p_225604_3_);
+   public Biome getNoiseBiomeRaw(int x, int y, int z) {
+      return this.getChunkProvider().getChunkGenerator().getBiomeProvider().getNoiseBiome(x, y, z);
    }
 
    public void tick(BooleanSupplier hasTimeLeft) {
@@ -328,7 +328,7 @@ public class ServerWorld extends World {
 
          for(int i1 = 0; i1 < this.globalEntities.size(); ++i1) {
             Entity entity = this.globalEntities.get(i1);
-            this.func_217390_a((p_229858_0_) -> {
+            this.guardEntityTick((p_229858_0_) -> {
                ++p_229858_0_.ticksExisted;
                p_229858_0_.tick();
             }, entity);
@@ -354,7 +354,7 @@ public class ServerWorld extends World {
                   }
 
                   iprofiler.endSection();
-                  this.func_217391_K();
+                  this.tickBlockEntities();
                   break label174;
                }
 
@@ -387,7 +387,7 @@ public class ServerWorld extends World {
 
             iprofiler.startSection("tick");
             if (!entity2.removed && !(entity2 instanceof EnderDragonPartEntity)) {
-               this.func_217390_a(this::updateEntity, entity2);
+               this.guardEntityTick(this::updateEntity, entity2);
             }
 
             iprofiler.endSection();
@@ -411,15 +411,15 @@ public class ServerWorld extends World {
       });
    }
 
-   public void func_217441_a(Chunk p_217441_1_, int p_217441_2_) {
-      ChunkPos chunkpos = p_217441_1_.getPos();
+   public void tickEnvironment(Chunk chunkIn, int randomTickSpeed) {
+      ChunkPos chunkpos = chunkIn.getPos();
       boolean flag = this.isRaining();
       int i = chunkpos.getXStart();
       int j = chunkpos.getZStart();
       IProfiler iprofiler = this.getProfiler();
       iprofiler.startSection("thunder");
       if (flag && this.isThundering() && this.rand.nextInt(100000) == 0) {
-         BlockPos blockpos = this.adjustPosToNearbyEntity(this.func_217383_a(i, 0, j, 15));
+         BlockPos blockpos = this.adjustPosToNearbyEntity(this.getBlockRandomPos(i, 0, j, 15));
          if (this.isRainingAt(blockpos)) {
             DifficultyInstance difficultyinstance = this.getDifficultyForLocation(blockpos);
             boolean flag1 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.rand.nextDouble() < (double)difficultyinstance.getAdditionalDifficulty() * 0.01D;
@@ -437,9 +437,9 @@ public class ServerWorld extends World {
 
       iprofiler.endStartSection("iceandsnow");
       if (this.rand.nextInt(16) == 0) {
-         BlockPos blockpos2 = this.getHeight(Heightmap.Type.MOTION_BLOCKING, this.func_217383_a(i, 0, j, 15));
+         BlockPos blockpos2 = this.getHeight(Heightmap.Type.MOTION_BLOCKING, this.getBlockRandomPos(i, 0, j, 15));
          BlockPos blockpos3 = blockpos2.down();
-         Biome biome = this.func_226691_t_(blockpos2);
+         Biome biome = this.getBiome(blockpos2);
          if (biome.doesWaterFreeze(this, blockpos3)) {
             this.setBlockState(blockpos3, Blocks.ICE.getDefaultState());
          }
@@ -448,23 +448,23 @@ public class ServerWorld extends World {
             this.setBlockState(blockpos2, Blocks.SNOW.getDefaultState());
          }
 
-         if (flag && this.func_226691_t_(blockpos3).getPrecipitation() == Biome.RainType.RAIN) {
+         if (flag && this.getBiome(blockpos3).getPrecipitation() == Biome.RainType.RAIN) {
             this.getBlockState(blockpos3).getBlock().fillWithRain(this, blockpos3);
          }
       }
 
       iprofiler.endStartSection("tickBlocks");
-      if (p_217441_2_ > 0) {
-         for(ChunkSection chunksection : p_217441_1_.getSections()) {
+      if (randomTickSpeed > 0) {
+         for(ChunkSection chunksection : chunkIn.getSections()) {
             if (chunksection != Chunk.EMPTY_SECTION && chunksection.needsRandomTickAny()) {
                int k = chunksection.getYLocation();
 
-               for(int l = 0; l < p_217441_2_; ++l) {
-                  BlockPos blockpos1 = this.func_217383_a(i, k, j, 15);
+               for(int l = 0; l < randomTickSpeed; ++l) {
+                  BlockPos blockpos1 = this.getBlockRandomPos(i, k, j, 15);
                   iprofiler.startSection("randomTick");
                   BlockState blockstate = chunksection.getBlockState(blockpos1.getX() - i, blockpos1.getY() - k, blockpos1.getZ() - j);
                   if (blockstate.ticksRandomly()) {
-                     blockstate.func_227034_b_(this, blockpos1, this.rand);
+                     blockstate.randomTick(this, blockpos1, this.rand);
                   }
 
                   IFluidState ifluidstate = blockstate.getFluidState();
@@ -485,7 +485,7 @@ public class ServerWorld extends World {
       BlockPos blockpos = this.getHeight(Heightmap.Type.MOTION_BLOCKING, pos);
       AxisAlignedBB axisalignedbb = (new AxisAlignedBB(blockpos, new BlockPos(blockpos.getX(), this.getHeight(), blockpos.getZ()))).grow(3.0D);
       List<LivingEntity> list = this.getEntitiesWithinAABB(LivingEntity.class, axisalignedbb, (p_217463_1_) -> {
-         return p_217463_1_ != null && p_217463_1_.isAlive() && this.isMaxLightLevel(p_217463_1_.getPosition());
+         return p_217463_1_ != null && p_217463_1_.isAlive() && this.canSeeSky(p_217463_1_.getPosition());
       });
       if (!list.isEmpty()) {
          return list.get(this.rand.nextInt(list.size())).getPosition();
@@ -570,23 +570,25 @@ public class ServerWorld extends World {
    private void tickBlock(NextTickListEntry<Block> blockTickEntry) {
       BlockState blockstate = this.getBlockState(blockTickEntry.position);
       if (blockstate.getBlock() == blockTickEntry.getTarget()) {
-         blockstate.func_227033_a_(this, blockTickEntry.position, this.rand);
+         blockstate.tick(this, blockTickEntry.position, this.rand);
       }
 
    }
 
    public void updateEntity(Entity entityIn) {
       if (entityIn instanceof PlayerEntity || this.getChunkProvider().isChunkLoaded(entityIn)) {
-         entityIn.func_226286_f_(entityIn.getPosX(), entityIn.getPosY(), entityIn.getPosZ());
+         entityIn.forceSetPosition(entityIn.getPosX(), entityIn.getPosY(), entityIn.getPosZ());
          entityIn.prevRotationYaw = entityIn.rotationYaw;
          entityIn.prevRotationPitch = entityIn.rotationPitch;
          if (entityIn.addedToChunk) {
             ++entityIn.ticksExisted;
-            this.getProfiler().startSection(() -> {
+            IProfiler iprofiler = this.getProfiler();
+            iprofiler.startSection(() -> {
                return Registry.ENTITY_TYPE.getKey(entityIn.getType()).toString();
             });
+            iprofiler.func_230035_c_("tickNonPassenger");
             entityIn.tick();
-            this.getProfiler().endSection();
+            iprofiler.endSection();
          }
 
          this.chunkCheck(entityIn);
@@ -602,12 +604,18 @@ public class ServerWorld extends World {
    public void func_217459_a(Entity p_217459_1_, Entity p_217459_2_) {
       if (!p_217459_2_.removed && p_217459_2_.getRidingEntity() == p_217459_1_) {
          if (p_217459_2_ instanceof PlayerEntity || this.getChunkProvider().isChunkLoaded(p_217459_2_)) {
-            p_217459_2_.func_226286_f_(p_217459_2_.getPosX(), p_217459_2_.getPosY(), p_217459_2_.getPosZ());
+            p_217459_2_.forceSetPosition(p_217459_2_.getPosX(), p_217459_2_.getPosY(), p_217459_2_.getPosZ());
             p_217459_2_.prevRotationYaw = p_217459_2_.rotationYaw;
             p_217459_2_.prevRotationPitch = p_217459_2_.rotationPitch;
             if (p_217459_2_.addedToChunk) {
                ++p_217459_2_.ticksExisted;
+               IProfiler iprofiler = this.getProfiler();
+               iprofiler.startSection(() -> {
+                  return Registry.ENTITY_TYPE.getKey(p_217459_2_.getType()).toString();
+               });
+               iprofiler.func_230035_c_("tickPassenger");
                p_217459_2_.updateRidden();
+               iprofiler.endSection();
             }
 
             this.chunkCheck(p_217459_2_);
@@ -705,7 +713,7 @@ public class ServerWorld extends World {
    }
 
    protected void createBonusChest() {
-      ConfiguredFeature<?, ?> configuredfeature = Feature.BONUS_CHEST.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG);
+      ConfiguredFeature<?, ?> configuredfeature = Feature.BONUS_CHEST.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG);
       configuredfeature.place(this, this.getChunkProvider().getChunkGenerator(), this.rand, new BlockPos(this.worldInfo.getSpawnX(), this.worldInfo.getSpawnY(), this.worldInfo.getSpawnZ()));
    }
 
@@ -812,8 +820,8 @@ public class ServerWorld extends World {
       return this.addEntity0(entityIn);
    }
 
-   public boolean summonEntity(Entity p_217470_1_) {
-      return this.addEntity0(p_217470_1_);
+   public boolean summonEntity(Entity entityIn) {
+      return this.addEntity0(entityIn);
    }
 
    public void func_217460_e(Entity p_217460_1_) {
@@ -906,7 +914,7 @@ public class ServerWorld extends World {
          for(Entity entity : aclassinheritancemultimap[j]) {
             if (!(entity instanceof ServerPlayerEntity)) {
                if (this.tickingEntities) {
-                  throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("Removing entity while ticking!"));
+                  throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("Removing entity while ticking!"));
                }
 
                this.entitiesById.remove(entity.getEntityId());
@@ -919,7 +927,7 @@ public class ServerWorld extends World {
 
    public void onEntityRemoved(Entity entityIn) {
       if (entityIn instanceof EnderDragonEntity) {
-         for(EnderDragonPartEntity enderdragonpartentity : ((EnderDragonEntity)entityIn).func_213404_dT()) {
+         for(EnderDragonPartEntity enderdragonpartentity : ((EnderDragonEntity)entityIn).getDragonParts()) {
             enderdragonpartentity.remove();
          }
       }
@@ -944,7 +952,7 @@ public class ServerWorld extends World {
       } else {
          this.entitiesById.put(entityIn.getEntityId(), entityIn);
          if (entityIn instanceof EnderDragonEntity) {
-            for(EnderDragonPartEntity enderdragonpartentity : ((EnderDragonEntity)entityIn).func_213404_dT()) {
+            for(EnderDragonPartEntity enderdragonpartentity : ((EnderDragonEntity)entityIn).getDragonParts()) {
                this.entitiesById.put(enderdragonpartentity.getEntityId(), enderdragonpartentity);
             }
          }
@@ -960,7 +968,7 @@ public class ServerWorld extends World {
 
    public void removeEntity(Entity entityIn) {
       if (this.tickingEntities) {
-         throw (IllegalStateException)Util.func_229757_c_(new IllegalStateException("Removing entity while ticking!"));
+         throw (IllegalStateException)Util.spinlockIfDevMode(new IllegalStateException("Removing entity while ticking!"));
       } else {
          this.removeFromChunk(entityIn);
          this.entitiesById.remove(entityIn.getEntityId());
@@ -1005,8 +1013,8 @@ public class ServerWorld extends World {
       this.server.getPlayerList().sendToAllNearExcept(player, x, y, z, volume > 1.0F ? (double)(16.0F * volume) : 16.0D, this.dimension.getType(), new SPlaySoundEffectPacket(soundIn, category, x, y, z, volume, pitch));
    }
 
-   public void playMovingSound(@Nullable PlayerEntity p_217384_1_, Entity p_217384_2_, SoundEvent p_217384_3_, SoundCategory p_217384_4_, float p_217384_5_, float p_217384_6_) {
-      this.server.getPlayerList().sendToAllNearExcept(p_217384_1_, p_217384_2_.getPosX(), p_217384_2_.getPosY(), p_217384_2_.getPosZ(), p_217384_5_ > 1.0F ? (double)(16.0F * p_217384_5_) : 16.0D, this.dimension.getType(), new SSpawnMovingSoundEffectPacket(p_217384_3_, p_217384_4_, p_217384_2_, p_217384_5_, p_217384_6_));
+   public void playMovingSound(@Nullable PlayerEntity playerIn, Entity entityIn, SoundEvent eventIn, SoundCategory categoryIn, float volume, float pitch) {
+      this.server.getPlayerList().sendToAllNearExcept(playerIn, entityIn.getPosX(), entityIn.getPosY(), entityIn.getPosZ(), volume > 1.0F ? (double)(16.0F * volume) : 16.0D, this.dimension.getType(), new SSpawnMovingSoundEffectPacket(eventIn, categoryIn, entityIn, volume, pitch));
    }
 
    public void playBroadcastSound(int id, BlockPos pos, int data) {
@@ -1039,21 +1047,21 @@ public class ServerWorld extends World {
       return (ServerChunkProvider)super.getChunkProvider();
    }
 
-   public Explosion createExplosion(@Nullable Entity p_217401_1_, @Nullable DamageSource p_217401_2_, double p_217401_3_, double p_217401_5_, double p_217401_7_, float p_217401_9_, boolean p_217401_10_, Explosion.Mode p_217401_11_) {
-      Explosion explosion = new Explosion(this, p_217401_1_, p_217401_3_, p_217401_5_, p_217401_7_, p_217401_9_, p_217401_10_, p_217401_11_);
-      if (p_217401_2_ != null) {
-         explosion.setDamageSource(p_217401_2_);
+   public Explosion createExplosion(@Nullable Entity entityIn, @Nullable DamageSource damageSourceIn, double xIn, double yIn, double zIn, float explosionRadius, boolean causesFire, Explosion.Mode modeIn) {
+      Explosion explosion = new Explosion(this, entityIn, xIn, yIn, zIn, explosionRadius, causesFire, modeIn);
+      if (damageSourceIn != null) {
+         explosion.setDamageSource(damageSourceIn);
       }
 
       explosion.doExplosionA();
       explosion.doExplosionB(false);
-      if (p_217401_11_ == Explosion.Mode.NONE) {
+      if (modeIn == Explosion.Mode.NONE) {
          explosion.clearAffectedBlockPositions();
       }
 
       for(ServerPlayerEntity serverplayerentity : this.players) {
-         if (serverplayerentity.getDistanceSq(p_217401_3_, p_217401_5_, p_217401_7_) < 4096.0D) {
-            serverplayerentity.connection.sendPacket(new SExplosionPacket(p_217401_3_, p_217401_5_, p_217401_7_, p_217401_9_, explosion.getAffectedBlockPositions(), explosion.getPlayerKnockbackMap().get(serverplayerentity)));
+         if (serverplayerentity.getDistanceSq(xIn, yIn, zIn) < 4096.0D) {
+            serverplayerentity.connection.sendPacket(new SExplosionPacket(xIn, yIn, zIn, explosionRadius, explosion.getAffectedBlockPositions(), explosion.getPlayerKnockbackMap().get(serverplayerentity)));
          }
       }
 
@@ -1178,25 +1186,25 @@ public class ServerWorld extends World {
    }
 
    @Nullable
-   public MapData func_217406_a(String p_217406_1_) {
+   public MapData getMapData(String mapName) {
       return this.getServer().getWorld(DimensionType.OVERWORLD).getSavedData().get(() -> {
-         return new MapData(p_217406_1_);
-      }, p_217406_1_);
+         return new MapData(mapName);
+      }, mapName);
    }
 
-   public void func_217399_a(MapData p_217399_1_) {
-      this.getServer().getWorld(DimensionType.OVERWORLD).getSavedData().set(p_217399_1_);
+   public void registerMapData(MapData mapDataIn) {
+      this.getServer().getWorld(DimensionType.OVERWORLD).getSavedData().set(mapDataIn);
    }
 
    public int getNextMapId() {
-      return this.getServer().getWorld(DimensionType.OVERWORLD).getSavedData().getOrCreate(MapIdTracker::new, "idcounts").func_215162_a();
+      return this.getServer().getWorld(DimensionType.OVERWORLD).getSavedData().getOrCreate(MapIdTracker::new, "idcounts").getNextId();
    }
 
    public void setSpawnPoint(BlockPos pos) {
       ChunkPos chunkpos = new ChunkPos(new BlockPos(this.worldInfo.getSpawnX(), 0, this.worldInfo.getSpawnZ()));
       super.setSpawnPoint(pos);
-      this.getChunkProvider().func_217222_b(TicketType.START, chunkpos, 11, Unit.INSTANCE);
-      this.getChunkProvider().func_217228_a(TicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
+      this.getChunkProvider().releaseTicket(TicketType.START, chunkpos, 11, Unit.INSTANCE);
+      this.getChunkProvider().registerTicket(TicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
    }
 
    public LongSet getForcedChunks() {
@@ -1230,54 +1238,48 @@ public class ServerWorld extends World {
       return this.players;
    }
 
-   public void updatePoiMgr(BlockPos pos, BlockState oldState, BlockState newState) {
-      Optional<PointOfInterestType> optional = PointOfInterestType.forState(oldState);
-      Optional<PointOfInterestType> optional1 = PointOfInterestType.forState(newState);
+   public void onBlockStateChange(BlockPos p_217393_1_, BlockState p_217393_2_, BlockState p_217393_3_) {
+      Optional<PointOfInterestType> optional = PointOfInterestType.forState(p_217393_2_);
+      Optional<PointOfInterestType> optional1 = PointOfInterestType.forState(p_217393_3_);
       if (!Objects.equals(optional, optional1)) {
-         BlockPos blockpos = pos.toImmutable();
+         BlockPos blockpos = p_217393_1_.toImmutable();
          optional.ifPresent((p_217476_2_) -> {
             this.getServer().execute(() -> {
-               this.getPoiMgr().removeLocation(blockpos);
+               this.getPointOfInterestManager().removeLocation(blockpos);
                DebugPacketSender.func_218805_b(this, blockpos);
             });
          });
          optional1.ifPresent((p_217457_2_) -> {
             this.getServer().execute(() -> {
-               this.getPoiMgr().addLocation(blockpos, p_217457_2_);
+               this.getPointOfInterestManager().addLocation(blockpos, p_217457_2_);
                DebugPacketSender.func_218799_a(this, blockpos);
             });
          });
       }
    }
 
-   //AH REFACTOR
-   public PointOfInterestManager getPoiMgr() {
-   //public PointOfInterestManager func_217443_B() {
-      return this.getChunkProvider().func_217231_i();
+   public PointOfInterestManager getPointOfInterestManager() {
+      return this.getChunkProvider().getPointOfInterestManager();
    }
 
-   public boolean isPosBelowEQSecLevel1(BlockPos pos) {
-      return this.isPosBelowEQSecLevel(pos, 1);
+   public boolean isPosBelowEQSecLevel1(BlockPos p_217483_1_) {
+      return this.isPosBelowEQSecLevel(p_217483_1_, 1);
    }
 
    public boolean func_222887_a(SectionPos p_222887_1_) {
       return this.isPosBelowEQSecLevel1(p_222887_1_.getCenter());
    }
 
-   //AH REFACTOR
-   public boolean isPosBelowEQSecLevel(BlockPos pos, int secLevel) {
-   //public boolean func_217471_a(BlockPos p_217471_1_, int p_217471_2_) {
-      if (secLevel > 6) {
+   public boolean isPosBelowEQSecLevel(BlockPos p_217471_1_, int p_217471_2_) {
+      if (p_217471_2_ > 6) {
          return false;
       } else {
-         return this.getPoiSecPosLevel(SectionPos.from(pos)) <= secLevel;
+         return this.getPoiSecPosLevel(SectionPos.from(p_217471_1_)) <= p_217471_2_;
       }
    }
 
-   //AH REFACTOR
-   public int getPoiSecPosLevel(SectionPos secPos) {
-   //public int func_217486_a(SectionPos p_217486_1_) {
-      return this.getPoiMgr().getPoiSecPosLevel(secPos);
+   public int getPoiSecPosLevel(SectionPos p_217486_1_) {
+      return this.getPointOfInterestManager().getPoiSecPosLevel(p_217486_1_);
    }
 
    public RaidManager getRaids() {
@@ -1293,25 +1295,25 @@ public class ServerWorld extends World {
       return this.findRaid(pos) != null;
    }
 
-   public void func_217489_a(IReputationType p_217489_1_, Entity p_217489_2_, IReputationTracking p_217489_3_) {
-      p_217489_3_.func_213739_a(p_217489_1_, p_217489_2_);
+   public void updateReputation(IReputationType type, Entity target, IReputationTracking host) {
+      host.updateReputation(type, target);
    }
 
-   public void func_225322_a(Path p_225322_1_) throws IOException {
+   public void writeDebugInfo(Path p_225322_1_) throws IOException {
       ChunkManager chunkmanager = this.getChunkProvider().chunkManager;
 
       try (Writer writer = Files.newBufferedWriter(p_225322_1_.resolve("stats.txt"))) {
-         writer.write(String.format("spawning_chunks: %d\n", chunkmanager.func_219246_e().func_219358_b()));
+         writer.write(String.format("spawning_chunks: %d\n", chunkmanager.getTicketManager().func_219358_b()));
 
          for(it.unimi.dsi.fastutil.objects.Object2IntMap.Entry<EntityClassification> entry : this.countEntities().object2IntEntrySet()) {
-            writer.write(String.format("spawn_count.%s: %d\n", entry.getKey().func_220363_a(), entry.getIntValue()));
+            writer.write(String.format("spawn_count.%s: %d\n", entry.getKey().getName(), entry.getIntValue()));
          }
 
          writer.write(String.format("entities: %d\n", this.entitiesById.size()));
          writer.write(String.format("block_entities: %d\n", this.loadedTileEntityList.size()));
          writer.write(String.format("block_ticks: %d\n", this.getPendingBlockTicks().func_225420_a()));
          writer.write(String.format("fluid_ticks: %d\n", this.getPendingFluidTicks().func_225420_a()));
-         writer.write("distance_manager: " + chunkmanager.func_219246_e().func_225412_c() + "\n");
+         writer.write("distance_manager: " + chunkmanager.getTicketManager().func_225412_c() + "\n");
          writer.write(String.format("pending_tasks: %d\n", this.getChunkProvider().func_225314_f()));
       }
 

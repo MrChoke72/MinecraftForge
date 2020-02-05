@@ -60,28 +60,28 @@ public class LootTable {
       };
    }
 
-   public void recursiveGenerate(LootContext p_216114_1_, Consumer<ItemStack> p_216114_2_) {
-      if (p_216114_1_.addLootTable(this)) {
-         Consumer<ItemStack> consumer = ILootFunction.func_215858_a(this.combinedFunctions, p_216114_2_, p_216114_1_);
+   public void recursiveGenerate(LootContext context, Consumer<ItemStack> stacksOut) {
+      if (context.addLootTable(this)) {
+         Consumer<ItemStack> consumer = ILootFunction.func_215858_a(this.combinedFunctions, stacksOut, context);
 
          for(LootPool lootpool : this.pools) {
-            lootpool.generate(consumer, p_216114_1_);
+            lootpool.generate(consumer, context);
          }
 
-         p_216114_1_.removeLootTable(this);
+         context.removeLootTable(this);
       } else {
          LOGGER.warn("Detected infinite loop in loot tables");
       }
 
    }
 
-   public void generate(LootContext p_216120_1_, Consumer<ItemStack> p_216120_2_) {
-      this.recursiveGenerate(p_216120_1_, capStackSizes(p_216120_2_));
+   public void generate(LootContext contextData, Consumer<ItemStack> stacksOut) {
+      this.recursiveGenerate(contextData, capStackSizes(stacksOut));
    }
 
-   public List<ItemStack> generate(LootContext p_216113_1_) {
+   public List<ItemStack> generate(LootContext context) {
       List<ItemStack> list = Lists.newArrayList();
-      this.generate(p_216113_1_, list::add);
+      this.generate(context, list::add);
       return list;
    }
 

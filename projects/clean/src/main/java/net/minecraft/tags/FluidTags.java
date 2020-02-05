@@ -18,7 +18,7 @@ public class FluidTags {
       ++generation;
    }
 
-   public static TagCollection<Fluid> func_226157_a_() {
+   public static TagCollection<Fluid> getCollection() {
       return collection;
    }
 

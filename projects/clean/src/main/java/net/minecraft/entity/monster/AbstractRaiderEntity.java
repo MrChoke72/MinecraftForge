@@ -55,8 +55,8 @@ public abstract class AbstractRaiderEntity extends PatrollerEntity {
    private boolean canJoinRaid;
    private int field_213664_bB;
 
-   protected AbstractRaiderEntity(EntityType<? extends AbstractRaiderEntity> p_i50143_1_, World worldIn) {
-      super(p_i50143_1_, worldIn);
+   protected AbstractRaiderEntity(EntityType<? extends AbstractRaiderEntity> type, World worldIn) {
+      super(type, worldIn);
    }
 
    protected void registerGoals() {
@@ -397,7 +397,7 @@ public abstract class AbstractRaiderEntity extends PatrollerEntity {
       private boolean func_220863_h() {
          ServerWorld serverworld = (ServerWorld)this.field_220864_a.world;
          BlockPos blockpos = new BlockPos(this.field_220864_a);
-         Optional<BlockPos> optional = serverworld.getPoiMgr().getRandomPoiPos((p_220859_0_) -> {
+         Optional<BlockPos> optional = serverworld.getPointOfInterestManager().getRandomPoiPos((p_220859_0_) -> {
             return p_220859_0_ == PointOfInterestType.HOME;
          }, this::func_220860_a, PointOfInterestManager.Status.ANY, blockpos, 48, this.field_220864_a.rand);
          if (!optional.isPresent()) {
@@ -433,9 +433,9 @@ public abstract class AbstractRaiderEntity extends PatrollerEntity {
       public void tick() {
          if (this.field_220864_a.getNavigator().noPath()) {
             Vec3d vec3d = new Vec3d(this.field_220866_c);
-            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardScaled(this.field_220864_a, 16, 7, vec3d, (double)((float)Math.PI / 10F));
+            Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetTowardsScaled(this.field_220864_a, 16, 7, vec3d, (double)((float)Math.PI / 10F));
             if (vec3d1 == null) {
-               vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.field_220864_a, 8, 7, vec3d);
+               vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.field_220864_a, 8, 7, vec3d);
             }
 
             if (vec3d1 == null) {

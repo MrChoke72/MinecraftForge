@@ -46,8 +46,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements IRang
    private int ghostTime;
    private final Vec3d[][] renderLocations;
 
-   public IllusionerEntity(EntityType<? extends IllusionerEntity> p_i50203_1_, World p_i50203_2_) {
-      super(p_i50203_1_, p_i50203_2_);
+   public IllusionerEntity(EntityType<? extends IllusionerEntity> type, World worldIn) {
+      super(type, worldIn);
       this.experienceValue = 5;
       this.renderLocations = new Vec3d[2][4];
 
@@ -123,7 +123,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements IRang
             }
 
             for(int l = 0; l < 16; ++l) {
-               this.world.addParticle(ParticleTypes.CLOUD, this.func_226282_d_(0.5D), this.func_226279_cv_(), this.func_226285_f_(0.5D), 0.0D, 0.0D, 0.0D);
+               this.world.addParticle(ParticleTypes.CLOUD, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZWidth(0.5D), 0.0D, 0.0D, 0.0D);
             }
 
             this.world.playSound(this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, this.getSoundCategory(), 1.0F, 1.0F, false);
@@ -184,9 +184,9 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements IRang
 
    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
       ItemStack itemstack = this.findAmmo(this.getHeldItem(ProjectileHelper.getHandWith(this, Items.BOW)));
-      AbstractArrowEntity abstractarrowentity = ProjectileHelper.func_221272_a(this, itemstack, distanceFactor);
+      AbstractArrowEntity abstractarrowentity = ProjectileHelper.fireArrow(this, itemstack, distanceFactor);
       double d0 = target.getPosX() - this.getPosX();
-      double d1 = target.func_226283_e_(0.3333333333333333D) - abstractarrowentity.getPosY();
+      double d1 = target.getPosYHeight(0.3333333333333333D) - abstractarrowentity.getPosY();
       double d2 = target.getPosZ() - this.getPosZ();
       double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
       abstractarrowentity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));

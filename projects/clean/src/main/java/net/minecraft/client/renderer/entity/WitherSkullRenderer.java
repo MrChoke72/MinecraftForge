@@ -21,20 +21,20 @@ public class WitherSkullRenderer extends EntityRenderer<WitherSkullEntity> {
       super(renderManagerIn);
    }
 
-   protected int func_225624_a_(WitherSkullEntity p_225624_1_, float p_225624_2_) {
+   protected int getBlockLight(WitherSkullEntity entityIn, float partialTicks) {
       return 15;
    }
 
-   public void func_225623_a_(WitherSkullEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      p_225623_4_.func_227860_a_();
-      p_225623_4_.func_227862_a_(-1.0F, -1.0F, 1.0F);
-      float f = MathHelper.func_226167_j_(p_225623_1_.prevRotationYaw, p_225623_1_.rotationYaw, p_225623_3_);
-      float f1 = MathHelper.lerp(p_225623_3_, p_225623_1_.prevRotationPitch, p_225623_1_.rotationPitch);
-      IVertexBuilder ivertexbuilder = p_225623_5_.getBuffer(this.skeletonHeadModel.func_228282_a_(this.getEntityTexture(p_225623_1_)));
+   public void render(WitherSkullEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      matrixStackIn.push();
+      matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
+      float f = MathHelper.rotLerp(entityIn.prevRotationYaw, entityIn.rotationYaw, partialTicks);
+      float f1 = MathHelper.lerp(partialTicks, entityIn.prevRotationPitch, entityIn.rotationPitch);
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(this.skeletonHeadModel.getRenderType(this.getEntityTexture(entityIn)));
       this.skeletonHeadModel.func_225603_a_(0.0F, f, f1);
-      this.skeletonHeadModel.func_225598_a_(p_225623_4_, ivertexbuilder, p_225623_6_, OverlayTexture.field_229196_a_, 1.0F, 1.0F, 1.0F, 1.0F);
-      p_225623_4_.func_227865_b_();
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      this.skeletonHeadModel.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_LIGHT, 1.0F, 1.0F, 1.0F, 1.0F);
+      matrixStackIn.pop();
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
    public ResourceLocation getEntityTexture(WitherSkullEntity entity) {

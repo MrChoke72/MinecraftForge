@@ -43,7 +43,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<SurfaceBuilderConfig> 
                }
 
                if (i1 < sealevel && (blockstate == null || blockstate.isAir())) {
-                  if (biomeIn.func_225486_c(blockpos$mutable.setPos(x, i1, z)) < 0.15F) {
+                  if (biomeIn.getTemperature(blockpos$mutable.setPos(x, i1, z)) < 0.15F) {
                      blockstate = Blocks.ICE.getDefaultState();
                   } else {
                      blockstate = defaultFluid;

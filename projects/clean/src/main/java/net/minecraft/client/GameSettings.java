@@ -67,7 +67,7 @@ public class GameSettings {
          return null;
       }
    };
-   private static final Splitter field_230003_aR_ = Splitter.on(':').limit(2);
+   private static final Splitter KEY_VALUE_SPLITTER = Splitter.on(':').limit(2);
    public double mouseSensitivity = 0.5D;
    public int renderDistanceChunks = -1;
    public int framerateLimit = 120;
@@ -100,7 +100,7 @@ public class GameSettings {
    public TutorialSteps tutorialStep = TutorialSteps.MOVEMENT;
    public int biomeBlendRadius = 2;
    public double mouseWheelSensitivity = 1.0D;
-   public boolean field_225307_E = true;
+   public boolean rawMouseInput = true;
    public int glDebugVerbosity = 1;
    public boolean autoJump = true;
    public boolean autoSuggestCommands = true;
@@ -120,18 +120,19 @@ public class GameSettings {
    public boolean touchscreen;
    public boolean fullscreen;
    public boolean viewBobbing = true;
-   public boolean field_228044_Y_;
-   public boolean field_228045_Z_;
+   public boolean sneakToggleState;
+   public boolean sprintToggleState;
+   public boolean field_230152_Z_;
    public final KeyBinding keyBindForward = new KeyBinding("key.forward", 87, "key.categories.movement");
    public final KeyBinding keyBindLeft = new KeyBinding("key.left", 65, "key.categories.movement");
    public final KeyBinding keyBindBack = new KeyBinding("key.back", 83, "key.categories.movement");
    public final KeyBinding keyBindRight = new KeyBinding("key.right", 68, "key.categories.movement");
    public final KeyBinding keyBindJump = new KeyBinding("key.jump", 32, "key.categories.movement");
-   public final KeyBinding field_228046_af_ = new ToggleableKeyBinding("key.sneak", 340, "key.categories.movement", () -> {
-      return this.field_228044_Y_;
+   public final KeyBinding keyBindSneak = new ToggleableKeyBinding("key.sneak", 340, "key.categories.movement", () -> {
+      return this.sneakToggleState;
    });
    public final KeyBinding keyBindSprint = new ToggleableKeyBinding("key.sprint", 341, "key.categories.movement", () -> {
-      return this.field_228045_Z_;
+      return this.sprintToggleState;
    });
    public final KeyBinding keyBindInventory = new KeyBinding("key.inventory", 69, "key.categories.inventory");
    public final KeyBinding keyBindSwapHands = new KeyBinding("key.swapHands", 70, "key.categories.inventory");
@@ -151,7 +152,7 @@ public class GameSettings {
    public final KeyBinding[] keyBindsHotbar = new KeyBinding[]{new KeyBinding("key.hotbar.1", 49, "key.categories.inventory"), new KeyBinding("key.hotbar.2", 50, "key.categories.inventory"), new KeyBinding("key.hotbar.3", 51, "key.categories.inventory"), new KeyBinding("key.hotbar.4", 52, "key.categories.inventory"), new KeyBinding("key.hotbar.5", 53, "key.categories.inventory"), new KeyBinding("key.hotbar.6", 54, "key.categories.inventory"), new KeyBinding("key.hotbar.7", 55, "key.categories.inventory"), new KeyBinding("key.hotbar.8", 56, "key.categories.inventory"), new KeyBinding("key.hotbar.9", 57, "key.categories.inventory")};
    public final KeyBinding keyBindSaveToolbar = new KeyBinding("key.saveToolbarActivator", 67, "key.categories.creative");
    public final KeyBinding keyBindLoadToolbar = new KeyBinding("key.loadToolbarActivator", 88, "key.categories.creative");
-   public KeyBinding[] keyBindings = ArrayUtils.addAll(new KeyBinding[]{this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.field_228046_af_, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.keyBindSaveToolbar, this.keyBindLoadToolbar, this.keyBindAdvancements}, this.keyBindsHotbar);
+   public KeyBinding[] keyBindings = ArrayUtils.addAll(new KeyBinding[]{this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.keyBindSaveToolbar, this.keyBindLoadToolbar, this.keyBindAdvancements}, this.keyBindsHotbar);
    protected Minecraft mc;
    private final File optionsFile;
    public Difficulty difficulty = Difficulty.NORMAL;
@@ -173,24 +174,24 @@ public class GameSettings {
       this.mc = mcIn;
       this.optionsFile = new File(mcDataDir, "options.txt");
       if (mcIn.isJava64bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
-         AbstractOption.RENDER_DISTANCE.func_216728_a(32.0F);
+         AbstractOption.RENDER_DISTANCE.setMax(32.0F);
       } else {
-         AbstractOption.RENDER_DISTANCE.func_216728_a(16.0F);
+         AbstractOption.RENDER_DISTANCE.setMax(16.0F);
       }
 
       this.renderDistanceChunks = mcIn.isJava64bit() ? 12 : 8;
       this.loadOptions();
    }
 
-   public float func_216840_a(float p_216840_1_) {
+   public float getTextBackgroundOpacity(float p_216840_1_) {
       return this.accessibilityTextBackground ? p_216840_1_ : (float)this.accessibilityTextBackgroundOpacity;
    }
 
-   public int func_216841_b(float p_216841_1_) {
-      return (int)(this.func_216840_a(p_216841_1_) * 255.0F) << 24 & -16777216;
+   public int getTextBackgroundColor(float p_216841_1_) {
+      return (int)(this.getTextBackgroundOpacity(p_216841_1_) * 255.0F) << 24 & -16777216;
    }
 
-   public int func_216839_a(int p_216839_1_) {
+   public int getChatBackgroundColor(int p_216839_1_) {
       return this.accessibilityTextBackground ? p_216839_1_ : (int)(this.accessibilityTextBackgroundOpacity * 255.0D) << 24 & -16777216;
    }
 
@@ -211,7 +212,7 @@ public class GameSettings {
          try (BufferedReader bufferedreader = Files.newReader(this.optionsFile, Charsets.UTF_8)) {
             bufferedreader.lines().forEach((p_230004_1_) -> {
                try {
-                  Iterator<String> iterator = field_230003_aR_.split(p_230004_1_).iterator();
+                  Iterator<String> iterator = KEY_VALUE_SPLITTER.split(p_230004_1_).iterator();
                   compoundnbt.putString(iterator.next(), iterator.next());
                } catch (Exception var3) {
                   LOGGER.warn("Skipping bad option: {}", (Object)p_230004_1_);
@@ -295,11 +296,11 @@ public class GameSettings {
                }
 
                if ("toggleCrouch".equals(s)) {
-                  this.field_228044_Y_ = "true".equals(s1);
+                  this.sneakToggleState = "true".equals(s1);
                }
 
                if ("toggleSprint".equals(s)) {
-                  this.field_228045_Z_ = "true".equals(s1);
+                  this.sprintToggleState = "true".equals(s1);
                }
 
                if ("mouseSensitivity".equals(s)) {
@@ -328,8 +329,8 @@ public class GameSettings {
 
                if ("maxFps".equals(s)) {
                   this.framerateLimit = Integer.parseInt(s1);
-                  if (this.mc.func_228018_at_() != null) {
-                     this.mc.func_228018_at_().setFramerateLimit(this.framerateLimit);
+                  if (this.mc.getMainWindow() != null) {
+                     this.mc.getMainWindow().setFramerateLimit(this.framerateLimit);
                   }
                }
 
@@ -351,7 +352,7 @@ public class GameSettings {
                   } else if ("false".equals(s1)) {
                      this.ambientOcclusionStatus = AmbientOcclusionStatus.OFF;
                   } else {
-                     this.ambientOcclusionStatus = AmbientOcclusionStatus.func_216570_a(Integer.parseInt(s1));
+                     this.ambientOcclusionStatus = AmbientOcclusionStatus.getValue(Integer.parseInt(s1));
                   }
                }
 
@@ -392,7 +393,7 @@ public class GameSettings {
                }
 
                if ("chatVisibility".equals(s)) {
-                  this.chatVisibility = ChatVisibility.func_221252_a(Integer.parseInt(s1));
+                  this.chatVisibility = ChatVisibility.getValue(Integer.parseInt(s1));
                }
 
                if ("chatOpacity".equals(s)) {
@@ -476,11 +477,15 @@ public class GameSettings {
                }
 
                if ("rawMouseInput".equals(s)) {
-                  this.field_225307_E = "true".equals(s1);
+                  this.rawMouseInput = "true".equals(s1);
                }
 
                if ("glDebugVerbosity".equals(s)) {
                   this.glDebugVerbosity = Integer.parseInt(s1);
+               }
+
+               if ("skipMultiplayerWarning".equals(s)) {
+                  this.field_230152_Z_ = "true".equals(s1);
                }
 
                for(KeyBinding keybinding : this.keyBindings) {
@@ -552,18 +557,18 @@ public class GameSettings {
          printwriter.println("touchscreen:" + AbstractOption.TOUCHSCREEN.get(this));
          printwriter.println("fullscreen:" + AbstractOption.FULLSCREEN.get(this));
          printwriter.println("bobView:" + AbstractOption.VIEW_BOBBING.get(this));
-         printwriter.println("toggleCrouch:" + this.field_228044_Y_);
-         printwriter.println("toggleSprint:" + this.field_228045_Z_);
+         printwriter.println("toggleCrouch:" + this.sneakToggleState);
+         printwriter.println("toggleSprint:" + this.sprintToggleState);
          printwriter.println("mouseSensitivity:" + this.mouseSensitivity);
          printwriter.println("fov:" + (this.fov - 70.0D) / 40.0D);
          printwriter.println("gamma:" + this.gamma);
          printwriter.println("renderDistance:" + this.renderDistanceChunks);
          printwriter.println("guiScale:" + this.guiScale);
-         printwriter.println("particles:" + this.particles.func_216832_b());
+         printwriter.println("particles:" + this.particles.getId());
          printwriter.println("maxFps:" + this.framerateLimit);
          printwriter.println("difficulty:" + this.difficulty.getId());
          printwriter.println("fancyGraphics:" + this.fancyGraphics);
-         printwriter.println("ao:" + this.ambientOcclusionStatus.func_216572_a());
+         printwriter.println("ao:" + this.ambientOcclusionStatus.getId());
          printwriter.println("biomeBlendRadius:" + this.biomeBlendRadius);
          switch(this.cloudOption) {
          case FANCY:
@@ -580,12 +585,12 @@ public class GameSettings {
          printwriter.println("incompatibleResourcePacks:" + GSON.toJson(this.incompatibleResourcePacks));
          printwriter.println("lastServer:" + this.lastServer);
          printwriter.println("lang:" + this.language);
-         printwriter.println("chatVisibility:" + this.chatVisibility.func_221254_a());
+         printwriter.println("chatVisibility:" + this.chatVisibility.getId());
          printwriter.println("chatOpacity:" + this.chatOpacity);
          printwriter.println("textBackgroundOpacity:" + this.accessibilityTextBackgroundOpacity);
          printwriter.println("backgroundForChatOnly:" + this.accessibilityTextBackground);
-         if (this.mc.func_228018_at_().getVideoMode().isPresent()) {
-            printwriter.println("fullscreenResolution:" + this.mc.func_228018_at_().getVideoMode().get().getSettingsString());
+         if (this.mc.getMainWindow().getVideoMode().isPresent()) {
+            printwriter.println("fullscreenResolution:" + this.mc.getMainWindow().getVideoMode().get().getSettingsString());
          }
 
          printwriter.println("hideServerAddress:" + this.hideServerAddress);
@@ -601,12 +606,13 @@ public class GameSettings {
          printwriter.println("mipmapLevels:" + this.mipmapLevels);
          printwriter.println("useNativeTransport:" + this.useNativeTransport);
          printwriter.println("mainHand:" + (this.mainHand == HandSide.LEFT ? "left" : "right"));
-         printwriter.println("attackIndicator:" + this.attackIndicator.func_216751_a());
-         printwriter.println("narrator:" + this.narrator.func_216827_a());
+         printwriter.println("attackIndicator:" + this.attackIndicator.getId());
+         printwriter.println("narrator:" + this.narrator.getId());
          printwriter.println("tutorialStep:" + this.tutorialStep.getName());
          printwriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
-         printwriter.println("rawMouseInput:" + AbstractOption.field_225302_l.get(this));
+         printwriter.println("rawMouseInput:" + AbstractOption.RAW_MOUSE_INPUT.get(this));
          printwriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
+         printwriter.println("skipMultiplayerWarning:" + this.field_230152_Z_);
 
          for(KeyBinding keybinding : this.keyBindings) {
             printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getTranslationKey());
@@ -695,10 +701,10 @@ public class GameSettings {
          if (clientresourcepackinfo == null) {
             LOGGER.warn("Removed resource pack {} from options because it doesn't seem to exist anymore", (Object)s);
             iterator.remove();
-         } else if (!clientresourcepackinfo.getCompatibility().func_198968_a() && !this.incompatibleResourcePacks.contains(s)) {
+         } else if (!clientresourcepackinfo.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(s)) {
             LOGGER.warn("Removed resource pack {} from options because it is no longer compatible", (Object)s);
             iterator.remove();
-         } else if (clientresourcepackinfo.getCompatibility().func_198968_a() && this.incompatibleResourcePacks.contains(s)) {
+         } else if (clientresourcepackinfo.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(s)) {
             LOGGER.info("Removed resource pack {} from incompatibility list because it's now compatible", (Object)s);
             this.incompatibleResourcePacks.remove(s);
          } else {

@@ -133,8 +133,8 @@ public abstract class LavaFluid extends FlowingFluid {
       return worldIn.getDimension().doesWaterVaporize() ? 1 : 2;
    }
 
-   public boolean func_215665_a(IFluidState p_215665_1_, IBlockReader p_215665_2_, BlockPos p_215665_3_, Fluid p_215665_4_, Direction p_215665_5_) {
-      return p_215665_1_.func_215679_a(p_215665_2_, p_215665_3_) >= 0.44444445F && p_215665_4_.isIn(FluidTags.WATER);
+   public boolean canDisplace(IFluidState p_215665_1_, IBlockReader p_215665_2_, BlockPos p_215665_3_, Fluid p_215665_4_, Direction p_215665_5_) {
+      return p_215665_1_.getActualHeight(p_215665_2_, p_215665_3_) >= 0.44444445F && p_215665_4_.isIn(FluidTags.WATER);
    }
 
    public int getTickRate(IWorldReader p_205569_1_) {
@@ -143,7 +143,7 @@ public abstract class LavaFluid extends FlowingFluid {
 
    public int func_215667_a(World p_215667_1_, BlockPos p_215667_2_, IFluidState p_215667_3_, IFluidState p_215667_4_) {
       int i = this.getTickRate(p_215667_1_);
-      if (!p_215667_3_.isEmpty() && !p_215667_4_.isEmpty() && !p_215667_3_.get(FALLING) && !p_215667_4_.get(FALLING) && p_215667_4_.func_215679_a(p_215667_1_, p_215667_2_) > p_215667_3_.func_215679_a(p_215667_1_, p_215667_2_) && p_215667_1_.getRandom().nextInt(4) != 0) {
+      if (!p_215667_3_.isEmpty() && !p_215667_4_.isEmpty() && !p_215667_3_.get(FALLING) && !p_215667_4_.get(FALLING) && p_215667_4_.getActualHeight(p_215667_1_, p_215667_2_) > p_215667_3_.getActualHeight(p_215667_1_, p_215667_2_) && p_215667_1_.getRandom().nextInt(4) != 0) {
          i *= 4;
       }
 

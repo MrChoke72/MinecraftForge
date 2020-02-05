@@ -15,7 +15,7 @@ public class EntityTypeTagsProvider extends TagsProvider<EntityType<?>> {
    protected void registerTags() {
       this.getBuilder(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON);
       this.getBuilder(EntityTypeTags.RAIDERS).add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
-      this.getBuilder(EntityTypeTags.field_226155_c_).add(EntityType.field_226289_e_);
+      this.getBuilder(EntityTypeTags.field_226155_c_).add(EntityType.BEE);
       this.getBuilder(EntityTypeTags.field_226156_d_).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
    }
 

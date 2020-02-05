@@ -87,14 +87,14 @@ public class BambooBlock extends Block implements IGrowable {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!p_225534_1_.isValidPosition(p_225534_2_, p_225534_3_)) {
-         p_225534_2_.destroyBlock(p_225534_3_, true);
-      } else if (p_225534_1_.get(PROPERTY_STAGE) == 0) {
-         if (p_225534_4_.nextInt(3) == 0 && p_225534_2_.isAirBlock(p_225534_3_.up()) && p_225534_2_.func_226659_b_(p_225534_3_.up(), 0) >= 9) {
-            int i = this.func_220260_b(p_225534_2_, p_225534_3_) + 1;
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!state.isValidPosition(worldIn, pos)) {
+         worldIn.destroyBlock(pos, true);
+      } else if (state.get(PROPERTY_STAGE) == 0) {
+         if (rand.nextInt(3) == 0 && worldIn.isAirBlock(pos.up()) && worldIn.getLightSubtracted(pos.up(), 0) >= 9) {
+            int i = this.getNumBambooBlocksBelow(worldIn, pos) + 1;
             if (i < 16) {
-               this.func_220258_a(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_, i);
+               this.grow(state, worldIn, pos, rand, i);
             }
          }
 
@@ -118,8 +118,8 @@ public class BambooBlock extends Block implements IGrowable {
    }
 
    public boolean canGrow(IBlockReader worldIn, BlockPos pos, BlockState state, boolean isClient) {
-      int i = this.func_220259_a(worldIn, pos);
-      int j = this.func_220260_b(worldIn, pos);
+      int i = this.getNumBambooBlocksAbove(worldIn, pos);
+      int j = this.getNumBambooBlocksBelow(worldIn, pos);
       return i + j + 1 < 16 && worldIn.getBlockState(pos.up(i)).get(PROPERTY_STAGE) != 1;
    }
 
@@ -127,9 +127,9 @@ public class BambooBlock extends Block implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
-      int i = this.func_220259_a(p_225535_1_, p_225535_3_);
-      int j = this.func_220260_b(p_225535_1_, p_225535_3_);
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+      int i = this.getNumBambooBlocksAbove(p_225535_1_, p_225535_3_);
+      int j = this.getNumBambooBlocksBelow(p_225535_1_, p_225535_3_);
       int k = i + j + 1;
       int l = 1 + p_225535_2_.nextInt(2);
 
@@ -140,7 +140,7 @@ public class BambooBlock extends Block implements IGrowable {
             return;
          }
 
-         this.func_220258_a(blockstate, p_225535_1_, blockpos, p_225535_2_, k);
+         this.grow(blockstate, p_225535_1_, blockpos, p_225535_2_, k);
          ++i;
          ++k;
       }
@@ -151,18 +151,18 @@ public class BambooBlock extends Block implements IGrowable {
       return player.getHeldItemMainhand().getItem() instanceof SwordItem ? 1.0F : super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
    }
 
-   protected void func_220258_a(BlockState p_220258_1_, World p_220258_2_, BlockPos p_220258_3_, Random p_220258_4_, int p_220258_5_) {
-      BlockState blockstate = p_220258_2_.getBlockState(p_220258_3_.down());
-      BlockPos blockpos = p_220258_3_.down(2);
-      BlockState blockstate1 = p_220258_2_.getBlockState(blockpos);
+   protected void grow(BlockState blockStateIn, World worldIn, BlockPos posIn, Random rand, int p_220258_5_) {
+      BlockState blockstate = worldIn.getBlockState(posIn.down());
+      BlockPos blockpos = posIn.down(2);
+      BlockState blockstate1 = worldIn.getBlockState(blockpos);
       BambooLeaves bambooleaves = BambooLeaves.NONE;
       if (p_220258_5_ >= 1) {
          if (blockstate.getBlock() == Blocks.BAMBOO && blockstate.get(PROPERTY_BAMBOO_LEAVES) != BambooLeaves.NONE) {
             if (blockstate.getBlock() == Blocks.BAMBOO && blockstate.get(PROPERTY_BAMBOO_LEAVES) != BambooLeaves.NONE) {
                bambooleaves = BambooLeaves.LARGE;
                if (blockstate1.getBlock() == Blocks.BAMBOO) {
-                  p_220258_2_.setBlockState(p_220258_3_.down(), blockstate.with(PROPERTY_BAMBOO_LEAVES, BambooLeaves.SMALL), 3);
-                  p_220258_2_.setBlockState(blockpos, blockstate1.with(PROPERTY_BAMBOO_LEAVES, BambooLeaves.NONE), 3);
+                  worldIn.setBlockState(posIn.down(), blockstate.with(PROPERTY_BAMBOO_LEAVES, BambooLeaves.SMALL), 3);
+                  worldIn.setBlockState(blockpos, blockstate1.with(PROPERTY_BAMBOO_LEAVES, BambooLeaves.NONE), 3);
                }
             }
          } else {
@@ -170,23 +170,23 @@ public class BambooBlock extends Block implements IGrowable {
          }
       }
 
-      int i = p_220258_1_.get(PROPERTY_AGE) != 1 && blockstate1.getBlock() != Blocks.BAMBOO ? 0 : 1;
-      int j = (p_220258_5_ < 11 || !(p_220258_4_.nextFloat() < 0.25F)) && p_220258_5_ != 15 ? 0 : 1;
-      p_220258_2_.setBlockState(p_220258_3_.up(), this.getDefaultState().with(PROPERTY_AGE, Integer.valueOf(i)).with(PROPERTY_BAMBOO_LEAVES, bambooleaves).with(PROPERTY_STAGE, Integer.valueOf(j)), 3);
+      int i = blockStateIn.get(PROPERTY_AGE) != 1 && blockstate1.getBlock() != Blocks.BAMBOO ? 0 : 1;
+      int j = (p_220258_5_ < 11 || !(rand.nextFloat() < 0.25F)) && p_220258_5_ != 15 ? 0 : 1;
+      worldIn.setBlockState(posIn.up(), this.getDefaultState().with(PROPERTY_AGE, Integer.valueOf(i)).with(PROPERTY_BAMBOO_LEAVES, bambooleaves).with(PROPERTY_STAGE, Integer.valueOf(j)), 3);
    }
 
-   protected int func_220259_a(IBlockReader p_220259_1_, BlockPos p_220259_2_) {
+   protected int getNumBambooBlocksAbove(IBlockReader worldIn, BlockPos pos) {
       int i;
-      for(i = 0; i < 16 && p_220259_1_.getBlockState(p_220259_2_.up(i + 1)).getBlock() == Blocks.BAMBOO; ++i) {
+      for(i = 0; i < 16 && worldIn.getBlockState(pos.up(i + 1)).getBlock() == Blocks.BAMBOO; ++i) {
          ;
       }
 
       return i;
    }
 
-   protected int func_220260_b(IBlockReader p_220260_1_, BlockPos p_220260_2_) {
+   protected int getNumBambooBlocksBelow(IBlockReader worldIn, BlockPos pos) {
       int i;
-      for(i = 0; i < 16 && p_220260_1_.getBlockState(p_220260_2_.down(i + 1)).getBlock() == Blocks.BAMBOO; ++i) {
+      for(i = 0; i < 16 && worldIn.getBlockState(pos.down(i + 1)).getBlock() == Blocks.BAMBOO; ++i) {
          ;
       }
 

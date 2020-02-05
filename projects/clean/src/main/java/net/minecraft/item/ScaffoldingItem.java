@@ -30,7 +30,7 @@ public class ScaffoldingItem extends BlockItem {
       } else {
          Direction direction;
          if (context.func_225518_g_()) {
-            direction = context.func_221533_k() ? context.getFace().getOpposite() : context.getFace();
+            direction = context.isInside() ? context.getFace().getOpposite() : context.getFace();
          } else {
             direction = context.getFace() == Direction.UP ? context.getPlacementHorizontalFacing() : Direction.UP;
          }
@@ -67,7 +67,7 @@ public class ScaffoldingItem extends BlockItem {
       }
    }
 
-   protected boolean func_219987_d() {
+   protected boolean checkPosition() {
       return false;
    }
 }

@@ -26,11 +26,11 @@ public class FolderResourceIndex extends ResourceIndex {
       return new File(this.baseDir, location.toString().replace(':', '/'));
    }
 
-   public File func_225638_a_(String p_225638_1_) {
+   public File getFile(String p_225638_1_) {
       return new File(this.baseDir, p_225638_1_);
    }
 
-   public Collection<ResourceLocation> func_225639_a_(String p_225639_1_, String p_225639_2_, int p_225639_3_, Predicate<String> p_225639_4_) {
+   public Collection<ResourceLocation> getFiles(String p_225639_1_, String p_225639_2_, int p_225639_3_, Predicate<String> p_225639_4_) {
       Path path = this.baseDir.toPath().resolve(p_225639_2_);
 
       try (Stream<Path> stream = Files.walk(path.resolve(p_225639_1_), p_225639_3_)) {

@@ -147,7 +147,7 @@
       {
         "name":"choke:mob/zombiemean/alaina_hurt",
         "pitch": 1.0,
-        "volume": 0.7
+        "volume": 0.9
       }
     ],
     "subtitle": "subtitles.entity.zombiemean.hurt"

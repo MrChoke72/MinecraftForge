@@ -48,7 +48,7 @@ public class OcelotEntity extends AnimalEntity {
    private static final Ingredient BREEDING_ITEMS = Ingredient.fromItems(Items.COD, Items.SALMON);
    private static final DataParameter<Boolean> IS_TRUSTING = EntityDataManager.createKey(OcelotEntity.class, DataSerializers.BOOLEAN);
    private OcelotEntity.AvoidEntityGoal<PlayerEntity> field_213531_bB;
-   private OcelotEntity.TemptGoal field_70914_e;
+   private OcelotEntity.TemptGoal aiTempt;
 
    public OcelotEntity(EntityType<? extends OcelotEntity> type, World worldIn) {
       super(type, worldIn);
@@ -80,9 +80,9 @@ public class OcelotEntity extends AnimalEntity {
    }
 
    protected void registerGoals() {
-      this.field_70914_e = new OcelotEntity.TemptGoal(this, 0.6D, BREEDING_ITEMS, true);
+      this.aiTempt = new OcelotEntity.TemptGoal(this, 0.6D, BREEDING_ITEMS, true);
       this.goalSelector.addGoal(1, new SwimGoal(this));
-      this.goalSelector.addGoal(3, this.field_70914_e);
+      this.goalSelector.addGoal(3, this.aiTempt);
       this.goalSelector.addGoal(7, new LeapAtTargetGoal(this, 0.3F));
       this.goalSelector.addGoal(8, new OcelotAttackGoal(this));
       this.goalSelector.addGoal(9, new BreedGoal(this, 0.8D));
@@ -123,7 +123,7 @@ public class OcelotEntity extends AnimalEntity {
       this.getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
+   public boolean onLivingFall(float distance, float damageMultiplier) {
       return false;
    }
 
@@ -158,7 +158,7 @@ public class OcelotEntity extends AnimalEntity {
 
    public boolean processInteract(PlayerEntity player, Hand hand) {
       ItemStack itemstack = player.getHeldItem(hand);
-      if ((this.field_70914_e == null || this.field_70914_e.isRunning()) && !this.isTrusting() && this.isBreedingItem(itemstack) && player.getDistanceSq(this) < 9.0D) {
+      if ((this.aiTempt == null || this.aiTempt.isRunning()) && !this.isTrusting() && this.isBreedingItem(itemstack) && player.getDistanceSq(this) < 9.0D) {
          this.consumeItemFromStack(player, itemstack);
          if (!this.world.isRemote) {
             if (this.rand.nextInt(3) == 0) {
@@ -199,7 +199,7 @@ public class OcelotEntity extends AnimalEntity {
          double d0 = this.rand.nextGaussian() * 0.02D;
          double d1 = this.rand.nextGaussian() * 0.02D;
          double d2 = this.rand.nextGaussian() * 0.02D;
-         this.world.addParticle(iparticledata, this.func_226282_d_(1.0D), this.func_226279_cv_() + 0.5D, this.func_226287_g_(1.0D), d0, d1, d2);
+         this.world.addParticle(iparticledata, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
       }
 
    }

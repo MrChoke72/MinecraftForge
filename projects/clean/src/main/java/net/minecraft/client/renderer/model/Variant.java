@@ -20,18 +20,18 @@ public class Variant implements IModelTransform {
    private final boolean uvLock;
    private final int weight;
 
-   public Variant(ResourceLocation p_i226001_1_, TransformationMatrix p_i226001_2_, boolean p_i226001_3_, int p_i226001_4_) {
-      this.modelLocation = p_i226001_1_;
-      this.rotation = p_i226001_2_;
-      this.uvLock = p_i226001_3_;
-      this.weight = p_i226001_4_;
+   public Variant(ResourceLocation modelLocationIn, TransformationMatrix rotationIn, boolean uvLockIn, int weightIn) {
+      this.modelLocation = modelLocationIn;
+      this.rotation = rotationIn;
+      this.uvLock = uvLockIn;
+      this.weight = weightIn;
    }
 
    public ResourceLocation getModelLocation() {
       return this.modelLocation;
    }
 
-   public TransformationMatrix func_225615_b_() {
+   public TransformationMatrix getRotation() {
       return this.rotation;
    }
 
@@ -74,7 +74,7 @@ public class Variant implements IModelTransform {
          ModelRotation modelrotation = this.parseModelRotation(jsonobject);
          boolean flag = this.parseUvLock(jsonobject);
          int i = this.parseWeight(jsonobject);
-         return new Variant(resourcelocation, modelrotation.func_225615_b_(), flag, i);
+         return new Variant(resourcelocation, modelrotation.getRotation(), flag, i);
       }
 
       private boolean parseUvLock(JsonObject json) {

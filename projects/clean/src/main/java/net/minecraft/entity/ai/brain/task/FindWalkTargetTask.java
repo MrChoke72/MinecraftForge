@@ -14,28 +14,19 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.server.ServerWorld;
 
 public class FindWalkTargetTask extends Task<CreatureEntity> {
-
-   //AH REFACTOR
    private final float speed;
-   //private final float field_220597_a;
+   private final int maxXZ;
+   private final int maxY;
 
-   //AH REFACTOR
-   private final int randXZ;
-   //private final int field_223525_b;
-
-   //AH REFACTOR
-   private final int randY;
-   //private final int field_223526_c;
-
-   public FindWalkTargetTask(float moveSpeed) {
-      this(moveSpeed, 10, 7);
+   public FindWalkTargetTask(float speedIn) {
+      this(speedIn, 10, 7);
    }
 
-   public FindWalkTargetTask(float speedIn, int xz, int y) {
+   public FindWalkTargetTask(float speedIn, int maxDistanceXZ, int maxDistanceY) {
       super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleStatus.VALUE_ABSENT));
       this.speed = speedIn;
-      this.randXZ = xz;
-      this.randY = y;
+      this.maxXZ = maxDistanceXZ;
+      this.maxY = maxDistanceY;
    }
 
    protected void startExecuting(ServerWorld worldIn, CreatureEntity entityIn, long gameTimeIn) {
@@ -54,20 +45,17 @@ public class FindWalkTargetTask extends Task<CreatureEntity> {
 
    }
 
-   //AH REFACTOR
-   private void findBlockTowardPos(CreatureEntity entity, SectionPos secPos) {
-   //private void func_220594_a(CreatureEntity p_220594_1_, SectionPos p_220594_2_) {
-      Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.findRandomTargetToward(entity, this.randXZ, this.randY, new Vec3d(secPos.getCenter())));
-      entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((vec3d) -> {
-         return new WalkTarget(vec3d, this.speed, 0);
+   private void findBlockTowardPos(CreatureEntity p_220594_1_, SectionPos p_220594_2_) {
+      Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.findRandomTargetBlockTowards(p_220594_1_, this.maxXZ, this.maxY, new Vec3d(p_220594_2_.getCenter())));
+      p_220594_1_.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((p_220596_1_) -> {
+         return new WalkTarget(p_220596_1_, this.speed, 0);
       }));
    }
 
-   private void findLandPosition(CreatureEntity entity) {
-   //private void func_220593_a(CreatureEntity p_220593_1_) {
-      Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.findLandPos(entity, this.randXZ, this.randY));
-      entity.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((vec3d) -> {
-         return new WalkTarget(vec3d, this.speed, 0);
+   private void findLandPosition(CreatureEntity p_220593_1_) {
+      Optional<Vec3d> optional = Optional.ofNullable(RandomPositionGenerator.getLandPos(p_220593_1_, this.maxXZ, this.maxY));
+      p_220593_1_.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map((p_220595_1_) -> {
+         return new WalkTarget(p_220595_1_, this.speed, 0);
       }));
    }
 }

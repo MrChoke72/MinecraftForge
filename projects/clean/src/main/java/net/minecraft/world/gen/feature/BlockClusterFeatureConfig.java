@@ -54,8 +54,8 @@ public class BlockClusterFeatureConfig implements IFeatureConfig {
    }
 
    public static <T> BlockClusterFeatureConfig func_227300_a_(Dynamic<T> p_227300_0_) {
-      BlockStateProviderType<?> blockstateprovidertype = Registry.field_229387_t_.getOrDefault(new ResourceLocation(p_227300_0_.get("state_provider").get("type").asString().orElseThrow(RuntimeException::new)));
-      BlockPlacerType<?> blockplacertype = Registry.field_229388_u_.getOrDefault(new ResourceLocation(p_227300_0_.get("block_placer").get("type").asString().orElseThrow(RuntimeException::new)));
+      BlockStateProviderType<?> blockstateprovidertype = Registry.BLOCK_STATE_PROVIDER_TYPE.getOrDefault(new ResourceLocation(p_227300_0_.get("state_provider").get("type").asString().orElseThrow(RuntimeException::new)));
+      BlockPlacerType<?> blockplacertype = Registry.BLOCK_PLACER_TYPE.getOrDefault(new ResourceLocation(p_227300_0_.get("block_placer").get("type").asString().orElseThrow(RuntimeException::new)));
       return new BlockClusterFeatureConfig(blockstateprovidertype.func_227399_a_(p_227300_0_.get("state_provider").orElseEmptyMap()), blockplacertype.func_227263_a_(p_227300_0_.get("block_placer").orElseEmptyMap()), p_227300_0_.get("whitelist").asList(BlockState::deserialize).stream().map(BlockState::getBlock).collect(Collectors.toSet()), Sets.newHashSet(p_227300_0_.get("blacklist").asList(BlockState::deserialize)), p_227300_0_.get("tries").asInt(128), p_227300_0_.get("xspread").asInt(7), p_227300_0_.get("yspread").asInt(3), p_227300_0_.get("zspread").asInt(7), p_227300_0_.get("can_replace").asBoolean(false), p_227300_0_.get("project").asBoolean(true), p_227300_0_.get("need_water").asBoolean(false));
    }
 

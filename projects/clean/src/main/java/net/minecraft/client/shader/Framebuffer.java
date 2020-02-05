@@ -34,29 +34,29 @@ public class Framebuffer {
       this.framebufferColor[1] = 1.0F;
       this.framebufferColor[2] = 1.0F;
       this.framebufferColor[3] = 0.0F;
-      this.func_216491_a(p_i51175_1_, p_i51175_2_, p_i51175_4_);
+      this.resize(p_i51175_1_, p_i51175_2_, p_i51175_4_);
    }
 
-   public void func_216491_a(int p_216491_1_, int p_216491_2_, boolean p_216491_3_) {
+   public void resize(int p_216491_1_, int p_216491_2_, boolean p_216491_3_) {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            this.func_227586_d_(p_216491_1_, p_216491_2_, p_216491_3_);
+            this.resizeRaw(p_216491_1_, p_216491_2_, p_216491_3_);
          });
       } else {
-         this.func_227586_d_(p_216491_1_, p_216491_2_, p_216491_3_);
+         this.resizeRaw(p_216491_1_, p_216491_2_, p_216491_3_);
       }
 
    }
 
-   private void func_227586_d_(int p_227586_1_, int p_227586_2_, boolean p_227586_3_) {
+   private void resizeRaw(int p_227586_1_, int p_227586_2_, boolean p_227586_3_) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-      GlStateManager.func_227734_k_();
+      GlStateManager.enableDepthTest();
       if (this.framebufferObject >= 0) {
          this.deleteFramebuffer();
       }
 
-      this.func_216492_b(p_227586_1_, p_227586_2_, p_227586_3_);
-      GlStateManager.func_227727_h_(FramebufferConstants.field_227592_a_, 0);
+      this.createBuffers(p_227586_1_, p_227586_2_, p_227586_3_);
+      GlStateManager.bindFramebuffer(FramebufferConstants.GL_FRAMEBUFFER, 0);
    }
 
    public void deleteFramebuffer() {
@@ -64,44 +64,44 @@ public class Framebuffer {
       this.unbindFramebufferTexture();
       this.unbindFramebuffer();
       if (this.depthBuffer > -1) {
-         GlStateManager.func_227735_k_(this.depthBuffer);
+         GlStateManager.deleteRenderbuffers(this.depthBuffer);
          this.depthBuffer = -1;
       }
 
       if (this.framebufferTexture > -1) {
-         TextureUtil.func_225679_a_(this.framebufferTexture);
+         TextureUtil.releaseTextureId(this.framebufferTexture);
          this.framebufferTexture = -1;
       }
 
       if (this.framebufferObject > -1) {
-         GlStateManager.func_227727_h_(FramebufferConstants.field_227592_a_, 0);
-         GlStateManager.func_227738_l_(this.framebufferObject);
+         GlStateManager.bindFramebuffer(FramebufferConstants.GL_FRAMEBUFFER, 0);
+         GlStateManager.deleteFramebuffers(this.framebufferObject);
          this.framebufferObject = -1;
       }
 
    }
 
-   public void func_216492_b(int p_216492_1_, int p_216492_2_, boolean p_216492_3_) {
+   public void createBuffers(int p_216492_1_, int p_216492_2_, boolean p_216492_3_) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
       this.framebufferWidth = p_216492_1_;
       this.framebufferHeight = p_216492_2_;
       this.framebufferTextureWidth = p_216492_1_;
       this.framebufferTextureHeight = p_216492_2_;
-      this.framebufferObject = GlStateManager.func_227749_p_();
-      this.framebufferTexture = TextureUtil.func_225678_a_();
+      this.framebufferObject = GlStateManager.genFramebuffers();
+      this.framebufferTexture = TextureUtil.generateTextureId();
       if (this.useDepth) {
-         this.depthBuffer = GlStateManager.func_227752_q_();
+         this.depthBuffer = GlStateManager.genRenderbuffers();
       }
 
       this.setFramebufferFilter(9728);
-      GlStateManager.func_227760_t_(this.framebufferTexture);
-      GlStateManager.func_227647_a_(3553, 0, 32856, this.framebufferTextureWidth, this.framebufferTextureHeight, 0, 6408, 5121, (IntBuffer)null);
-      GlStateManager.func_227727_h_(FramebufferConstants.field_227592_a_, this.framebufferObject);
-      GlStateManager.func_227645_a_(FramebufferConstants.field_227592_a_, FramebufferConstants.field_227594_c_, 3553, this.framebufferTexture, 0);
+      GlStateManager.bindTexture(this.framebufferTexture);
+      GlStateManager.texImage2D(3553, 0, 32856, this.framebufferTextureWidth, this.framebufferTextureHeight, 0, 6408, 5121, (IntBuffer)null);
+      GlStateManager.bindFramebuffer(FramebufferConstants.GL_FRAMEBUFFER, this.framebufferObject);
+      GlStateManager.framebufferTexture2D(FramebufferConstants.GL_FRAMEBUFFER, FramebufferConstants.GL_COLOR_ATTACHMENT0, 3553, this.framebufferTexture, 0);
       if (this.useDepth) {
-         GlStateManager.func_227730_i_(FramebufferConstants.field_227593_b_, this.depthBuffer);
-         GlStateManager.func_227678_b_(FramebufferConstants.field_227593_b_, 33190, this.framebufferTextureWidth, this.framebufferTextureHeight);
-         GlStateManager.func_227693_c_(FramebufferConstants.field_227592_a_, FramebufferConstants.field_227595_d_, FramebufferConstants.field_227593_b_, this.depthBuffer);
+         GlStateManager.bindRenderbuffer(FramebufferConstants.GL_RENDERBUFFER, this.depthBuffer);
+         GlStateManager.renderbufferStorage(FramebufferConstants.GL_RENDERBUFFER, 33190, this.framebufferTextureWidth, this.framebufferTextureHeight);
+         GlStateManager.framebufferRenderbuffer(FramebufferConstants.GL_FRAMEBUFFER, FramebufferConstants.GL_DEPTH_ATTACHMENT, FramebufferConstants.GL_RENDERBUFFER, this.depthBuffer);
       }
 
       this.checkFramebufferComplete();
@@ -112,25 +112,25 @@ public class Framebuffer {
    public void setFramebufferFilter(int framebufferFilterIn) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
       this.framebufferFilter = framebufferFilterIn;
-      GlStateManager.func_227760_t_(this.framebufferTexture);
-      GlStateManager.func_227677_b_(3553, 10241, framebufferFilterIn);
-      GlStateManager.func_227677_b_(3553, 10240, framebufferFilterIn);
-      GlStateManager.func_227677_b_(3553, 10242, 10496);
-      GlStateManager.func_227677_b_(3553, 10243, 10496);
-      GlStateManager.func_227760_t_(0);
+      GlStateManager.bindTexture(this.framebufferTexture);
+      GlStateManager.texParameter(3553, 10241, framebufferFilterIn);
+      GlStateManager.texParameter(3553, 10240, framebufferFilterIn);
+      GlStateManager.texParameter(3553, 10242, 10496);
+      GlStateManager.texParameter(3553, 10243, 10496);
+      GlStateManager.bindTexture(0);
    }
 
    public void checkFramebufferComplete() {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-      int i = GlStateManager.func_227741_m_(FramebufferConstants.field_227592_a_);
-      if (i != FramebufferConstants.field_227596_e_) {
-         if (i == FramebufferConstants.field_227597_f_) {
+      int i = GlStateManager.checkFramebufferStatus(FramebufferConstants.GL_FRAMEBUFFER);
+      if (i != FramebufferConstants.GL_FRAMEBUFFER_COMPLETE) {
+         if (i == FramebufferConstants.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT) {
             throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-         } else if (i == FramebufferConstants.field_227598_g_) {
+         } else if (i == FramebufferConstants.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT) {
             throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-         } else if (i == FramebufferConstants.field_227599_h_) {
+         } else if (i == FramebufferConstants.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER) {
             throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-         } else if (i == FramebufferConstants.field_227600_i_) {
+         } else if (i == FramebufferConstants.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER) {
             throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
          } else {
             throw new RuntimeException("glCheckFramebufferStatus returned unknown status:" + i);
@@ -140,30 +140,30 @@ public class Framebuffer {
 
    public void bindFramebufferTexture() {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-      GlStateManager.func_227760_t_(this.framebufferTexture);
+      GlStateManager.bindTexture(this.framebufferTexture);
    }
 
    public void unbindFramebufferTexture() {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-      GlStateManager.func_227760_t_(0);
+      GlStateManager.bindTexture(0);
    }
 
-   public void bindFramebuffer(boolean p_147610_1_) {
+   public void bindFramebuffer(boolean setViewportIn) {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            this.func_227585_c_(p_147610_1_);
+            this.bindFramebufferRaw(setViewportIn);
          });
       } else {
-         this.func_227585_c_(p_147610_1_);
+         this.bindFramebufferRaw(setViewportIn);
       }
 
    }
 
-   private void func_227585_c_(boolean p_227585_1_) {
+   private void bindFramebufferRaw(boolean setViewportIn) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-      GlStateManager.func_227727_h_(FramebufferConstants.field_227592_a_, this.framebufferObject);
-      if (p_227585_1_) {
-         GlStateManager.func_227714_e_(0, 0, this.framebufferWidth, this.framebufferHeight);
+      GlStateManager.bindFramebuffer(FramebufferConstants.GL_FRAMEBUFFER, this.framebufferObject);
+      if (setViewportIn) {
+         GlStateManager.viewport(0, 0, this.framebufferWidth, this.framebufferHeight);
       }
 
    }
@@ -171,10 +171,10 @@ public class Framebuffer {
    public void unbindFramebuffer() {
       if (!RenderSystem.isOnRenderThread()) {
          RenderSystem.recordRenderCall(() -> {
-            GlStateManager.func_227727_h_(FramebufferConstants.field_227592_a_, 0);
+            GlStateManager.bindFramebuffer(FramebufferConstants.GL_FRAMEBUFFER, 0);
          });
       } else {
-         GlStateManager.func_227727_h_(FramebufferConstants.field_227592_a_, 0);
+         GlStateManager.bindFramebuffer(FramebufferConstants.GL_FRAMEBUFFER, 0);
       }
 
    }
@@ -194,64 +194,64 @@ public class Framebuffer {
       RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
       if (!RenderSystem.isInInitPhase()) {
          RenderSystem.recordRenderCall(() -> {
-            this.func_227588_e_(width, height, p_178038_3_);
+            this.framebufferRenderExtRaw(width, height, p_178038_3_);
          });
       } else {
-         this.func_227588_e_(width, height, p_178038_3_);
+         this.framebufferRenderExtRaw(width, height, p_178038_3_);
       }
 
    }
 
-   private void func_227588_e_(int p_227588_1_, int p_227588_2_, boolean p_227588_3_) {
+   private void framebufferRenderExtRaw(int width, int height, boolean p_227588_3_) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-      GlStateManager.func_227668_a_(true, true, true, false);
-      GlStateManager.func_227731_j_();
-      GlStateManager.func_227667_a_(false);
-      GlStateManager.func_227768_x_(5889);
-      GlStateManager.func_227625_M_();
-      GlStateManager.func_227633_a_(0.0D, (double)p_227588_1_, (double)p_227588_2_, 0.0D, 1000.0D, 3000.0D);
-      GlStateManager.func_227768_x_(5888);
-      GlStateManager.func_227625_M_();
-      GlStateManager.func_227688_c_(0.0F, 0.0F, -2000.0F);
-      GlStateManager.func_227714_e_(0, 0, p_227588_1_, p_227588_2_);
-      GlStateManager.func_227619_H_();
-      GlStateManager.func_227722_g_();
-      GlStateManager.func_227700_d_();
+      GlStateManager.colorMask(true, true, true, false);
+      GlStateManager.disableDepthTest();
+      GlStateManager.depthMask(false);
+      GlStateManager.matrixMode(5889);
+      GlStateManager.loadIdentity();
+      GlStateManager.ortho(0.0D, (double)width, (double)height, 0.0D, 1000.0D, 3000.0D);
+      GlStateManager.matrixMode(5888);
+      GlStateManager.loadIdentity();
+      GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
+      GlStateManager.viewport(0, 0, width, height);
+      GlStateManager.enableTexture();
+      GlStateManager.disableLighting();
+      GlStateManager.disableAlphaTest();
       if (p_227588_3_) {
-         GlStateManager.func_227737_l_();
-         GlStateManager.func_227725_h_();
+         GlStateManager.disableBlend();
+         GlStateManager.enableColorMaterial();
       }
 
-      GlStateManager.func_227702_d_(1.0F, 1.0F, 1.0F, 1.0F);
+      GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       this.bindFramebufferTexture();
-      float f = (float)p_227588_1_;
-      float f1 = (float)p_227588_2_;
+      float f = (float)width;
+      float f1 = (float)height;
       float f2 = (float)this.framebufferWidth / (float)this.framebufferTextureWidth;
       float f3 = (float)this.framebufferHeight / (float)this.framebufferTextureHeight;
       Tessellator tessellator = RenderSystem.renderThreadTesselator();
       BufferBuilder bufferbuilder = tessellator.getBuffer();
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_(0.0D, (double)f1, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(255, 255, 255, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)f, (double)f1, 0.0D).func_225583_a_(f2, 0.0F).func_225586_a_(255, 255, 255, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)f, 0.0D, 0.0D).func_225583_a_(f2, f3).func_225586_a_(255, 255, 255, 255).endVertex();
-      bufferbuilder.func_225582_a_(0.0D, 0.0D, 0.0D).func_225583_a_(0.0F, f3).func_225586_a_(255, 255, 255, 255).endVertex();
+      bufferbuilder.pos(0.0D, (double)f1, 0.0D).tex(0.0F, 0.0F).color(255, 255, 255, 255).endVertex();
+      bufferbuilder.pos((double)f, (double)f1, 0.0D).tex(f2, 0.0F).color(255, 255, 255, 255).endVertex();
+      bufferbuilder.pos((double)f, 0.0D, 0.0D).tex(f2, f3).color(255, 255, 255, 255).endVertex();
+      bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex(0.0F, f3).color(255, 255, 255, 255).endVertex();
       tessellator.draw();
       this.unbindFramebufferTexture();
-      GlStateManager.func_227667_a_(true);
-      GlStateManager.func_227668_a_(true, true, true, true);
+      GlStateManager.depthMask(true);
+      GlStateManager.colorMask(true, true, true, true);
    }
 
    public void framebufferClear(boolean onMac) {
       RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
       this.bindFramebuffer(true);
-      GlStateManager.func_227673_b_(this.framebufferColor[0], this.framebufferColor[1], this.framebufferColor[2], this.framebufferColor[3]);
+      GlStateManager.clearColor(this.framebufferColor[0], this.framebufferColor[1], this.framebufferColor[2], this.framebufferColor[3]);
       int i = 16384;
       if (this.useDepth) {
-         GlStateManager.func_227631_a_(1.0D);
+         GlStateManager.clearDepth(1.0D);
          i |= 256;
       }
 
-      GlStateManager.func_227658_a_(i, onMac);
+      GlStateManager.clear(i, onMac);
       this.unbindFramebuffer();
    }
 }

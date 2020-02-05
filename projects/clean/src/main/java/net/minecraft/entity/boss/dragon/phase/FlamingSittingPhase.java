@@ -23,9 +23,9 @@ public class FlamingSittingPhase extends SittingPhase {
       if (this.flameTicks % 2 == 0 && this.flameTicks < 10) {
          Vec3d vec3d = this.dragon.getHeadLookVec(1.0F).normalize();
          vec3d.rotateYaw((-(float)Math.PI / 4F));
-         double d0 = this.dragon.field_70986_h.getPosX();
-         double d1 = this.dragon.field_70986_h.func_226283_e_(0.5D);
-         double d2 = this.dragon.field_70986_h.getPosZ();
+         double d0 = this.dragon.dragonPartHead.getPosX();
+         double d1 = this.dragon.dragonPartHead.getPosYHeight(0.5D);
+         double d2 = this.dragon.dragonPartHead.getPosZ();
 
          for(int i = 0; i < 8; ++i) {
             double d3 = d0 + this.dragon.getRNG().nextGaussian() / 2.0D;
@@ -51,11 +51,11 @@ public class FlamingSittingPhase extends SittingPhase {
             this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
          }
       } else if (this.flameTicks == 10) {
-         Vec3d vec3d = (new Vec3d(this.dragon.field_70986_h.getPosX() - this.dragon.getPosX(), 0.0D, this.dragon.field_70986_h.getPosZ() - this.dragon.getPosZ())).normalize();
+         Vec3d vec3d = (new Vec3d(this.dragon.dragonPartHead.getPosX() - this.dragon.getPosX(), 0.0D, this.dragon.dragonPartHead.getPosZ() - this.dragon.getPosZ())).normalize();
          float f = 5.0F;
-         double d0 = this.dragon.field_70986_h.getPosX() + vec3d.x * 5.0D / 2.0D;
-         double d1 = this.dragon.field_70986_h.getPosZ() + vec3d.z * 5.0D / 2.0D;
-         double d2 = this.dragon.field_70986_h.func_226283_e_(0.5D);
+         double d0 = this.dragon.dragonPartHead.getPosX() + vec3d.x * 5.0D / 2.0D;
+         double d1 = this.dragon.dragonPartHead.getPosZ() + vec3d.z * 5.0D / 2.0D;
+         double d2 = this.dragon.dragonPartHead.getPosYHeight(0.5D);
          double d3 = d2;
          BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(d0, d2, d1);
 

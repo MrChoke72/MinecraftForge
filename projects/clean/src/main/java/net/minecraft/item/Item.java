@@ -101,7 +101,7 @@ public class Item implements IItemProvider {
 
    }
 
-   public void func_219972_a(World worldIn, LivingEntity livingEntityIn, ItemStack stack, int p_219972_4_) {
+   public void func_219972_a(World worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
    }
 
    @Nullable

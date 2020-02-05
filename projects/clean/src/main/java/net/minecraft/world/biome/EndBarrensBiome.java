@@ -14,7 +14,7 @@ public class EndBarrensBiome extends Biome {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225529_c_() {
+   public int getSkyColor() {
       return 0;
    }
 }

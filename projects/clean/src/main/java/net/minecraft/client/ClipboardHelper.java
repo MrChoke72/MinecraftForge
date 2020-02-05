@@ -1,9 +1,11 @@
 package net.minecraft.client;
 
+import com.google.common.base.Charsets;
 import java.nio.ByteBuffer;
 import net.minecraft.util.SharedConstants;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
@@ -11,11 +13,11 @@ import org.lwjgl.system.MemoryUtil;
 
 @OnlyIn(Dist.CLIENT)
 public class ClipboardHelper {
-   private final ByteBuffer field_216490_a = ByteBuffer.allocateDirect(1024);
+   private final ByteBuffer buffer = BufferUtils.createByteBuffer(8192);
 
-   public String func_216487_a(long p_216487_1_, GLFWErrorCallbackI p_216487_3_) {
-      GLFWErrorCallback glfwerrorcallback = GLFW.glfwSetErrorCallback(p_216487_3_);
-      String s = GLFW.glfwGetClipboardString(p_216487_1_);
+   public String getClipboardString(long window, GLFWErrorCallbackI errorCallback) {
+      GLFWErrorCallback glfwerrorcallback = GLFW.glfwSetErrorCallback(errorCallback);
+      String s = GLFW.glfwGetClipboardString(window);
       s = s != null ? SharedConstants.func_215070_b(s) : "";
       GLFWErrorCallback glfwerrorcallback1 = GLFW.glfwSetErrorCallback(glfwerrorcallback);
       if (glfwerrorcallback1 != null) {
@@ -25,19 +27,27 @@ public class ClipboardHelper {
       return s;
    }
 
-   private void func_216488_a(long p_216488_1_, ByteBuffer p_216488_3_, String p_216488_4_) {
-      MemoryUtil.memUTF8(p_216488_4_, true, p_216488_3_);
-      GLFW.glfwSetClipboardString(p_216488_1_, p_216488_3_);
+   private static void func_230147_a_(long p_230147_0_, ByteBuffer p_230147_2_, byte[] p_230147_3_) {
+      p_230147_2_.clear();
+      p_230147_2_.put(p_230147_3_);
+      p_230147_2_.put((byte)0);
+      p_230147_2_.flip();
+      GLFW.glfwSetClipboardString(p_230147_0_, p_230147_2_);
    }
 
-   public void func_216489_a(long p_216489_1_, String p_216489_3_) {
-      int i = MemoryUtil.memLengthUTF8(p_216489_3_, true);
-      if (i < this.field_216490_a.capacity()) {
-         this.func_216488_a(p_216489_1_, this.field_216490_a, p_216489_3_);
-         this.field_216490_a.clear();
+   public void setClipboardString(long window, String string) {
+      byte[] abyte = string.getBytes(Charsets.UTF_8);
+      int i = abyte.length + 1;
+      if (i < this.buffer.capacity()) {
+         func_230147_a_(window, this.buffer, abyte);
       } else {
-         ByteBuffer bytebuffer = ByteBuffer.allocateDirect(i);
-         this.func_216488_a(p_216489_1_, bytebuffer, p_216489_3_);
+         ByteBuffer bytebuffer = MemoryUtil.memAlloc(i);
+
+         try {
+            func_230147_a_(window, bytebuffer, abyte);
+         } finally {
+            MemoryUtil.memFree(bytebuffer);
+         }
       }
 
    }

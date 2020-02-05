@@ -8,38 +8,38 @@ public class ScheduleBuilder {
    private final Schedule schedule;
    private final List<ScheduleBuilder.ActivityEntry> entries = Lists.newArrayList();
 
-   public ScheduleBuilder(Schedule schedule) {
-      this.schedule = schedule;
+   public ScheduleBuilder(Schedule p_i50135_1_) {
+      this.schedule = p_i50135_1_;
    }
 
-   public ScheduleBuilder add(int startTime, Activity activity) {
-      this.entries.add(new ScheduleBuilder.ActivityEntry(startTime, activity));
+   public ScheduleBuilder add(int duration, Activity p_221402_2_) {
+      this.entries.add(new ScheduleBuilder.ActivityEntry(duration, p_221402_2_));
       return this;
    }
 
    public Schedule build() {
       this.entries.stream().map(ScheduleBuilder.ActivityEntry::getActivity).collect(Collectors.toSet()).forEach(this.schedule::createDutiesFor);
-      this.entries.forEach((activityEntry) -> {
-         Activity activity = activityEntry.getActivity();
-         this.schedule.getAllDutiesExcept(activity).forEach((schedDuties) -> {
-            schedDuties.addDutyTime(activityEntry.getStartTime(), 0.0F);
+      this.entries.forEach((p_221405_1_) -> {
+         Activity activity = p_221405_1_.getActivity();
+         this.schedule.getAllDutiesExcept(activity).forEach((p_221403_1_) -> {
+            p_221403_1_.addDutyTime(p_221405_1_.getDuration(), 0.0F);
          });
-         this.schedule.getDutiesFor(activity).addDutyTime(activityEntry.getStartTime(), 1.0F);
+         this.schedule.getDutiesFor(activity).addDutyTime(p_221405_1_.getDuration(), 1.0F);
       });
       return this.schedule;
    }
 
    static class ActivityEntry {
-      private final int startTime;
+      private final int duration;
       private final Activity activity;
 
       public ActivityEntry(int p_i51309_1_, Activity p_i51309_2_) {
-         this.startTime = p_i51309_1_;
+         this.duration = p_i51309_1_;
          this.activity = p_i51309_2_;
       }
 
-      public int getStartTime() {
-         return this.startTime;
+      public int getDuration() {
+         return this.duration;
       }
 
       public Activity getActivity() {

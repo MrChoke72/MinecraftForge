@@ -111,7 +111,7 @@ public abstract class AbstractMinecartEntity extends Entity {
       }
    }
 
-   protected boolean func_225502_at_() {
+   protected boolean canTriggerWalking() {
       return false;
    }
 
@@ -221,7 +221,7 @@ public abstract class AbstractMinecartEntity extends Entity {
             this.setPosition(d4, d5, d6);
             this.setRotation(this.rotationYaw, this.rotationPitch);
          } else {
-            this.func_226264_Z_();
+            this.recenterBoundingBox();
             this.setRotation(this.rotationYaw, this.rotationPitch);
          }
 
@@ -266,7 +266,7 @@ public abstract class AbstractMinecartEntity extends Entity {
          }
 
          this.setRotation(this.rotationYaw, this.rotationPitch);
-         if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && func_213296_b(this.getMotion()) > 0.01D) {
+         if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && horizontalMag(this.getMotion()) > 0.01D) {
             List<Entity> list = this.world.getEntitiesInAABBexcluding(this, this.getBoundingBox().grow((double)0.2F, 0.0D, (double)0.2F), EntityPredicates.pushableBy(this));
             if (!list.isEmpty()) {
                for(int l = 0; l < list.size(); ++l) {
@@ -361,14 +361,14 @@ public abstract class AbstractMinecartEntity extends Entity {
          d5 = -d5;
       }
 
-      double d8 = Math.min(2.0D, Math.sqrt(func_213296_b(vec3d1)));
+      double d8 = Math.min(2.0D, Math.sqrt(horizontalMag(vec3d1)));
       vec3d1 = new Vec3d(d8 * d4 / d6, vec3d1.y, d8 * d5 / d6);
       this.setMotion(vec3d1);
       Entity entity = this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
       if (entity instanceof PlayerEntity) {
          Vec3d vec3d2 = entity.getMotion();
-         double d9 = func_213296_b(vec3d2);
-         double d11 = func_213296_b(this.getMotion());
+         double d9 = horizontalMag(vec3d2);
+         double d11 = horizontalMag(this.getMotion());
          if (d9 > 1.0E-4D && d11 < 0.01D) {
             this.setMotion(this.getMotion().add(vec3d2.x * 0.1D, 0.0D, vec3d2.z * 0.1D));
             flag1 = false;
@@ -376,7 +376,7 @@ public abstract class AbstractMinecartEntity extends Entity {
       }
 
       if (flag1) {
-         double d22 = Math.sqrt(func_213296_b(this.getMotion()));
+         double d22 = Math.sqrt(horizontalMag(this.getMotion()));
          if (d22 < 0.03D) {
             this.setMotion(Vec3d.ZERO);
          } else {
@@ -419,7 +419,7 @@ public abstract class AbstractMinecartEntity extends Entity {
       if (vec3d3 != null && vec3d != null) {
          double d17 = (vec3d.y - vec3d3.y) * 0.05D;
          Vec3d vec3d4 = this.getMotion();
-         double d18 = Math.sqrt(func_213296_b(vec3d4));
+         double d18 = Math.sqrt(horizontalMag(vec3d4));
          if (d18 > 0.0D) {
             this.setMotion(vec3d4.mul((d18 + d17) / d18, 1.0D, (d18 + d17) / d18));
          }
@@ -431,13 +431,13 @@ public abstract class AbstractMinecartEntity extends Entity {
       int i = MathHelper.floor(this.getPosZ());
       if (j != pos.getX() || i != pos.getZ()) {
          Vec3d vec3d5 = this.getMotion();
-         double d26 = Math.sqrt(func_213296_b(vec3d5));
+         double d26 = Math.sqrt(horizontalMag(vec3d5));
          this.setMotion(d26 * (double)(j - pos.getX()), vec3d5.y, d26 * (double)(i - pos.getZ()));
       }
 
       if (flag) {
          Vec3d vec3d6 = this.getMotion();
-         double d27 = Math.sqrt(func_213296_b(vec3d6));
+         double d27 = Math.sqrt(horizontalMag(vec3d6));
          if (d27 > 0.01D) {
             double d19 = 0.06D;
             this.setMotion(vec3d6.add(vec3d6.x / d27 * 0.06D, 0.0D, vec3d6.z / d27 * 0.06D));

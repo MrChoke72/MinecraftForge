@@ -263,8 +263,8 @@ public class PlayerController {
             boolean flag = !p_217292_1_.getHeldItemMainhand().isEmpty() || !p_217292_1_.getHeldItemOffhand().isEmpty();
             boolean flag1 = p_217292_1_.func_226563_dT_() && flag;
             if (!flag1) {
-               ActionResultType actionresulttype = p_217292_2_.getBlockState(blockpos).func_227031_a_(p_217292_2_, p_217292_1_, p_217292_3_, p_217292_4_);
-               if (actionresulttype.func_226246_a_()) {
+               ActionResultType actionresulttype = p_217292_2_.getBlockState(blockpos).onBlockActivated(p_217292_2_, p_217292_1_, p_217292_3_, p_217292_4_);
+               if (actionresulttype.isSuccessOrConsume()) {
                   this.connection.sendPacket(new CPlayerTryUseItemOnBlockPacket(p_217292_3_, p_217292_4_));
                   return actionresulttype;
                }
@@ -346,7 +346,7 @@ public class PlayerController {
       return itemstack;
    }
 
-   public void func_203413_a(int p_203413_1_, IRecipe<?> p_203413_2_, boolean p_203413_3_) {
+   public void sendPlaceRecipePacket(int p_203413_1_, IRecipe<?> p_203413_2_, boolean p_203413_3_) {
       this.connection.sendPacket(new CPlaceRecipePacket(p_203413_1_, p_203413_2_, p_203413_3_));
    }
 

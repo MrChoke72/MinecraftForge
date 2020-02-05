@@ -16,6 +16,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.stb.STBTTFontinfo;
+import org.lwjgl.stb.STBTruetype;
+import org.lwjgl.system.MemoryUtil;
 
 @OnlyIn(Dist.CLIENT)
 public class TrueTypeGlyphProviderFactory implements IGlyphProviderFactory {
@@ -68,15 +71,28 @@ public class TrueTypeGlyphProviderFactory implements IGlyphProviderFactory {
 
    @Nullable
    public IGlyphProvider create(IResourceManager resourceManagerIn) {
+      STBTTFontinfo stbttfontinfo = null;
+      ByteBuffer bytebuffer = null;
+
       try (IResource iresource = resourceManagerIn.getResource(new ResourceLocation(this.file.getNamespace(), "font/" + this.file.getPath()))) {
-         RANDOM.info("Loading font");
-         ByteBuffer bytebuffer = TextureUtil.func_225684_a_(iresource.getInputStream());
+         RANDOM.debug("Loading font {}", (Object)this.file);
+         stbttfontinfo = STBTTFontinfo.malloc();
+         bytebuffer = TextureUtil.readToBuffer(iresource.getInputStream());
          bytebuffer.flip();
-         RANDOM.info("Reading font");
-         TrueTypeGlyphProvider truetypeglyphprovider = new TrueTypeGlyphProvider(TrueTypeGlyphProvider.func_216485_a(bytebuffer), this.size, this.oversample, this.shiftX, this.shiftY, this.chars);
-         return truetypeglyphprovider;
-      } catch (IOException ioexception) {
-         RANDOM.error("Couldn't load truetype font {}", this.file, ioexception);
+         RANDOM.debug("Reading font {}", (Object)this.file);
+         if (!STBTruetype.stbtt_InitFont(stbttfontinfo, bytebuffer)) {
+            throw new IOException("Invalid ttf");
+         } else {
+            TrueTypeGlyphProvider truetypeglyphprovider = new TrueTypeGlyphProvider(bytebuffer, stbttfontinfo, this.size, this.oversample, this.shiftX, this.shiftY, this.chars);
+            return truetypeglyphprovider;
+         }
+      } catch (Exception exception) {
+         RANDOM.error("Couldn't load truetype font {}", this.file, exception);
+         if (stbttfontinfo != null) {
+            stbttfontinfo.free();
+         }
+
+         MemoryUtil.memFree(bytebuffer);
          return null;
       }
    }

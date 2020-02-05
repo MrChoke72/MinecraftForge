@@ -122,8 +122,8 @@ public class ChunkPrimerWrapper extends ChunkPrimer {
    public void setStructureReferences(Map<String, LongSet> p_201606_1_) {
    }
 
-   public BiomeContainer func_225549_i_() {
-      return this.chunk.func_225549_i_();
+   public BiomeContainer getBiomes() {
+      return this.chunk.getBiomes();
    }
 
    public void setModified(boolean modified) {
@@ -152,15 +152,15 @@ public class ChunkPrimerWrapper extends ChunkPrimer {
    }
 
    @Nullable
-   public CompoundNBT func_223134_j(BlockPos p_223134_1_) {
-      return this.chunk.func_223134_j(p_223134_1_);
+   public CompoundNBT getTileEntityNBT(BlockPos pos) {
+      return this.chunk.getTileEntityNBT(pos);
    }
 
    public void func_225548_a_(BiomeContainer p_225548_1_) {
    }
 
-   public Stream<BlockPos> func_217304_m() {
-      return this.chunk.func_217304_m();
+   public Stream<BlockPos> getLightSources() {
+      return this.chunk.getLightSources();
    }
 
    public ChunkPrimerTickList<Block> getBlocksToBeTicked() {
@@ -187,7 +187,7 @@ public class ChunkPrimerWrapper extends ChunkPrimer {
       return this.chunk.hasLight();
    }
 
-   public void setLight(boolean p_217305_1_) {
-      this.chunk.setLight(p_217305_1_);
+   public void setLight(boolean lightCorrectIn) {
+      this.chunk.setLight(lightCorrectIn);
    }
 }

@@ -7,10 +7,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class ByteNBT extends NumberNBT {
-   public static final INBTType<ByteNBT> field_229668_a_ = new INBTType<ByteNBT>() {
+   public static final INBTType<ByteNBT> TYPE = new INBTType<ByteNBT>() {
       public ByteNBT func_225649_b_(DataInput p_225649_1_, int p_225649_2_, NBTSizeTracker p_225649_3_) throws IOException {
          p_225649_3_.read(72L);
-         return ByteNBT.func_229671_a_(p_225649_1_.readByte());
+         return ByteNBT.valueOf(p_225649_1_.readByte());
       }
 
       public String func_225648_a_() {
@@ -25,20 +25,20 @@ public class ByteNBT extends NumberNBT {
          return true;
       }
    };
-   public static final ByteNBT field_229669_b_ = func_229671_a_((byte)0);
-   public static final ByteNBT field_229670_c_ = func_229671_a_((byte)1);
+   public static final ByteNBT ZERO = valueOf((byte)0);
+   public static final ByteNBT ONE = valueOf((byte)1);
    private final byte data;
 
    private ByteNBT(byte data) {
       this.data = data;
    }
 
-   public static ByteNBT func_229671_a_(byte p_229671_0_) {
-      return ByteNBT.Cache.field_229673_a_[128 + p_229671_0_];
+   public static ByteNBT valueOf(byte p_229671_0_) {
+      return ByteNBT.Cache.CACHE[128 + p_229671_0_];
    }
 
-   public static ByteNBT func_229672_a_(boolean p_229672_0_) {
-      return p_229672_0_ ? field_229670_c_ : field_229669_b_;
+   public static ByteNBT valueOf(boolean p_229672_0_) {
+      return p_229672_0_ ? ONE : ZERO;
    }
 
    public void write(DataOutput output) throws IOException {
@@ -49,8 +49,8 @@ public class ByteNBT extends NumberNBT {
       return 1;
    }
 
-   public INBTType<ByteNBT> func_225647_b_() {
-      return field_229668_a_;
+   public INBTType<ByteNBT> getType() {
+      return TYPE;
    }
 
    public String toString() {
@@ -107,11 +107,11 @@ public class ByteNBT extends NumberNBT {
    }
 
    static class Cache {
-      private static final ByteNBT[] field_229673_a_ = new ByteNBT[256];
+      private static final ByteNBT[] CACHE = new ByteNBT[256];
 
       static {
-         for(int i = 0; i < field_229673_a_.length; ++i) {
-            field_229673_a_[i] = new ByteNBT((byte)(i - 128));
+         for(int i = 0; i < CACHE.length; ++i) {
+            CACHE[i] = new ByteNBT((byte)(i - 128));
          }
 
       }

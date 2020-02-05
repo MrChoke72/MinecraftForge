@@ -42,13 +42,13 @@ public class NeighborsUpdateDebugRenderer implements DebugRenderer.IDebugRendere
       map.put(pos, integer + 1);
    }
 
-   public void func_225619_a_(MatrixStack p_225619_1_, IRenderTypeBuffer p_225619_2_, double p_225619_3_, double p_225619_5_, double p_225619_7_) {
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, double camX, double camY, double camZ) {
       long i = this.minecraft.world.getGameTime();
       int j = 200;
       double d0 = 0.0025D;
       Set<BlockPos> set = Sets.newHashSet();
       Map<BlockPos, Integer> map = Maps.newHashMap();
-      IVertexBuilder ivertexbuilder = p_225619_2_.getBuffer(RenderType.func_228659_m_());
+      IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.lines());
       Iterator<Entry<Long, Map<BlockPos, Integer>>> iterator = this.lastUpdate.entrySet().iterator();
 
       while(iterator.hasNext()) {
@@ -63,8 +63,8 @@ public class NeighborsUpdateDebugRenderer implements DebugRenderer.IDebugRendere
                BlockPos blockpos = entry1.getKey();
                Integer integer = entry1.getValue();
                if (set.add(blockpos)) {
-                  AxisAlignedBB axisalignedbb = (new AxisAlignedBB(BlockPos.ZERO)).grow(0.002D).shrink(0.0025D * (double)k).offset((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ()).offset(-p_225619_3_, -p_225619_5_, -p_225619_7_);
-                  WorldRenderer.func_228432_a_(ivertexbuilder, axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.maxX, axisalignedbb.maxY, axisalignedbb.maxZ, 1.0F, 1.0F, 1.0F, 1.0F);
+                  AxisAlignedBB axisalignedbb = (new AxisAlignedBB(BlockPos.ZERO)).grow(0.002D).shrink(0.0025D * (double)k).offset((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ()).offset(-camX, -camY, -camZ);
+                  WorldRenderer.drawBoundingBox(ivertexbuilder, axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.maxX, axisalignedbb.maxY, axisalignedbb.maxZ, 1.0F, 1.0F, 1.0F, 1.0F);
                   map.put(blockpos, integer);
                }
             }
@@ -74,7 +74,7 @@ public class NeighborsUpdateDebugRenderer implements DebugRenderer.IDebugRendere
       for(Entry<BlockPos, Integer> entry2 : map.entrySet()) {
          BlockPos blockpos1 = entry2.getKey();
          Integer integer1 = entry2.getValue();
-         DebugRenderer.func_217731_a(String.valueOf((Object)integer1), blockpos1.getX(), blockpos1.getY(), blockpos1.getZ(), -1);
+         DebugRenderer.renderText(String.valueOf((Object)integer1), blockpos1.getX(), blockpos1.getY(), blockpos1.getZ(), -1);
       }
 
    }

@@ -6,13 +6,13 @@ import net.minecraft.entity.player.PlayerEntity;
 public class LookAtCustomerGoal extends LookAtGoal {
    private final AbstractVillagerEntity villager;
 
-   public LookAtCustomerGoal(AbstractVillagerEntity p_i50326_1_) {
-      super(p_i50326_1_, PlayerEntity.class, 8.0F);
-      this.villager = p_i50326_1_;
+   public LookAtCustomerGoal(AbstractVillagerEntity abstractVillagerEntityIn) {
+      super(abstractVillagerEntityIn, PlayerEntity.class, 8.0F);
+      this.villager = abstractVillagerEntityIn;
    }
 
    public boolean shouldExecute() {
-      if (this.villager.func_213716_dX()) {
+      if (this.villager.hasCustomer()) {
          this.closestEntity = this.villager.getCustomer();
          return true;
       } else {

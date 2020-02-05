@@ -12,23 +12,23 @@ public enum CloudOption {
    FAST(1, "options.clouds.fast"),
    FANCY(2, "options.clouds.fancy");
 
-   private static final CloudOption[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(CloudOption::func_216806_a)).toArray((p_216805_0_) -> {
+   private static final CloudOption[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(CloudOption::getId)).toArray((p_216805_0_) -> {
       return new CloudOption[p_216805_0_];
    });
    private final int id;
-   private final String field_216809_f;
+   private final String key;
 
-   private CloudOption(int id, String p_i51166_4_) {
+   private CloudOption(int id, String keyIn) {
       this.id = id;
-      this.field_216809_f = p_i51166_4_;
+      this.key = keyIn;
    }
 
-   public int func_216806_a() {
+   public int getId() {
       return this.id;
    }
 
-   public String func_216803_b() {
-      return this.field_216809_f;
+   public String getKey() {
+      return this.key;
    }
 
    public static CloudOption byId(int id) {

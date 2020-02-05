@@ -17,7 +17,7 @@ public class TopSolidWithNoise extends Placement<TopSolidWithNoiseConfig> {
    }
 
    public Stream<BlockPos> getPositions(IWorld worldIn, ChunkGenerator<? extends GenerationSettings> generatorIn, Random random, TopSolidWithNoiseConfig configIn, BlockPos pos) {
-      double d0 = Biome.INFO_NOISE.func_215464_a((double)pos.getX() / configIn.noiseFactor, (double)pos.getZ() / configIn.noiseFactor, false);
+      double d0 = Biome.INFO_NOISE.noiseAt((double)pos.getX() / configIn.noiseFactor, (double)pos.getZ() / configIn.noiseFactor, false);
       int i = (int)Math.ceil((d0 + configIn.noiseOffset) * (double)configIn.noiseToCountRatio);
       return IntStream.range(0, i).mapToObj((p_227451_4_) -> {
          int j = random.nextInt(16) + pos.getX();

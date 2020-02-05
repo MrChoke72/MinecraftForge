@@ -21,31 +21,31 @@ import net.minecraft.world.gen.feature.jigsaw.JigsawPiece;
 import net.minecraft.world.gen.feature.template.TemplateManager;
 
 public abstract class AbstractVillagePiece extends StructurePiece {
-   protected final JigsawPiece field_214832_a;
-   protected BlockPos field_214833_b;
+   protected final JigsawPiece jigsawPiece;
+   protected BlockPos pos;
    private final int groundLevelDelta;
    protected final Rotation rotation;
    private final List<JigsawJunction> junctions = Lists.newArrayList();
-   private final TemplateManager field_214837_f;
+   private final TemplateManager templateManager;
 
-   public AbstractVillagePiece(IStructurePieceType p_i51346_1_, TemplateManager p_i51346_2_, JigsawPiece p_i51346_3_, BlockPos p_i51346_4_, int groundLevelDelta, Rotation rotation, MutableBoundingBox p_i51346_7_) {
-      super(p_i51346_1_, 0);
-      this.field_214837_f = p_i51346_2_;
-      this.field_214832_a = p_i51346_3_;
-      this.field_214833_b = p_i51346_4_;
+   public AbstractVillagePiece(IStructurePieceType structurePieceTypeIn, TemplateManager templateManagerIn, JigsawPiece jigsawPieceIn, BlockPos posIn, int groundLevelDelta, Rotation rotation, MutableBoundingBox p_i51346_7_) {
+      super(structurePieceTypeIn, 0);
+      this.templateManager = templateManagerIn;
+      this.jigsawPiece = jigsawPieceIn;
+      this.pos = posIn;
       this.groundLevelDelta = groundLevelDelta;
       this.rotation = rotation;
       this.boundingBox = p_i51346_7_;
    }
 
-   public AbstractVillagePiece(TemplateManager p_i51347_1_, CompoundNBT p_i51347_2_, IStructurePieceType p_i51347_3_) {
-      super(p_i51347_3_, p_i51347_2_);
-      this.field_214837_f = p_i51347_1_;
-      this.field_214833_b = new BlockPos(p_i51347_2_.getInt("PosX"), p_i51347_2_.getInt("PosY"), p_i51347_2_.getInt("PosZ"));
+   public AbstractVillagePiece(TemplateManager templateManagerIn, CompoundNBT p_i51347_2_, IStructurePieceType structurePieceTypeIn) {
+      super(structurePieceTypeIn, p_i51347_2_);
+      this.templateManager = templateManagerIn;
+      this.pos = new BlockPos(p_i51347_2_.getInt("PosX"), p_i51347_2_.getInt("PosY"), p_i51347_2_.getInt("PosZ"));
       this.groundLevelDelta = p_i51347_2_.getInt("ground_level_delta");
-      this.field_214832_a = IDynamicDeserializer.func_214907_a(new Dynamic<>(NBTDynamicOps.INSTANCE, p_i51347_2_.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyJigsawPiece.INSTANCE);
+      this.jigsawPiece = IDynamicDeserializer.func_214907_a(new Dynamic<>(NBTDynamicOps.INSTANCE, p_i51347_2_.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyJigsawPiece.INSTANCE);
       this.rotation = Rotation.valueOf(p_i51347_2_.getString("rotation"));
-      this.boundingBox = this.field_214832_a.func_214852_a(p_i51347_1_, this.field_214833_b, this.rotation);
+      this.boundingBox = this.jigsawPiece.getBoundingBox(templateManagerIn, this.pos, this.rotation);
       ListNBT listnbt = p_i51347_2_.getList("junctions", 10);
       this.junctions.clear();
       listnbt.forEach((p_214827_1_) -> {
@@ -54,11 +54,11 @@ public abstract class AbstractVillagePiece extends StructurePiece {
    }
 
    protected void readAdditional(CompoundNBT tagCompound) {
-      tagCompound.putInt("PosX", this.field_214833_b.getX());
-      tagCompound.putInt("PosY", this.field_214833_b.getY());
-      tagCompound.putInt("PosZ", this.field_214833_b.getZ());
+      tagCompound.putInt("PosX", this.pos.getX());
+      tagCompound.putInt("PosY", this.pos.getY());
+      tagCompound.putInt("PosZ", this.pos.getZ());
       tagCompound.putInt("ground_level_delta", this.groundLevelDelta);
-      tagCompound.put("pool_element", this.field_214832_a.serialize(NBTDynamicOps.INSTANCE).getValue());
+      tagCompound.put("pool_element", this.jigsawPiece.serialize(NBTDynamicOps.INSTANCE).getValue());
       tagCompound.putString("rotation", this.rotation.name());
       ListNBT listnbt = new ListNBT();
 
@@ -70,12 +70,12 @@ public abstract class AbstractVillagePiece extends StructurePiece {
    }
 
    public boolean func_225577_a_(IWorld p_225577_1_, ChunkGenerator<?> p_225577_2_, Random p_225577_3_, MutableBoundingBox p_225577_4_, ChunkPos p_225577_5_) {
-      return this.field_214832_a.func_225575_a_(this.field_214837_f, p_225577_1_, p_225577_2_, this.field_214833_b, this.rotation, p_225577_4_, p_225577_3_);
+      return this.jigsawPiece.func_225575_a_(this.templateManager, p_225577_1_, p_225577_2_, this.pos, this.rotation, p_225577_4_, p_225577_3_);
    }
 
    public void offset(int x, int y, int z) {
       super.offset(x, y, z);
-      this.field_214833_b = this.field_214833_b.add(x, y, z);
+      this.pos = this.pos.add(x, y, z);
    }
 
    public Rotation getRotation() {
@@ -83,23 +83,23 @@ public abstract class AbstractVillagePiece extends StructurePiece {
    }
 
    public String toString() {
-      return String.format("<%s | %s | %s | %s>", this.getClass().getSimpleName(), this.field_214833_b, this.rotation, this.field_214832_a);
+      return String.format("<%s | %s | %s | %s>", this.getClass().getSimpleName(), this.pos, this.rotation, this.jigsawPiece);
    }
 
-   public JigsawPiece func_214826_b() {
-      return this.field_214832_a;
+   public JigsawPiece getJigsawPiece() {
+      return this.jigsawPiece;
    }
 
-   public BlockPos func_214828_c() {
-      return this.field_214833_b;
+   public BlockPos getPos() {
+      return this.pos;
    }
 
    public int getGroundLevelDelta() {
       return this.groundLevelDelta;
    }
 
-   public void addJunction(JigsawJunction p_214831_1_) {
-      this.junctions.add(p_214831_1_);
+   public void addJunction(JigsawJunction junction) {
+      this.junctions.add(junction);
    }
 
    public List<JigsawJunction> getJunctions() {

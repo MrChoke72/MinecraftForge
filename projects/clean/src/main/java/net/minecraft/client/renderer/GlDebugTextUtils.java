@@ -26,15 +26,15 @@ import org.lwjgl.opengl.KHRDebug;
 @OnlyIn(Dist.CLIENT)
 public class GlDebugTextUtils {
    private static final Logger LOGGER = LogManager.getLogger();
-   protected static final ByteBuffer field_209250_a = GLAllocation.createDirectByteBuffer(64);
-   protected static final FloatBuffer field_209251_b = field_209250_a.asFloatBuffer();
-   protected static final IntBuffer field_209252_c = field_209250_a.asIntBuffer();
-   private static final Joiner field_209254_e = Joiner.on('\n');
-   private static final Joiner field_209255_f = Joiner.on("; ");
+   protected static final ByteBuffer BYTE_BUFFER = GLAllocation.createDirectByteBuffer(64);
+   protected static final FloatBuffer FLOAT_BUFFER = BYTE_BUFFER.asFloatBuffer();
+   protected static final IntBuffer INT_BUFFER = BYTE_BUFFER.asIntBuffer();
+   private static final Joiner NEWLINE_JOINER = Joiner.on('\n');
+   private static final Joiner STATEMENT_JOINER = Joiner.on("; ");
    private static final Map<Integer, String> GL_CONSTANT_NAMES = Maps.newHashMap();
-   private static final List<Integer> field_209257_h = ImmutableList.of(37190, 37191, 37192, 33387);
-   private static final List<Integer> field_209258_i = ImmutableList.of(37190, 37191, 37192);
-   private static final Map<String, List<String>> field_209259_j = Maps.newHashMap();
+   private static final List<Integer> DEBUG_LEVELS = ImmutableList.of(37190, 37191, 37192, 33387);
+   private static final List<Integer> DEBUG_LEVELS_ARB = ImmutableList.of(37190, 37191, 37192);
+   private static final Map<String, List<String>> SAVED_STATES = Maps.newHashMap();
 
    private static String getFallbackString(int p_209245_0_) {
       return "Unknown (0x" + Integer.toHexString(p_209245_0_).toUpperCase() + ")";
@@ -105,30 +105,30 @@ public class GlDebugTextUtils {
       });
    }
 
-   public static void setDebugVerbosity(int debugVerbosity, boolean p_209247_1_) {
+   public static void setDebugVerbosity(int debugVerbosity, boolean synchronous) {
       RenderSystem.assertThread(RenderSystem::isInInitPhase);
       if (debugVerbosity > 0) {
          GLCapabilities glcapabilities = GL.getCapabilities();
          if (glcapabilities.GL_KHR_debug) {
             GL11.glEnable(37600);
-            if (p_209247_1_) {
+            if (synchronous) {
                GL11.glEnable(33346);
             }
 
-            for(int i = 0; i < field_209257_h.size(); ++i) {
+            for(int i = 0; i < DEBUG_LEVELS.size(); ++i) {
                boolean flag = i < debugVerbosity;
-               KHRDebug.glDebugMessageControl(4352, 4352, field_209257_h.get(i), (int[])null, flag);
+               KHRDebug.glDebugMessageControl(4352, 4352, DEBUG_LEVELS.get(i), (int[])null, flag);
             }
 
             KHRDebug.glDebugMessageCallback(GLX.make(GLDebugMessageCallback.create(GlDebugTextUtils::logDebugMessage), LWJGLMemoryUntracker::untrack), 0L);
          } else if (glcapabilities.GL_ARB_debug_output) {
-            if (p_209247_1_) {
+            if (synchronous) {
                GL11.glEnable(33346);
             }
 
-            for(int j = 0; j < field_209258_i.size(); ++j) {
+            for(int j = 0; j < DEBUG_LEVELS_ARB.size(); ++j) {
                boolean flag1 = j < debugVerbosity;
-               ARBDebugOutput.glDebugMessageControlARB(4352, 4352, field_209258_i.get(j), (int[])null, flag1);
+               ARBDebugOutput.glDebugMessageControlARB(4352, 4352, DEBUG_LEVELS_ARB.get(j), (int[])null, flag1);
             }
 
             ARBDebugOutput.glDebugMessageCallbackARB(GLX.make(GLDebugMessageARBCallback.create(GlDebugTextUtils::logDebugMessage), LWJGLMemoryUntracker::untrack), 0L);

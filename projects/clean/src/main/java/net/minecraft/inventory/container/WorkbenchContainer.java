@@ -20,8 +20,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class WorkbenchContainer extends RecipeBookContainer<CraftingInventory> {
-   private final CraftingInventory field_75162_e = new CraftingInventory(this, 3, 3);
-   private final CraftResultInventory field_75160_f = new CraftResultInventory();
+   private final CraftingInventory craftMatrix = new CraftingInventory(this, 3, 3);
+   private final CraftResultInventory craftResult = new CraftResultInventory();
    private final IWorldPosCallable field_217070_e;
    private final PlayerEntity player;
 
@@ -33,11 +33,11 @@ public class WorkbenchContainer extends RecipeBookContainer<CraftingInventory> {
       super(ContainerType.CRAFTING, p_i50090_1_);
       this.field_217070_e = p_i50090_3_;
       this.player = p_i50090_2_.player;
-      this.addSlot(new CraftingResultSlot(p_i50090_2_.player, this.field_75162_e, this.field_75160_f, 0, 124, 35));
+      this.addSlot(new CraftingResultSlot(p_i50090_2_.player, this.craftMatrix, this.craftResult, 0, 124, 35));
 
       for(int i = 0; i < 3; ++i) {
          for(int j = 0; j < 3; ++j) {
-            this.addSlot(new Slot(this.field_75162_e, j + i * 3, 30 + j * 18, 17 + i * 18));
+            this.addSlot(new Slot(this.craftMatrix, j + i * 3, 30 + j * 18, 17 + i * 18));
          }
       }
 
@@ -72,27 +72,27 @@ public class WorkbenchContainer extends RecipeBookContainer<CraftingInventory> {
 
    public void onCraftMatrixChanged(IInventory inventoryIn) {
       this.field_217070_e.consume((p_217069_1_, p_217069_2_) -> {
-         func_217066_a(this.windowId, p_217069_1_, this.player, this.field_75162_e, this.field_75160_f);
+         func_217066_a(this.windowId, p_217069_1_, this.player, this.craftMatrix, this.craftResult);
       });
    }
 
-   public void func_201771_a(RecipeItemHelper p_201771_1_) {
-      this.field_75162_e.fillStackedContents(p_201771_1_);
+   public void fillStackedContents(RecipeItemHelper itemHelperIn) {
+      this.craftMatrix.fillStackedContents(itemHelperIn);
    }
 
    public void clear() {
-      this.field_75162_e.clear();
-      this.field_75160_f.clear();
+      this.craftMatrix.clear();
+      this.craftResult.clear();
    }
 
    public boolean matches(IRecipe<? super CraftingInventory> recipeIn) {
-      return recipeIn.matches(this.field_75162_e, this.player.world);
+      return recipeIn.matches(this.craftMatrix, this.player.world);
    }
 
    public void onContainerClosed(PlayerEntity playerIn) {
       super.onContainerClosed(playerIn);
       this.field_217070_e.consume((p_217068_2_, p_217068_3_) -> {
-         this.clearContainer(playerIn, p_217068_2_, this.field_75162_e);
+         this.clearContainer(playerIn, p_217068_2_, this.craftMatrix);
       });
    }
 
@@ -149,7 +149,7 @@ public class WorkbenchContainer extends RecipeBookContainer<CraftingInventory> {
    }
 
    public boolean canMergeSlot(ItemStack stack, Slot slotIn) {
-      return slotIn.inventory != this.field_75160_f && super.canMergeSlot(stack, slotIn);
+      return slotIn.inventory != this.craftResult && super.canMergeSlot(stack, slotIn);
    }
 
    public int getOutputSlot() {
@@ -157,11 +157,11 @@ public class WorkbenchContainer extends RecipeBookContainer<CraftingInventory> {
    }
 
    public int getWidth() {
-      return this.field_75162_e.getWidth();
+      return this.craftMatrix.getWidth();
    }
 
    public int getHeight() {
-      return this.field_75162_e.getHeight();
+      return this.craftMatrix.getHeight();
    }
 
    @OnlyIn(Dist.CLIENT)

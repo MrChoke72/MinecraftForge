@@ -31,23 +31,23 @@ public class BlockStateProperty implements ILootCondition {
 
    public boolean test(LootContext p_test_1_) {
       BlockState blockstate = p_test_1_.get(LootParameters.BLOCK_STATE);
-      return blockstate != null && this.block == blockstate.getBlock() && this.properties.func_227181_a_(blockstate);
+      return blockstate != null && this.block == blockstate.getBlock() && this.properties.matches(blockstate);
    }
 
-   public static BlockStateProperty.Builder builder(Block p_215985_0_) {
-      return new BlockStateProperty.Builder(p_215985_0_);
+   public static BlockStateProperty.Builder builder(Block blockIn) {
+      return new BlockStateProperty.Builder(blockIn);
    }
 
    public static class Builder implements ILootCondition.IBuilder {
       private final Block block;
-      private StatePropertiesPredicate desiredProperties = StatePropertiesPredicate.field_227178_a_;
+      private StatePropertiesPredicate desiredProperties = StatePropertiesPredicate.EMPTY;
 
-      public Builder(Block p_i50576_1_) {
-         this.block = p_i50576_1_;
+      public Builder(Block blockIn) {
+         this.block = blockIn;
       }
 
-      public BlockStateProperty.Builder func_227567_a_(StatePropertiesPredicate.Builder p_227567_1_) {
-         this.desiredProperties = p_227567_1_.func_227196_b_();
+      public BlockStateProperty.Builder fromProperties(StatePropertiesPredicate.Builder p_227567_1_) {
+         this.desiredProperties = p_227567_1_.build();
          return this;
       }
 
@@ -63,7 +63,7 @@ public class BlockStateProperty implements ILootCondition {
 
       public void serialize(JsonObject json, BlockStateProperty value, JsonSerializationContext context) {
          json.addProperty("block", Registry.BLOCK.getKey(value.block).toString());
-         json.add("properties", value.properties.func_227180_a_());
+         json.add("properties", value.properties.toJsonElement());
       }
 
       public BlockStateProperty deserialize(JsonObject json, JsonDeserializationContext context) {
@@ -71,8 +71,8 @@ public class BlockStateProperty implements ILootCondition {
          Block block = Registry.BLOCK.getValue(resourcelocation).orElseThrow(() -> {
             return new IllegalArgumentException("Can't find block " + resourcelocation);
          });
-         StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.func_227186_a_(json.get("properties"));
-         statepropertiespredicate.func_227183_a_(block.getStateContainer(), (p_227568_1_) -> {
+         StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.deserializeProperties(json.get("properties"));
+         statepropertiespredicate.forEachNotPresent(block.getStateContainer(), (p_227568_1_) -> {
             throw new JsonSyntaxException("Block " + block + " has no property " + p_227568_1_);
          });
          return new BlockStateProperty(block, statepropertiespredicate);

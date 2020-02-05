@@ -24,7 +24,7 @@ public class DirectoryCache {
    private int hits;
    private final Map<Path, String> staleFiles = Maps.newHashMap();
    private final Map<Path, String> createdFiles = Maps.newHashMap();
-   private final Set<Path> field_218457_g = Sets.newHashSet();
+   private final Set<Path> protectedPaths = Sets.newHashSet();
 
    public DirectoryCache(Path folder, String fileName) throws IOException {
       this.outputFolder = folder;
@@ -44,7 +44,7 @@ public class DirectoryCache {
    }
 
    public void writeCache() throws IOException {
-      this.func_209400_b();
+      this.deleteStale();
 
       Writer writer;
       try {
@@ -66,7 +66,7 @@ public class DirectoryCache {
       return this.staleFiles.get(fileIn);
    }
 
-   public void func_208316_a(Path fileIn, String hash) {
+   public void recordHash(Path fileIn, String hash) {
       this.createdFiles.put(fileIn, hash);
       if (Objects.equals(this.staleFiles.remove(fileIn), hash)) {
          ++this.hits;
@@ -74,17 +74,17 @@ public class DirectoryCache {
 
    }
 
-   public boolean func_208320_b(Path fileIn) {
+   public boolean isStale(Path fileIn) {
       return this.staleFiles.containsKey(fileIn);
    }
 
-   public void func_218456_c(Path p_218456_1_) {
-      this.field_218457_g.add(p_218456_1_);
+   public void addProtectedPath(Path p_218456_1_) {
+      this.protectedPaths.add(p_218456_1_);
    }
 
-   private void func_209400_b() throws IOException {
+   private void deleteStale() throws IOException {
       this.getFiles().forEach((p_208322_1_) -> {
-         if (this.func_208320_b(p_208322_1_) && !this.field_218457_g.contains(p_208322_1_)) {
+         if (this.isStale(p_208322_1_) && !this.protectedPaths.contains(p_208322_1_)) {
             try {
                Files.delete(p_208322_1_);
             } catch (IOException ioexception) {

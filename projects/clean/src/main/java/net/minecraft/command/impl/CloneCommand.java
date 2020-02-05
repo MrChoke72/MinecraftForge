@@ -108,7 +108,7 @@ public class CloneCommand {
                               CompoundNBT compoundnbt = tileentity.write(new CompoundNBT());
                               list1.add(new CloneCommand.BlockInfo(blockpos3, blockstate, compoundnbt));
                               deque.addLast(blockpos2);
-                           } else if (!blockstate.isOpaqueCube(serverworld, blockpos2) && !blockstate.func_224756_o(serverworld, blockpos2)) {
+                           } else if (!blockstate.isOpaqueCube(serverworld, blockpos2) && !blockstate.isCollisionShapeOpaque(serverworld, blockpos2)) {
                               list2.add(new CloneCommand.BlockInfo(blockpos3, blockstate, (CompoundNBT)null));
                               deque.addFirst(blockpos2);
                            } else {

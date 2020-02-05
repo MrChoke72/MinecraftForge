@@ -36,7 +36,7 @@ public class EditSignScreen extends Screen {
    private final SignTileEntity tileSign;
    private int updateCounter;
    private int editLine;
-   private TextInputUtil field_214267_d;
+   private TextInputUtil textInputUtil;
 
    public EditSignScreen(SignTileEntity teSign) {
       super(new TranslationTextComponent("sign.edit"));
@@ -49,7 +49,7 @@ public class EditSignScreen extends Screen {
          this.close();
       }));
       this.tileSign.setEditable(false);
-      this.field_214267_d = new TextInputUtil(this.minecraft, () -> {
+      this.textInputUtil = new TextInputUtil(this.minecraft, () -> {
          return this.tileSign.getText(this.editLine).getString();
       }, (p_214265_1_) -> {
          this.tileSign.setText(this.editLine, new StringTextComponent(p_214265_1_));
@@ -80,7 +80,7 @@ public class EditSignScreen extends Screen {
    }
 
    public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
-      this.field_214267_d.func_216894_a(p_charTyped_1_);
+      this.textInputUtil.func_216894_a(p_charTyped_1_);
       return true;
    }
 
@@ -91,50 +91,50 @@ public class EditSignScreen extends Screen {
    public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
       if (p_keyPressed_1_ == 265) {
          this.editLine = this.editLine - 1 & 3;
-         this.field_214267_d.func_216899_b();
+         this.textInputUtil.func_216899_b();
          return true;
       } else if (p_keyPressed_1_ != 264 && p_keyPressed_1_ != 257 && p_keyPressed_1_ != 335) {
-         return this.field_214267_d.func_216897_a(p_keyPressed_1_) ? true : super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
+         return this.textInputUtil.func_216897_a(p_keyPressed_1_) ? true : super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
       } else {
          this.editLine = this.editLine + 1 & 3;
-         this.field_214267_d.func_216899_b();
+         this.textInputUtil.func_216899_b();
          return true;
       }
    }
 
    public void render(int p_render_1_, int p_render_2_, float p_render_3_) {
-      RenderHelper.func_227783_c_();
+      RenderHelper.setupGuiFlatDiffuseLighting();
       this.renderBackground();
       this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 16777215);
       MatrixStack matrixstack = new MatrixStack();
-      matrixstack.func_227860_a_();
-      matrixstack.func_227861_a_((double)(this.width / 2), 0.0D, 50.0D);
+      matrixstack.push();
+      matrixstack.translate((double)(this.width / 2), 0.0D, 50.0D);
       float f = 93.75F;
-      matrixstack.func_227862_a_(93.75F, -93.75F, 93.75F);
-      matrixstack.func_227861_a_(0.0D, -1.3125D, 0.0D);
+      matrixstack.scale(93.75F, -93.75F, 93.75F);
+      matrixstack.translate(0.0D, -1.3125D, 0.0D);
       BlockState blockstate = this.tileSign.getBlockState();
       boolean flag = blockstate.getBlock() instanceof StandingSignBlock;
       if (!flag) {
-         matrixstack.func_227861_a_(0.0D, -0.3125D, 0.0D);
+         matrixstack.translate(0.0D, -0.3125D, 0.0D);
       }
 
       boolean flag1 = this.updateCounter / 6 % 2 == 0;
       float f1 = 0.6666667F;
-      matrixstack.func_227860_a_();
-      matrixstack.func_227862_a_(0.6666667F, -0.6666667F, -0.6666667F);
-      IRenderTypeBuffer.Impl irendertypebuffer$impl = this.minecraft.func_228019_au_().func_228487_b_();
-      Material material = SignTileEntityRenderer.func_228877_a_(blockstate.getBlock());
-      IVertexBuilder ivertexbuilder = material.func_229311_a_(irendertypebuffer$impl, this.field_228191_a_::func_228282_a_);
-      this.field_228191_a_.field_78166_a.func_228308_a_(matrixstack, ivertexbuilder, 15728880, OverlayTexture.field_229196_a_);
+      matrixstack.push();
+      matrixstack.scale(0.6666667F, -0.6666667F, -0.6666667F);
+      IRenderTypeBuffer.Impl irendertypebuffer$impl = this.minecraft.getRenderTypeBuffers().getBufferSource();
+      Material material = SignTileEntityRenderer.getMaterial(blockstate.getBlock());
+      IVertexBuilder ivertexbuilder = material.getBuffer(irendertypebuffer$impl, this.field_228191_a_::getRenderType);
+      this.field_228191_a_.signBoard.render(matrixstack, ivertexbuilder, 15728880, OverlayTexture.DEFAULT_LIGHT);
       if (flag) {
-         this.field_228191_a_.field_78165_b.func_228308_a_(matrixstack, ivertexbuilder, 15728880, OverlayTexture.field_229196_a_);
+         this.field_228191_a_.signStick.render(matrixstack, ivertexbuilder, 15728880, OverlayTexture.DEFAULT_LIGHT);
       }
 
-      matrixstack.func_227865_b_();
+      matrixstack.pop();
       float f2 = 0.010416667F;
-      matrixstack.func_227861_a_(0.0D, (double)0.33333334F, (double)0.046666667F);
-      matrixstack.func_227862_a_(0.010416667F, -0.010416667F, 0.010416667F);
-      int i = this.tileSign.getTextColor().func_218388_g();
+      matrixstack.translate(0.0D, (double)0.33333334F, (double)0.046666667F);
+      matrixstack.scale(0.010416667F, -0.010416667F, 0.010416667F);
+      int i = this.tileSign.getTextColor().getTextColor();
       String[] astring = new String[4];
 
       for(int j = 0; j < astring.length; ++j) {
@@ -144,9 +144,9 @@ public class EditSignScreen extends Screen {
          });
       }
 
-      Matrix4f matrix4f = matrixstack.func_227866_c_().func_227870_a_();
-      int k = this.field_214267_d.func_216896_c();
-      int l = this.field_214267_d.func_216898_d();
+      Matrix4f matrix4f = matrixstack.getLast().getPositionMatrix();
+      int k = this.textInputUtil.func_216896_c();
+      int l = this.textInputUtil.func_216898_d();
       int i1 = this.minecraft.fontRenderer.getBidiFlag() ? -1 : 1;
       int j1 = this.editLine * 10 - this.tileSign.signText.length * 5;
 
@@ -154,18 +154,18 @@ public class EditSignScreen extends Screen {
          String s = astring[k1];
          if (s != null) {
             float f3 = (float)(-this.minecraft.fontRenderer.getStringWidth(s) / 2);
-            this.minecraft.fontRenderer.func_228079_a_(s, f3, (float)(k1 * 10 - this.tileSign.signText.length * 5), i, false, matrix4f, irendertypebuffer$impl, false, 0, 15728880);
+            this.minecraft.fontRenderer.renderString(s, f3, (float)(k1 * 10 - this.tileSign.signText.length * 5), i, false, matrix4f, irendertypebuffer$impl, false, 0, 15728880);
             if (k1 == this.editLine && k >= 0 && flag1) {
                int l1 = this.minecraft.fontRenderer.getStringWidth(s.substring(0, Math.max(Math.min(k, s.length()), 0)));
                int i2 = (l1 - this.minecraft.fontRenderer.getStringWidth(s) / 2) * i1;
                if (k >= s.length()) {
-                  this.minecraft.fontRenderer.func_228079_a_("_", (float)i2, (float)j1, i, false, matrix4f, irendertypebuffer$impl, false, 0, 15728880);
+                  this.minecraft.fontRenderer.renderString("_", (float)i2, (float)j1, i, false, matrix4f, irendertypebuffer$impl, false, 0, 15728880);
                }
             }
          }
       }
 
-      irendertypebuffer$impl.func_228461_a_();
+      irendertypebuffer$impl.finish();
 
       for(int k3 = 0; k3 < astring.length; ++k3) {
          String s1 = astring[k3];
@@ -189,10 +189,10 @@ public class EditSignScreen extends Screen {
                RenderSystem.enableColorLogicOp();
                RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
                bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-               bufferbuilder.func_227888_a_(matrix4f, (float)i3, (float)(j1 + 9), 0.0F).func_225586_a_(0, 0, 255, 255).endVertex();
-               bufferbuilder.func_227888_a_(matrix4f, (float)j3, (float)(j1 + 9), 0.0F).func_225586_a_(0, 0, 255, 255).endVertex();
-               bufferbuilder.func_227888_a_(matrix4f, (float)j3, (float)j1, 0.0F).func_225586_a_(0, 0, 255, 255).endVertex();
-               bufferbuilder.func_227888_a_(matrix4f, (float)i3, (float)j1, 0.0F).func_225586_a_(0, 0, 255, 255).endVertex();
+               bufferbuilder.pos(matrix4f, (float)i3, (float)(j1 + 9), 0.0F).color(0, 0, 255, 255).endVertex();
+               bufferbuilder.pos(matrix4f, (float)j3, (float)(j1 + 9), 0.0F).color(0, 0, 255, 255).endVertex();
+               bufferbuilder.pos(matrix4f, (float)j3, (float)j1, 0.0F).color(0, 0, 255, 255).endVertex();
+               bufferbuilder.pos(matrix4f, (float)i3, (float)j1, 0.0F).color(0, 0, 255, 255).endVertex();
                bufferbuilder.finishDrawing();
                WorldVertexBufferUploader.draw(bufferbuilder);
                RenderSystem.disableColorLogicOp();
@@ -201,8 +201,8 @@ public class EditSignScreen extends Screen {
          }
       }
 
-      matrixstack.func_227865_b_();
-      RenderHelper.func_227784_d_();
+      matrixstack.pop();
+      RenderHelper.setupGui3DDiffuseLighting();
       super.render(p_render_1_, p_render_2_, p_render_3_);
    }
 }

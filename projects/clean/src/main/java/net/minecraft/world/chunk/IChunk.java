@@ -59,11 +59,11 @@ public interface IChunk extends IBlockReader, IStructureReader {
 
    ChunkSection[] getSections();
 
-   Collection<Entry<Heightmap.Type, Heightmap>> func_217311_f();
+   Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 
    void setHeightmap(Heightmap.Type type, long[] data);
 
-   Heightmap func_217303_b(Heightmap.Type p_217303_1_);
+   Heightmap getHeightmap(Heightmap.Type typeIn);
 
    int getTopBlockY(Heightmap.Type heightmapType, int x, int z);
 
@@ -94,7 +94,7 @@ public interface IChunk extends IBlockReader, IStructureReader {
    }
 
    @Nullable
-   BiomeContainer func_225549_i_();
+   BiomeContainer getBiomes();
 
    void setModified(boolean modified);
 
@@ -122,16 +122,16 @@ public interface IChunk extends IBlockReader, IStructureReader {
    CompoundNBT getDeferredTileEntity(BlockPos pos);
 
    @Nullable
-   CompoundNBT func_223134_j(BlockPos p_223134_1_);
+   CompoundNBT getTileEntityNBT(BlockPos pos);
 
-   Stream<BlockPos> func_217304_m();
+   Stream<BlockPos> getLightSources();
 
    ITickList<Block> getBlocksToBeTicked();
 
    ITickList<Fluid> getFluidsToBeTicked();
 
    default BitSet getCarvingMask(GenerationStage.Carving type) {
-      throw (RuntimeException)Util.func_229757_c_(new RuntimeException("Meaningless in this context"));
+      throw (RuntimeException)Util.spinlockIfDevMode(new RuntimeException("Meaningless in this context"));
    }
 
    UpgradeData getUpgradeData();
@@ -150,5 +150,5 @@ public interface IChunk extends IBlockReader, IStructureReader {
 
    boolean hasLight();
 
-   void setLight(boolean p_217305_1_);
+   void setLight(boolean lightCorrectIn);
 }

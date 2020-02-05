@@ -24,7 +24,7 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
    }
 
    public <T> AlterGroundTreeDecorator(Dynamic<T> p_i225865_1_) {
-      this(Registry.field_229387_t_.getOrDefault(new ResourceLocation(p_i225865_1_.get("provider").get("type").asString().orElseThrow(RuntimeException::new))).func_227399_a_(p_i225865_1_.get("provider").orElseEmptyMap()));
+      this(Registry.BLOCK_STATE_PROVIDER_TYPE.getOrDefault(new ResourceLocation(p_i225865_1_.get("provider").get("type").asString().orElseThrow(RuntimeException::new))).func_227399_a_(p_i225865_1_.get("provider").orElseEmptyMap()));
    }
 
    public void func_225576_a_(IWorld p_225576_1_, Random p_225576_2_, List<BlockPos> p_225576_3_, List<BlockPos> p_225576_4_, Set<BlockPos> p_225576_5_, MutableBoundingBox p_225576_6_) {
@@ -76,6 +76,6 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
    }
 
    public <T> T serialize(DynamicOps<T> p_218175_1_) {
-      return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(ImmutableMap.of(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.field_229390_w_.getKey(this.field_227422_a_).toString()), p_218175_1_.createString("provider"), this.field_227410_b_.serialize(p_218175_1_))))).getValue();
+      return (new Dynamic<>(p_218175_1_, p_218175_1_.createMap(ImmutableMap.of(p_218175_1_.createString("type"), p_218175_1_.createString(Registry.TREE_DECORATOR_TYPE.getKey(this.field_227422_a_).toString()), p_218175_1_.createString("provider"), this.field_227410_b_.serialize(p_218175_1_))))).getValue();
    }
 }

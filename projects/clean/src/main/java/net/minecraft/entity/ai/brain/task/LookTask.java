@@ -23,7 +23,7 @@ public class LookTask extends Task<MobEntity> {
 
    protected void updateTask(ServerWorld worldIn, MobEntity owner, long gameTime) {
       owner.getBrain().getMemory(MemoryModuleType.LOOK_TARGET).ifPresent((p_220484_1_) -> {
-         owner.getLookController().func_220674_a(p_220484_1_.getPos());
+         owner.getLookController().setLookPosition(p_220484_1_.getPos());
       });
    }
 }

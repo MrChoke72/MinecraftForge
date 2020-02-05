@@ -25,13 +25,13 @@ import net.minecraft.world.World;
 public class CarvedPumpkinBlock extends HorizontalBlock {
    public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
    @Nullable
-   private BlockPattern field_196361_b;
+   private BlockPattern snowmanBasePattern;
    @Nullable
-   private BlockPattern field_196362_c;
+   private BlockPattern snowmanPattern;
    @Nullable
-   private BlockPattern field_196363_y;
+   private BlockPattern golemBasePattern;
    @Nullable
-   private BlockPattern field_196364_z;
+   private BlockPattern golemPattern;
    private static final Predicate<BlockState> IS_PUMPKIN = (p_210301_0_) -> {
       return p_210301_0_ != null && (p_210301_0_.getBlock() == Blocks.CARVED_PUMPKIN || p_210301_0_.getBlock() == Blocks.JACK_O_LANTERN);
    };
@@ -114,35 +114,35 @@ public class CarvedPumpkinBlock extends HorizontalBlock {
    }
 
    private BlockPattern getSnowmanBasePattern() {
-      if (this.field_196361_b == null) {
-         this.field_196361_b = BlockPatternBuilder.start().aisle(" ", "#", "#").where('#', CachedBlockInfo.hasState(BlockStateMatcher.forBlock(Blocks.SNOW_BLOCK))).build();
+      if (this.snowmanBasePattern == null) {
+         this.snowmanBasePattern = BlockPatternBuilder.start().aisle(" ", "#", "#").where('#', CachedBlockInfo.hasState(BlockStateMatcher.forBlock(Blocks.SNOW_BLOCK))).build();
       }
 
-      return this.field_196361_b;
+      return this.snowmanBasePattern;
    }
 
    private BlockPattern getSnowmanPattern() {
-      if (this.field_196362_c == null) {
-         this.field_196362_c = BlockPatternBuilder.start().aisle("^", "#", "#").where('^', CachedBlockInfo.hasState(IS_PUMPKIN)).where('#', CachedBlockInfo.hasState(BlockStateMatcher.forBlock(Blocks.SNOW_BLOCK))).build();
+      if (this.snowmanPattern == null) {
+         this.snowmanPattern = BlockPatternBuilder.start().aisle("^", "#", "#").where('^', CachedBlockInfo.hasState(IS_PUMPKIN)).where('#', CachedBlockInfo.hasState(BlockStateMatcher.forBlock(Blocks.SNOW_BLOCK))).build();
       }
 
-      return this.field_196362_c;
+      return this.snowmanPattern;
    }
 
    private BlockPattern getGolemBasePattern() {
-      if (this.field_196363_y == null) {
-         this.field_196363_y = BlockPatternBuilder.start().aisle("~ ~", "###", "~#~").where('#', CachedBlockInfo.hasState(BlockStateMatcher.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockInfo.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
+      if (this.golemBasePattern == null) {
+         this.golemBasePattern = BlockPatternBuilder.start().aisle("~ ~", "###", "~#~").where('#', CachedBlockInfo.hasState(BlockStateMatcher.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockInfo.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
       }
 
-      return this.field_196363_y;
+      return this.golemBasePattern;
    }
 
    private BlockPattern getGolemPattern() {
-      if (this.field_196364_z == null) {
-         this.field_196364_z = BlockPatternBuilder.start().aisle("~^~", "###", "~#~").where('^', CachedBlockInfo.hasState(IS_PUMPKIN)).where('#', CachedBlockInfo.hasState(BlockStateMatcher.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockInfo.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
+      if (this.golemPattern == null) {
+         this.golemPattern = BlockPatternBuilder.start().aisle("~^~", "###", "~#~").where('^', CachedBlockInfo.hasState(IS_PUMPKIN)).where('#', CachedBlockInfo.hasState(BlockStateMatcher.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockInfo.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
       }
 
-      return this.field_196364_z;
+      return this.golemPattern;
    }
 
    public boolean canEntitySpawn(BlockState state, IBlockReader worldIn, BlockPos pos, EntityType<?> type) {

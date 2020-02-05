@@ -30,7 +30,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
    private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar", "foo[0]", "[0]", "[]", "{foo=bar}");
    public static final SimpleCommandExceptionType PATH_MALFORMED = new SimpleCommandExceptionType(new TranslationTextComponent("arguments.nbtpath.node.invalid"));
-   public static final DynamicCommandExceptionType field_218084_b = new DynamicCommandExceptionType((p_208665_0_) -> {
+   public static final DynamicCommandExceptionType NOTHING_FOUND = new DynamicCommandExceptionType((p_208665_0_) -> {
       return new TranslationTextComponent("arguments.nbtpath.nothing_found", p_208665_0_);
    });
 
@@ -130,7 +130,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
       return ch != ' ' && ch != '"' && ch != '[' && ch != ']' && ch != '.' && ch != '{' && ch != '}';
    }
 
-   private static Predicate<INBT> func_218080_b(CompoundNBT p_218080_0_) {
+   private static Predicate<INBT> equalToCompoundPredicate(CompoundNBT p_218080_0_) {
       return (p_218081_1_) -> {
          return NBTUtil.areNBTEquals(p_218080_0_, p_218081_1_, true);
       };
@@ -143,7 +143,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
          this.field_218059_a = p_i51153_1_;
       }
 
-      public void func_218050_a(INBT p_218050_1_, List<INBT> p_218050_2_) {
+      public void addMatchingElements(INBT p_218050_1_, List<INBT> p_218050_2_) {
          if (p_218050_1_ instanceof CollectionNBT) {
             CollectionNBT<?> collectionnbt = (CollectionNBT)p_218050_1_;
             int i = collectionnbt.size();
@@ -156,7 +156,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
       }
 
       public void func_218054_a(INBT p_218054_1_, Supplier<INBT> p_218054_2_, List<INBT> p_218054_3_) {
-         this.func_218050_a(p_218054_1_, p_218054_3_);
+         this.addMatchingElements(p_218054_1_, p_218054_3_);
       }
 
       public INBT createEmptyElement() {
@@ -199,10 +199,10 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
       private final Predicate<INBT> field_218066_a;
 
       public CompoundNode(CompoundNBT p_i51149_1_) {
-         this.field_218066_a = NBTPathArgument.func_218080_b(p_i51149_1_);
+         this.field_218066_a = NBTPathArgument.equalToCompoundPredicate(p_i51149_1_);
       }
 
-      public void func_218050_a(INBT p_218050_1_, List<INBT> p_218050_2_) {
+      public void addMatchingElements(INBT p_218050_1_, List<INBT> p_218050_2_) {
          if (p_218050_1_ instanceof CompoundNBT && this.field_218066_a.test(p_218050_1_)) {
             p_218050_2_.add(p_218050_1_);
          }
@@ -210,7 +210,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
       }
 
       public void func_218054_a(INBT p_218054_1_, Supplier<INBT> p_218054_2_, List<INBT> p_218054_3_) {
-         this.func_218050_a(p_218054_1_, p_218054_3_);
+         this.addMatchingElements(p_218054_1_, p_218054_3_);
       }
 
       public INBT createEmptyElement() {
@@ -232,7 +232,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
       private EmptyListNode() {
       }
 
-      public void func_218050_a(INBT p_218050_1_, List<INBT> p_218050_2_) {
+      public void addMatchingElements(INBT p_218050_1_, List<INBT> p_218050_2_) {
          if (p_218050_1_ instanceof CollectionNBT) {
             p_218050_2_.addAll((CollectionNBT)p_218050_1_);
          }
@@ -303,7 +303,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
    }
 
    interface INode {
-      void func_218050_a(INBT p_218050_1_, List<INBT> p_218050_2_);
+      void addMatchingElements(INBT p_218050_1_, List<INBT> p_218050_2_);
 
       void func_218054_a(INBT p_218054_1_, Supplier<INBT> p_218054_2_, List<INBT> p_218054_3_);
 
@@ -314,7 +314,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
       int func_218053_a(INBT p_218053_1_);
 
       default List<INBT> func_218056_a(List<INBT> p_218056_1_) {
-         return this.func_218057_a(p_218056_1_, this::func_218050_a);
+         return this.func_218057_a(p_218056_1_, this::addMatchingElements);
       }
 
       default List<INBT> func_218052_a(List<INBT> p_218052_1_, Supplier<INBT> p_218052_2_) {
@@ -342,10 +342,10 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
       public JsonNode(String p_i51150_1_, CompoundNBT p_i51150_2_) {
          this.field_218063_a = p_i51150_1_;
          this.field_218064_b = p_i51150_2_;
-         this.field_218065_c = NBTPathArgument.func_218080_b(p_i51150_2_);
+         this.field_218065_c = NBTPathArgument.equalToCompoundPredicate(p_i51150_2_);
       }
 
-      public void func_218050_a(INBT p_218050_1_, List<INBT> p_218050_2_) {
+      public void addMatchingElements(INBT p_218050_1_, List<INBT> p_218050_2_) {
          if (p_218050_1_ instanceof CompoundNBT) {
             INBT inbt = ((CompoundNBT)p_218050_1_).get(this.field_218063_a);
             if (this.field_218065_c.test(inbt)) {
@@ -405,18 +405,18 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
    }
 
    static class ListNode implements NBTPathArgument.INode {
-      private final CompoundNBT field_218061_a;
-      private final Predicate<INBT> field_218062_b;
+      private final CompoundNBT compound;
+      private final Predicate<INBT> equalToPredicate;
 
       public ListNode(CompoundNBT p_i51151_1_) {
-         this.field_218061_a = p_i51151_1_;
-         this.field_218062_b = NBTPathArgument.func_218080_b(p_i51151_1_);
+         this.compound = p_i51151_1_;
+         this.equalToPredicate = NBTPathArgument.equalToCompoundPredicate(p_i51151_1_);
       }
 
-      public void func_218050_a(INBT p_218050_1_, List<INBT> p_218050_2_) {
+      public void addMatchingElements(INBT p_218050_1_, List<INBT> p_218050_2_) {
          if (p_218050_1_ instanceof ListNBT) {
             ListNBT listnbt = (ListNBT)p_218050_1_;
-            listnbt.stream().filter(this.field_218062_b).forEach(p_218050_2_::add);
+            listnbt.stream().filter(this.equalToPredicate).forEach(p_218050_2_::add);
          }
 
       }
@@ -425,12 +425,12 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
          MutableBoolean mutableboolean = new MutableBoolean();
          if (p_218054_1_ instanceof ListNBT) {
             ListNBT listnbt = (ListNBT)p_218054_1_;
-            listnbt.stream().filter(this.field_218062_b).forEach((p_218060_2_) -> {
+            listnbt.stream().filter(this.equalToPredicate).forEach((p_218060_2_) -> {
                p_218054_3_.add(p_218060_2_);
                mutableboolean.setTrue();
             });
             if (mutableboolean.isFalse()) {
-               CompoundNBT compoundnbt = this.field_218061_a.copy();
+               CompoundNBT compoundnbt = this.compound.copy();
                listnbt.add(compoundnbt);
                p_218054_3_.add(compoundnbt);
             }
@@ -453,7 +453,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
             } else {
                for(int k = 0; k < j; ++k) {
                   INBT inbt = listnbt.get(k);
-                  if (this.field_218062_b.test(inbt)) {
+                  if (this.equalToPredicate.test(inbt)) {
                      INBT inbt1 = p_218051_2_.get();
                      if (!inbt1.equals(inbt) && listnbt.func_218659_a(k, inbt1)) {
                         ++i;
@@ -472,7 +472,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
             ListNBT listnbt = (ListNBT)p_218053_1_;
 
             for(int j = listnbt.size() - 1; j >= 0; --j) {
-               if (this.field_218062_b.test(listnbt.get(j))) {
+               if (this.equalToPredicate.test(listnbt.get(j))) {
                   listnbt.remove(j);
                   ++i;
                }
@@ -500,7 +500,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
          for(NBTPathArgument.INode nbtpathargument$inode : this.nodes) {
             list = nbtpathargument$inode.func_218056_a(list);
             if (list.isEmpty()) {
-               throw this.func_218070_a(nbtpathargument$inode);
+               throw this.createNothingFoundException(nbtpathargument$inode);
             }
          }
 
@@ -528,7 +528,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
             int j = i + 1;
             list = nbtpathargument$inode.func_218052_a(list, this.nodes[j]::createEmptyElement);
             if (list.isEmpty()) {
-               throw this.func_218070_a(nbtpathargument$inode);
+               throw this.createNothingFoundException(nbtpathargument$inode);
             }
          }
 
@@ -541,7 +541,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
          return nbtpathargument$inode.func_218052_a(list, p_218073_2_);
       }
 
-      private static int func_218075_a(List<INBT> p_218075_0_, Function<INBT, Integer> p_218075_1_) {
+      private static int reduceToInt(List<INBT> p_218075_0_, Function<INBT, Integer> p_218075_1_) {
          return p_218075_0_.stream().map(p_218075_1_).reduce(0, (p_218074_0_, p_218074_1_) -> {
             return p_218074_0_ + p_218074_1_;
          });
@@ -550,7 +550,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
       public int func_218076_b(INBT p_218076_1_, Supplier<INBT> p_218076_2_) throws CommandSyntaxException {
          List<INBT> list = this.func_218072_d(p_218076_1_);
          NBTPathArgument.INode nbtpathargument$inode = this.nodes[this.nodes.length - 1];
-         return func_218075_a(list, (p_218077_2_) -> {
+         return reduceToInt(list, (p_218077_2_) -> {
             return nbtpathargument$inode.func_218051_a(p_218077_2_, p_218076_2_);
          });
       }
@@ -563,12 +563,12 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
          }
 
          NBTPathArgument.INode nbtpathargument$inode = this.nodes[this.nodes.length - 1];
-         return func_218075_a(list, nbtpathargument$inode::func_218053_a);
+         return reduceToInt(list, nbtpathargument$inode::func_218053_a);
       }
 
-      private CommandSyntaxException func_218070_a(NBTPathArgument.INode p_218070_1_) {
+      private CommandSyntaxException createNothingFoundException(NBTPathArgument.INode p_218070_1_) {
          int i = this.field_218078_b.getInt(p_218070_1_);
-         return NBTPathArgument.field_218084_b.create(this.rawText.substring(0, i));
+         return NBTPathArgument.NOTHING_FOUND.create(this.rawText.substring(0, i));
       }
 
       public String toString() {
@@ -583,7 +583,7 @@ public class NBTPathArgument implements ArgumentType<NBTPathArgument.NBTPath> {
          this.field_218058_a = p_i51154_1_;
       }
 
-      public void func_218050_a(INBT p_218050_1_, List<INBT> p_218050_2_) {
+      public void addMatchingElements(INBT p_218050_1_, List<INBT> p_218050_2_) {
          if (p_218050_1_ instanceof CompoundNBT) {
             INBT inbt = ((CompoundNBT)p_218050_1_).get(this.field_218058_a);
             if (inbt != null) {

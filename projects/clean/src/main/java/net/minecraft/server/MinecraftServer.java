@@ -355,6 +355,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
          worldsettings = new WorldSettings(worldinfo);
       }
 
+      worldinfo.func_230145_a_(this.getServerModName(), this.func_230045_q_().isPresent());
       this.loadDataPacks(savehandler.getWorldDirectory(), worldinfo);
       IChunkStatusListener ichunkstatuslistener = this.chunkStatusListenerFactory.create(11);
       this.loadWorlds(savehandler, worldinfo, worldsettings, ichunkstatuslistener);
@@ -362,12 +363,12 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
       this.loadInitialChunks(ichunkstatuslistener);
    }
 
-   protected void loadWorlds(SaveHandler p_213194_1_, WorldInfo info, WorldSettings p_213194_3_, IChunkStatusListener p_213194_4_) {
+   protected void loadWorlds(SaveHandler saveHandlerIn, WorldInfo info, WorldSettings worldSettingsIn, IChunkStatusListener chunkStatusListenerIn) {
       if (this.isDemo()) {
          info.populateFromWorldSettings(DEMO_WORLD_SETTINGS);
       }
 
-      ServerWorld serverworld = new ServerWorld(this, this.backgroundExecutor, p_213194_1_, info, DimensionType.OVERWORLD, this.profiler, p_213194_4_);
+      ServerWorld serverworld = new ServerWorld(this, this.backgroundExecutor, saveHandlerIn, info, DimensionType.OVERWORLD, this.profiler, chunkStatusListenerIn);
       this.worlds.put(DimensionType.OVERWORLD, serverworld);
       DimensionSavedDataManager dimensionsaveddatamanager = serverworld.getSavedData();
       this.func_213204_a(dimensionsaveddatamanager);
@@ -376,7 +377,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
       ServerWorld serverworld1 = this.getWorld(DimensionType.OVERWORLD);
       if (!info.isInitialized()) {
          try {
-            serverworld1.createSpawnPosition(p_213194_3_);
+            serverworld1.createSpawnPosition(worldSettingsIn);
             if (info.getGenerator() == WorldType.DEBUG_ALL_BLOCK_STATES) {
                this.applyDebugWorldInfo(info);
             }
@@ -404,7 +405,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
 
       for(DimensionType dimensiontype : DimensionType.getAll()) {
          if (dimensiontype != DimensionType.OVERWORLD) {
-            this.worlds.put(dimensiontype, new ServerMultiWorld(serverworld1, this, this.backgroundExecutor, p_213194_1_, dimensiontype, this.profiler, p_213194_4_));
+            this.worlds.put(dimensiontype, new ServerMultiWorld(serverworld1, this, this.backgroundExecutor, saveHandlerIn, dimensiontype, this.profiler, chunkStatusListenerIn));
          }
       }
 
@@ -454,7 +455,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
       ServerChunkProvider serverchunkprovider = serverworld.getChunkProvider();
       serverchunkprovider.getLightManager().func_215598_a(500);
       this.serverTime = Util.milliTime();
-      serverchunkprovider.func_217228_a(TicketType.START, new ChunkPos(blockpos), 11, Unit.INSTANCE);
+      serverchunkprovider.registerTicket(TicketType.START, new ChunkPos(blockpos), 11, Unit.INSTANCE);
 
       while(serverchunkprovider.func_217229_b() != 441) {
          this.serverTime = Util.milliTime() + 10L;
@@ -506,7 +507,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
 
    public abstract int getOpPermissionLevel();
 
-   public abstract int func_223707_k();
+   public abstract int getFunctionLevel();
 
    public abstract boolean allowLoggingRcon();
 
@@ -589,9 +590,9 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
       return this.serverRunning;
    }
 
-   public void initiateShutdown(boolean p_71263_1_) {
+   public void initiateShutdown(boolean waitForServer) {
       this.serverRunning = false;
-      if (p_71263_1_) {
+      if (waitForServer) {
          try {
             this.serverThread.join();
          } catch (InterruptedException interruptedexception) {
@@ -621,7 +622,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
                this.serverTime += 50L;
                if (this.startProfiling) {
                   this.startProfiling = false;
-                  this.profiler.func_219899_d().func_219939_d();
+                  this.profiler.getFixedProfiler().enable();
                }
 
                this.profiler.startTick();
@@ -689,18 +690,18 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
    }
 
    public boolean driveOne() {
-      boolean flag = this.func_213205_aW();
+      boolean flag = this.driveOneInternal();
       this.isRunningScheduledTasks = flag;
       return flag;
    }
 
-   private boolean func_213205_aW() {
+   private boolean driveOneInternal() {
       if (super.driveOne()) {
          return true;
       } else {
          if (this.isAheadOfTime()) {
             for(ServerWorld serverworld : this.getWorlds()) {
-               if (serverworld.getChunkProvider().func_217234_d()) {
+               if (serverworld.getChunkProvider().driveOneTask()) {
                   return true;
                }
             }
@@ -708,6 +709,11 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
 
          return false;
       }
+   }
+
+   protected void run(TickDelayedTask taskIn) {
+      this.getProfiler().func_230035_c_("runTask");
+      super.run(taskIn);
    }
 
    public void applyServerIconToResponse(ServerStatusResponse response) {
@@ -895,8 +901,9 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
             return;
          }
 
+         CrashReport.func_230188_h_();
          Bootstrap.register();
-         Bootstrap.func_218821_c();
+         Bootstrap.checkTranslations();
          String s = optionset.valueOf(optionspec8);
          YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
          MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
@@ -1022,7 +1029,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
             }
 
             stringbuilder.append(resourcepackinfo.getName());
-            if (!resourcepackinfo.getCompatibility().func_198968_a()) {
+            if (!resourcepackinfo.getCompatibility().isCompatible()) {
                stringbuilder.append(" (incompatible)");
             }
          }
@@ -1037,6 +1044,8 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
 
       return report;
    }
+
+   public abstract Optional<String> func_230045_q_();
 
    public boolean isAnvilFileSet() {
       return this.anvilFile != null;
@@ -1531,7 +1540,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
          OpEntry opentry = this.getPlayerList().getOppedPlayers().getEntry(profile);
          if (opentry != null) {
             return opentry.getPermissionLevel();
-         } else if (this.func_213199_b(profile)) {
+         } else if (this.isServerOwner(profile)) {
             return 4;
          } else if (this.isSinglePlayer()) {
             return this.getPlayerList().commandsAllowedForAll() ? 4 : 0;
@@ -1556,28 +1565,28 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
       return this.backgroundExecutor;
    }
 
-   public abstract boolean func_213199_b(GameProfile p_213199_1_);
+   public abstract boolean isServerOwner(GameProfile profileIn);
 
-   public void func_223711_a(Path p_223711_1_) throws IOException {
+   public void dumpDebugInfo(Path p_223711_1_) throws IOException {
       Path path = p_223711_1_.resolve("levels");
 
       for(Entry<DimensionType, ServerWorld> entry : this.worlds.entrySet()) {
          ResourceLocation resourcelocation = DimensionType.getKey(entry.getKey());
          Path path1 = path.resolve(resourcelocation.getNamespace()).resolve(resourcelocation.getPath());
          Files.createDirectories(path1);
-         entry.getValue().func_225322_a(path1);
+         entry.getValue().writeDebugInfo(path1);
       }
 
-      this.func_223708_d(p_223711_1_.resolve("gamerules.txt"));
-      this.func_223706_e(p_223711_1_.resolve("classpath.txt"));
-      this.func_223709_c(p_223711_1_.resolve("example_crash.txt"));
-      this.func_223710_b(p_223711_1_.resolve("stats.txt"));
-      this.func_223712_f(p_223711_1_.resolve("threads.txt"));
+      this.dumpGameRules(p_223711_1_.resolve("gamerules.txt"));
+      this.dumpClasspath(p_223711_1_.resolve("classpath.txt"));
+      this.dumpDummyCrashReport(p_223711_1_.resolve("example_crash.txt"));
+      this.dumpStats(p_223711_1_.resolve("stats.txt"));
+      this.dumpThreads(p_223711_1_.resolve("threads.txt"));
    }
 
-   private void func_223710_b(Path p_223710_1_) throws IOException {
+   private void dumpStats(Path p_223710_1_) throws IOException {
       try (Writer writer = Files.newBufferedWriter(p_223710_1_)) {
-         writer.write(String.format("pending_tasks: %d\n", this.func_223704_be()));
+         writer.write(String.format("pending_tasks: %d\n", this.getQueueSize()));
          writer.write(String.format("average_tick_time: %f\n", this.getTickTime()));
          writer.write(String.format("tick_times: %s\n", Arrays.toString(this.tickTimeArray)));
          writer.write(String.format("queue: %s\n", Util.getServerExecutor()));
@@ -1585,7 +1594,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
 
    }
 
-   private void func_223709_c(Path p_223709_1_) throws IOException {
+   private void dumpDummyCrashReport(Path p_223709_1_) throws IOException {
       CrashReport crashreport = new CrashReport("Server dump", new Exception("dummy"));
       this.addServerInfoToCrashReport(crashreport);
 
@@ -1595,13 +1604,13 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
 
    }
 
-   private void func_223708_d(Path p_223708_1_) throws IOException {
+   private void dumpGameRules(Path p_223708_1_) throws IOException {
       try (Writer writer = Files.newBufferedWriter(p_223708_1_)) {
          final List<String> list = Lists.newArrayList();
          final GameRules gamerules = this.getGameRules();
-         GameRules.func_223590_a(new GameRules.IRuleEntryVisitor() {
-            public <T extends GameRules.RuleValue<T>> void func_223481_a(GameRules.RuleKey<T> p_223481_1_, GameRules.RuleType<T> p_223481_2_) {
-               list.add(String.format("%s=%s\n", p_223481_1_.func_223576_a(), gamerules.<T>get(p_223481_1_).toString()));
+         GameRules.visitAll(new GameRules.IRuleEntryVisitor() {
+            public <T extends GameRules.RuleValue<T>> void visit(GameRules.RuleKey<T> key, GameRules.RuleType<T> type) {
+               list.add(String.format("%s=%s\n", key.getName(), gamerules.<T>get(key).toString()));
             }
          });
 
@@ -1612,7 +1621,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
 
    }
 
-   private void func_223706_e(Path p_223706_1_) throws IOException {
+   private void dumpClasspath(Path p_223706_1_) throws IOException {
       try (Writer writer = Files.newBufferedWriter(p_223706_1_)) {
          String s = System.getProperty("java.class.path");
          String s1 = System.getProperty("path.separator");
@@ -1625,7 +1634,7 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
 
    }
 
-   private void func_223712_f(Path p_223712_1_) throws IOException {
+   private void dumpThreads(Path p_223712_1_) throws IOException {
       ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
       ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);
       Arrays.sort(athreadinfo, Comparator.comparing(ThreadInfo::getThreadName));
@@ -1640,6 +1649,6 @@ public abstract class MinecraftServer extends RecursiveEventLoop<TickDelayedTask
    }
 
    private void func_229737_ba_() {
-      Block.BLOCK_STATE_IDS.forEach(BlockState::func_215692_c);
+      Block.BLOCK_STATE_IDS.forEach(BlockState::cacheState);
    }
 }

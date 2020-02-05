@@ -50,9 +50,9 @@ public class Sound implements ISoundEventAccessor<Sound> {
       return this;
    }
 
-   public void func_217867_a(SoundEngine p_217867_1_) {
+   public void enqueuePreload(SoundEngine engine) {
       if (this.preload) {
-         p_217867_1_.enqueuePreload(this);
+         engine.enqueuePreload(this);
       }
 
    }

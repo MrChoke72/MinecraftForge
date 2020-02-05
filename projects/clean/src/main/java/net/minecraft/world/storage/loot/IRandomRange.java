@@ -10,5 +10,5 @@ public interface IRandomRange {
 
    int generateInt(Random rand);
 
-   ResourceLocation getLocation();
+   ResourceLocation getType();
 }

@@ -19,9 +19,9 @@ public class CoralBlock extends Block {
       this.deadBlock = p_i48893_1_;
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (!this.canLive(p_225534_2_, p_225534_3_)) {
-         p_225534_2_.setBlockState(p_225534_3_, this.deadBlock.getDefaultState(), 2);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (!this.canLive(worldIn, pos)) {
+         worldIn.setBlockState(pos, this.deadBlock.getDefaultState(), 2);
       }
 
    }

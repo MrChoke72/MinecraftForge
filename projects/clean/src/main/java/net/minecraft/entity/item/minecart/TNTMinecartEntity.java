@@ -46,11 +46,11 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
          --this.minecartTNTFuse;
          this.world.addParticle(ParticleTypes.SMOKE, this.getPosX(), this.getPosY() + 0.5D, this.getPosZ(), 0.0D, 0.0D, 0.0D);
       } else if (this.minecartTNTFuse == 0) {
-         this.explodeCart(func_213296_b(this.getMotion()));
+         this.explodeCart(horizontalMag(this.getMotion()));
       }
 
       if (this.collidedHorizontally) {
-         double d0 = func_213296_b(this.getMotion());
+         double d0 = horizontalMag(this.getMotion());
          if (d0 >= (double)0.01F) {
             this.explodeCart(d0);
          }
@@ -71,7 +71,7 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
    }
 
    public void killMinecart(DamageSource source) {
-      double d0 = func_213296_b(this.getMotion());
+      double d0 = horizontalMag(this.getMotion());
       if (!source.isFireDamage() && !source.isExplosion() && !(d0 >= (double)0.01F)) {
          super.killMinecart(source);
          if (!source.isExplosion() && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
@@ -100,13 +100,13 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 
    }
 
-   public boolean func_225503_b_(float p_225503_1_, float p_225503_2_) {
-      if (p_225503_1_ >= 3.0F) {
-         float f = p_225503_1_ / 10.0F;
+   public boolean onLivingFall(float distance, float damageMultiplier) {
+      if (distance >= 3.0F) {
+         float f = distance / 10.0F;
          this.explodeCart((double)(f * f));
       }
 
-      return super.func_225503_b_(p_225503_1_, p_225503_2_);
+      return super.onLivingFall(distance, damageMultiplier);
    }
 
    public void onActivatorRailPass(int x, int y, int z, boolean receivingPower) {

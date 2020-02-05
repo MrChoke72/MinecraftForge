@@ -13,8 +13,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public final class ModifiedWoodedBadlandsPlateauBiome extends Biome {
    public ModifiedWoodedBadlandsPlateauBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.WOODED_BADLANDS, SurfaceBuilder.RED_SAND_WHITE_TERRACOTTA_GRAVEL_CONFIG).precipitation(Biome.RainType.NONE).category(Biome.Category.MESA).depth(0.45F).scale(0.3F).temperature(2.0F).downfall(0.0F).waterColor(4159204).waterFogColor(329011).parent("wooded_badlands_plateau"));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.MESA)));
-      this.func_226711_a_(Feature.STRONGHOLD.func_225566_b_(IFeatureConfig.NO_FEATURE_CONFIG));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.MESA)));
+      this.addStructure(Feature.STRONGHOLD.withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG));
       DefaultBiomeFeatures.addCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -23,8 +23,8 @@ public final class ModifiedWoodedBadlandsPlateauBiome extends Biome {
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addExtraGoldOre(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
-      DefaultBiomeFeatures.func_222327_E(this);
-      DefaultBiomeFeatures.func_222308_M(this);
+      DefaultBiomeFeatures.addSparseOakTrees(this);
+      DefaultBiomeFeatures.addGrassAndDeadBushes(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsPumpkinsCactus(this);
       DefaultBiomeFeatures.addSprings(this);
@@ -46,12 +46,12 @@ public final class ModifiedWoodedBadlandsPlateauBiome extends Biome {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225527_a_() {
+   public int getFoliageColor() {
       return 10387789;
    }
 
    @OnlyIn(Dist.CLIENT)
-   public int func_225528_a_(double p_225528_1_, double p_225528_3_) {
+   public int getGrassColor(double p_225528_1_, double p_225528_3_) {
       return 9470285;
    }
 }

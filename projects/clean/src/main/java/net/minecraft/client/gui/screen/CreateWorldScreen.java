@@ -70,7 +70,7 @@ public class CreateWorldScreen extends Screen {
          }
       };
       this.worldNameField.setText(this.worldName);
-      this.worldNameField.func_212954_a((p_214319_1_) -> {
+      this.worldNameField.setResponder((p_214319_1_) -> {
          this.worldName = p_214319_1_;
          this.btnCreateWorld.active = !this.worldNameField.getText().isEmpty();
          this.calcSaveDirName();
@@ -100,7 +100,7 @@ public class CreateWorldScreen extends Screen {
       });
       this.worldSeedField = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.format("selectWorld.enterSeed"));
       this.worldSeedField.setText(this.worldSeed);
-      this.worldSeedField.func_212954_a((p_214313_1_) -> {
+      this.worldSeedField.setResponder((p_214313_1_) -> {
          this.worldSeed = this.worldSeedField.getText();
       });
       this.children.add(this.worldSeedField);
@@ -189,7 +189,7 @@ public class CreateWorldScreen extends Screen {
          this.minecraft.displayGuiScreen(this.parentScreen);
       }));
       this.showMoreWorldOptions(this.inMoreWorldOptionsDisplay);
-      this.func_212928_a(this.worldNameField);
+      this.setFocusedDefault(this.worldNameField);
       this.func_228200_a_(this.field_228197_f_);
       this.calcSaveDirName();
    }

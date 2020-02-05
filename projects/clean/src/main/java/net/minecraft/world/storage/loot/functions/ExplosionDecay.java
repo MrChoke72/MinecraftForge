@@ -35,7 +35,7 @@ public class ExplosionDecay extends LootFunction {
       return stack;
    }
 
-   public static LootFunction.Builder<?> func_215863_b() {
+   public static LootFunction.Builder<?> builder() {
       return builder(ExplosionDecay::new);
    }
 

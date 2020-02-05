@@ -162,7 +162,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements IVillagerDataH
    public void handleStatusUpdate(byte id) {
       if (id == 16) {
          if (!this.isSilent()) {
-            this.world.playSound(this.getPosX(), this.getPosYPlusEyeHeight(), this.getPosZ(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.getSoundCategory(), 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.7F + 0.3F, false);
+            this.world.playSound(this.getPosX(), this.getPosYEye(), this.getPosZ(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.getSoundCategory(), 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.7F + 0.3F, false);
          }
 
       } else {
@@ -194,7 +194,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements IVillagerDataH
       }
 
       if (this.field_213793_bB != null) {
-         villagerentity.func_213768_b(new MerchantOffers(this.field_213793_bB));
+         villagerentity.setOffers(new MerchantOffers(this.field_213793_bB));
       }
 
       villagerentity.setXp(this.field_213794_bC);
@@ -220,7 +220,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements IVillagerDataH
          PlayerEntity playerentity = p_213791_1_.getPlayerByUuid(this.converstionStarter);
          if (playerentity instanceof ServerPlayerEntity) {
             CriteriaTriggers.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerentity, this, villagerentity);
-            p_213791_1_.func_217489_a(IReputationType.ZOMBIE_VILLAGER_CURED, playerentity, villagerentity);
+            p_213791_1_.updateReputation(IReputationType.ZOMBIE_VILLAGER_CURED, playerentity, villagerentity);
          }
       }
 
@@ -287,7 +287,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements IVillagerDataH
 
    @Nullable
    public ILivingEntityData onInitialSpawn(IWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-      this.func_213792_a(this.getVillagerData().withType(IVillagerType.byBiome(worldIn.func_226691_t_(new BlockPos(this)))));
+      this.func_213792_a(this.getVillagerData().withType(IVillagerType.byBiome(worldIn.getBiome(new BlockPos(this)))));
       return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
    }
 

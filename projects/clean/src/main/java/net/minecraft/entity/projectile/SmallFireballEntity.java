@@ -32,13 +32,13 @@ public class SmallFireballEntity extends AbstractFireballEntity {
          if (result.getType() == RayTraceResult.Type.ENTITY) {
             Entity entity = ((EntityRayTraceResult)result).getEntity();
             if (!entity.isImmuneToFire()) {
-               int i = entity.func_223314_ad();
+               int i = entity.getFireTimer();
                entity.setFire(5);
                boolean flag = entity.attackEntityFrom(DamageSource.causeFireballDamage(this, this.shootingEntity), 5.0F);
                if (flag) {
                   this.applyEnchantments(this.shootingEntity, entity);
                } else {
-                  entity.func_223308_g(i);
+                  entity.setFireTimer(i);
                }
             }
          } else if (this.shootingEntity == null || !(this.shootingEntity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {

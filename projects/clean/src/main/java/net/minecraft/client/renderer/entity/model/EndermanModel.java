@@ -14,29 +14,29 @@ public class EndermanModel<T extends LivingEntity> extends BipedModel<T> {
       super(0.0F, -14.0F, 64, 32);
       float f = -14.0F;
       this.bipedHeadwear = new ModelRenderer(this, 0, 16);
-      this.bipedHeadwear.func_228301_a_(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, scale - 0.5F);
+      this.bipedHeadwear.addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, scale - 0.5F);
       this.bipedHeadwear.setRotationPoint(0.0F, -14.0F, 0.0F);
       this.bipedBody = new ModelRenderer(this, 32, 16);
-      this.bipedBody.func_228301_a_(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, scale);
+      this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, scale);
       this.bipedBody.setRotationPoint(0.0F, -14.0F, 0.0F);
       this.bipedRightArm = new ModelRenderer(this, 56, 0);
-      this.bipedRightArm.func_228301_a_(-1.0F, -2.0F, -1.0F, 2.0F, 30.0F, 2.0F, scale);
+      this.bipedRightArm.addBox(-1.0F, -2.0F, -1.0F, 2.0F, 30.0F, 2.0F, scale);
       this.bipedRightArm.setRotationPoint(-3.0F, -12.0F, 0.0F);
       this.bipedLeftArm = new ModelRenderer(this, 56, 0);
       this.bipedLeftArm.mirror = true;
-      this.bipedLeftArm.func_228301_a_(-1.0F, -2.0F, -1.0F, 2.0F, 30.0F, 2.0F, scale);
+      this.bipedLeftArm.addBox(-1.0F, -2.0F, -1.0F, 2.0F, 30.0F, 2.0F, scale);
       this.bipedLeftArm.setRotationPoint(5.0F, -12.0F, 0.0F);
       this.bipedRightLeg = new ModelRenderer(this, 56, 0);
-      this.bipedRightLeg.func_228301_a_(-1.0F, 0.0F, -1.0F, 2.0F, 30.0F, 2.0F, scale);
+      this.bipedRightLeg.addBox(-1.0F, 0.0F, -1.0F, 2.0F, 30.0F, 2.0F, scale);
       this.bipedRightLeg.setRotationPoint(-2.0F, -2.0F, 0.0F);
       this.bipedLeftLeg = new ModelRenderer(this, 56, 0);
       this.bipedLeftLeg.mirror = true;
-      this.bipedLeftLeg.func_228301_a_(-1.0F, 0.0F, -1.0F, 2.0F, 30.0F, 2.0F, scale);
+      this.bipedLeftLeg.addBox(-1.0F, 0.0F, -1.0F, 2.0F, 30.0F, 2.0F, scale);
       this.bipedLeftLeg.setRotationPoint(2.0F, -2.0F, 0.0F);
    }
 
-   public void func_225597_a_(T p_225597_1_, float p_225597_2_, float p_225597_3_, float p_225597_4_, float p_225597_5_, float p_225597_6_) {
-      super.func_225597_a_(p_225597_1_, p_225597_2_, p_225597_3_, p_225597_4_, p_225597_5_, p_225597_6_);
+   public void render(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+      super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
       this.bipedHead.showModel = true;
       float f = -14.0F;
       this.bipedBody.rotateAngleX = 0.0F;

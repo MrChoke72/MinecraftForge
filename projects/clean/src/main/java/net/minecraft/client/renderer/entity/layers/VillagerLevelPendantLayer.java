@@ -49,9 +49,9 @@ public class VillagerLevelPendantLayer<T extends LivingEntity & IVillagerDataHol
       p_i50955_2_.addReloadListener(this);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, T p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      if (!p_225628_4_.isInvisible()) {
-         VillagerData villagerdata = ((IVillagerDataHolder)p_225628_4_).getVillagerData();
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      if (!entitylivingbaseIn.isInvisible()) {
+         VillagerData villagerdata = ((IVillagerDataHolder)entitylivingbaseIn).getVillagerData();
          IVillagerType ivillagertype = villagerdata.getType();
          VillagerProfession villagerprofession = villagerdata.getProfession();
          VillagerMetadataSection.HatType villagermetadatasection$hattype = this.func_215350_a(this.field_215353_b, "type", Registry.VILLAGER_TYPE, ivillagertype);
@@ -59,14 +59,14 @@ public class VillagerLevelPendantLayer<T extends LivingEntity & IVillagerDataHol
          M m = this.getEntityModel();
          ((IHeadToggle)m).func_217146_a(villagermetadatasection$hattype1 == VillagerMetadataSection.HatType.NONE || villagermetadatasection$hattype1 == VillagerMetadataSection.HatType.PARTIAL && villagermetadatasection$hattype != VillagerMetadataSection.HatType.FULL);
          ResourceLocation resourcelocation = this.func_215351_a("type", Registry.VILLAGER_TYPE.getKey(ivillagertype));
-         func_229141_a_(m, resourcelocation, p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, 1.0F, 1.0F, 1.0F);
+         renderCutoutModel(m, resourcelocation, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
          ((IHeadToggle)m).func_217146_a(true);
-         if (villagerprofession != VillagerProfession.NONE && !p_225628_4_.isChild()) {
+         if (villagerprofession != VillagerProfession.NONE && !entitylivingbaseIn.isChild()) {
             ResourceLocation resourcelocation1 = this.func_215351_a("profession", Registry.VILLAGER_PROFESSION.getKey(villagerprofession));
-            func_229141_a_(m, resourcelocation1, p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, 1.0F, 1.0F, 1.0F);
+            renderCutoutModel(m, resourcelocation1, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
             if (villagerprofession != VillagerProfession.NITWIT) {
                ResourceLocation resourcelocation2 = this.func_215351_a("profession_level", field_215352_a.get(MathHelper.clamp(villagerdata.getLevel(), 1, field_215352_a.size())));
-               func_229141_a_(m, resourcelocation2, p_225628_1_, p_225628_2_, p_225628_3_, p_225628_4_, 1.0F, 1.0F, 1.0F);
+               renderCutoutModel(m, resourcelocation2, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
             }
          }
 

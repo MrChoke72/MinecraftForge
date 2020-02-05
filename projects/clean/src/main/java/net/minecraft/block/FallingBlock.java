@@ -28,11 +28,11 @@ public class FallingBlock extends Block {
       return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      if (canFallThrough(p_225534_2_.getBlockState(p_225534_3_.down())) && p_225534_3_.getY() >= 0) {
-         FallingBlockEntity fallingblockentity = new FallingBlockEntity(p_225534_2_, (double)p_225534_3_.getX() + 0.5D, (double)p_225534_3_.getY(), (double)p_225534_3_.getZ() + 0.5D, p_225534_2_.getBlockState(p_225534_3_));
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      if (canFallThrough(worldIn.getBlockState(pos.down())) && pos.getY() >= 0) {
+         FallingBlockEntity fallingblockentity = new FallingBlockEntity(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY(), (double)pos.getZ() + 0.5D, worldIn.getBlockState(pos));
          this.onStartFalling(fallingblockentity);
-         p_225534_2_.addEntity(fallingblockentity);
+         worldIn.addEntity(fallingblockentity);
       }
    }
 

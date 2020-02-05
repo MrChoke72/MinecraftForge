@@ -38,7 +38,7 @@ public class SOpenWindowPacket implements IPacket<IClientPlayNetHandler> {
    }
 
    public void processPacket(IClientPlayNetHandler handler) {
-      handler.func_217272_a(this);
+      handler.handleOpenWindowPacket(this);
    }
 
    @OnlyIn(Dist.CLIENT)

@@ -23,11 +23,11 @@ public class MerchantOffers extends ArrayList<MerchantOffer> {
    public MerchantOffer func_222197_a(ItemStack p_222197_1_, ItemStack p_222197_2_, int p_222197_3_) {
       if (p_222197_3_ > 0 && p_222197_3_ < this.size()) {
          MerchantOffer merchantoffer1 = this.get(p_222197_3_);
-         return merchantoffer1.func_222204_a(p_222197_1_, p_222197_2_) ? merchantoffer1 : null;
+         return merchantoffer1.matches(p_222197_1_, p_222197_2_) ? merchantoffer1 : null;
       } else {
          for(int i = 0; i < this.size(); ++i) {
             MerchantOffer merchantoffer = this.get(i);
-            if (merchantoffer.func_222204_a(p_222197_1_, p_222197_2_)) {
+            if (merchantoffer.matches(p_222197_1_, p_222197_2_)) {
                return merchantoffer;
             }
          }
@@ -36,31 +36,31 @@ public class MerchantOffers extends ArrayList<MerchantOffer> {
       }
    }
 
-   public void func_222196_a(PacketBuffer p_222196_1_) {
+   public void write(PacketBuffer p_222196_1_) {
       p_222196_1_.writeByte((byte)(this.size() & 255));
 
       for(int i = 0; i < this.size(); ++i) {
          MerchantOffer merchantoffer = this.get(i);
-         p_222196_1_.writeItemStack(merchantoffer.func_222218_a());
-         p_222196_1_.writeItemStack(merchantoffer.func_222200_d());
-         ItemStack itemstack = merchantoffer.func_222202_c();
+         p_222196_1_.writeItemStack(merchantoffer.getBuyingStackFirst());
+         p_222196_1_.writeItemStack(merchantoffer.getSellingStack());
+         ItemStack itemstack = merchantoffer.getBuyingStackSecond();
          p_222196_1_.writeBoolean(!itemstack.isEmpty());
          if (!itemstack.isEmpty()) {
             p_222196_1_.writeItemStack(itemstack);
          }
 
-         p_222196_1_.writeBoolean(merchantoffer.func_222217_o());
-         p_222196_1_.writeInt(merchantoffer.func_222213_g());
+         p_222196_1_.writeBoolean(merchantoffer.hasNoUsesLeft());
+         p_222196_1_.writeInt(merchantoffer.getUses());
          p_222196_1_.writeInt(merchantoffer.func_222214_i());
-         p_222196_1_.writeInt(merchantoffer.func_222210_n());
-         p_222196_1_.writeInt(merchantoffer.func_222212_l());
-         p_222196_1_.writeFloat(merchantoffer.func_222211_m());
+         p_222196_1_.writeInt(merchantoffer.getGivenExp());
+         p_222196_1_.writeInt(merchantoffer.getSpecialPrice());
+         p_222196_1_.writeFloat(merchantoffer.getPriceMultiplier());
          p_222196_1_.writeInt(merchantoffer.func_225482_k());
       }
 
    }
 
-   public static MerchantOffers func_222198_b(PacketBuffer p_222198_0_) {
+   public static MerchantOffers read(PacketBuffer p_222198_0_) {
       MerchantOffers merchantoffers = new MerchantOffers();
       int i = p_222198_0_.readByte() & 255;
 
@@ -81,23 +81,23 @@ public class MerchantOffers extends ArrayList<MerchantOffer> {
          int k1 = p_222198_0_.readInt();
          MerchantOffer merchantoffer = new MerchantOffer(itemstack, itemstack2, itemstack1, k, l, i1, f, k1);
          if (flag) {
-            merchantoffer.func_222216_p();
+            merchantoffer.getMaxUses();
          }
 
-         merchantoffer.func_222209_b(j1);
+         merchantoffer.setSpecialPrice(j1);
          merchantoffers.add(merchantoffer);
       }
 
       return merchantoffers;
    }
 
-   public CompoundNBT func_222199_a() {
+   public CompoundNBT write() {
       CompoundNBT compoundnbt = new CompoundNBT();
       ListNBT listnbt = new ListNBT();
 
       for(int i = 0; i < this.size(); ++i) {
          MerchantOffer merchantoffer = this.get(i);
-         listnbt.add(merchantoffer.func_222208_r());
+         listnbt.add(merchantoffer.write());
       }
 
       compoundnbt.put("Recipes", listnbt);

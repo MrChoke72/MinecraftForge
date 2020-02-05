@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
 import java.util.List;
 
+//AH REFACTOR Class refactor
 public class ScheduleDuties {
    private final List<DutyTime> dutyList = Lists.newArrayList();  //Sorted by start time
    private int dutyListIdx;

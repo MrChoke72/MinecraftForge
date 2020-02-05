@@ -13,23 +13,23 @@ public enum NarratorStatus {
    CHAT(2, "options.narrator.chat"),
    SYSTEM(3, "options.narrator.system");
 
-   private static final NarratorStatus[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(NarratorStatus::func_216827_a)).toArray((p_216826_0_) -> {
+   private static final NarratorStatus[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(NarratorStatus::getId)).toArray((p_216826_0_) -> {
       return new NarratorStatus[p_216826_0_];
    });
    private final int id;
-   private final String field_216830_g;
+   private final String resourceKey;
 
-   private NarratorStatus(int id, String p_i51160_4_) {
+   private NarratorStatus(int id, String resourceKeyIn) {
       this.id = id;
-      this.field_216830_g = p_i51160_4_;
+      this.resourceKey = resourceKeyIn;
    }
 
-   public int func_216827_a() {
+   public int getId() {
       return this.id;
    }
 
-   public String func_216824_b() {
-      return this.field_216830_g;
+   public String getResourceKey() {
+      return this.resourceKey;
    }
 
    public static NarratorStatus byId(int id) {

@@ -24,20 +24,20 @@ public class EndermanRenderer extends MobRenderer<EndermanEntity, EndermanModel<
       this.addLayer(new HeldBlockLayer(this));
    }
 
-   public void func_225623_a_(EndermanEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack p_225623_4_, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-      BlockState blockstate = p_225623_1_.getHeldBlockState();
+   public void render(EndermanEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+      BlockState blockstate = entityIn.getHeldBlockState();
       EndermanModel<EndermanEntity> endermanmodel = this.getEntityModel();
       endermanmodel.isCarrying = blockstate != null;
-      endermanmodel.isAttacking = p_225623_1_.isScreaming();
-      super.func_225623_a_(p_225623_1_, p_225623_2_, p_225623_3_, p_225623_4_, p_225623_5_, p_225623_6_);
+      endermanmodel.isAttacking = entityIn.isScreaming();
+      super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
    }
 
-   public Vec3d func_225627_b_(EndermanEntity p_225627_1_, float p_225627_2_) {
-      if (p_225627_1_.isScreaming()) {
+   public Vec3d getRenderOffset(EndermanEntity entityIn, float partialTicks) {
+      if (entityIn.isScreaming()) {
          double d0 = 0.02D;
          return new Vec3d(this.rnd.nextGaussian() * 0.02D, 0.0D, this.rnd.nextGaussian() * 0.02D);
       } else {
-         return super.func_225627_b_(p_225627_1_, p_225627_2_);
+         return super.getRenderOffset(entityIn, partialTicks);
       }
    }
 

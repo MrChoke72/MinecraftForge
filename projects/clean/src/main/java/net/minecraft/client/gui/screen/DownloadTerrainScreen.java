@@ -8,7 +8,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class DownloadTerrainScreen extends Screen {
    public DownloadTerrainScreen() {
-      super(NarratorChatListener.field_216868_a);
+      super(NarratorChatListener.EMPTY);
    }
 
    public boolean shouldCloseOnEsc() {

@@ -39,7 +39,7 @@ public final class BlockLightEngine extends LightEngine<BlockLightStorage.Storag
          int i = Integer.signum(BlockPos.unpackX(endPos) - BlockPos.unpackX(startPos));
          int j = Integer.signum(BlockPos.unpackY(endPos) - BlockPos.unpackY(startPos));
          int k = Integer.signum(BlockPos.unpackZ(endPos) - BlockPos.unpackZ(startPos));
-         Direction direction = Direction.func_218383_a(i, j, k);
+         Direction direction = Direction.byLong(i, j, k);
          if (direction == null) {
             return 15;
          } else {
@@ -51,7 +51,7 @@ public final class BlockLightEngine extends LightEngine<BlockLightStorage.Storag
                BlockState blockstate1 = this.func_227468_a_(startPos, (MutableInt)null);
                VoxelShape voxelshape = this.getVoxelShape(blockstate1, startPos, direction);
                VoxelShape voxelshape1 = this.getVoxelShape(blockstate, endPos, direction.getOpposite());
-               return VoxelShapes.func_223416_b(voxelshape, voxelshape1) ? 15 : startLevel + Math.max(1, mutableint.getValue());
+               return VoxelShapes.faceShapeCovers(voxelshape, voxelshape1) ? 15 : startLevel + Math.max(1, mutableint.getValue());
             }
          }
       }

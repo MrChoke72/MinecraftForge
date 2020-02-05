@@ -55,30 +55,30 @@ public final class SkyLightEngine extends LightEngine<SkyLightStorage.StorageMap
                if (startPos == Long.MAX_VALUE) {
                   direction = Direction.DOWN;
                } else {
-                  direction = Direction.func_218383_a(k1, l1, i2);
+                  direction = Direction.byLong(k1, l1, i2);
                }
 
                BlockState blockstate1 = this.func_227468_a_(startPos, (MutableInt)null);
                if (direction != null) {
                   VoxelShape voxelshape = this.getVoxelShape(blockstate1, startPos, direction);
                   VoxelShape voxelshape1 = this.getVoxelShape(blockstate, endPos, direction.getOpposite());
-                  if (VoxelShapes.func_223416_b(voxelshape, voxelshape1)) {
+                  if (VoxelShapes.faceShapeCovers(voxelshape, voxelshape1)) {
                      return 15;
                   }
                } else {
                   VoxelShape voxelshape3 = this.getVoxelShape(blockstate1, startPos, Direction.DOWN);
-                  if (VoxelShapes.func_223416_b(voxelshape3, VoxelShapes.empty())) {
+                  if (VoxelShapes.faceShapeCovers(voxelshape3, VoxelShapes.empty())) {
                      return 15;
                   }
 
                   int j2 = flag ? -1 : 0;
-                  Direction direction1 = Direction.func_218383_a(k1, j2, i2);
+                  Direction direction1 = Direction.byLong(k1, j2, i2);
                   if (direction1 == null) {
                      return 15;
                   }
 
                   VoxelShape voxelshape2 = this.getVoxelShape(blockstate, endPos, direction1.getOpposite());
-                  if (VoxelShapes.func_223416_b(VoxelShapes.empty(), voxelshape2)) {
+                  if (VoxelShapes.faceShapeCovers(VoxelShapes.empty(), voxelshape2)) {
                      return 15;
                   }
                }

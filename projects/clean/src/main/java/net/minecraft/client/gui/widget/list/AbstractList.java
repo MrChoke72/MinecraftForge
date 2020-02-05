@@ -40,15 +40,15 @@ public abstract class AbstractList<E extends AbstractList.AbstractListEntry<E>> 
    private boolean scrolling;
    private E selected;
 
-   public AbstractList(Minecraft p_i51146_1_, int p_i51146_2_, int p_i51146_3_, int p_i51146_4_, int p_i51146_5_, int p_i51146_6_) {
-      this.minecraft = p_i51146_1_;
-      this.width = p_i51146_2_;
-      this.height = p_i51146_3_;
-      this.y0 = p_i51146_4_;
-      this.y1 = p_i51146_5_;
-      this.itemHeight = p_i51146_6_;
+   public AbstractList(Minecraft mcIn, int widthIn, int heightIn, int topIn, int bottomIn, int itemHeightIn) {
+      this.minecraft = mcIn;
+      this.width = widthIn;
+      this.height = heightIn;
+      this.y0 = topIn;
+      this.y1 = bottomIn;
+      this.itemHeight = itemHeightIn;
       this.x0 = 0;
-      this.x1 = p_i51146_2_;
+      this.x1 = widthIn;
    }
 
    public void setRenderSelection(boolean p_setRenderSelection_1_) {
@@ -163,10 +163,10 @@ public abstract class AbstractList<E extends AbstractList.AbstractListEntry<E>> 
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       float f = 32.0F;
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_((double)this.x0, (double)this.y1, 0.0D).func_225583_a_((float)this.x0 / 32.0F, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0F).func_225586_a_(32, 32, 32, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x1, (double)this.y1, 0.0D).func_225583_a_((float)this.x1 / 32.0F, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0F).func_225586_a_(32, 32, 32, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x1, (double)this.y0, 0.0D).func_225583_a_((float)this.x1 / 32.0F, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0F).func_225586_a_(32, 32, 32, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x0, (double)this.y0, 0.0D).func_225583_a_((float)this.x0 / 32.0F, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0F).func_225586_a_(32, 32, 32, 255).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)this.y1, 0.0D).tex((float)this.x0 / 32.0F, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+      bufferbuilder.pos((double)this.x1, (double)this.y1, 0.0D).tex((float)this.x1 / 32.0F, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+      bufferbuilder.pos((double)this.x1, (double)this.y0, 0.0D).tex((float)this.x1 / 32.0F, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)this.y0, 0.0D).tex((float)this.x0 / 32.0F, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
       tessellator.draw();
       int k = this.getRowLeft();
       int l = this.y0 + 4 - (int)this.getScrollAmount();
@@ -185,16 +185,16 @@ public abstract class AbstractList<E extends AbstractList.AbstractListEntry<E>> 
       RenderSystem.disableTexture();
       int i1 = 4;
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_((double)this.x0, (double)(this.y0 + 4), 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(0, 0, 0, 0).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x1, (double)(this.y0 + 4), 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(0, 0, 0, 0).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x1, (double)this.y0, 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x0, (double)this.y0, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(0, 0, 0, 255).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)(this.y0 + 4), 0.0D).tex(0.0F, 1.0F).color(0, 0, 0, 0).endVertex();
+      bufferbuilder.pos((double)this.x1, (double)(this.y0 + 4), 0.0D).tex(1.0F, 1.0F).color(0, 0, 0, 0).endVertex();
+      bufferbuilder.pos((double)this.x1, (double)this.y0, 0.0D).tex(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)this.y0, 0.0D).tex(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
       tessellator.draw();
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_((double)this.x0, (double)this.y1, 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x1, (double)this.y1, 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x1, (double)(this.y1 - 4), 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(0, 0, 0, 0).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x0, (double)(this.y1 - 4), 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(0, 0, 0, 0).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)this.y1, 0.0D).tex(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+      bufferbuilder.pos((double)this.x1, (double)this.y1, 0.0D).tex(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+      bufferbuilder.pos((double)this.x1, (double)(this.y1 - 4), 0.0D).tex(1.0F, 0.0F).color(0, 0, 0, 0).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)(this.y1 - 4), 0.0D).tex(0.0F, 0.0F).color(0, 0, 0, 0).endVertex();
       tessellator.draw();
       int j1 = this.getMaxScroll();
       if (j1 > 0) {
@@ -206,22 +206,22 @@ public abstract class AbstractList<E extends AbstractList.AbstractListEntry<E>> 
          }
 
          bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-         bufferbuilder.func_225582_a_((double)i, (double)this.y1, 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)j, (double)this.y1, 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)j, (double)this.y0, 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(0, 0, 0, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)i, (double)this.y0, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)i, (double)this.y1, 0.0D).tex(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)j, (double)this.y1, 0.0D).tex(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)j, (double)this.y0, 0.0D).tex(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
+         bufferbuilder.pos((double)i, (double)this.y0, 0.0D).tex(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
          tessellator.draw();
          bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-         bufferbuilder.func_225582_a_((double)i, (double)(l1 + k1), 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(128, 128, 128, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)j, (double)(l1 + k1), 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(128, 128, 128, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)j, (double)l1, 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(128, 128, 128, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)i, (double)l1, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(128, 128, 128, 255).endVertex();
+         bufferbuilder.pos((double)i, (double)(l1 + k1), 0.0D).tex(0.0F, 1.0F).color(128, 128, 128, 255).endVertex();
+         bufferbuilder.pos((double)j, (double)(l1 + k1), 0.0D).tex(1.0F, 1.0F).color(128, 128, 128, 255).endVertex();
+         bufferbuilder.pos((double)j, (double)l1, 0.0D).tex(1.0F, 0.0F).color(128, 128, 128, 255).endVertex();
+         bufferbuilder.pos((double)i, (double)l1, 0.0D).tex(0.0F, 0.0F).color(128, 128, 128, 255).endVertex();
          tessellator.draw();
          bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-         bufferbuilder.func_225582_a_((double)i, (double)(l1 + k1 - 1), 0.0D).func_225583_a_(0.0F, 1.0F).func_225586_a_(192, 192, 192, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)(j - 1), (double)(l1 + k1 - 1), 0.0D).func_225583_a_(1.0F, 1.0F).func_225586_a_(192, 192, 192, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)(j - 1), (double)l1, 0.0D).func_225583_a_(1.0F, 0.0F).func_225586_a_(192, 192, 192, 255).endVertex();
-         bufferbuilder.func_225582_a_((double)i, (double)l1, 0.0D).func_225583_a_(0.0F, 0.0F).func_225586_a_(192, 192, 192, 255).endVertex();
+         bufferbuilder.pos((double)i, (double)(l1 + k1 - 1), 0.0D).tex(0.0F, 1.0F).color(192, 192, 192, 255).endVertex();
+         bufferbuilder.pos((double)(j - 1), (double)(l1 + k1 - 1), 0.0D).tex(1.0F, 1.0F).color(192, 192, 192, 255).endVertex();
+         bufferbuilder.pos((double)(j - 1), (double)l1, 0.0D).tex(1.0F, 0.0F).color(192, 192, 192, 255).endVertex();
+         bufferbuilder.pos((double)i, (double)l1, 0.0D).tex(0.0F, 0.0F).color(192, 192, 192, 255).endVertex();
          tessellator.draw();
       }
 
@@ -384,17 +384,17 @@ public abstract class AbstractList<E extends AbstractList.AbstractListEntry<E>> 
                float f = this.isFocused() ? 1.0F : 0.5F;
                RenderSystem.color4f(f, f, f, 1.0F);
                bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-               bufferbuilder.func_225582_a_((double)l1, (double)(i1 + j1 + 2), 0.0D).endVertex();
-               bufferbuilder.func_225582_a_((double)i2, (double)(i1 + j1 + 2), 0.0D).endVertex();
-               bufferbuilder.func_225582_a_((double)i2, (double)(i1 - 2), 0.0D).endVertex();
-               bufferbuilder.func_225582_a_((double)l1, (double)(i1 - 2), 0.0D).endVertex();
+               bufferbuilder.pos((double)l1, (double)(i1 + j1 + 2), 0.0D).endVertex();
+               bufferbuilder.pos((double)i2, (double)(i1 + j1 + 2), 0.0D).endVertex();
+               bufferbuilder.pos((double)i2, (double)(i1 - 2), 0.0D).endVertex();
+               bufferbuilder.pos((double)l1, (double)(i1 - 2), 0.0D).endVertex();
                tessellator.draw();
                RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
                bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-               bufferbuilder.func_225582_a_((double)(l1 + 1), (double)(i1 + j1 + 1), 0.0D).endVertex();
-               bufferbuilder.func_225582_a_((double)(i2 - 1), (double)(i1 + j1 + 1), 0.0D).endVertex();
-               bufferbuilder.func_225582_a_((double)(i2 - 1), (double)(i1 - 1), 0.0D).endVertex();
-               bufferbuilder.func_225582_a_((double)(l1 + 1), (double)(i1 - 1), 0.0D).endVertex();
+               bufferbuilder.pos((double)(l1 + 1), (double)(i1 + j1 + 1), 0.0D).endVertex();
+               bufferbuilder.pos((double)(i2 - 1), (double)(i1 + j1 + 1), 0.0D).endVertex();
+               bufferbuilder.pos((double)(i2 - 1), (double)(i1 - 1), 0.0D).endVertex();
+               bufferbuilder.pos((double)(l1 + 1), (double)(i1 - 1), 0.0D).endVertex();
                tessellator.draw();
                RenderSystem.enableTexture();
             }
@@ -429,10 +429,10 @@ public abstract class AbstractList<E extends AbstractList.AbstractListEntry<E>> 
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       float f = 32.0F;
       bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-      bufferbuilder.func_225582_a_((double)this.x0, (double)p_renderHoleBackground_2_, 0.0D).func_225583_a_(0.0F, (float)p_renderHoleBackground_2_ / 32.0F).func_225586_a_(64, 64, 64, p_renderHoleBackground_4_).endVertex();
-      bufferbuilder.func_225582_a_((double)(this.x0 + this.width), (double)p_renderHoleBackground_2_, 0.0D).func_225583_a_((float)this.width / 32.0F, (float)p_renderHoleBackground_2_ / 32.0F).func_225586_a_(64, 64, 64, p_renderHoleBackground_4_).endVertex();
-      bufferbuilder.func_225582_a_((double)(this.x0 + this.width), (double)p_renderHoleBackground_1_, 0.0D).func_225583_a_((float)this.width / 32.0F, (float)p_renderHoleBackground_1_ / 32.0F).func_225586_a_(64, 64, 64, p_renderHoleBackground_3_).endVertex();
-      bufferbuilder.func_225582_a_((double)this.x0, (double)p_renderHoleBackground_1_, 0.0D).func_225583_a_(0.0F, (float)p_renderHoleBackground_1_ / 32.0F).func_225586_a_(64, 64, 64, p_renderHoleBackground_3_).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)p_renderHoleBackground_2_, 0.0D).tex(0.0F, (float)p_renderHoleBackground_2_ / 32.0F).color(64, 64, 64, p_renderHoleBackground_4_).endVertex();
+      bufferbuilder.pos((double)(this.x0 + this.width), (double)p_renderHoleBackground_2_, 0.0D).tex((float)this.width / 32.0F, (float)p_renderHoleBackground_2_ / 32.0F).color(64, 64, 64, p_renderHoleBackground_4_).endVertex();
+      bufferbuilder.pos((double)(this.x0 + this.width), (double)p_renderHoleBackground_1_, 0.0D).tex((float)this.width / 32.0F, (float)p_renderHoleBackground_1_ / 32.0F).color(64, 64, 64, p_renderHoleBackground_3_).endVertex();
+      bufferbuilder.pos((double)this.x0, (double)p_renderHoleBackground_1_, 0.0D).tex(0.0F, (float)p_renderHoleBackground_1_ / 32.0F).color(64, 64, 64, p_renderHoleBackground_3_).endVertex();
       tessellator.draw();
    }
 

@@ -48,7 +48,7 @@ public class GrindstoneBlock extends HorizontalFaceBlock {
    public static final VoxelShape field_220218_G = VoxelShapes.or(field_220214_B, field_220216_E);
    public static final VoxelShape field_220219_H = VoxelShapes.or(field_220215_D, field_220217_F);
    public static final VoxelShape field_220220_I = VoxelShapes.or(field_220218_G, field_220219_H);
-   public static final VoxelShape field_220221_J = VoxelShapes.or(field_220220_I, Block.makeCuboidShape(4.0D, 2.0D, 4.0D, 12.0D, 14.0D, 16.0D));
+   public static final VoxelShape SHAPE_WALL_SOUTH = VoxelShapes.or(field_220220_I, Block.makeCuboidShape(4.0D, 2.0D, 4.0D, 12.0D, 14.0D, 16.0D));
    public static final VoxelShape field_220222_K = Block.makeCuboidShape(2.0D, 6.0D, 7.0D, 4.0D, 10.0D, 16.0D);
    public static final VoxelShape field_220223_L = Block.makeCuboidShape(12.0D, 6.0D, 7.0D, 14.0D, 10.0D, 16.0D);
    public static final VoxelShape field_220224_M = Block.makeCuboidShape(2.0D, 5.0D, 3.0D, 4.0D, 11.0D, 9.0D);
@@ -56,7 +56,7 @@ public class GrindstoneBlock extends HorizontalFaceBlock {
    public static final VoxelShape field_220226_O = VoxelShapes.or(field_220222_K, field_220224_M);
    public static final VoxelShape field_220227_P = VoxelShapes.or(field_220223_L, field_220225_N);
    public static final VoxelShape field_220228_Q = VoxelShapes.or(field_220226_O, field_220227_P);
-   public static final VoxelShape field_220229_R = VoxelShapes.or(field_220228_Q, Block.makeCuboidShape(4.0D, 2.0D, 0.0D, 12.0D, 14.0D, 12.0D));
+   public static final VoxelShape SHAPE_WALL_NORTH = VoxelShapes.or(field_220228_Q, Block.makeCuboidShape(4.0D, 2.0D, 0.0D, 12.0D, 14.0D, 12.0D));
    public static final VoxelShape field_220230_S = Block.makeCuboidShape(7.0D, 6.0D, 2.0D, 16.0D, 10.0D, 4.0D);
    public static final VoxelShape field_220231_T = Block.makeCuboidShape(7.0D, 6.0D, 12.0D, 16.0D, 10.0D, 14.0D);
    public static final VoxelShape field_220232_U = Block.makeCuboidShape(3.0D, 5.0D, 2.0D, 9.0D, 11.0D, 4.0D);
@@ -80,7 +80,7 @@ public class GrindstoneBlock extends HorizontalFaceBlock {
    public static final VoxelShape field_220200_am = VoxelShapes.or(field_220196_ai, field_220198_ak);
    public static final VoxelShape field_220201_an = VoxelShapes.or(field_220197_aj, field_220199_al);
    public static final VoxelShape field_220202_ao = VoxelShapes.or(field_220200_am, field_220201_an);
-   public static final VoxelShape field_220203_ap = VoxelShapes.or(field_220202_ao, Block.makeCuboidShape(4.0D, 0.0D, 2.0D, 12.0D, 12.0D, 14.0D));
+   public static final VoxelShape SHAPE_CEILING_NORTH_OR_SOUTH = VoxelShapes.or(field_220202_ao, Block.makeCuboidShape(4.0D, 0.0D, 2.0D, 12.0D, 12.0D, 14.0D));
    public static final VoxelShape field_220204_aq = Block.makeCuboidShape(6.0D, 9.0D, 2.0D, 10.0D, 16.0D, 4.0D);
    public static final VoxelShape field_220205_ar = Block.makeCuboidShape(6.0D, 9.0D, 12.0D, 10.0D, 16.0D, 14.0D);
    public static final VoxelShape field_220206_as = Block.makeCuboidShape(5.0D, 3.0D, 2.0D, 11.0D, 9.0D, 4.0D);
@@ -88,11 +88,11 @@ public class GrindstoneBlock extends HorizontalFaceBlock {
    public static final VoxelShape field_220208_au = VoxelShapes.or(field_220204_aq, field_220206_as);
    public static final VoxelShape field_220209_av = VoxelShapes.or(field_220205_ar, field_220207_at);
    public static final VoxelShape field_220210_aw = VoxelShapes.or(field_220208_au, field_220209_av);
-   public static final VoxelShape field_220211_ax = VoxelShapes.or(field_220210_aw, Block.makeCuboidShape(2.0D, 0.0D, 4.0D, 14.0D, 12.0D, 12.0D));
-   private static final TranslationTextComponent field_220212_az = new TranslationTextComponent("container.grindstone_title");
+   public static final VoxelShape SHAPE_CEILING_EAST_OR_WEST = VoxelShapes.or(field_220210_aw, Block.makeCuboidShape(2.0D, 0.0D, 4.0D, 14.0D, 12.0D, 12.0D));
+   private static final TranslationTextComponent CONTAINER_NAME = new TranslationTextComponent("container.grindstone_title");
 
-   protected GrindstoneBlock(Block.Properties p_i49983_1_) {
-      super(p_i49983_1_);
+   protected GrindstoneBlock(Block.Properties propertiesIn) {
+      super(propertiesIn);
       this.setDefaultState(this.stateContainer.getBaseState().with(HORIZONTAL_FACING, Direction.NORTH).with(FACE, AttachFace.WALL));
    }
 
@@ -100,9 +100,9 @@ public class GrindstoneBlock extends HorizontalFaceBlock {
       return BlockRenderType.MODEL;
    }
 
-   private VoxelShape func_220186_q(BlockState p_220186_1_) {
-      Direction direction = p_220186_1_.get(HORIZONTAL_FACING);
-      switch((AttachFace)p_220186_1_.get(FACE)) {
+   private VoxelShape getShapeFromState(BlockState state) {
+      Direction direction = state.get(HORIZONTAL_FACING);
+      switch((AttachFace)state.get(FACE)) {
       case FLOOR:
          if (direction != Direction.NORTH && direction != Direction.SOUTH) {
             return field_220213_A;
@@ -111,9 +111,9 @@ public class GrindstoneBlock extends HorizontalFaceBlock {
          return field_220245_h;
       case WALL:
          if (direction == Direction.NORTH) {
-            return field_220229_R;
+            return SHAPE_WALL_NORTH;
          } else if (direction == Direction.SOUTH) {
-            return field_220221_J;
+            return SHAPE_WALL_SOUTH;
          } else {
             if (direction == Direction.EAST) {
                return field_220195_ah;
@@ -123,33 +123,33 @@ public class GrindstoneBlock extends HorizontalFaceBlock {
          }
       case CEILING:
          if (direction != Direction.NORTH && direction != Direction.SOUTH) {
-            return field_220211_ax;
+            return SHAPE_CEILING_EAST_OR_WEST;
          }
 
-         return field_220203_ap;
+         return SHAPE_CEILING_NORTH_OR_SOUTH;
       default:
          return field_220213_A;
       }
    }
 
    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-      return this.func_220186_q(state);
+      return this.getShapeFromState(state);
    }
 
    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-      return this.func_220186_q(state);
+      return this.getShapeFromState(state);
    }
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
       return true;
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         p_225533_4_.openContainer(p_225533_1_.getContainer(p_225533_2_, p_225533_3_));
-         p_225533_4_.addStat(Stats.field_226146_aB_);
+         player.openContainer(state.getContainer(worldIn, pos));
+         player.addStat(Stats.INTERACT_WITH_GRINDSTONE);
          return ActionResultType.SUCCESS;
       }
    }
@@ -157,7 +157,7 @@ public class GrindstoneBlock extends HorizontalFaceBlock {
    public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
       return new SimpleNamedContainerProvider((p_220187_2_, p_220187_3_, p_220187_4_) -> {
          return new GrindstoneContainer(p_220187_2_, p_220187_3_, IWorldPosCallable.of(worldIn, pos));
-      }, field_220212_az);
+      }, CONTAINER_NAME);
    }
 
    public BlockState rotate(BlockState state, Rotation rot) {

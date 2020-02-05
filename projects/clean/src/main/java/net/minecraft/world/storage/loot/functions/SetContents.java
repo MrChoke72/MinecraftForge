@@ -67,7 +67,7 @@ public class SetContents extends LootFunction {
       }
 
       public SetContents.Builder func_216075_a(LootEntry.Builder<?> p_216075_1_) {
-         this.field_216076_a.add(p_216075_1_.func_216081_b());
+         this.field_216076_a.add(p_216075_1_.build());
          return this;
       }
 

@@ -12,7 +12,8 @@ import net.minecraft.util.SharedConstants;
 import net.minecraft.util.Util;
 import net.minecraft.util.datafix.fixes.AddBedTileEntity;
 import net.minecraft.util.datafix.fixes.AddNewChoices;
-import net.minecraft.util.datafix.fixes.AdvancementsFix;
+import net.minecraft.util.datafix.fixes.AdvancementRenamer;
+import net.minecraft.util.datafix.fixes.AdvancementRenamer1501;
 import net.minecraft.util.datafix.fixes.ArmorStandSilent;
 import net.minecraft.util.datafix.fixes.BannerItemColor;
 import net.minecraft.util.datafix.fixes.BedItemColor;
@@ -84,11 +85,12 @@ import net.minecraft.util.datafix.fixes.PointOfInterestReorganizationFix;
 import net.minecraft.util.datafix.fixes.PotionItems;
 import net.minecraft.util.datafix.fixes.PotionWater;
 import net.minecraft.util.datafix.fixes.PufferfishRename;
-import net.minecraft.util.datafix.fixes.RecipesRenaming;
+import net.minecraft.util.datafix.fixes.RecipeRenamer;
+import net.minecraft.util.datafix.fixes.RecipeRenamer1502;
+import net.minecraft.util.datafix.fixes.RecipeRenamer1510;
 import net.minecraft.util.datafix.fixes.RedundantChanceTags;
 import net.minecraft.util.datafix.fixes.RenameBeehivePointOfInterest;
 import net.minecraft.util.datafix.fixes.RenamedCoral;
-import net.minecraft.util.datafix.fixes.RenamedRecipes;
 import net.minecraft.util.datafix.fixes.RidingToPassengers;
 import net.minecraft.util.datafix.fixes.ShulkerBoxEntityColor;
 import net.minecraft.util.datafix.fixes.ShulkerBoxItemColor;
@@ -369,9 +371,9 @@ public class DataFixesManager {
       Schema schema64 = builder.addSchema(1500, NAMESPACED_SCHEMA_FACTORY);
       builder.addFixer(new BlockEntityKeepPacked(schema64, false));
       Schema schema65 = builder.addSchema(1501, NAMESPACED_SCHEMA_FACTORY);
-      builder.addFixer(new AdvancementsFix(schema65, false));
+      builder.addFixer(new AdvancementRenamer1501(schema65, false));
       Schema schema66 = builder.addSchema(1502, NAMESPACED_SCHEMA_FACTORY);
-      builder.addFixer(new RenamedRecipes(schema66, false));
+      builder.addFixer(new RecipeRenamer1502(schema66, false));
       Schema schema67 = builder.addSchema(1506, NAMESPACED_SCHEMA_FACTORY);
       builder.addFixer(new LevelDataGeneratorOptionsFix(schema67, false));
       Schema schema68 = builder.addSchema(1508, NAMESPACED_SCHEMA_FACTORY);
@@ -383,7 +385,7 @@ public class DataFixesManager {
       builder.addFixer(ItemRename.create(schema69, "Item renamening fix", (p_210900_0_) -> {
          return EntityRenaming1510.ITEM_RENAME_MAP.getOrDefault(p_210900_0_, p_210900_0_);
       }));
-      builder.addFixer(new RecipesRenaming(schema69, false));
+      builder.addFixer(new RecipeRenamer1510(schema69, false));
       builder.addFixer(new EntityRenaming1510(schema69, true));
       builder.addFixer(new SwimStatsRename(schema69, false));
       Schema schema70 = builder.addSchema(1514, NAMESPACED_SCHEMA_FACTORY);
@@ -458,6 +460,12 @@ public class DataFixesManager {
       Schema schema95 = builder.addSchema(2100, V2100::new);
       builder.addFixer(new AddNewChoices(schema95, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
       builder.addFixer(new AddNewChoices(schema95, "Add beehive", TypeReferences.BLOCK_ENTITY));
+      builder.addFixer(new RecipeRenamer(schema95, false, "Rename sugar recipe", (p_230063_0_) -> {
+         return "minecraft:sugar".equals(p_230063_0_) ? "sugar_from_sugar_cane" : p_230063_0_;
+      }));
+      builder.addFixer(new AdvancementRenamer(schema95, false, "Rename sugar recipe advancement", (p_230062_0_) -> {
+         return "minecraft:recipes/misc/sugar".equals(p_230062_0_) ? "minecraft:recipes/misc/sugar_from_sugar_cane" : p_230062_0_;
+      }));
       Schema schema96 = builder.addSchema(2202, NAMESPACED_SCHEMA_FACTORY);
       builder.addFixer(new BiomeIdFix(schema96, false));
       Schema schema97 = builder.addSchema(2209, NAMESPACED_SCHEMA_FACTORY);

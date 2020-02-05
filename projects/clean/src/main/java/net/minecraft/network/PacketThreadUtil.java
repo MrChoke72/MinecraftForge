@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PacketThreadUtil {
-   private static final Logger field_225384_a = LogManager.getLogger();
+   private static final Logger LOGGER = LogManager.getLogger();
 
    public static <T extends INetHandler> void checkThreadAndEnqueue(IPacket<T> packetIn, T processor, ServerWorld worldIn) throws ThreadQuickExitException {
       checkThreadAndEnqueue(packetIn, processor, worldIn.getServer());
@@ -18,7 +18,7 @@ public class PacketThreadUtil {
             if (processor.getNetworkManager().isChannelOpen()) {
                packetIn.processPacket(processor);
             } else {
-               field_225384_a.debug("Ignoring packet due to disconnection: " + packetIn);
+               LOGGER.debug("Ignoring packet due to disconnection: " + packetIn);
             }
 
          });

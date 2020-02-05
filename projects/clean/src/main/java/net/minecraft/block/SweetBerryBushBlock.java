@@ -46,17 +46,17 @@ public class SweetBerryBushBlock extends BushBlock implements IGrowable {
       }
    }
 
-   public void func_225534_a_(BlockState p_225534_1_, ServerWorld p_225534_2_, BlockPos p_225534_3_, Random p_225534_4_) {
-      super.func_225534_a_(p_225534_1_, p_225534_2_, p_225534_3_, p_225534_4_);
-      int i = p_225534_1_.get(AGE);
-      if (i < 3 && p_225534_4_.nextInt(5) == 0 && p_225534_2_.func_226659_b_(p_225534_3_.up(), 0) >= 9) {
-         p_225534_2_.setBlockState(p_225534_3_, p_225534_1_.with(AGE, Integer.valueOf(i + 1)), 2);
+   public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+      super.tick(state, worldIn, pos, rand);
+      int i = state.get(AGE);
+      if (i < 3 && rand.nextInt(5) == 0 && worldIn.getLightSubtracted(pos.up(), 0) >= 9) {
+         worldIn.setBlockState(pos, state.with(AGE, Integer.valueOf(i + 1)), 2);
       }
 
    }
 
    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
-      if (entityIn instanceof LivingEntity && entityIn.getType() != EntityType.FOX && entityIn.getType() != EntityType.field_226289_e_) {
+      if (entityIn instanceof LivingEntity && entityIn.getType() != EntityType.FOX && entityIn.getType() != EntityType.BEE) {
          entityIn.setMotionMultiplier(state, new Vec3d((double)0.8F, 0.75D, (double)0.8F));
          if (!worldIn.isRemote && state.get(AGE) > 0 && (entityIn.lastTickPosX != entityIn.getPosX() || entityIn.lastTickPosZ != entityIn.getPosZ())) {
             double d0 = Math.abs(entityIn.getPosX() - entityIn.lastTickPosX);
@@ -69,19 +69,19 @@ public class SweetBerryBushBlock extends BushBlock implements IGrowable {
       }
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      int i = p_225533_1_.get(AGE);
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      int i = state.get(AGE);
       boolean flag = i == 3;
-      if (!flag && p_225533_4_.getHeldItem(p_225533_5_).getItem() == Items.BONE_MEAL) {
+      if (!flag && player.getHeldItem(handIn).getItem() == Items.BONE_MEAL) {
          return ActionResultType.PASS;
       } else if (i > 1) {
-         int j = 1 + p_225533_2_.rand.nextInt(2);
-         spawnAsEntity(p_225533_2_, p_225533_3_, new ItemStack(Items.SWEET_BERRIES, j + (flag ? 1 : 0)));
-         p_225533_2_.playSound((PlayerEntity)null, p_225533_3_, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0F, 0.8F + p_225533_2_.rand.nextFloat() * 0.4F);
-         p_225533_2_.setBlockState(p_225533_3_, p_225533_1_.with(AGE, Integer.valueOf(1)), 2);
+         int j = 1 + worldIn.rand.nextInt(2);
+         spawnAsEntity(worldIn, pos, new ItemStack(Items.SWEET_BERRIES, j + (flag ? 1 : 0)));
+         worldIn.playSound((PlayerEntity)null, pos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0F, 0.8F + worldIn.rand.nextFloat() * 0.4F);
+         worldIn.setBlockState(pos, state.with(AGE, Integer.valueOf(1)), 2);
          return ActionResultType.SUCCESS;
       } else {
-         return super.func_225533_a_(p_225533_1_, p_225533_2_, p_225533_3_, p_225533_4_, p_225533_5_, p_225533_6_);
+         return super.onBlockActivated(state, worldIn, pos, player, handIn, p_225533_6_);
       }
    }
 
@@ -97,7 +97,7 @@ public class SweetBerryBushBlock extends BushBlock implements IGrowable {
       return true;
    }
 
-   public void func_225535_a_(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
+   public void grow(ServerWorld p_225535_1_, Random p_225535_2_, BlockPos p_225535_3_, BlockState p_225535_4_) {
       int i = Math.min(3, p_225535_4_.get(AGE) + 1);
       p_225535_1_.setBlockState(p_225535_3_, p_225535_4_.with(AGE, Integer.valueOf(i)), 2);
    }

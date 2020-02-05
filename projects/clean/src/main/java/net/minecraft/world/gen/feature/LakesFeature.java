@@ -94,8 +94,8 @@ public class LakesFeature extends Feature<BlockStateFeatureConfig> {
                   for(int j4 = 4; j4 < 8; ++j4) {
                      if (aboolean[(i2 * 16 + j3) * 8 + j4]) {
                         BlockPos blockpos = pos.add(i2, j4 - 1, j3);
-                        if (func_227250_b_(worldIn.getBlockState(blockpos).getBlock()) && worldIn.getLightLevel(LightType.SKY, pos.add(i2, j4, j3)) > 0) {
-                           Biome biome = worldIn.func_226691_t_(blockpos);
+                        if (isDirt(worldIn.getBlockState(blockpos).getBlock()) && worldIn.getLightFor(LightType.SKY, pos.add(i2, j4, j3)) > 0) {
+                           Biome biome = worldIn.getBiome(blockpos);
                            if (biome.getSurfaceBuilderConfig().getTop().getBlock() == Blocks.MYCELIUM) {
                               worldIn.setBlockState(blockpos, Blocks.MYCELIUM.getDefaultState(), 2);
                            } else {
@@ -125,7 +125,7 @@ public class LakesFeature extends Feature<BlockStateFeatureConfig> {
                   for(int l3 = 0; l3 < 16; ++l3) {
                      int l4 = 4;
                      BlockPos blockpos1 = pos.add(k2, 4, l3);
-                     if (worldIn.func_226691_t_(blockpos1).doesWaterFreeze(worldIn, blockpos1, false)) {
+                     if (worldIn.getBiome(blockpos1).doesWaterFreeze(worldIn, blockpos1, false)) {
                         worldIn.setBlockState(blockpos1, Blocks.ICE.getDefaultState(), 2);
                      }
                   }

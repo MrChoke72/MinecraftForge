@@ -104,7 +104,7 @@ public class WorldSelectionList extends ExtendedList<WorldSelectionList.Entry> {
       super.setSelected(p_setSelected_1_);
       if (p_setSelected_1_ != null) {
          WorldSummary worldsummary = p_setSelected_1_.field_214451_d;
-         NarratorChatListener.INSTANCE.func_216864_a((new TranslationTextComponent("narrator.select", new TranslationTextComponent("narrator.select.world", worldsummary.getDisplayName(), new Date(worldsummary.getLastTimePlayed()), worldsummary.isHardcoreModeEnabled() ? I18n.format("gameMode.hardcore") : I18n.format("gameMode." + worldsummary.getEnumGameType().getName()), worldsummary.getCheatsEnabled() ? I18n.format("selectWorld.cheats") : "", worldsummary.func_200538_i()))).getString());
+         NarratorChatListener.INSTANCE.say((new TranslationTextComponent("narrator.select", new TranslationTextComponent("narrator.select.world", worldsummary.getDisplayName(), new Date(worldsummary.getLastTimePlayed()), worldsummary.isHardcoreModeEnabled() ? I18n.format("gameMode.hardcore") : I18n.format("gameMode." + worldsummary.getEnumGameType().getName()), worldsummary.getCheatsEnabled() ? I18n.format("selectWorld.cheats") : "", worldsummary.getVersionName()))).getString());
       }
 
    }
@@ -166,7 +166,7 @@ public class WorldSelectionList extends ExtendedList<WorldSelectionList.Entry> {
                s2 = s2 + ", " + I18n.format("selectWorld.cheats");
             }
 
-            String s3 = this.field_214451_d.func_200538_i().getFormattedText();
+            String s3 = this.field_214451_d.getVersionName().getFormattedText();
             if (this.field_214451_d.markVersionInList()) {
                if (this.field_214451_d.askToOpenWorld()) {
                   s2 = s2 + ", " + I18n.format("selectWorld.version") + " " + TextFormatting.RED + s3 + TextFormatting.RESET;
@@ -197,7 +197,7 @@ public class WorldSelectionList extends ExtendedList<WorldSelectionList.Entry> {
                if (this.field_214451_d.func_202842_n()) {
                   AbstractGui.blit(p_render_3_, p_render_2_, 96.0F, (float)i, 32, 32, 256, 256);
                   if (j < 32) {
-                     ITextComponent itextcomponent = (new TranslationTextComponent("selectWorld.tooltip.unsupported", this.field_214451_d.func_200538_i())).applyTextStyle(TextFormatting.RED);
+                     ITextComponent itextcomponent = (new TranslationTextComponent("selectWorld.tooltip.unsupported", this.field_214451_d.getVersionName())).applyTextStyle(TextFormatting.RED);
                      this.field_214450_c.setVersionTooltip(this.field_214449_b.fontRenderer.wrapFormattedStringToWidth(itextcomponent.getFormattedText(), 175));
                   }
                } else if (this.field_214451_d.askToOpenWorld()) {
@@ -250,13 +250,13 @@ public class WorldSelectionList extends ExtendedList<WorldSelectionList.Entry> {
                      this.field_214449_b.displayGuiScreen(this.field_214450_c);
                   }
 
-               }, new TranslationTextComponent("selectWorld.versionQuestion"), new TranslationTextComponent("selectWorld.versionWarning", this.field_214451_d.func_200538_i().getFormattedText()), I18n.format("selectWorld.versionJoinButton"), I18n.format("gui.cancel")));
+               }, new TranslationTextComponent("selectWorld.versionQuestion"), new TranslationTextComponent("selectWorld.versionWarning", this.field_214451_d.getVersionName().getFormattedText()), I18n.format("selectWorld.versionJoinButton"), I18n.format("gui.cancel")));
             } else {
                this.func_214443_e();
             }
          } else {
             ITextComponent itextcomponent = new TranslationTextComponent("selectWorld.backupQuestion");
-            ITextComponent itextcomponent1 = new TranslationTextComponent("selectWorld.backupWarning", this.field_214451_d.func_200538_i().getFormattedText(), SharedConstants.getVersion().getName());
+            ITextComponent itextcomponent1 = new TranslationTextComponent("selectWorld.backupWarning", this.field_214451_d.getVersionName().getFormattedText(), SharedConstants.getVersion().getName());
             if (this.field_214451_d.func_202842_n()) {
                itextcomponent = new TranslationTextComponent("selectWorld.backupQuestion.customized");
                itextcomponent1 = new TranslationTextComponent("selectWorld.backupWarning.customized");
@@ -343,7 +343,7 @@ public class WorldSelectionList extends ExtendedList<WorldSelectionList.Entry> {
                Validate.validState(nativeimage.getWidth() == 64, "Must be 64 pixels wide");
                Validate.validState(nativeimage.getHeight() == 64, "Must be 64 pixels high");
                DynamicTexture dynamictexture = new DynamicTexture(nativeimage);
-               this.field_214449_b.getTextureManager().func_229263_a_(this.field_214452_e, dynamictexture);
+               this.field_214449_b.getTextureManager().loadTexture(this.field_214452_e, dynamictexture);
                return dynamictexture;
             } catch (Throwable throwable) {
                WorldSelectionList.LOGGER.error("Invalid icon for world {}", this.field_214451_d.getFileName(), throwable);

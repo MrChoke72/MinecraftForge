@@ -75,7 +75,7 @@ public class EnchantmentScreen extends ContainerScreen<EnchantmentContainer> {
    }
 
    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-      RenderHelper.func_227783_c_();
+      RenderHelper.setupGuiFlatDiffuseLighting();
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       this.minecraft.getTextureManager().bindTexture(ENCHANTMENT_TABLE_GUI_TEXTURE);
       int i = (this.width - this.xSize) / 2;
@@ -84,26 +84,26 @@ public class EnchantmentScreen extends ContainerScreen<EnchantmentContainer> {
       RenderSystem.matrixMode(5889);
       RenderSystem.pushMatrix();
       RenderSystem.loadIdentity();
-      int k = (int)this.minecraft.func_228018_at_().getGuiScaleFactor();
+      int k = (int)this.minecraft.getMainWindow().getGuiScaleFactor();
       RenderSystem.viewport((this.width - 320) / 2 * k, (this.height - 240) / 2 * k, 320 * k, 240 * k);
       RenderSystem.translatef(-0.34F, 0.23F, 0.0F);
       RenderSystem.multMatrix(Matrix4f.perspective(90.0D, 1.3333334F, 9.0F, 80.0F));
       RenderSystem.matrixMode(5888);
       MatrixStack matrixstack = new MatrixStack();
-      matrixstack.func_227860_a_();
-      MatrixStack.Entry matrixstack$entry = matrixstack.func_227866_c_();
-      matrixstack$entry.func_227870_a_().func_226591_a_();
-      matrixstack$entry.func_227872_b_().func_226119_c_();
-      matrixstack.func_227861_a_(0.0D, (double)3.3F, 1984.0D);
+      matrixstack.push();
+      MatrixStack.Entry matrixstack$entry = matrixstack.getLast();
+      matrixstack$entry.getPositionMatrix().identity();
+      matrixstack$entry.getNormalMatrix().identity();
+      matrixstack.translate(0.0D, (double)3.3F, 1984.0D);
       float f = 5.0F;
-      matrixstack.func_227862_a_(5.0F, 5.0F, 5.0F);
-      matrixstack.func_227863_a_(Vector3f.field_229183_f_.func_229187_a_(180.0F));
-      matrixstack.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(20.0F));
+      matrixstack.scale(5.0F, 5.0F, 5.0F);
+      matrixstack.rotate(Vector3f.ZP.rotationDegrees(180.0F));
+      matrixstack.rotate(Vector3f.XP.rotationDegrees(20.0F));
       float f1 = MathHelper.lerp(partialTicks, this.oOpen, this.open);
-      matrixstack.func_227861_a_((double)((1.0F - f1) * 0.2F), (double)((1.0F - f1) * 0.1F), (double)((1.0F - f1) * 0.25F));
+      matrixstack.translate((double)((1.0F - f1) * 0.2F), (double)((1.0F - f1) * 0.1F), (double)((1.0F - f1) * 0.25F));
       float f2 = -(1.0F - f1) * 90.0F - 90.0F;
-      matrixstack.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(f2));
-      matrixstack.func_227863_a_(Vector3f.field_229179_b_.func_229187_a_(180.0F));
+      matrixstack.rotate(Vector3f.YP.rotationDegrees(f2));
+      matrixstack.rotate(Vector3f.XP.rotationDegrees(180.0F));
       float f3 = MathHelper.lerp(partialTicks, this.oFlip, this.flip) + 0.25F;
       float f4 = MathHelper.lerp(partialTicks, this.oFlip, this.flip) + 0.75F;
       f3 = (f3 - (float)MathHelper.fastFloor((double)f3)) * 1.6F - 0.3F;
@@ -126,16 +126,16 @@ public class EnchantmentScreen extends ContainerScreen<EnchantmentContainer> {
 
       RenderSystem.enableRescaleNormal();
       MODEL_BOOK.func_228247_a_(0.0F, f3, f4, f1);
-      IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.func_228455_a_(Tessellator.getInstance().getBuffer());
-      IVertexBuilder ivertexbuilder = irendertypebuffer$impl.getBuffer(MODEL_BOOK.func_228282_a_(ENCHANTMENT_TABLE_BOOK_TEXTURE));
-      MODEL_BOOK.func_225598_a_(matrixstack, ivertexbuilder, 15728880, OverlayTexture.field_229196_a_, 1.0F, 1.0F, 1.0F, 1.0F);
-      irendertypebuffer$impl.func_228461_a_();
-      matrixstack.func_227865_b_();
+      IRenderTypeBuffer.Impl irendertypebuffer$impl = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
+      IVertexBuilder ivertexbuilder = irendertypebuffer$impl.getBuffer(MODEL_BOOK.getRenderType(ENCHANTMENT_TABLE_BOOK_TEXTURE));
+      MODEL_BOOK.render(matrixstack, ivertexbuilder, 15728880, OverlayTexture.DEFAULT_LIGHT, 1.0F, 1.0F, 1.0F, 1.0F);
+      irendertypebuffer$impl.finish();
+      matrixstack.pop();
       RenderSystem.matrixMode(5889);
-      RenderSystem.viewport(0, 0, this.minecraft.func_228018_at_().getFramebufferWidth(), this.minecraft.func_228018_at_().getFramebufferHeight());
+      RenderSystem.viewport(0, 0, this.minecraft.getMainWindow().getFramebufferWidth(), this.minecraft.getMainWindow().getFramebufferHeight());
       RenderSystem.popMatrix();
       RenderSystem.matrixMode(5888);
-      RenderHelper.func_227784_d_();
+      RenderHelper.setupGui3DDiffuseLighting();
       RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
       EnchantmentNameParts.getInstance().reseedRandomGenerator((long)this.container.func_217005_f());
       int l = this.container.getLapisAmount();

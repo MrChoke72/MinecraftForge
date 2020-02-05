@@ -57,22 +57,22 @@ public class EnderDragonEntity extends MobEntity implements IMob {
    private static final EntityPredicate field_213405_bO = (new EntityPredicate()).setDistance(64.0D);
    public final double[][] ringBuffer = new double[64][3];
    public int ringBufferIndex = -1;
-   private final EnderDragonPartEntity[] field_70977_g;
-   public final EnderDragonPartEntity field_70986_h;
+   private final EnderDragonPartEntity[] dragonParts;
+   public final EnderDragonPartEntity dragonPartHead;
    private final EnderDragonPartEntity dragonPartNeck;
-   private final EnderDragonPartEntity field_70987_i;
-   private final EnderDragonPartEntity field_70985_j;
-   private final EnderDragonPartEntity field_70984_by;
-   private final EnderDragonPartEntity field_70982_bz;
-   private final EnderDragonPartEntity field_70983_bA;
-   private final EnderDragonPartEntity field_70990_bB;
+   private final EnderDragonPartEntity dragonPartBody;
+   private final EnderDragonPartEntity dragonPartTail1;
+   private final EnderDragonPartEntity dragonPartTail2;
+   private final EnderDragonPartEntity dragonPartTail3;
+   private final EnderDragonPartEntity dragonPartRightWing;
+   private final EnderDragonPartEntity dragonPartLeftWing;
    public float prevAnimTime;
    public float animTime;
    public boolean slowed;
    public int deathTicks;
    public float field_226525_bB_;
    @Nullable
-   public EnderCrystalEntity field_70992_bH;
+   public EnderCrystalEntity closestEnderCrystal;
    @Nullable
    private final DragonFightManager fightManager;
    private final PhaseManager phaseManager;
@@ -82,22 +82,22 @@ public class EnderDragonEntity extends MobEntity implements IMob {
    private final int[] neighbors = new int[24];
    private final PathHeap pathFindQueue = new PathHeap();
 
-   public EnderDragonEntity(EntityType<? extends EnderDragonEntity> p_i50230_1_, World p_i50230_2_) {
-      super(EntityType.ENDER_DRAGON, p_i50230_2_);
-      this.field_70986_h = new EnderDragonPartEntity(this, "head", 1.0F, 1.0F);
+   public EnderDragonEntity(EntityType<? extends EnderDragonEntity> type, World worldIn) {
+      super(EntityType.ENDER_DRAGON, worldIn);
+      this.dragonPartHead = new EnderDragonPartEntity(this, "head", 1.0F, 1.0F);
       this.dragonPartNeck = new EnderDragonPartEntity(this, "neck", 3.0F, 3.0F);
-      this.field_70987_i = new EnderDragonPartEntity(this, "body", 5.0F, 3.0F);
-      this.field_70985_j = new EnderDragonPartEntity(this, "tail", 2.0F, 2.0F);
-      this.field_70984_by = new EnderDragonPartEntity(this, "tail", 2.0F, 2.0F);
-      this.field_70982_bz = new EnderDragonPartEntity(this, "tail", 2.0F, 2.0F);
-      this.field_70983_bA = new EnderDragonPartEntity(this, "wing", 4.0F, 2.0F);
-      this.field_70990_bB = new EnderDragonPartEntity(this, "wing", 4.0F, 2.0F);
-      this.field_70977_g = new EnderDragonPartEntity[]{this.field_70986_h, this.dragonPartNeck, this.field_70987_i, this.field_70985_j, this.field_70984_by, this.field_70982_bz, this.field_70983_bA, this.field_70990_bB};
+      this.dragonPartBody = new EnderDragonPartEntity(this, "body", 5.0F, 3.0F);
+      this.dragonPartTail1 = new EnderDragonPartEntity(this, "tail", 2.0F, 2.0F);
+      this.dragonPartTail2 = new EnderDragonPartEntity(this, "tail", 2.0F, 2.0F);
+      this.dragonPartTail3 = new EnderDragonPartEntity(this, "tail", 2.0F, 2.0F);
+      this.dragonPartRightWing = new EnderDragonPartEntity(this, "wing", 4.0F, 2.0F);
+      this.dragonPartLeftWing = new EnderDragonPartEntity(this, "wing", 4.0F, 2.0F);
+      this.dragonParts = new EnderDragonPartEntity[]{this.dragonPartHead, this.dragonPartNeck, this.dragonPartBody, this.dragonPartTail1, this.dragonPartTail2, this.dragonPartTail3, this.dragonPartRightWing, this.dragonPartLeftWing};
       this.setHealth(this.getMaxHealth());
       this.noClip = true;
       this.ignoreFrustumCheck = true;
-      if (!p_i50230_2_.isRemote && p_i50230_2_.dimension instanceof EndDimension) {
-         this.fightManager = ((EndDimension)p_i50230_2_.dimension).getDragonFightManager();
+      if (!worldIn.isRemote && worldIn.dimension instanceof EndDimension) {
+         this.fightManager = ((EndDimension)worldIn.dimension).getDragonFightManager();
       } else {
          this.fightManager = null;
       }
@@ -160,7 +160,7 @@ public class EnderDragonEntity extends MobEntity implements IMob {
       } else {
          this.updateDragonEnderCrystal();
          Vec3d vec3d4 = this.getMotion();
-         float f12 = 0.2F / (MathHelper.sqrt(func_213296_b(vec3d4)) * 10.0F + 1.0F);
+         float f12 = 0.2F / (MathHelper.sqrt(horizontalMag(vec3d4)) * 10.0F + 1.0F);
          f12 = f12 * (float)Math.pow(2.0D, vec3d4.y);
          if (this.phaseManager.getCurrentPhase().getIsStationary()) {
             this.animTime += 0.1F;
@@ -246,10 +246,10 @@ public class EnderDragonEntity extends MobEntity implements IMob {
             }
 
             this.renderYawOffset = this.rotationYaw;
-            Vec3d[] avec3d = new Vec3d[this.field_70977_g.length];
+            Vec3d[] avec3d = new Vec3d[this.dragonParts.length];
 
-            for(int j = 0; j < this.field_70977_g.length; ++j) {
-               avec3d[j] = new Vec3d(this.field_70977_g[j].getPosX(), this.field_70977_g[j].getPosY(), this.field_70977_g[j].getPosZ());
+            for(int j = 0; j < this.dragonParts.length; ++j) {
+               avec3d[j] = new Vec3d(this.dragonParts[j].getPosX(), this.dragonParts[j].getPosY(), this.dragonParts[j].getPosZ());
             }
 
             float f15 = (float)(this.getMovementOffsets(5, 1.0F)[1] - this.getMovementOffsets(10, 1.0F)[1]) * 10.0F * ((float)Math.PI / 180F);
@@ -258,35 +258,35 @@ public class EnderDragonEntity extends MobEntity implements IMob {
             float f17 = this.rotationYaw * ((float)Math.PI / 180F);
             float f3 = MathHelper.sin(f17);
             float f18 = MathHelper.cos(f17);
-            this.func_226526_a_(this.field_70987_i, (double)(f3 * 0.5F), 0.0D, (double)(-f18 * 0.5F));
-            this.func_226526_a_(this.field_70983_bA, (double)(f18 * 4.5F), 2.0D, (double)(f3 * 4.5F));
-            this.func_226526_a_(this.field_70990_bB, (double)(f18 * -4.5F), 2.0D, (double)(f3 * -4.5F));
+            this.func_226526_a_(this.dragonPartBody, (double)(f3 * 0.5F), 0.0D, (double)(-f18 * 0.5F));
+            this.func_226526_a_(this.dragonPartRightWing, (double)(f18 * 4.5F), 2.0D, (double)(f3 * 4.5F));
+            this.func_226526_a_(this.dragonPartLeftWing, (double)(f18 * -4.5F), 2.0D, (double)(f3 * -4.5F));
             if (!this.world.isRemote && this.hurtTime == 0) {
-               this.collideWithEntities(this.world.getEntitiesInAABBexcluding(this, this.field_70983_bA.getBoundingBox().grow(4.0D, 2.0D, 4.0D).offset(0.0D, -2.0D, 0.0D), EntityPredicates.CAN_AI_TARGET));
-               this.collideWithEntities(this.world.getEntitiesInAABBexcluding(this, this.field_70990_bB.getBoundingBox().grow(4.0D, 2.0D, 4.0D).offset(0.0D, -2.0D, 0.0D), EntityPredicates.CAN_AI_TARGET));
-               this.attackEntitiesInList(this.world.getEntitiesInAABBexcluding(this, this.field_70986_h.getBoundingBox().grow(1.0D), EntityPredicates.CAN_AI_TARGET));
+               this.collideWithEntities(this.world.getEntitiesInAABBexcluding(this, this.dragonPartRightWing.getBoundingBox().grow(4.0D, 2.0D, 4.0D).offset(0.0D, -2.0D, 0.0D), EntityPredicates.CAN_AI_TARGET));
+               this.collideWithEntities(this.world.getEntitiesInAABBexcluding(this, this.dragonPartLeftWing.getBoundingBox().grow(4.0D, 2.0D, 4.0D).offset(0.0D, -2.0D, 0.0D), EntityPredicates.CAN_AI_TARGET));
+               this.attackEntitiesInList(this.world.getEntitiesInAABBexcluding(this, this.dragonPartHead.getBoundingBox().grow(1.0D), EntityPredicates.CAN_AI_TARGET));
                this.attackEntitiesInList(this.world.getEntitiesInAABBexcluding(this, this.dragonPartNeck.getBoundingBox().grow(1.0D), EntityPredicates.CAN_AI_TARGET));
             }
 
             float f4 = MathHelper.sin(this.rotationYaw * ((float)Math.PI / 180F) - this.field_226525_bB_ * 0.01F);
             float f19 = MathHelper.cos(this.rotationYaw * ((float)Math.PI / 180F) - this.field_226525_bB_ * 0.01F);
             float f5 = this.func_226527_er_();
-            this.func_226526_a_(this.field_70986_h, (double)(f4 * 6.5F * f16), (double)(f5 + f2 * 6.5F), (double)(-f19 * 6.5F * f16));
+            this.func_226526_a_(this.dragonPartHead, (double)(f4 * 6.5F * f16), (double)(f5 + f2 * 6.5F), (double)(-f19 * 6.5F * f16));
             this.func_226526_a_(this.dragonPartNeck, (double)(f4 * 5.5F * f16), (double)(f5 + f2 * 5.5F), (double)(-f19 * 5.5F * f16));
             double[] adouble = this.getMovementOffsets(5, 1.0F);
 
             for(int k = 0; k < 3; ++k) {
                EnderDragonPartEntity enderdragonpartentity = null;
                if (k == 0) {
-                  enderdragonpartentity = this.field_70985_j;
+                  enderdragonpartentity = this.dragonPartTail1;
                }
 
                if (k == 1) {
-                  enderdragonpartentity = this.field_70984_by;
+                  enderdragonpartentity = this.dragonPartTail2;
                }
 
                if (k == 2) {
-                  enderdragonpartentity = this.field_70982_bz;
+                  enderdragonpartentity = this.dragonPartTail3;
                }
 
                double[] adouble1 = this.getMovementOffsets(12 + k * 2, 1.0F);
@@ -299,19 +299,19 @@ public class EnderDragonEntity extends MobEntity implements IMob {
             }
 
             if (!this.world.isRemote) {
-               this.slowed = this.destroyBlocksInAABB(this.field_70986_h.getBoundingBox()) | this.destroyBlocksInAABB(this.dragonPartNeck.getBoundingBox()) | this.destroyBlocksInAABB(this.field_70987_i.getBoundingBox());
+               this.slowed = this.destroyBlocksInAABB(this.dragonPartHead.getBoundingBox()) | this.destroyBlocksInAABB(this.dragonPartNeck.getBoundingBox()) | this.destroyBlocksInAABB(this.dragonPartBody.getBoundingBox());
                if (this.fightManager != null) {
                   this.fightManager.dragonUpdate(this);
                }
             }
 
-            for(int l = 0; l < this.field_70977_g.length; ++l) {
-               this.field_70977_g[l].prevPosX = avec3d[l].x;
-               this.field_70977_g[l].prevPosY = avec3d[l].y;
-               this.field_70977_g[l].prevPosZ = avec3d[l].z;
-               this.field_70977_g[l].lastTickPosX = avec3d[l].x;
-               this.field_70977_g[l].lastTickPosY = avec3d[l].y;
-               this.field_70977_g[l].lastTickPosZ = avec3d[l].z;
+            for(int l = 0; l < this.dragonParts.length; ++l) {
+               this.dragonParts[l].prevPosX = avec3d[l].x;
+               this.dragonParts[l].prevPosY = avec3d[l].y;
+               this.dragonParts[l].prevPosZ = avec3d[l].z;
+               this.dragonParts[l].lastTickPosX = avec3d[l].x;
+               this.dragonParts[l].lastTickPosY = avec3d[l].y;
+               this.dragonParts[l].lastTickPosZ = avec3d[l].z;
             }
 
          }
@@ -333,9 +333,9 @@ public class EnderDragonEntity extends MobEntity implements IMob {
    }
 
    private void updateDragonEnderCrystal() {
-      if (this.field_70992_bH != null) {
-         if (this.field_70992_bH.removed) {
-            this.field_70992_bH = null;
+      if (this.closestEnderCrystal != null) {
+         if (this.closestEnderCrystal.removed) {
+            this.closestEnderCrystal = null;
          } else if (this.ticksExisted % 10 == 0 && this.getHealth() < this.getMaxHealth()) {
             this.setHealth(this.getHealth() + 1.0F);
          }
@@ -354,14 +354,14 @@ public class EnderDragonEntity extends MobEntity implements IMob {
             }
          }
 
-         this.field_70992_bH = endercrystalentity;
+         this.closestEnderCrystal = endercrystalentity;
       }
 
    }
 
    private void collideWithEntities(List<Entity> p_70970_1_) {
-      double d0 = (this.field_70987_i.getBoundingBox().minX + this.field_70987_i.getBoundingBox().maxX) / 2.0D;
-      double d1 = (this.field_70987_i.getBoundingBox().minZ + this.field_70987_i.getBoundingBox().maxZ) / 2.0D;
+      double d0 = (this.dragonPartBody.getBoundingBox().minX + this.dragonPartBody.getBoundingBox().maxX) / 2.0D;
+      double d1 = (this.dragonPartBody.getBoundingBox().minZ + this.dragonPartBody.getBoundingBox().maxZ) / 2.0D;
 
       for(Entity entity : p_70970_1_) {
          if (entity instanceof LivingEntity) {
@@ -432,7 +432,7 @@ public class EnderDragonEntity extends MobEntity implements IMob {
          return false;
       } else {
          p_213403_3_ = this.phaseManager.getCurrentPhase().func_221113_a(p_213403_2_, p_213403_3_);
-         if (p_213403_1_ != this.field_70986_h) {
+         if (p_213403_1_ != this.dragonPartHead) {
             p_213403_3_ = p_213403_3_ / 4.0F + Math.min(p_213403_3_, 1.0F);
          }
 
@@ -463,7 +463,7 @@ public class EnderDragonEntity extends MobEntity implements IMob {
 
    public boolean attackEntityFrom(DamageSource source, float amount) {
       if (source instanceof EntityDamageSource && ((EntityDamageSource)source).getIsThornsDamage()) {
-         this.func_213403_a(this.field_70987_i, source, amount);
+         this.func_213403_a(this.dragonPartBody, source, amount);
       }
 
       return false;
@@ -725,8 +725,8 @@ public class EnderDragonEntity extends MobEntity implements IMob {
    public void checkDespawn() {
    }
 
-   public EnderDragonPartEntity[] func_213404_dT() {
-      return this.field_70977_g;
+   public EnderDragonPartEntity[] getDragonParts() {
+      return this.dragonParts;
    }
 
    public boolean canBeCollidedWith() {
@@ -807,8 +807,8 @@ public class EnderDragonEntity extends MobEntity implements IMob {
          playerentity = this.world.getClosestPlayer(field_213405_bO, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
       }
 
-      if (crystal == this.field_70992_bH) {
-         this.func_213403_a(this.field_70986_h, DamageSource.causeExplosionDamage(playerentity), 10.0F);
+      if (crystal == this.closestEnderCrystal) {
+         this.func_213403_a(this.dragonPartHead, DamageSource.causeExplosionDamage(playerentity), 10.0F);
       }
 
       this.phaseManager.getCurrentPhase().onCrystalDestroyed(crystal, pos, dmgSrc, playerentity);
@@ -831,7 +831,7 @@ public class EnderDragonEntity extends MobEntity implements IMob {
       return this.fightManager;
    }
 
-   public boolean addPotionEffect(EffectInstance p_195064_1_) {
+   public boolean addPotionEffect(EffectInstance effectInstanceIn) {
       return false;
    }
 

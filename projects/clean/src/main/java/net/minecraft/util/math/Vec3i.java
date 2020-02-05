@@ -84,25 +84,23 @@ public class Vec3i implements Comparable<Vec3i> {
       return new Vec3i(this.getY() * vec.getZ() - this.getZ() * vec.getY(), this.getZ() * vec.getX() - this.getX() * vec.getZ(), this.getX() * vec.getY() - this.getY() * vec.getX());
    }
 
-   public boolean withinDistance(Vec3i p_218141_1_, double p_218141_2_) {
-      return this.distanceSq((double)p_218141_1_.getX(), (double)p_218141_1_.getY(), (double)p_218141_1_.getZ(), false) < p_218141_2_ * p_218141_2_;
+   public boolean withinDistance(Vec3i p_218141_1_, double distance) {
+      return this.distanceSq((double)p_218141_1_.getX(), (double)p_218141_1_.getY(), (double)p_218141_1_.getZ(), false) < distance * distance;
    }
 
-   public boolean withinDistance(IPosition p_218137_1_, double p_218137_2_) {
-      return this.distanceSq(p_218137_1_.getX(), p_218137_1_.getY(), p_218137_1_.getZ(), true) < p_218137_2_ * p_218137_2_;
+   public boolean withinDistance(IPosition p_218137_1_, double distance) {
+      return this.distanceSq(p_218137_1_.getX(), p_218137_1_.getY(), p_218137_1_.getZ(), true) < distance * distance;
    }
 
    public double distanceSq(Vec3i to) {
       return this.distanceSq((double)to.getX(), (double)to.getY(), (double)to.getZ(), true);
    }
 
-   public double distanceSq(IPosition p_218138_1_, boolean p_218138_2_) {
-      return this.distanceSq(p_218138_1_.getX(), p_218138_1_.getY(), p_218138_1_.getZ(), p_218138_2_);
+   public double distanceSq(IPosition p_218138_1_, boolean useCenter) {
+      return this.distanceSq(p_218138_1_.getX(), p_218138_1_.getY(), p_218138_1_.getZ(), useCenter);
    }
 
-   //AH CHANGE REFACTOR
    public double distanceSq(double x, double y, double z, boolean useCenter) {
-   //public double distanceSq(double p_218140_1_, double p_218140_3_, double p_218140_5_, boolean useCenter) {
       double d0 = useCenter ? 0.5D : 0.0D;
       double d1 = (double)this.getX() + d0 - x;
       double d2 = (double)this.getY() + d0 - y;

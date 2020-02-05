@@ -53,7 +53,7 @@ public class MoveThroughVillageGoal extends Goal {
                if (!serverworld.isPosBelowEQSecLevel1(pos)) {
                   return Double.NEGATIVE_INFINITY;
                } else {
-                  Optional<BlockPos> optional1 = serverworld.getPoiMgr().poiOptByDistFiltPos(PointOfInterestType.POI_TYPE_PRED_TRUE, this::isNotTrackedDoor, pos, 10,
+                  Optional<BlockPos> optional1 = serverworld.getPointOfInterestManager().poiOptByDistFiltPos(PointOfInterestType.POI_TYPE_PRED_TRUE, this::isNotTrackedDoor, pos, 10,
                           PointOfInterestManager.Status.IS_OCCUPIED);
                   return !optional1.isPresent() ? Double.NEGATIVE_INFINITY : -optional1.get().distanceSq(blockpos);
                }
@@ -61,7 +61,7 @@ public class MoveThroughVillageGoal extends Goal {
             if (vec3d == null) {
                return false;
             } else {
-               Optional<BlockPos> optional = serverworld.getPoiMgr().poiOptByDistFiltPos(PointOfInterestType.POI_TYPE_PRED_TRUE, this::isNotTrackedDoor, new BlockPos(vec3d), 10,
+               Optional<BlockPos> optional = serverworld.getPointOfInterestManager().poiOptByDistFiltPos(PointOfInterestType.POI_TYPE_PRED_TRUE, this::isNotTrackedDoor, new BlockPos(vec3d), 10,
                        PointOfInterestManager.Status.IS_OCCUPIED);
                if (!optional.isPresent()) {
                   return false;
@@ -73,7 +73,7 @@ public class MoveThroughVillageGoal extends Goal {
                   this.path = groundpathnavigator.getPathToPos(this.targetPos, 0);
                   groundpathnavigator.setBreakDoors(flag);
                   if (this.path == null) {
-                     Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetToward(this.entity, 10, 7, new Vec3d(this.targetPos));
+                     Vec3d vec3d1 = RandomPositionGenerator.findRandomTargetBlockTowards(this.entity, 10, 7, new Vec3d(this.targetPos));
                      if (vec3d1 == null) {
                         return false;
                      }

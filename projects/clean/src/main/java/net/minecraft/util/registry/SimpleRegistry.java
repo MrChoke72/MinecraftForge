@@ -24,25 +24,25 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
    protected Object[] values;
    private int nextFreeId;
 
-   public <V extends T> V register(int p_218382_1_, ResourceLocation p_218382_2_, V p_218382_3_) {
-      this.underlyingIntegerMap.put((T)p_218382_3_, p_218382_1_);
-      Validate.notNull(p_218382_2_);
-      Validate.notNull(p_218382_3_);
+   public <V extends T> V register(int id, ResourceLocation name, V instance) {
+      this.underlyingIntegerMap.put((T)instance, id);
+      Validate.notNull(name);
+      Validate.notNull(instance);
       this.values = null;
-      if (this.registryObjects.containsKey(p_218382_2_)) {
-         LOGGER0.debug("Adding duplicate key '{}' to registry", (Object)p_218382_2_);
+      if (this.registryObjects.containsKey(name)) {
+         LOGGER0.debug("Adding duplicate key '{}' to registry", (Object)name);
       }
 
-      this.registryObjects.put(p_218382_2_, (T)p_218382_3_);
-      if (this.nextFreeId <= p_218382_1_) {
-         this.nextFreeId = p_218382_1_ + 1;
+      this.registryObjects.put(name, (T)instance);
+      if (this.nextFreeId <= id) {
+         this.nextFreeId = id + 1;
       }
 
-      return p_218382_3_;
+      return instance;
    }
 
-   public <V extends T> V register(ResourceLocation p_218381_1_, V p_218381_2_) {
-      return this.register(this.nextFreeId, p_218381_1_, p_218381_2_);
+   public <V extends T> V register(ResourceLocation name, V instance) {
+      return this.register(this.nextFreeId, name, instance);
    }
 
    @Nullable

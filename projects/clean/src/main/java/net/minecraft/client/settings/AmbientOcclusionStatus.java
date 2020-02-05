@@ -12,26 +12,26 @@ public enum AmbientOcclusionStatus {
    MIN(1, "options.ao.min"),
    MAX(2, "options.ao.max");
 
-   private static final AmbientOcclusionStatus[] field_216573_d = Arrays.stream(values()).sorted(Comparator.comparingInt(AmbientOcclusionStatus::func_216572_a)).toArray((p_216571_0_) -> {
+   private static final AmbientOcclusionStatus[] VALUES = Arrays.stream(values()).sorted(Comparator.comparingInt(AmbientOcclusionStatus::getId)).toArray((p_216571_0_) -> {
       return new AmbientOcclusionStatus[p_216571_0_];
    });
-   private final int field_216574_e;
-   private final String field_216575_f;
+   private final int id;
+   private final String resourceKey;
 
-   private AmbientOcclusionStatus(int p_i51169_3_, String p_i51169_4_) {
-      this.field_216574_e = p_i51169_3_;
-      this.field_216575_f = p_i51169_4_;
+   private AmbientOcclusionStatus(int idIn, String resourceKeyIn) {
+      this.id = idIn;
+      this.resourceKey = resourceKeyIn;
    }
 
-   public int func_216572_a() {
-      return this.field_216574_e;
+   public int getId() {
+      return this.id;
    }
 
-   public String func_216569_b() {
-      return this.field_216575_f;
+   public String getResourceKey() {
+      return this.resourceKey;
    }
 
-   public static AmbientOcclusionStatus func_216570_a(int p_216570_0_) {
-      return field_216573_d[MathHelper.normalizeAngle(p_216570_0_, field_216573_d.length)];
+   public static AmbientOcclusionStatus getValue(int valueIn) {
+      return VALUES[MathHelper.normalizeAngle(valueIn, VALUES.length)];
    }
 }

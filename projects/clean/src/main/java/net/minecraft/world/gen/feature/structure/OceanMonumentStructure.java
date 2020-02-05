@@ -20,8 +20,8 @@ import net.minecraft.world.gen.feature.template.TemplateManager;
 public class OceanMonumentStructure extends Structure<NoFeatureConfig> {
    private static final List<Biome.SpawnListEntry> MONUMENT_ENEMIES = Lists.newArrayList(new Biome.SpawnListEntry(EntityType.GUARDIAN, 1, 2, 4));
 
-   public OceanMonumentStructure(Function<Dynamic<?>, ? extends NoFeatureConfig> p_i51474_1_) {
-      super(p_i51474_1_);
+   public OceanMonumentStructure(Function<Dynamic<?>, ? extends NoFeatureConfig> noFeatureConfigIn) {
+      super(noFeatureConfigIn);
    }
 
    protected ChunkPos getStartPositionForPosition(ChunkGenerator<?> chunkGenerator, Random random, int x, int z, int spacingOffsetsX, int spacingOffsetsZ) {
@@ -86,12 +86,12 @@ public class OceanMonumentStructure extends Structure<NoFeatureConfig> {
       }
 
       public void init(ChunkGenerator<?> generator, TemplateManager templateManagerIn, int chunkX, int chunkZ, Biome biomeIn) {
-         this.func_214633_b(chunkX, chunkZ);
+         this.generateStart(chunkX, chunkZ);
       }
 
-      private void func_214633_b(int p_214633_1_, int p_214633_2_) {
-         int i = p_214633_1_ * 16 - 29;
-         int j = p_214633_2_ * 16 - 29;
+      private void generateStart(int chunkX, int chunkZ) {
+         int i = chunkX * 16 - 29;
+         int j = chunkZ * 16 - 29;
          Direction direction = Direction.Plane.HORIZONTAL.random(this.rand);
          this.components.add(new OceanMonumentPieces.MonumentBuilding(this.rand, i, j, direction));
          this.recalculateStructureSize();
@@ -101,7 +101,7 @@ public class OceanMonumentStructure extends Structure<NoFeatureConfig> {
       public void func_225565_a_(IWorld p_225565_1_, ChunkGenerator<?> p_225565_2_, Random p_225565_3_, MutableBoundingBox p_225565_4_, ChunkPos p_225565_5_) {
          if (!this.wasCreated) {
             this.components.clear();
-            this.func_214633_b(this.getChunkPosX(), this.getChunkPosZ());
+            this.generateStart(this.getChunkPosX(), this.getChunkPosZ());
          }
 
          super.func_225565_a_(p_225565_1_, p_225565_2_, p_225565_3_, p_225565_4_, p_225565_5_);

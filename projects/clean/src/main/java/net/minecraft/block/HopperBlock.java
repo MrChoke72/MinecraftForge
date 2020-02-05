@@ -112,14 +112,14 @@ public class HopperBlock extends ContainerBlock {
       }
    }
 
-   public ActionResultType func_225533_a_(BlockState p_225533_1_, World p_225533_2_, BlockPos p_225533_3_, PlayerEntity p_225533_4_, Hand p_225533_5_, BlockRayTraceResult p_225533_6_) {
-      if (p_225533_2_.isRemote) {
+   public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult p_225533_6_) {
+      if (worldIn.isRemote) {
          return ActionResultType.SUCCESS;
       } else {
-         TileEntity tileentity = p_225533_2_.getTileEntity(p_225533_3_);
+         TileEntity tileentity = worldIn.getTileEntity(pos);
          if (tileentity instanceof HopperTileEntity) {
-            p_225533_4_.openContainer((HopperTileEntity)tileentity);
-            p_225533_4_.addStat(Stats.INSPECT_HOPPER);
+            player.openContainer((HopperTileEntity)tileentity);
+            player.addStat(Stats.INSPECT_HOPPER);
          }
 
          return ActionResultType.SUCCESS;

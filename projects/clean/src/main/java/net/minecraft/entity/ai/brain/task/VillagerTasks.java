@@ -17,7 +17,7 @@ public class VillagerTasks {
 
    //AH REFACTOR
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> core(VillagerProfession profession, float moveSpeed) {
-   //public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> core(VillagerProfession p_220638_0_, float p_220638_1_) {
+      //public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> core(VillagerProfession p_220638_0_, float p_220638_1_) {
       return ImmutableList.of(
               Pair.of(0, new SwimTask(0.4F, 0.8F)),
               Pair.of(0, new InteractWithDoorTask()),
@@ -41,14 +41,14 @@ public class VillagerTasks {
 
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> work(VillagerProfession profession, float moveSpeed) {
       return ImmutableList.of(
-              lookTasks(),
+              lookAtPlayerOrVillager(),
               Pair.of(5, new FirstShuffledTask<>(
                       ImmutableList.of(
-                        Pair.of(new SpawnGolemTask(), 7),
-                        Pair.of(new WorkTask(MemoryModuleType.JOB_SITE, 4), 2),
-                        Pair.of(new WalkTowardsPosTask(MemoryModuleType.JOB_SITE, 1, 10), 5),
-                        Pair.of(new WalkTowardsRandomSecondaryPosTask(MemoryModuleType.SECONDARY_JOB_SITE, 0.4F, 1, 6, MemoryModuleType.JOB_SITE), 5),
-                        Pair.of(new FarmTask(), profession == VillagerProfession.FARMER ? 2 : 5)))
+                              Pair.of(new SpawnGolemTask(), 7),
+                              Pair.of(new WorkTask(MemoryModuleType.JOB_SITE, 4), 2),
+                              Pair.of(new WalkTowardsPosTask(MemoryModuleType.JOB_SITE, 1, 10), 5),
+                              Pair.of(new WalkTowardsRandomSecondaryPosTask(MemoryModuleType.SECONDARY_JOB_SITE, 0.4F, 1, 6, MemoryModuleType.JOB_SITE), 5),
+                              Pair.of(new FarmTask(), profession == VillagerProfession.FARMER ? 2 : 5)))
               ),
               Pair.of(10, new ShowWaresTask(400, 1600)),
               Pair.of(10, new FindInteractionAndLookTargetTask(EntityType.PLAYER, 4)),
@@ -61,7 +61,7 @@ public class VillagerTasks {
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> play(float moveSpeed) {
       return ImmutableList.of(
               Pair.of(0, new WalkToTargetTask(100)),
-              lookAtEntityTasks(),
+              lookAtMany(),
               Pair.of(5, new WalkToVillagerBabiesTask()),
               Pair.of(5, new FirstShuffledTask<>(
                       ImmutableMap.of(
@@ -78,7 +78,7 @@ public class VillagerTasks {
 
    //AH REFACTOR
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> rest(VillagerProfession profession, float moveSpeed) {
-   //public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> rest(VillagerProfession p_220635_0_, float p_220635_1_) {
+      //public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> rest(VillagerProfession p_220635_0_, float p_220635_1_) {
       return ImmutableList.of(
               Pair.of(2, new StayNearPointTask(MemoryModuleType.HOME, moveSpeed, 1, 150, 1200)),
               Pair.of(3, new ExpirePOITask(PointOfInterestType.HOME, MemoryModuleType.HOME)),
@@ -86,12 +86,12 @@ public class VillagerTasks {
               Pair.of(5, new FirstShuffledTask<>(
                       ImmutableMap.of(MemoryModuleType.HOME, MemoryModuleStatus.VALUE_ABSENT),
                       ImmutableList.of(
-                           Pair.of(new WalkToHouseTask(moveSpeed), 1),
-                           Pair.of(new WalkRandomlyTask(moveSpeed), 4),
-                           Pair.of(new WalkToPOITask(moveSpeed, 4), 2),
-                           Pair.of(new DummyTask(20, 40), 2)))
+                              Pair.of(new WalkToHouseTask(moveSpeed), 1),
+                              Pair.of(new WalkRandomlyTask(moveSpeed), 4),
+                              Pair.of(new WalkToPOITask(moveSpeed, 4), 2),
+                              Pair.of(new DummyTask(20, 40), 2)))
               ),
-              lookTasks(),
+              lookAtPlayerOrVillager(),
               Pair.of(99, new UpdateActivityTask()));
    }
 
@@ -112,7 +112,7 @@ public class VillagerTasks {
                       MultiTask.RunType.RUN_ONE,
                       ImmutableList.of(
                               Pair.of(new ShareItemsTask(), 1)))),
-              lookAtEntityTasks(),
+              lookAtMany(),
               Pair.of(99, new UpdateActivityTask()));
    }
 
@@ -137,7 +137,7 @@ public class VillagerTasks {
                       MultiTask.RunType.RUN_ONE,
                       ImmutableList.of(
                               Pair.of(new ShareItemsTask(), 1))
-                      )),
+              )),
               Pair.of(3, new MultiTask<>(
                       ImmutableMap.of(),
                       ImmutableSet.of(MemoryModuleType.BREED_TARGET),
@@ -146,7 +146,7 @@ public class VillagerTasks {
                       ImmutableList.of(
                               Pair.of(new CreateBabyVillagerTask(), 1)
                       ))),
-              lookAtEntityTasks(),
+              lookAtMany(),
               Pair.of(99, new UpdateActivityTask())
       );
    }
@@ -162,7 +162,7 @@ public class VillagerTasks {
               Pair.of(1, new FleeTask(MemoryModuleType.NEAREST_HOSTILE, f)),
               Pair.of(1, new FleeTask(MemoryModuleType.HURT_BY_ENTITY, f)),
               Pair.of(3, new FindWalkTargetTask(f, 2, 2)),
-              lookTasks());
+              lookAtPlayerOrVillager());
    }
 
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> preRaid(VillagerProfession profession, float moveSpeed) {
@@ -172,21 +172,21 @@ public class VillagerTasks {
                       ImmutableList.of(
                               Pair.of(new StayNearPointTask(MemoryModuleType.MEETING_POINT, moveSpeed * 1.5F, 2, 150, 200), 6),
                               Pair.of(new FindWalkTargetTask(moveSpeed * 1.5F), 2)))),
-              lookTasks(), Pair.of(99, new ForgetRaidTask()));
+              lookAtPlayerOrVillager(), Pair.of(99, new ForgetRaidTask()));
    }
 
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> raid(VillagerProfession profession, float moveSpeed) {
-      return ImmutableList.of(Pair.of(0, new FirstShuffledTask<>(ImmutableList.of(Pair.of(new GoOutsideAfterRaidTask(moveSpeed), 5), Pair.of(new FindWalkTargetAfterRaidVictoryTask(moveSpeed * 1.1F), 2)))), Pair.of(0, new CelebrateRaidVictoryTask(600, 600)), Pair.of(2, new FindHidingPlaceDuringRaidTask(24, moveSpeed * 1.4F)), lookTasks(), Pair.of(99, new ForgetRaidTask()));
+      return ImmutableList.of(Pair.of(0, new FirstShuffledTask<>(ImmutableList.of(Pair.of(new GoOutsideAfterRaidTask(moveSpeed), 5), Pair.of(new FindWalkTargetAfterRaidVictoryTask(moveSpeed * 1.1F), 2)))), Pair.of(0, new CelebrateRaidVictoryTask(600, 600)), Pair.of(2, new FindHidingPlaceDuringRaidTask(24, moveSpeed * 1.4F)), lookAtPlayerOrVillager(), Pair.of(99, new ForgetRaidTask()));
    }
 
    public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> hide(VillagerProfession profession, float moveSpeed) {
       return ImmutableList.of(
               Pair.of(0, new ExpireHidingTask(15, 2)),
               Pair.of(1, new FindHidingPlaceTask(32, moveSpeed * 1.25F, 2)),
-              lookTasks());
+              lookAtPlayerOrVillager());
    }
 
-   private static Pair<Integer, Task<LivingEntity>> lookAtEntityTasks() {
+   private static Pair<Integer, Task<LivingEntity>> lookAtMany() {
       return Pair.of(5, new FirstShuffledTask<>(
               ImmutableList.of(
                       Pair.of(new LookAtEntityTask(EntityType.CAT, 8.0F), 8),
@@ -199,11 +199,11 @@ public class VillagerTasks {
    }
 
    //AH REFACTOR
-   private static Pair<Integer, Task<LivingEntity>> lookTasks() {
-   //private static Pair<Integer, Task<LivingEntity>> func_220646_b() {
+   private static Pair<Integer, Task<LivingEntity>> lookAtPlayerOrVillager() {
+      //private static Pair<Integer, Task<LivingEntity>> func_220646_b() {
       return Pair.of(5, new FirstShuffledTask<>(ImmutableList.of(
-                  Pair.of(new LookAtEntityTask(EntityType.VILLAGER, 8.0F), 2),
-                  Pair.of(new LookAtEntityTask(EntityType.PLAYER, 8.0F), 2),
-                  Pair.of(new DummyTask(30, 60), 8))));
+              Pair.of(new LookAtEntityTask(EntityType.VILLAGER, 8.0F), 2),
+              Pair.of(new LookAtEntityTask(EntityType.PLAYER, 8.0F), 2),
+              Pair.of(new DummyTask(30, 60), 8))));
    }
 }

@@ -71,9 +71,9 @@ public class IngameMenuScreen extends Screen {
          p_213067_1_.active = false;
          this.minecraft.world.sendQuittingDisconnectingPacket();
          if (flag) {
-            this.minecraft.func_213231_b(new DirtMessageScreen(new TranslationTextComponent("menu.savingLevel")));
+            this.minecraft.unloadWorld(new DirtMessageScreen(new TranslationTextComponent("menu.savingLevel")));
          } else {
-            this.minecraft.func_213254_o();
+            this.minecraft.unloadWorld();
          }
 
          if (flag) {

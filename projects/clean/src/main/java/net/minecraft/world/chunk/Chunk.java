@@ -80,21 +80,21 @@ public class Chunk implements IChunk {
    private volatile boolean dirty;
    private long inhabitedTime;
    @Nullable
-   private Supplier<ChunkHolder.LocationType> field_217329_u;
+   private Supplier<ChunkHolder.LocationType> locationType;
    @Nullable
-   private Consumer<Chunk> field_217330_v;
+   private Consumer<Chunk> postLoadConsumer;
    private final ChunkPos pos;
-   private volatile boolean field_217331_x;
+   private volatile boolean lightCorrect;
 
-   public Chunk(World p_i225780_1_, ChunkPos p_i225780_2_, BiomeContainer p_i225780_3_) {
-      this(p_i225780_1_, p_i225780_2_, p_i225780_3_, UpgradeData.EMPTY, EmptyTickList.get(), EmptyTickList.get(), 0L, (ChunkSection[])null, (Consumer<Chunk>)null);
+   public Chunk(World worldIn, ChunkPos chunkPosIn, BiomeContainer biomeContainerIn) {
+      this(worldIn, chunkPosIn, biomeContainerIn, UpgradeData.EMPTY, EmptyTickList.get(), EmptyTickList.get(), 0L, (ChunkSection[])null, (Consumer<Chunk>)null);
    }
 
-   public Chunk(World p_i225781_1_, ChunkPos p_i225781_2_, BiomeContainer p_i225781_3_, UpgradeData p_i225781_4_, ITickList<Block> p_i225781_5_, ITickList<Fluid> p_i225781_6_, long p_i225781_7_, @Nullable ChunkSection[] p_i225781_9_, @Nullable Consumer<Chunk> p_i225781_10_) {
+   public Chunk(World worldIn, ChunkPos chunkPosIn, BiomeContainer biomeContainerIn, UpgradeData upgradeDataIn, ITickList<Block> tickBlocksIn, ITickList<Fluid> tickFluidsIn, long inhabitedTimeIn, @Nullable ChunkSection[] sectionsIn, @Nullable Consumer<Chunk> postLoadConsumerIn) {
       this.entityLists = new ClassInheritanceMultiMap[16];
-      this.world = p_i225781_1_;
-      this.pos = p_i225781_2_;
-      this.upgradeData = p_i225781_4_;
+      this.world = worldIn;
+      this.pos = chunkPosIn;
+      this.upgradeData = upgradeDataIn;
 
       for(Heightmap.Type heightmap$type : Heightmap.Type.values()) {
          if (ChunkStatus.FULL.getHeightMaps().contains(heightmap$type)) {
@@ -106,26 +106,26 @@ public class Chunk implements IChunk {
          this.entityLists[i] = new ClassInheritanceMultiMap<>(Entity.class);
       }
 
-      this.blockBiomeArray = p_i225781_3_;
-      this.blocksToBeTicked = p_i225781_5_;
-      this.fluidsToBeTicked = p_i225781_6_;
-      this.inhabitedTime = p_i225781_7_;
-      this.field_217330_v = p_i225781_10_;
-      if (p_i225781_9_ != null) {
-         if (this.sections.length == p_i225781_9_.length) {
-            System.arraycopy(p_i225781_9_, 0, this.sections, 0, this.sections.length);
+      this.blockBiomeArray = biomeContainerIn;
+      this.blocksToBeTicked = tickBlocksIn;
+      this.fluidsToBeTicked = tickFluidsIn;
+      this.inhabitedTime = inhabitedTimeIn;
+      this.postLoadConsumer = postLoadConsumerIn;
+      if (sectionsIn != null) {
+         if (this.sections.length == sectionsIn.length) {
+            System.arraycopy(sectionsIn, 0, this.sections, 0, this.sections.length);
          } else {
-            LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", p_i225781_9_.length, this.sections.length);
+            LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", sectionsIn.length, this.sections.length);
          }
       }
 
    }
 
-   public Chunk(World p_i49947_1_, ChunkPrimer p_i49947_2_) {
-      this(p_i49947_1_, p_i49947_2_.getPos(), p_i49947_2_.func_225549_i_(), p_i49947_2_.getUpgradeData(), p_i49947_2_.getBlocksToBeTicked(), p_i49947_2_.getFluidsToBeTicked(), p_i49947_2_.getInhabitedTime(), p_i49947_2_.getSections(), (Consumer<Chunk>)null);
+   public Chunk(World worldIn, ChunkPrimer p_i49947_2_) {
+      this(worldIn, p_i49947_2_.getPos(), p_i49947_2_.getBiomes(), p_i49947_2_.getUpgradeData(), p_i49947_2_.getBlocksToBeTicked(), p_i49947_2_.getFluidsToBeTicked(), p_i49947_2_.getInhabitedTime(), p_i49947_2_.getSections(), (Consumer<Chunk>)null);
 
       for(CompoundNBT compoundnbt : p_i49947_2_.getEntities()) {
-         EntityType.func_220335_a(compoundnbt, p_i49947_1_, (p_217325_1_) -> {
+         EntityType.func_220335_a(compoundnbt, worldIn, (p_217325_1_) -> {
             this.addEntity(p_217325_1_);
             return p_217325_1_;
          });
@@ -144,9 +144,9 @@ public class Chunk implements IChunk {
       this.setStructureStarts(p_i49947_2_.getStructureStarts());
       this.setStructureReferences(p_i49947_2_.getStructureReferences());
 
-      for(Entry<Heightmap.Type, Heightmap> entry : p_i49947_2_.func_217311_f()) {
+      for(Entry<Heightmap.Type, Heightmap> entry : p_i49947_2_.getHeightmaps()) {
          if (ChunkStatus.FULL.getHeightMaps().contains(entry.getKey())) {
-            this.func_217303_b(entry.getKey()).setDataArray(entry.getValue().getDataArray());
+            this.getHeightmap(entry.getKey()).setDataArray(entry.getValue().getDataArray());
          }
       }
 
@@ -154,8 +154,8 @@ public class Chunk implements IChunk {
       this.dirty = true;
    }
 
-   public Heightmap func_217303_b(Heightmap.Type p_217303_1_) {
-      return this.heightMap.computeIfAbsent(p_217303_1_, (p_217319_1_) -> {
+   public Heightmap getHeightmap(Heightmap.Type typeIn) {
+      return this.heightMap.computeIfAbsent(typeIn, (p_217319_1_) -> {
          return new Heightmap(this, p_217319_1_);
       });
    }
@@ -399,7 +399,7 @@ public class Chunk implements IChunk {
 
    public void addTileEntity(BlockPos pos, TileEntity tileEntityIn) {
       if (this.getBlockState(pos).getBlock() instanceof ITileEntityProvider) {
-         tileEntityIn.func_226984_a_(this.world, pos);
+         tileEntityIn.setWorldAndPos(this.world, pos);
          tileEntityIn.validate();
          TileEntity tileentity = this.tileEntities.put(pos.toImmutable(), tileEntityIn);
          if (tileentity != null && tileentity != tileEntityIn) {
@@ -414,14 +414,14 @@ public class Chunk implements IChunk {
    }
 
    @Nullable
-   public CompoundNBT func_223134_j(BlockPos p_223134_1_) {
-      TileEntity tileentity = this.getTileEntity(p_223134_1_);
+   public CompoundNBT getTileEntityNBT(BlockPos pos) {
+      TileEntity tileentity = this.getTileEntity(pos);
       if (tileentity != null && !tileentity.isRemoved()) {
          CompoundNBT compoundnbt1 = tileentity.write(new CompoundNBT());
          compoundnbt1.putBoolean("keepPacked", false);
          return compoundnbt1;
       } else {
-         CompoundNBT compoundnbt = this.deferredTileEntities.get(p_223134_1_);
+         CompoundNBT compoundnbt = this.deferredTileEntities.get(pos);
          if (compoundnbt != null) {
             compoundnbt = compoundnbt.copy();
             compoundnbt.putBoolean("keepPacked", true);
@@ -441,10 +441,10 @@ public class Chunk implements IChunk {
 
    }
 
-   public void func_217318_w() {
-      if (this.field_217330_v != null) {
-         this.field_217330_v.accept(this);
-         this.field_217330_v = null;
+   public void postLoad() {
+      if (this.postLoadConsumer != null) {
+         this.postLoadConsumer.accept(this);
+         this.postLoadConsumer = null;
       }
 
    }
@@ -468,7 +468,7 @@ public class Chunk implements IChunk {
                   }
 
                   if (entity instanceof EnderDragonEntity) {
-                     for(EnderDragonPartEntity enderdragonpartentity : ((EnderDragonEntity)entity).func_213404_dT()) {
+                     for(EnderDragonPartEntity enderdragonpartentity : ((EnderDragonEntity)entity).getDragonParts()) {
                         if (enderdragonpartentity != entityIn && enderdragonpartentity.getBoundingBox().intersects(aabb) && (filter == null || filter.test(enderdragonpartentity))) {
                            listToFill.add(enderdragonpartentity);
                         }
@@ -481,16 +481,16 @@ public class Chunk implements IChunk {
 
    }
 
-   public <T extends Entity> void func_217313_a(@Nullable EntityType<?> p_217313_1_, AxisAlignedBB p_217313_2_, List<? super T> p_217313_3_, Predicate<? super T> p_217313_4_) {
-      int i = MathHelper.floor((p_217313_2_.minY - 2.0D) / 16.0D);
-      int j = MathHelper.floor((p_217313_2_.maxY + 2.0D) / 16.0D);
+   public <T extends Entity> void getEntitiesWithinAABBForList(@Nullable EntityType<?> entitytypeIn, AxisAlignedBB aabb, List<? super T> list, Predicate<? super T> filter) {
+      int i = MathHelper.floor((aabb.minY - 2.0D) / 16.0D);
+      int j = MathHelper.floor((aabb.maxY + 2.0D) / 16.0D);
       i = MathHelper.clamp(i, 0, this.entityLists.length - 1);
       j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
 
       for(int k = i; k <= j; ++k) {
-         for(Entity entity : this.entityLists[k].func_219790_a(Entity.class)) {
-            if ((p_217313_1_ == null || entity.getType() == p_217313_1_) && entity.getBoundingBox().intersects(p_217313_2_) && p_217313_4_.test((T)entity)) {
-               p_217313_3_.add((T)entity);
+         for(Entity entity : this.entityLists[k].getByClass(Entity.class)) {
+            if ((entitytypeIn == null || entity.getType() == entitytypeIn) && entity.getBoundingBox().intersects(aabb) && filter.test((T)entity)) {
+               list.add((T)entity);
             }
          }
       }
@@ -504,7 +504,7 @@ public class Chunk implements IChunk {
       j = MathHelper.clamp(j, 0, this.entityLists.length - 1);
 
       for(int k = i; k <= j; ++k) {
-         for(T t : this.entityLists[k].func_219790_a(entityClass)) {
+         for(T t : this.entityLists[k].getByClass(entityClass)) {
             if (t.getBoundingBox().intersects(aabb) && (filter == null || filter.test(t))) {
                listToFill.add(t);
             }
@@ -522,18 +522,18 @@ public class Chunk implements IChunk {
    }
 
    @OnlyIn(Dist.CLIENT)
-   public void func_227073_a_(@Nullable BiomeContainer p_227073_1_, PacketBuffer p_227073_2_, CompoundNBT p_227073_3_, int p_227073_4_) {
-      boolean flag = p_227073_1_ != null;
+   public void read(@Nullable BiomeContainer biomeContainerIn, PacketBuffer packetBufferIn, CompoundNBT nbtIn, int availableSections) {
+      boolean flag = biomeContainerIn != null;
       Predicate<BlockPos> predicate = flag ? (p_217315_0_) -> {
          return true;
       } : (p_217323_1_) -> {
-         return (p_227073_4_ & 1 << (p_217323_1_.getY() >> 4)) != 0;
+         return (availableSections & 1 << (p_217323_1_.getY() >> 4)) != 0;
       };
       Sets.newHashSet(this.tileEntities.keySet()).stream().filter(predicate).forEach(this.world::removeTileEntity);
 
       for(int i = 0; i < this.sections.length; ++i) {
          ChunkSection chunksection = this.sections[i];
-         if ((p_227073_4_ & 1 << i) == 0) {
+         if ((availableSections & 1 << i) == 0) {
             if (flag && chunksection != EMPTY_SECTION) {
                this.sections[i] = EMPTY_SECTION;
             }
@@ -543,18 +543,18 @@ public class Chunk implements IChunk {
                this.sections[i] = chunksection;
             }
 
-            chunksection.read(p_227073_2_);
+            chunksection.read(packetBufferIn);
          }
       }
 
-      if (p_227073_1_ != null) {
-         this.blockBiomeArray = p_227073_1_;
+      if (biomeContainerIn != null) {
+         this.blockBiomeArray = biomeContainerIn;
       }
 
       for(Heightmap.Type heightmap$type : Heightmap.Type.values()) {
          String s = heightmap$type.getId();
-         if (p_227073_3_.contains(s, 12)) {
-            this.setHeightmap(heightmap$type, p_227073_3_.getLongArray(s));
+         if (nbtIn.contains(s, 12)) {
+            this.setHeightmap(heightmap$type, nbtIn.getLongArray(s));
          }
       }
 
@@ -564,7 +564,7 @@ public class Chunk implements IChunk {
 
    }
 
-   public BiomeContainer func_225549_i_() {
+   public BiomeContainer getBiomes() {
       return this.blockBiomeArray;
    }
 
@@ -576,7 +576,7 @@ public class Chunk implements IChunk {
       return this.world;
    }
 
-   public Collection<Entry<Heightmap.Type, Heightmap>> func_217311_f() {
+   public Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps() {
       return Collections.unmodifiableSet(this.heightMap.entrySet());
    }
 
@@ -592,7 +592,7 @@ public class Chunk implements IChunk {
       return this.deferredTileEntities.get(pos);
    }
 
-   public Stream<BlockPos> func_217304_m() {
+   public Stream<BlockPos> getLightSources() {
       return StreamSupport.stream(BlockPos.getAllInBoxMutable(this.pos.getXStart(), 0, this.pos.getZStart(), this.pos.getXEnd(), 255, this.pos.getZEnd()).spliterator(), false).filter((p_217312_1_) -> {
          return this.getBlockState(p_217312_1_).getLightValue() != 0;
       });
@@ -685,7 +685,7 @@ public class Chunk implements IChunk {
          }
       }
 
-      this.func_222879_B();
+      this.rescheduleTicks();
 
       for(BlockPos blockpos1 : Sets.newHashSet(this.deferredTileEntities.keySet())) {
          this.getTileEntity(blockpos1);
@@ -711,7 +711,7 @@ public class Chunk implements IChunk {
       }
 
       if (tileentity != null) {
-         tileentity.func_226984_a_(this.world, pos);
+         tileentity.setWorldAndPos(this.world, pos);
          this.addTileEntity(tileentity);
       } else {
          LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", this.getBlockState(pos), pos);
@@ -728,14 +728,14 @@ public class Chunk implements IChunk {
       return this.packedBlockPositions;
    }
 
-   public void func_222879_B() {
+   public void rescheduleTicks() {
       if (this.blocksToBeTicked instanceof ChunkPrimerTickList) {
          ((ChunkPrimerTickList<Block>)this.blocksToBeTicked).postProcess(this.world.getPendingBlockTicks(), (p_222881_1_) -> {
             return this.getBlockState(p_222881_1_).getBlock();
          });
          this.blocksToBeTicked = EmptyTickList.get();
       } else if (this.blocksToBeTicked instanceof SerializableTickList) {
-         this.world.getPendingBlockTicks().func_219497_a(((SerializableTickList)this.blocksToBeTicked).func_219499_a());
+         this.world.getPendingBlockTicks().addAll(((SerializableTickList)this.blocksToBeTicked).func_219499_a());
          this.blocksToBeTicked = EmptyTickList.get();
       }
 
@@ -745,20 +745,20 @@ public class Chunk implements IChunk {
          });
          this.fluidsToBeTicked = EmptyTickList.get();
       } else if (this.fluidsToBeTicked instanceof SerializableTickList) {
-         this.world.getPendingFluidTicks().func_219497_a(((SerializableTickList)this.fluidsToBeTicked).func_219499_a());
+         this.world.getPendingFluidTicks().addAll(((SerializableTickList)this.fluidsToBeTicked).func_219499_a());
          this.fluidsToBeTicked = EmptyTickList.get();
       }
 
    }
 
-   public void func_222880_a(ServerWorld p_222880_1_) {
+   public void saveScheduledTicks(ServerWorld serverWorldIn) {
       if (this.blocksToBeTicked == EmptyTickList.<Block>get()) {
-         this.blocksToBeTicked = new SerializableTickList<>(Registry.BLOCK::getKey, p_222880_1_.getPendingBlockTicks().func_223188_a(this.pos, true, false));
+         this.blocksToBeTicked = new SerializableTickList<>(Registry.BLOCK::getKey, serverWorldIn.getPendingBlockTicks().getPending(this.pos, true, false));
          this.setModified(true);
       }
 
       if (this.fluidsToBeTicked == EmptyTickList.<Fluid>get()) {
-         this.fluidsToBeTicked = new SerializableTickList<>(Registry.FLUID::getKey, p_222880_1_.getPendingFluidTicks().func_223188_a(this.pos, true, false));
+         this.fluidsToBeTicked = new SerializableTickList<>(Registry.FLUID::getKey, serverWorldIn.getPendingFluidTicks().getPending(this.pos, true, false));
          this.setModified(true);
       }
 
@@ -768,20 +768,20 @@ public class Chunk implements IChunk {
       return ChunkStatus.FULL;
    }
 
-   public ChunkHolder.LocationType func_217321_u() {
-      return this.field_217329_u == null ? ChunkHolder.LocationType.BORDER : this.field_217329_u.get();
+   public ChunkHolder.LocationType getLocationType() {
+      return this.locationType == null ? ChunkHolder.LocationType.BORDER : this.locationType.get();
    }
 
-   public void func_217314_a(Supplier<ChunkHolder.LocationType> p_217314_1_) {
-      this.field_217329_u = p_217314_1_;
+   public void setLocationType(Supplier<ChunkHolder.LocationType> locationTypeIn) {
+      this.locationType = locationTypeIn;
    }
 
    public boolean hasLight() {
-      return this.field_217331_x;
+      return this.lightCorrect;
    }
 
-   public void setLight(boolean p_217305_1_) {
-      this.field_217331_x = p_217305_1_;
+   public void setLight(boolean lightCorrectIn) {
+      this.lightCorrect = lightCorrectIn;
       this.setModified(true);
    }
 

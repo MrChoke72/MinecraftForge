@@ -17,19 +17,19 @@ public class EndGatewayTileEntityRenderer extends EndPortalTileEntityRenderer<En
       super(p_i226018_1_);
    }
 
-   public void func_225616_a_(EndGatewayTileEntity p_225616_1_, float p_225616_2_, MatrixStack p_225616_3_, IRenderTypeBuffer p_225616_4_, int p_225616_5_, int p_225616_6_) {
-      if (p_225616_1_.isSpawning() || p_225616_1_.isCoolingDown()) {
-         float f = p_225616_1_.isSpawning() ? p_225616_1_.getSpawnPercent(p_225616_2_) : p_225616_1_.getCooldownPercent(p_225616_2_);
-         double d0 = p_225616_1_.isSpawning() ? 256.0D : 50.0D;
+   public void render(EndGatewayTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+      if (tileEntityIn.isSpawning() || tileEntityIn.isCoolingDown()) {
+         float f = tileEntityIn.isSpawning() ? tileEntityIn.getSpawnPercent(partialTicks) : tileEntityIn.getCooldownPercent(partialTicks);
+         double d0 = tileEntityIn.isSpawning() ? 256.0D : 50.0D;
          f = MathHelper.sin(f * (float)Math.PI);
          int i = MathHelper.floor((double)f * d0);
-         float[] afloat = p_225616_1_.isSpawning() ? DyeColor.MAGENTA.getColorComponentValues() : DyeColor.PURPLE.getColorComponentValues();
-         long j = p_225616_1_.getWorld().getGameTime();
-         BeaconTileEntityRenderer.func_228842_a_(p_225616_3_, p_225616_4_, END_GATEWAY_BEAM_TEXTURE, p_225616_2_, f, j, 0, i, afloat, 0.15F, 0.175F);
-         BeaconTileEntityRenderer.func_228842_a_(p_225616_3_, p_225616_4_, END_GATEWAY_BEAM_TEXTURE, p_225616_2_, f, j, 0, -i, afloat, 0.15F, 0.175F);
+         float[] afloat = tileEntityIn.isSpawning() ? DyeColor.MAGENTA.getColorComponentValues() : DyeColor.PURPLE.getColorComponentValues();
+         long j = tileEntityIn.getWorld().getGameTime();
+         BeaconTileEntityRenderer.renderBeamSegment(matrixStackIn, bufferIn, END_GATEWAY_BEAM_TEXTURE, partialTicks, f, j, 0, i, afloat, 0.15F, 0.175F);
+         BeaconTileEntityRenderer.renderBeamSegment(matrixStackIn, bufferIn, END_GATEWAY_BEAM_TEXTURE, partialTicks, f, j, 0, -i, afloat, 0.15F, 0.175F);
       }
 
-      super.func_225616_a_(p_225616_1_, p_225616_2_, p_225616_3_, p_225616_4_, p_225616_5_, p_225616_6_);
+      super.render(tileEntityIn, partialTicks, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn);
    }
 
    protected int getPasses(double p_191286_1_) {

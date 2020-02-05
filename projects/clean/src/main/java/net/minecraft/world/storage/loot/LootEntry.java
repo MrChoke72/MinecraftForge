@@ -26,33 +26,33 @@ public abstract class LootEntry implements ILootEntry {
 
    }
 
-   protected final boolean func_216141_a(LootContext p_216141_1_) {
+   protected final boolean test(LootContext p_216141_1_) {
       return this.field_216143_c.test(p_216141_1_);
    }
 
    public abstract static class Builder<T extends LootEntry.Builder<T>> implements ILootConditionConsumer<T> {
       private final List<ILootCondition> field_216082_a = Lists.newArrayList();
 
-      protected abstract T builder();
+      protected abstract T func_212845_d_();
 
       public T acceptCondition(ILootCondition.IBuilder conditionBuilder) {
          this.field_216082_a.add(conditionBuilder.build());
-         return (T)this.builder();
+         return (T)this.func_212845_d_();
       }
 
       public final T cast() {
-         return (T)this.builder();
+         return (T)this.func_212845_d_();
       }
 
       protected ILootCondition[] func_216079_f() {
          return this.field_216082_a.toArray(new ILootCondition[0]);
       }
 
-      public AlternativesLootEntry.Builder func_216080_a(LootEntry.Builder<?> p_216080_1_) {
+      public AlternativesLootEntry.Builder alternatively(LootEntry.Builder<?> p_216080_1_) {
          return new AlternativesLootEntry.Builder(this, p_216080_1_);
       }
 
-      public abstract LootEntry func_216081_b();
+      public abstract LootEntry build();
    }
 
    public abstract static class Serializer<T extends LootEntry> {

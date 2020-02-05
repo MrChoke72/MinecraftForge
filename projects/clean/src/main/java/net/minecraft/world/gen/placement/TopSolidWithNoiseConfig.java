@@ -26,7 +26,7 @@ public class TopSolidWithNoiseConfig implements IPlacementConfig {
       int i = p_214726_0_.get("noise_to_count_ratio").asInt(10);
       double d0 = p_214726_0_.get("noise_factor").asDouble(80.0D);
       double d1 = p_214726_0_.get("noise_offset").asDouble(0.0D);
-      Heightmap.Type heightmap$type = Heightmap.Type.func_203501_a(p_214726_0_.get("heightmap").asString("OCEAN_FLOOR_WG"));
+      Heightmap.Type heightmap$type = Heightmap.Type.getTypeFromId(p_214726_0_.get("heightmap").asString("OCEAN_FLOOR_WG"));
       return new TopSolidWithNoiseConfig(i, d0, d1, heightmap$type);
    }
 }

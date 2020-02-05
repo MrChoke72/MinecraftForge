@@ -47,7 +47,7 @@ public class LadderBlock extends Block implements IWaterLoggable {
 
    private boolean canAttachTo(IBlockReader p_196471_1_, BlockPos p_196471_2_, Direction p_196471_3_) {
       BlockState blockstate = p_196471_1_.getBlockState(p_196471_2_);
-      return !blockstate.canProvidePower() && blockstate.func_224755_d(p_196471_1_, p_196471_2_, p_196471_3_);
+      return !blockstate.canProvidePower() && blockstate.isSolidSide(p_196471_1_, p_196471_2_, p_196471_3_);
    }
 
    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {

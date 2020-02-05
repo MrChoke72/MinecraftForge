@@ -99,7 +99,7 @@ public class PhantomEntity extends FlyingEntity implements IMob {
       super.notifyDataManagerChange(key);
    }
 
-   protected boolean func_225511_J_() {
+   protected boolean isDespawnPeaceful() {
       return true;
    }
 
@@ -222,7 +222,7 @@ public class PhantomEntity extends FlyingEntity implements IMob {
                });
 
                for(PlayerEntity playerentity : list) {
-                  if (PhantomEntity.this.func_213344_a(playerentity, EntityPredicate.DEFAULT)) {
+                  if (PhantomEntity.this.canAttack(playerentity, EntityPredicate.DEFAULT)) {
                      PhantomEntity.this.setAttackTarget(playerentity);
                      return true;
                   }
@@ -235,7 +235,7 @@ public class PhantomEntity extends FlyingEntity implements IMob {
 
       public boolean shouldContinueExecuting() {
          LivingEntity livingentity = PhantomEntity.this.getAttackTarget();
-         return livingentity != null ? PhantomEntity.this.func_213344_a(livingentity, EntityPredicate.DEFAULT) : false;
+         return livingentity != null ? PhantomEntity.this.canAttack(livingentity, EntityPredicate.DEFAULT) : false;
       }
    }
 
@@ -386,7 +386,7 @@ public class PhantomEntity extends FlyingEntity implements IMob {
 
       public boolean shouldExecute() {
          LivingEntity livingentity = PhantomEntity.this.getAttackTarget();
-         return livingentity != null ? PhantomEntity.this.func_213344_a(PhantomEntity.this.getAttackTarget(), EntityPredicate.DEFAULT) : false;
+         return livingentity != null ? PhantomEntity.this.canAttack(PhantomEntity.this.getAttackTarget(), EntityPredicate.DEFAULT) : false;
       }
 
       public void startExecuting() {
@@ -467,7 +467,7 @@ public class PhantomEntity extends FlyingEntity implements IMob {
 
       public void tick() {
          LivingEntity livingentity = PhantomEntity.this.getAttackTarget();
-         PhantomEntity.this.orbitOffset = new Vec3d(livingentity.getPosX(), livingentity.func_226283_e_(0.5D), livingentity.getPosZ());
+         PhantomEntity.this.orbitOffset = new Vec3d(livingentity.getPosX(), livingentity.getPosYHeight(0.5D), livingentity.getPosZ());
          if (PhantomEntity.this.getBoundingBox().grow((double)0.2F).intersects(livingentity.getBoundingBox())) {
             PhantomEntity.this.attackEntityAsMob(livingentity);
             PhantomEntity.this.attackPhase = PhantomEntity.AttackPhase.CIRCLE;

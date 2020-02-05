@@ -36,7 +36,7 @@ public abstract class ThreadTaskExecutor<R extends Runnable> implements ITaskExe
       return !this.isOnExecutionThread();
    }
 
-   public int func_223704_be() {
+   public int getQueueSize() {
       return this.queue.size();
    }
 
@@ -118,7 +118,7 @@ public abstract class ThreadTaskExecutor<R extends Runnable> implements ITaskExe
       try {
          while(!isDone.getAsBoolean()) {
             if (!this.driveOne()) {
-               this.func_223705_bi();
+               this.threadYieldPark();
             }
          }
       } finally {
@@ -127,7 +127,7 @@ public abstract class ThreadTaskExecutor<R extends Runnable> implements ITaskExe
 
    }
 
-   protected void func_223705_bi() {
+   protected void threadYieldPark() {
       Thread.yield();
       LockSupport.parkNanos("waiting for tasks", 100000L);
    }

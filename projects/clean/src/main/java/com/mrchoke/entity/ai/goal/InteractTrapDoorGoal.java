@@ -1,10 +1,10 @@
-package net.minecraft.entity.ai.goal;
+package com.mrchoke.entity.ai.goal;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TrapDoorBlock;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.monster.HuskEntity;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.pathfinding.GroundPathNavigator;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;

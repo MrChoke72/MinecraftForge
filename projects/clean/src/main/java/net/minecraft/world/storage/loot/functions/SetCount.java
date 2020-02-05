@@ -14,9 +14,9 @@ import net.minecraft.world.storage.loot.conditions.ILootCondition;
 public class SetCount extends LootFunction {
    private final IRandomRange countRange;
 
-   private SetCount(ILootCondition[] lootCond, IRandomRange randRange) {
-      super(lootCond);
-      this.countRange = randRange;
+   private SetCount(ILootCondition[] p_i51222_1_, IRandomRange p_i51222_2_) {
+      super(p_i51222_1_);
+      this.countRange = p_i51222_2_;
    }
 
    public ItemStack doApply(ItemStack stack, LootContext context) {
@@ -24,9 +24,9 @@ public class SetCount extends LootFunction {
       return stack;
    }
 
-   public static LootFunction.Builder<?> createLootBuilder(IRandomRange randRange) {
+   public static LootFunction.Builder<?> builder(IRandomRange p_215932_0_) {
       return builder((p_215934_1_) -> {
-         return new SetCount(p_215934_1_, randRange);
+         return new SetCount(p_215934_1_, p_215932_0_);
       });
    }
 

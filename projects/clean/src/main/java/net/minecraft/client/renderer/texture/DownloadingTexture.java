@@ -25,42 +25,42 @@ public class DownloadingTexture extends SimpleTexture {
    @Nullable
    private final File cacheFile;
    private final String imageUrl;
-   private final boolean field_229154_h_;
+   private final boolean legacySkin;
    @Nullable
-   private final Runnable field_229155_i_;
+   private final Runnable processTask;
    @Nullable
-   private CompletableFuture<?> field_229156_j_;
+   private CompletableFuture<?> future;
    private boolean textureUploaded;
 
-   public DownloadingTexture(@Nullable File p_i226043_1_, String p_i226043_2_, ResourceLocation p_i226043_3_, boolean p_i226043_4_, @Nullable Runnable p_i226043_5_) {
-      super(p_i226043_3_);
-      this.cacheFile = p_i226043_1_;
-      this.imageUrl = p_i226043_2_;
-      this.field_229154_h_ = p_i226043_4_;
-      this.field_229155_i_ = p_i226043_5_;
+   public DownloadingTexture(@Nullable File cacheFileIn, String imageUrlIn, ResourceLocation textureResourceLocation, boolean legacySkinIn, @Nullable Runnable processTaskIn) {
+      super(textureResourceLocation);
+      this.cacheFile = cacheFileIn;
+      this.imageUrl = imageUrlIn;
+      this.legacySkin = legacySkinIn;
+      this.processTask = processTaskIn;
    }
 
    private void setImage(NativeImage nativeImageIn) {
-      if (this.field_229155_i_ != null) {
-         this.field_229155_i_.run();
+      if (this.processTask != null) {
+         this.processTask.run();
       }
 
       Minecraft.getInstance().execute(() -> {
          this.textureUploaded = true;
          if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> {
-               this.func_229160_b_(nativeImageIn);
+               this.upload(nativeImageIn);
             });
          } else {
-            this.func_229160_b_(nativeImageIn);
+            this.upload(nativeImageIn);
          }
 
       });
    }
 
-   private void func_229160_b_(NativeImage p_229160_1_) {
-      TextureUtil.func_225680_a_(this.getGlTextureId(), p_229160_1_.getWidth(), p_229160_1_.getHeight());
-      p_229160_1_.uploadTextureSub(0, 0, 0, true);
+   private void upload(NativeImage imageIn) {
+      TextureUtil.prepareImage(this.getGlTextureId(), imageIn.getWidth(), imageIn.getHeight());
+      imageIn.uploadTextureSub(0, 0, 0, true);
    }
 
    public void loadTexture(IResourceManager manager) throws IOException {
@@ -76,12 +76,12 @@ public class DownloadingTexture extends SimpleTexture {
          }
 
       });
-      if (this.field_229156_j_ == null) {
+      if (this.future == null) {
          NativeImage nativeimage;
          if (this.cacheFile != null && this.cacheFile.isFile()) {
             LOGGER.debug("Loading http texture from local cache ({})", (Object)this.cacheFile);
             FileInputStream fileinputstream = new FileInputStream(this.cacheFile);
-            nativeimage = this.func_229159_a_(fileinputstream);
+            nativeimage = this.loadTexture(fileinputstream);
          } else {
             nativeimage = null;
          }
@@ -89,7 +89,7 @@ public class DownloadingTexture extends SimpleTexture {
          if (nativeimage != null) {
             this.setImage(nativeimage);
          } else {
-            this.field_229156_j_ = CompletableFuture.runAsync(() -> {
+            this.future = CompletableFuture.runAsync(() -> {
                HttpURLConnection httpurlconnection = null;
                LOGGER.debug("Downloading http texture from {} to {}", this.imageUrl, this.cacheFile);
 
@@ -108,7 +108,7 @@ public class DownloadingTexture extends SimpleTexture {
                      }
 
                      Minecraft.getInstance().execute(() -> {
-                        NativeImage nativeimage1 = this.func_229159_a_(inputstream);
+                        NativeImage nativeimage1 = this.loadTexture(inputstream);
                         if (nativeimage1 != null) {
                            this.setImage(nativeimage1);
                         }
@@ -132,13 +132,13 @@ public class DownloadingTexture extends SimpleTexture {
    }
 
    @Nullable
-   private NativeImage func_229159_a_(InputStream p_229159_1_) {
+   private NativeImage loadTexture(InputStream inputStreamIn) {
       NativeImage nativeimage = null;
 
       try {
-         nativeimage = NativeImage.read(p_229159_1_);
-         if (this.field_229154_h_) {
-            nativeimage = func_229163_c_(nativeimage);
+         nativeimage = NativeImage.read(inputStreamIn);
+         if (this.legacySkin) {
+            nativeimage = processLegacySkin(nativeimage);
          }
       } catch (IOException ioexception) {
          LOGGER.warn("Error while loading the skin texture", (Throwable)ioexception);
@@ -147,13 +147,13 @@ public class DownloadingTexture extends SimpleTexture {
       return nativeimage;
    }
 
-   private static NativeImage func_229163_c_(NativeImage p_229163_0_) {
-      boolean flag = p_229163_0_.getHeight() == 32;
+   private static NativeImage processLegacySkin(NativeImage nativeImageIn) {
+      boolean flag = nativeImageIn.getHeight() == 32;
       if (flag) {
          NativeImage nativeimage = new NativeImage(64, 64, true);
-         nativeimage.copyImageData(p_229163_0_);
-         p_229163_0_.close();
-         p_229163_0_ = nativeimage;
+         nativeimage.copyImageData(nativeImageIn);
+         nativeImageIn.close();
+         nativeImageIn = nativeimage;
          nativeimage.fillAreaRGBA(0, 32, 64, 32, 0);
          nativeimage.copyAreaRGBA(4, 16, 16, 32, 4, 4, true, false);
          nativeimage.copyAreaRGBA(8, 16, 16, 32, 4, 4, true, false);
@@ -169,38 +169,38 @@ public class DownloadingTexture extends SimpleTexture {
          nativeimage.copyAreaRGBA(52, 20, -8, 32, 4, 12, true, false);
       }
 
-      func_229161_b_(p_229163_0_, 0, 0, 32, 16);
+      setAreaOpaque(nativeImageIn, 0, 0, 32, 16);
       if (flag) {
-         func_229158_a_(p_229163_0_, 32, 0, 64, 32);
+         setAreaTransparent(nativeImageIn, 32, 0, 64, 32);
       }
 
-      func_229161_b_(p_229163_0_, 0, 16, 64, 32);
-      func_229161_b_(p_229163_0_, 16, 48, 48, 64);
-      return p_229163_0_;
+      setAreaOpaque(nativeImageIn, 0, 16, 64, 32);
+      setAreaOpaque(nativeImageIn, 16, 48, 48, 64);
+      return nativeImageIn;
    }
 
-   private static void func_229158_a_(NativeImage p_229158_0_, int p_229158_1_, int p_229158_2_, int p_229158_3_, int p_229158_4_) {
-      for(int i = p_229158_1_; i < p_229158_3_; ++i) {
-         for(int j = p_229158_2_; j < p_229158_4_; ++j) {
-            int k = p_229158_0_.getPixelRGBA(i, j);
+   private static void setAreaTransparent(NativeImage image, int x, int y, int width, int height) {
+      for(int i = x; i < width; ++i) {
+         for(int j = y; j < height; ++j) {
+            int k = image.getPixelRGBA(i, j);
             if ((k >> 24 & 255) < 128) {
                return;
             }
          }
       }
 
-      for(int l = p_229158_1_; l < p_229158_3_; ++l) {
-         for(int i1 = p_229158_2_; i1 < p_229158_4_; ++i1) {
-            p_229158_0_.setPixelRGBA(l, i1, p_229158_0_.getPixelRGBA(l, i1) & 16777215);
+      for(int l = x; l < width; ++l) {
+         for(int i1 = y; i1 < height; ++i1) {
+            image.setPixelRGBA(l, i1, image.getPixelRGBA(l, i1) & 16777215);
          }
       }
 
    }
 
-   private static void func_229161_b_(NativeImage p_229161_0_, int p_229161_1_, int p_229161_2_, int p_229161_3_, int p_229161_4_) {
-      for(int i = p_229161_1_; i < p_229161_3_; ++i) {
-         for(int j = p_229161_2_; j < p_229161_4_; ++j) {
-            p_229161_0_.setPixelRGBA(i, j, p_229161_0_.getPixelRGBA(i, j) | -16777216);
+   private static void setAreaOpaque(NativeImage image, int x, int y, int width, int height) {
+      for(int i = x; i < width; ++i) {
+         for(int j = y; j < height; ++j) {
+            image.setPixelRGBA(i, j, image.getPixelRGBA(i, j) | -16777216);
          }
       }
 

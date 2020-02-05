@@ -47,7 +47,7 @@ public abstract class StandaloneLootEntry extends LootEntry {
    protected abstract void func_216154_a(Consumer<ItemStack> p_216154_1_, LootContext p_216154_2_);
 
    public boolean expand(LootContext p_expand_1_, Consumer<ILootGenerator> p_expand_2_) {
-      if (this.func_216141_a(p_expand_1_)) {
+      if (this.test(p_expand_1_)) {
          p_expand_2_.accept(this.field_216161_h);
          return true;
       } else {
@@ -66,7 +66,7 @@ public abstract class StandaloneLootEntry extends LootEntry {
 
       public T acceptFunction(ILootFunction.IBuilder functionBuilder) {
          this.functions.add(functionBuilder.build());
-         return (T)(this.builder());
+         return (T)(this.func_212845_d_());
       }
 
       protected ILootFunction[] getFunctions() {
@@ -75,12 +75,12 @@ public abstract class StandaloneLootEntry extends LootEntry {
 
       public T weight(int weightIn) {
          this.weight = weightIn;
-         return (T)(this.builder());
+         return (T)(this.func_212845_d_());
       }
 
       public T quality(int qualityIn) {
          this.quality = qualityIn;
-         return (T)(this.builder());
+         return (T)(this.func_212845_d_());
       }
    }
 
@@ -91,11 +91,11 @@ public abstract class StandaloneLootEntry extends LootEntry {
          this.field_216090_c = p_i50485_1_;
       }
 
-      protected StandaloneLootEntry.BuilderImpl builder() {
+      protected StandaloneLootEntry.BuilderImpl func_212845_d_() {
          return this;
       }
 
-      public LootEntry func_216081_b() {
+      public LootEntry build() {
          return this.field_216090_c.build(this.weight, this.quality, this.func_216079_f(), this.getFunctions());
       }
    }

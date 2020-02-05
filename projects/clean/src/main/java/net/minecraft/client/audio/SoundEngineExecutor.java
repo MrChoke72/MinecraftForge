@@ -43,7 +43,7 @@ public class SoundEngineExecutor extends ThreadTaskExecutor<Runnable> {
 
    }
 
-   protected void func_223705_bi() {
+   protected void threadYieldPark() {
       LockSupport.park("waiting for tasks");
    }
 

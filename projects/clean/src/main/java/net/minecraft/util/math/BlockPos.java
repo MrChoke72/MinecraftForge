@@ -212,15 +212,15 @@ public class BlockPos extends Vec3i implements IDynamicSerializable {
       return this;
    }
 
-   public static Iterable<BlockPos> getAllInBoxMutable(BlockPos p_218278_0_, BlockPos p_218278_1_) {
-      return getAllInBoxMutable(Math.min(p_218278_0_.getX(), p_218278_1_.getX()), Math.min(p_218278_0_.getY(), p_218278_1_.getY()), Math.min(p_218278_0_.getZ(), p_218278_1_.getZ()), Math.max(p_218278_0_.getX(), p_218278_1_.getX()), Math.max(p_218278_0_.getY(), p_218278_1_.getY()), Math.max(p_218278_0_.getZ(), p_218278_1_.getZ()));
+   public static Iterable<BlockPos> getAllInBoxMutable(BlockPos firstPos, BlockPos secondPos) {
+      return getAllInBoxMutable(Math.min(firstPos.getX(), secondPos.getX()), Math.min(firstPos.getY(), secondPos.getY()), Math.min(firstPos.getZ(), secondPos.getZ()), Math.max(firstPos.getX(), secondPos.getX()), Math.max(firstPos.getY(), secondPos.getY()), Math.max(firstPos.getZ(), secondPos.getZ()));
    }
 
-   public static Stream<BlockPos> getAllInBox(BlockPos p_218281_0_, BlockPos p_218281_1_) {
-      return getAllInBox(Math.min(p_218281_0_.getX(), p_218281_1_.getX()), Math.min(p_218281_0_.getY(), p_218281_1_.getY()), Math.min(p_218281_0_.getZ(), p_218281_1_.getZ()), Math.max(p_218281_0_.getX(), p_218281_1_.getX()), Math.max(p_218281_0_.getY(), p_218281_1_.getY()), Math.max(p_218281_0_.getZ(), p_218281_1_.getZ()));
+   public static Stream<BlockPos> getAllInBox(BlockPos firstPos, BlockPos secondPos) {
+      return getAllInBox(Math.min(firstPos.getX(), secondPos.getX()), Math.min(firstPos.getY(), secondPos.getY()), Math.min(firstPos.getZ(), secondPos.getZ()), Math.max(firstPos.getX(), secondPos.getX()), Math.max(firstPos.getY(), secondPos.getY()), Math.max(firstPos.getZ(), secondPos.getZ()));
    }
 
-   public static Stream<BlockPos> func_229383_a_(MutableBoundingBox p_229383_0_) {
+   public static Stream<BlockPos> getAllInBox(MutableBoundingBox p_229383_0_) {
       return getAllInBox(Math.min(p_229383_0_.minX, p_229383_0_.maxX), Math.min(p_229383_0_.minY, p_229383_0_.maxY), Math.min(p_229383_0_.minZ, p_229383_0_.maxZ), Math.max(p_229383_0_.minX, p_229383_0_.maxX), Math.max(p_229383_0_.minY, p_229383_0_.maxY), Math.max(p_229383_0_.minZ, p_229383_0_.maxZ));
    }
 
@@ -348,16 +348,16 @@ public class BlockPos extends Vec3i implements IDynamicSerializable {
          return this.setPos(this.x + xIn, this.y + yIn, this.z + zIn);
       }
 
-      public void func_223471_o(int p_223471_1_) {
-         this.x = p_223471_1_;
+      public void setX(int xIn) {
+         this.x = xIn;
       }
 
       public void setY(int yIn) {
          this.y = yIn;
       }
 
-      public void func_223472_q(int p_223472_1_) {
-         this.z = p_223472_1_;
+      public void setZ(int zIn) {
+         this.z = zIn;
       }
 
       public BlockPos toImmutable() {

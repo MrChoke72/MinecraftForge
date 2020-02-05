@@ -26,11 +26,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DebugCommand {
-   private static final Logger field_225390_a = LogManager.getLogger();
+   private static final Logger LOGGER = LogManager.getLogger();
    private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslationTextComponent("commands.debug.notRunning"));
    private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslationTextComponent("commands.debug.alreadyRunning"));
    @Nullable
-   private static final FileSystemProvider field_225391_d = FileSystemProvider.installedProviders().stream().filter((p_225386_0_) -> {
+   private static final FileSystemProvider JAR_FILESYSTEM_PROVIDER = FileSystemProvider.installedProviders().stream().filter((p_225386_0_) -> {
       return p_225386_0_.getScheme().equalsIgnoreCase("jar");
    }).findFirst().orElse((FileSystemProvider)null);
 
@@ -42,14 +42,14 @@ public class DebugCommand {
       })).then(Commands.literal("stop").executes((p_198333_0_) -> {
          return stopDebug(p_198333_0_.getSource());
       })).then(Commands.literal("report").executes((p_225388_0_) -> {
-         return func_225389_c(p_225388_0_.getSource());
+         return writeDebugReport(p_225388_0_.getSource());
       })));
    }
 
    private static int startDebug(CommandSource source) throws CommandSyntaxException {
       MinecraftServer minecraftserver = source.getServer();
       DebugProfiler debugprofiler = minecraftserver.getProfiler();
-      if (debugprofiler.func_219899_d().isEnabled()) {
+      if (debugprofiler.getFixedProfiler().isEnabled()) {
          throw ALREADY_RUNNING_EXCEPTION.create();
       } else {
          minecraftserver.enableProfiling();
@@ -61,10 +61,10 @@ public class DebugCommand {
    private static int stopDebug(CommandSource source) throws CommandSyntaxException {
       MinecraftServer minecraftserver = source.getServer();
       DebugProfiler debugprofiler = minecraftserver.getProfiler();
-      if (!debugprofiler.func_219899_d().isEnabled()) {
+      if (!debugprofiler.getFixedProfiler().isEnabled()) {
          throw NOT_RUNNING_EXCEPTION.create();
       } else {
-         IProfileResult iprofileresult = debugprofiler.func_219899_d().func_219938_b();
+         IProfileResult iprofileresult = debugprofiler.getFixedProfiler().disable();
          File file1 = new File(minecraftserver.getFile("debug"), "profile-results-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + ".txt");
          iprofileresult.writeToFile(file1);
          float f = (float)iprofileresult.nanoTime() / 1.0E9F;
@@ -74,28 +74,28 @@ public class DebugCommand {
       }
    }
 
-   private static int func_225389_c(CommandSource p_225389_0_) {
+   private static int writeDebugReport(CommandSource p_225389_0_) {
       MinecraftServer minecraftserver = p_225389_0_.getServer();
       String s = "debug-report-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date());
 
       try {
          Path path1 = minecraftserver.getFile("debug").toPath();
          Files.createDirectories(path1);
-         if (!SharedConstants.developmentMode && field_225391_d != null) {
+         if (!SharedConstants.developmentMode && JAR_FILESYSTEM_PROVIDER != null) {
             Path path2 = path1.resolve(s + ".zip");
 
-            try (FileSystem filesystem = field_225391_d.newFileSystem(path2, ImmutableMap.of("create", "true"))) {
-               minecraftserver.func_223711_a(filesystem.getPath("/"));
+            try (FileSystem filesystem = JAR_FILESYSTEM_PROVIDER.newFileSystem(path2, ImmutableMap.of("create", "true"))) {
+               minecraftserver.dumpDebugInfo(filesystem.getPath("/"));
             }
          } else {
             Path path = path1.resolve(s);
-            minecraftserver.func_223711_a(path);
+            minecraftserver.dumpDebugInfo(path);
          }
 
          p_225389_0_.sendFeedback(new TranslationTextComponent("commands.debug.reportSaved", s), false);
          return 1;
       } catch (IOException ioexception) {
-         field_225390_a.error("Failed to save debug dump", (Throwable)ioexception);
+         LOGGER.error("Failed to save debug dump", (Throwable)ioexception);
          p_225389_0_.sendErrorMessage(new TranslationTextComponent("commands.debug.reportFailed"));
          return 0;
       }

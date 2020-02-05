@@ -40,19 +40,19 @@ import org.apache.logging.log4j.Logger;
 @OnlyIn(Dist.CLIENT)
 public class DownloadingPackFinder implements IPackFinder {
    private static final Logger LOGGER = LogManager.getLogger();
-   private static final Pattern field_195752_b = Pattern.compile("^[a-fA-F0-9]{40}$");
+   private static final Pattern PATTERN_SHA1 = Pattern.compile("^[a-fA-F0-9]{40}$");
    private final VanillaPack vanillaPack;
-   private final File field_195754_d;
-   private final ReentrantLock field_195755_e = new ReentrantLock();
-   private final ResourceIndex field_217819_f;
+   private final File serverPackDir;
+   private final ReentrantLock lockDownload = new ReentrantLock();
+   private final ResourceIndex resourceIndex;
    @Nullable
-   private CompletableFuture<?> field_195756_f;
+   private CompletableFuture<?> currentDownload;
    @Nullable
-   private ClientResourcePackInfo field_195757_g;
+   private ClientResourcePackInfo serverPack;
 
    public DownloadingPackFinder(File p_i48116_1_, ResourceIndex p_i48116_2_) {
-      this.field_195754_d = p_i48116_1_;
-      this.field_217819_f = p_i48116_2_;
+      this.serverPackDir = p_i48116_1_;
+      this.resourceIndex = p_i48116_2_;
       this.vanillaPack = new VirtualAssetsPack(p_i48116_2_);
    }
 
@@ -64,11 +64,11 @@ public class DownloadingPackFinder implements IPackFinder {
          nameToPackMap.put("vanilla", t);
       }
 
-      if (this.field_195757_g != null) {
-         nameToPackMap.put("server", (T)this.field_195757_g);
+      if (this.serverPack != null) {
+         nameToPackMap.put("server", (T)this.serverPack);
       }
 
-      File file1 = this.field_217819_f.getFile(new ResourceLocation("resourcepacks/programmer_art.zip"));
+      File file1 = this.resourceIndex.getFile(new ResourceLocation("resourcepacks/programmer_art.zip"));
       if (file1 != null && file1.isFile()) {
          T t1 = ResourcePackInfo.createResourcePack("programer_art", false, () -> {
             return new FilePack(file1) {
@@ -99,16 +99,16 @@ public class DownloadingPackFinder implements IPackFinder {
       return map;
    }
 
-   public CompletableFuture<?> func_217818_a(String p_217818_1_, String p_217818_2_) {
+   public CompletableFuture<?> downloadResourcePack(String p_217818_1_, String p_217818_2_) {
       String s = DigestUtils.sha1Hex(p_217818_1_);
-      String s1 = field_195752_b.matcher(p_217818_2_).matches() ? p_217818_2_ : "";
-      this.field_195755_e.lock();
+      String s1 = PATTERN_SHA1.matcher(p_217818_2_).matches() ? p_217818_2_ : "";
+      this.lockDownload.lock();
 
       CompletableFuture completablefuture1;
       try {
          this.clearResourcePack();
-         this.func_195747_e();
-         File file1 = new File(this.field_195754_d, s);
+         this.clearDownloads();
+         File file1 = new File(this.serverPackDir, s);
          CompletableFuture<?> completablefuture;
          if (file1.exists()) {
             completablefuture = CompletableFuture.completedFuture("");
@@ -122,24 +122,24 @@ public class DownloadingPackFinder implements IPackFinder {
             completablefuture = HTTPUtil.downloadResourcePack(file1, p_217818_1_, map, 104857600, workingscreen, minecraft.getProxy());
          }
 
-         this.field_195756_f = completablefuture.<Void>thenCompose((p_217812_3_) -> {
-            return !this.func_195745_a(s1, file1) ? Util.completedExceptionallyFuture(new RuntimeException("Hash check failure for file " + file1 + ", see log")) : this.func_217816_a(file1);
+         this.currentDownload = completablefuture.<Void>thenCompose((p_217812_3_) -> {
+            return !this.checkHash(s1, file1) ? Util.completedExceptionallyFuture(new RuntimeException("Hash check failure for file " + file1 + ", see log")) : this.setServerPack(file1);
          }).whenComplete((p_217815_1_, p_217815_2_) -> {
             if (p_217815_2_ != null) {
                LOGGER.warn("Pack application failed: {}, deleting file {}", p_217815_2_.getMessage(), file1);
-               func_217811_b(file1);
+               deleteQuiet(file1);
             }
 
          });
-         completablefuture1 = this.field_195756_f;
+         completablefuture1 = this.currentDownload;
       } finally {
-         this.field_195755_e.unlock();
+         this.lockDownload.unlock();
       }
 
       return completablefuture1;
    }
 
-   private static void func_217811_b(File p_217811_0_) {
+   private static void deleteQuiet(File p_217811_0_) {
       try {
          Files.delete(p_217811_0_.toPath());
       } catch (IOException ioexception) {
@@ -149,25 +149,25 @@ public class DownloadingPackFinder implements IPackFinder {
    }
 
    public void clearResourcePack() {
-      this.field_195755_e.lock();
+      this.lockDownload.lock();
 
       try {
-         if (this.field_195756_f != null) {
-            this.field_195756_f.cancel(true);
+         if (this.currentDownload != null) {
+            this.currentDownload.cancel(true);
          }
 
-         this.field_195756_f = null;
-         if (this.field_195757_g != null) {
-            this.field_195757_g = null;
-            Minecraft.getInstance().func_213245_w();
+         this.currentDownload = null;
+         if (this.serverPack != null) {
+            this.serverPack = null;
+            Minecraft.getInstance().scheduleResourcesRefresh();
          }
       } finally {
-         this.field_195755_e.unlock();
+         this.lockDownload.unlock();
       }
 
    }
 
-   private boolean func_195745_a(String p_195745_1_, File p_195745_2_) {
+   private boolean checkHash(String p_195745_1_, File p_195745_2_) {
       try (FileInputStream fileinputstream = new FileInputStream(p_195745_2_)) {
          String s = DigestUtils.sha1Hex((InputStream)fileinputstream);
          if (p_195745_1_.isEmpty()) {
@@ -188,9 +188,9 @@ public class DownloadingPackFinder implements IPackFinder {
       return false;
    }
 
-   private void func_195747_e() {
+   private void clearDownloads() {
       try {
-         List<File> list = Lists.newArrayList(FileUtils.listFiles(this.field_195754_d, TrueFileFilter.TRUE, (IOFileFilter)null));
+         List<File> list = Lists.newArrayList(FileUtils.listFiles(this.serverPackDir, TrueFileFilter.TRUE, (IOFileFilter)null));
          list.sort(LastModifiedFileComparator.LASTMODIFIED_REVERSE);
          int i = 0;
 
@@ -206,7 +206,7 @@ public class DownloadingPackFinder implements IPackFinder {
 
    }
 
-   public CompletableFuture<Void> func_217816_a(File p_217816_1_) {
+   public CompletableFuture<Void> setServerPack(File p_217816_1_) {
       PackMetadataSection packmetadatasection = null;
       NativeImage nativeimage = null;
       String s = null;
@@ -227,10 +227,10 @@ public class DownloadingPackFinder implements IPackFinder {
          return Util.completedExceptionallyFuture(new RuntimeException(String.format("Invalid resourcepack at %s: %s", p_217816_1_, s)));
       } else {
          LOGGER.info("Applying server pack {}", (Object)p_217816_1_);
-         this.field_195757_g = new ClientResourcePackInfo("server", true, () -> {
+         this.serverPack = new ClientResourcePackInfo("server", true, () -> {
             return new FilePack(p_217816_1_);
-         }, new TranslationTextComponent("resourcePack.server.name"), packmetadatasection.getDescription(), PackCompatibility.func_198969_a(packmetadatasection.getPackFormat()), ResourcePackInfo.Priority.TOP, true, nativeimage);
-         return Minecraft.getInstance().func_213245_w();
+         }, new TranslationTextComponent("resourcePack.server.name"), packmetadatasection.getDescription(), PackCompatibility.getCompatibility(packmetadatasection.getPackFormat()), ResourcePackInfo.Priority.TOP, true, nativeimage);
+         return Minecraft.getInstance().scheduleResourcesRefresh();
       }
    }
 }

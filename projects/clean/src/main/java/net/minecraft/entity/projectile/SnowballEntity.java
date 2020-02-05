@@ -30,12 +30,12 @@ public class SnowballEntity extends ProjectileItemEntity {
       super(EntityType.SNOWBALL, x, y, z, worldIn);
    }
 
-   protected Item func_213885_i() {
+   protected Item getDefaultItem() {
       return Items.SNOWBALL;
    }
 
    @OnlyIn(Dist.CLIENT)
-   private IParticleData func_213887_n() {
+   private IParticleData makeParticle() {
       ItemStack itemstack = this.func_213882_k();
       return (IParticleData)(itemstack.isEmpty() ? ParticleTypes.ITEM_SNOWBALL : new ItemParticleData(ParticleTypes.ITEM, itemstack));
    }
@@ -43,7 +43,7 @@ public class SnowballEntity extends ProjectileItemEntity {
    @OnlyIn(Dist.CLIENT)
    public void handleStatusUpdate(byte id) {
       if (id == 3) {
-         IParticleData iparticledata = this.func_213887_n();
+         IParticleData iparticledata = this.makeParticle();
 
          for(int i = 0; i < 8; ++i) {
             this.world.addParticle(iparticledata, this.getPosX(), this.getPosY(), this.getPosZ(), 0.0D, 0.0D, 0.0D);

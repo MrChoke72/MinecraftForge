@@ -59,17 +59,17 @@ public abstract class Feature<FC extends IFeatureConfig> {
    public static final Structure<NoFeatureConfig> END_CITY = register("end_city", new EndCityStructure(NoFeatureConfig::deserialize));
    public static final Structure<BuriedTreasureConfig> BURIED_TREASURE = register("buried_treasure", new BuriedTreasureStructure(BuriedTreasureConfig::deserialize));
    public static final Structure<VillageConfig> VILLAGE = register("village", new VillageStructure(VillageConfig::deserialize));
-   public static final Feature<NoFeatureConfig> field_227245_q_ = register("no_op", new NoOpFeature(NoFeatureConfig::deserialize));
+   public static final Feature<NoFeatureConfig> NO_OP = register("no_op", new NoOpFeature(NoFeatureConfig::deserialize));
    public static final Feature<TreeFeatureConfig> NORMAL_TREE = register("normal_tree", new TreeFeature(TreeFeatureConfig::func_227338_a_));
-   public static final Feature<TreeFeatureConfig> field_227246_s_ = register("acacia_tree", new AcaciaFeature(TreeFeatureConfig::func_227338_a_));
+   public static final Feature<TreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new AcaciaFeature(TreeFeatureConfig::func_227338_a_));
    public static final Feature<TreeFeatureConfig> FANCY_TREE = register("fancy_tree", new FancyTreeFeature(TreeFeatureConfig::func_227338_a_));
-   public static final Feature<BaseTreeFeatureConfig> JUNGLE_GROUND_BUSH = register("jungle_ground_bush", new ShrubFeature(BaseTreeFeatureConfig::func_227376_b_));
+   public static final Feature<BaseTreeFeatureConfig> JUNGLE_GROUND_BUSH = register("jungle_ground_bush", new ShrubFeature(BaseTreeFeatureConfig::deserialize));
    public static final Feature<HugeTreeFeatureConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeFeature(HugeTreeFeatureConfig::func_227277_a_));
    public static final Feature<HugeTreeFeatureConfig> MEGA_JUNGLE_TREE = register("mega_jungle_tree", new MegaJungleFeature(HugeTreeFeatureConfig::func_227277_a_));
    public static final Feature<HugeTreeFeatureConfig> MEGA_SPRUCE_TREE = register("mega_spruce_tree", new MegaPineTree(HugeTreeFeatureConfig::func_227277_a_));
-   public static final FlowersFeature<BlockClusterFeatureConfig> field_227247_y_ = register("flower", new DefaultFlowersFeature(BlockClusterFeatureConfig::func_227300_a_));
-   public static final Feature<BlockClusterFeatureConfig> field_227248_z_ = register("random_patch", new RandomPatchFeature(BlockClusterFeatureConfig::func_227300_a_));
-   public static final Feature<BlockStateProvidingFeatureConfig> field_227244_A_ = register("block_pile", new BlockPileFeature(BlockStateProvidingFeatureConfig::func_227269_a_));
+   public static final FlowersFeature<BlockClusterFeatureConfig> FLOWER = register("flower", new DefaultFlowersFeature(BlockClusterFeatureConfig::func_227300_a_));
+   public static final Feature<BlockClusterFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(BlockClusterFeatureConfig::func_227300_a_));
+   public static final Feature<BlockStateProvidingFeatureConfig> BLOCK_PILE = register("block_pile", new BlockPileFeature(BlockStateProvidingFeatureConfig::func_227269_a_));
    public static final Feature<LiquidsConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(LiquidsConfig::deserialize));
    public static final Feature<NoFeatureConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantFeature(NoFeatureConfig::deserialize));
    public static final Feature<ReplaceBlockConfig> EMERALD_ORE = register("emerald_ore", new ReplaceBlockFeature(ReplaceBlockConfig::deserialize));
@@ -126,7 +126,7 @@ public abstract class Feature<FC extends IFeatureConfig> {
       p_205170_0_.put("Buried_Treasure".toLowerCase(Locale.ROOT), BURIED_TREASURE);
       p_205170_0_.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
    });
-   public static final List<Structure<?>> field_214488_aQ = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
+   public static final List<Structure<?>> ILLAGER_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
    private final Function<Dynamic<?>, ? extends FC> configFactory;
 
    private static <C extends IFeatureConfig, F extends Feature<C>> F register(String key, F value) {
@@ -137,7 +137,7 @@ public abstract class Feature<FC extends IFeatureConfig> {
       this.configFactory = configFactoryIn;
    }
 
-   public ConfiguredFeature<FC, ?> func_225566_b_(FC p_225566_1_) {
+   public ConfiguredFeature<FC, ?> withConfiguration(FC p_225566_1_) {
       return new ConfiguredFeature<>(this, p_225566_1_);
    }
 
@@ -159,11 +159,11 @@ public abstract class Feature<FC extends IFeatureConfig> {
       return Collections.emptyList();
    }
 
-   protected static boolean func_227249_a_(Block p_227249_0_) {
-      return p_227249_0_ == Blocks.STONE || p_227249_0_ == Blocks.GRANITE || p_227249_0_ == Blocks.DIORITE || p_227249_0_ == Blocks.ANDESITE;
+   protected static boolean isStone(Block blockIn) {
+      return blockIn == Blocks.STONE || blockIn == Blocks.GRANITE || blockIn == Blocks.DIORITE || blockIn == Blocks.ANDESITE;
    }
 
-   protected static boolean func_227250_b_(Block p_227250_0_) {
-      return p_227250_0_ == Blocks.DIRT || p_227250_0_ == Blocks.GRASS_BLOCK || p_227250_0_ == Blocks.PODZOL || p_227250_0_ == Blocks.COARSE_DIRT || p_227250_0_ == Blocks.MYCELIUM;
+   protected static boolean isDirt(Block blockIn) {
+      return blockIn == Blocks.DIRT || blockIn == Blocks.GRASS_BLOCK || blockIn == Blocks.PODZOL || blockIn == Blocks.COARSE_DIRT || blockIn == Blocks.MYCELIUM;
    }
 }

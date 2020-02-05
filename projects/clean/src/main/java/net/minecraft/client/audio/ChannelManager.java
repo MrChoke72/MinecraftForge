@@ -24,7 +24,7 @@ public class ChannelManager {
    public ChannelManager.Entry createChannel(SoundSystem.Mode mode) {
       ChannelManager.Entry channelmanager$entry = new ChannelManager.Entry();
       this.soundExecutor.execute(() -> {
-         SoundSource soundsource = this.sndSystem.func_216403_a(mode);
+         SoundSource soundsource = this.sndSystem.getSource(mode);
          if (soundsource != null) {
             channelmanager$entry.source = soundsource;
             this.channels.add(channelmanager$entry);

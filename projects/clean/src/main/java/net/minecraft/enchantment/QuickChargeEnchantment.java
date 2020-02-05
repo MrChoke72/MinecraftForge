@@ -3,8 +3,8 @@ package net.minecraft.enchantment;
 import net.minecraft.inventory.EquipmentSlotType;
 
 public class QuickChargeEnchantment extends Enchantment {
-   public QuickChargeEnchantment(Enchantment.Rarity p_i50016_1_, EquipmentSlotType... p_i50016_2_) {
-      super(p_i50016_1_, EnchantmentType.CROSSBOW, p_i50016_2_);
+   public QuickChargeEnchantment(Enchantment.Rarity rarityIn, EquipmentSlotType... slotTypes) {
+      super(rarityIn, EnchantmentType.CROSSBOW, slotTypes);
    }
 
    public int getMinEnchantability(int enchantmentLevel) {

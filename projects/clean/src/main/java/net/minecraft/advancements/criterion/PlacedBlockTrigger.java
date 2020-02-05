@@ -24,9 +24,9 @@ public class PlacedBlockTrigger extends AbstractCriterionTrigger<PlacedBlockTrig
 
    public PlacedBlockTrigger.Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
       Block block = func_226950_a_(json);
-      StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.func_227186_a_(json.get("state"));
+      StatePropertiesPredicate statepropertiespredicate = StatePropertiesPredicate.deserializeProperties(json.get("state"));
       if (block != null) {
-         statepropertiespredicate.func_227183_a_(block.getStateContainer(), (p_226948_1_) -> {
+         statepropertiespredicate.forEachNotPresent(block.getStateContainer(), (p_226948_1_) -> {
             throw new JsonSyntaxException("Block " + block + " has no property " + p_226948_1_ + ":");
          });
       }
@@ -70,13 +70,13 @@ public class PlacedBlockTrigger extends AbstractCriterionTrigger<PlacedBlockTrig
       }
 
       public static PlacedBlockTrigger.Instance placedBlock(Block p_203934_0_) {
-         return new PlacedBlockTrigger.Instance(p_203934_0_, StatePropertiesPredicate.field_227178_a_, LocationPredicate.ANY, ItemPredicate.ANY);
+         return new PlacedBlockTrigger.Instance(p_203934_0_, StatePropertiesPredicate.EMPTY, LocationPredicate.ANY, ItemPredicate.ANY);
       }
 
       public boolean test(BlockState state, BlockPos pos, ServerWorld world, ItemStack item) {
          if (this.block != null && state.getBlock() != this.block) {
             return false;
-         } else if (!this.properties.func_227181_a_(state)) {
+         } else if (!this.properties.matches(state)) {
             return false;
          } else if (!this.location.test(world, (float)pos.getX(), (float)pos.getY(), (float)pos.getZ())) {
             return false;
@@ -91,7 +91,7 @@ public class PlacedBlockTrigger extends AbstractCriterionTrigger<PlacedBlockTrig
             jsonobject.addProperty("block", Registry.BLOCK.getKey(this.block).toString());
          }
 
-         jsonobject.add("state", this.properties.func_227180_a_());
+         jsonobject.add("state", this.properties.toJsonElement());
          jsonobject.add("location", this.location.serialize());
          jsonobject.add("item", this.item.serialize());
          return jsonobject;

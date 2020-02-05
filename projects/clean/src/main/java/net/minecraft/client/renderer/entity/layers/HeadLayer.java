@@ -34,26 +34,26 @@ public class HeadLayer<T extends LivingEntity, M extends EntityModel<T> & IHasHe
       super(p_i50946_1_);
    }
 
-   public void func_225628_a_(MatrixStack p_225628_1_, IRenderTypeBuffer p_225628_2_, int p_225628_3_, T p_225628_4_, float p_225628_5_, float p_225628_6_, float p_225628_7_, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
-      ItemStack itemstack = p_225628_4_.getItemStackFromSlot(EquipmentSlotType.HEAD);
+   public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+      ItemStack itemstack = entitylivingbaseIn.getItemStackFromSlot(EquipmentSlotType.HEAD);
       if (!itemstack.isEmpty()) {
          Item item = itemstack.getItem();
-         p_225628_1_.func_227860_a_();
-         boolean flag = p_225628_4_ instanceof VillagerEntity || p_225628_4_ instanceof ZombieVillagerEntity;
-         if (p_225628_4_.isChild() && !(p_225628_4_ instanceof VillagerEntity)) {
+         matrixStackIn.push();
+         boolean flag = entitylivingbaseIn instanceof VillagerEntity || entitylivingbaseIn instanceof ZombieVillagerEntity;
+         if (entitylivingbaseIn.isChild() && !(entitylivingbaseIn instanceof VillagerEntity)) {
             float f = 2.0F;
             float f1 = 1.4F;
-            p_225628_1_.func_227861_a_(0.0D, 0.03125D, 0.0D);
-            p_225628_1_.func_227862_a_(0.7F, 0.7F, 0.7F);
-            p_225628_1_.func_227861_a_(0.0D, 1.0D, 0.0D);
+            matrixStackIn.translate(0.0D, 0.03125D, 0.0D);
+            matrixStackIn.scale(0.7F, 0.7F, 0.7F);
+            matrixStackIn.translate(0.0D, 1.0D, 0.0D);
          }
 
-         ((IHasHead)this.getEntityModel()).func_205072_a().func_228307_a_(p_225628_1_);
+         ((IHasHead)this.getEntityModel()).getModelHead().setAnglesAndRotation(matrixStackIn);
          if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
             float f3 = 1.1875F;
-            p_225628_1_.func_227862_a_(1.1875F, -1.1875F, -1.1875F);
+            matrixStackIn.scale(1.1875F, -1.1875F, -1.1875F);
             if (flag) {
-               p_225628_1_.func_227861_a_(0.0D, 0.0625D, 0.0D);
+               matrixStackIn.translate(0.0D, 0.0625D, 0.0D);
             }
 
             GameProfile gameprofile = null;
@@ -70,21 +70,21 @@ public class HeadLayer<T extends LivingEntity, M extends EntityModel<T> & IHasHe
                }
             }
 
-            p_225628_1_.func_227861_a_(-0.5D, 0.0D, -0.5D);
-            SkullTileEntityRenderer.func_228879_a_((Direction)null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameprofile, p_225628_5_, p_225628_1_, p_225628_2_, p_225628_3_);
+            matrixStackIn.translate(-0.5D, 0.0D, -0.5D);
+            SkullTileEntityRenderer.func_228879_a_((Direction)null, 180.0F, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameprofile, limbSwing, matrixStackIn, bufferIn, packedLightIn);
          } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getEquipmentSlot() != EquipmentSlotType.HEAD) {
             float f2 = 0.625F;
-            p_225628_1_.func_227861_a_(0.0D, -0.25D, 0.0D);
-            p_225628_1_.func_227863_a_(Vector3f.field_229181_d_.func_229187_a_(180.0F));
-            p_225628_1_.func_227862_a_(0.625F, -0.625F, -0.625F);
+            matrixStackIn.translate(0.0D, -0.25D, 0.0D);
+            matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180.0F));
+            matrixStackIn.scale(0.625F, -0.625F, -0.625F);
             if (flag) {
-               p_225628_1_.func_227861_a_(0.0D, 0.1875D, 0.0D);
+               matrixStackIn.translate(0.0D, 0.1875D, 0.0D);
             }
 
-            Minecraft.getInstance().getFirstPersonRenderer().func_228397_a_(p_225628_4_, itemstack, ItemCameraTransforms.TransformType.HEAD, false, p_225628_1_, p_225628_2_, p_225628_3_);
+            Minecraft.getInstance().getFirstPersonRenderer().renderItemSide(entitylivingbaseIn, itemstack, ItemCameraTransforms.TransformType.HEAD, false, matrixStackIn, bufferIn, packedLightIn);
          }
 
-         p_225628_1_.func_227865_b_();
+         matrixStackIn.pop();
       }
    }
 }

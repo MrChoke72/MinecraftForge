@@ -18,9 +18,9 @@ public final class FrozenOceanBiome extends Biome {
 
    public FrozenOceanBiome() {
       super((new Biome.Builder()).surfaceBuilder(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.GRASS_DIRT_GRAVEL_CONFIG).precipitation(Biome.RainType.SNOW).category(Biome.Category.OCEAN).depth(-1.0F).scale(0.1F).temperature(0.0F).downfall(0.5F).waterColor(3750089).waterFogColor(329011).parent((String)null));
-      this.func_226711_a_(Feature.OCEAN_RUIN.func_225566_b_(new OceanRuinConfig(OceanRuinStructure.Type.COLD, 0.3F, 0.9F)));
-      this.func_226711_a_(Feature.MINESHAFT.func_225566_b_(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
-      this.func_226711_a_(Feature.SHIPWRECK.func_225566_b_(new ShipwreckConfig(false)));
+      this.addStructure(Feature.OCEAN_RUIN.withConfiguration(new OceanRuinConfig(OceanRuinStructure.Type.COLD, 0.3F, 0.9F)));
+      this.addStructure(Feature.MINESHAFT.withConfiguration(new MineshaftConfig(0.004D, MineshaftStructure.Type.NORMAL)));
+      this.addStructure(Feature.SHIPWRECK.withConfiguration(new ShipwreckConfig(false)));
       DefaultBiomeFeatures.addOceanCarvers(this);
       DefaultBiomeFeatures.addStructures(this);
       DefaultBiomeFeatures.addLakes(this);
@@ -30,9 +30,9 @@ public final class FrozenOceanBiome extends Biome {
       DefaultBiomeFeatures.addStoneVariants(this);
       DefaultBiomeFeatures.addOres(this);
       DefaultBiomeFeatures.addSedimentDisks(this);
-      DefaultBiomeFeatures.func_222296_u(this);
+      DefaultBiomeFeatures.addScatteredOakTrees(this);
       DefaultBiomeFeatures.addDefaultFlowers(this);
-      DefaultBiomeFeatures.func_222348_W(this);
+      DefaultBiomeFeatures.addSparseGrass(this);
       DefaultBiomeFeatures.addMushrooms(this);
       DefaultBiomeFeatures.addReedsAndPumpkins(this);
       DefaultBiomeFeatures.addSprings(this);
@@ -57,20 +57,20 @@ public final class FrozenOceanBiome extends Biome {
       //AH END ****
    }
 
-   public float getTemperature(BlockPos pos) {
+   public float getTemperatureRaw(BlockPos pos) {
       float f = this.getDefaultTemperature();
-      double d0 = field_205163_aV.func_215464_a((double)pos.getX() * 0.05D, (double)pos.getZ() * 0.05D, false) * 7.0D;
-      double d1 = INFO_NOISE.func_215464_a((double)pos.getX() * 0.2D, (double)pos.getZ() * 0.2D, false);
+      double d0 = field_205163_aV.noiseAt((double)pos.getX() * 0.05D, (double)pos.getZ() * 0.05D, false) * 7.0D;
+      double d1 = INFO_NOISE.noiseAt((double)pos.getX() * 0.2D, (double)pos.getZ() * 0.2D, false);
       double d2 = d0 + d1;
       if (d2 < 0.3D) {
-         double d3 = INFO_NOISE.func_215464_a((double)pos.getX() * 0.09D, (double)pos.getZ() * 0.09D, false);
+         double d3 = INFO_NOISE.noiseAt((double)pos.getX() * 0.09D, (double)pos.getZ() * 0.09D, false);
          if (d3 < 0.8D) {
             f = 0.2F;
          }
       }
 
       if (pos.getY() > 64) {
-         float f1 = (float)(TEMPERATURE_NOISE.func_215464_a((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 4.0D);
+         float f1 = (float)(TEMPERATURE_NOISE.noiseAt((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 4.0D);
          return f - (f1 + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
       } else {
          return f;

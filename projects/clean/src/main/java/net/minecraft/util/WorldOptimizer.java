@@ -118,7 +118,7 @@ public class WorldOptimizer {
                   boolean flag1 = false;
 
                   try {
-                     CompoundNBT compoundnbt = chunkloader.func_227078_e_(chunkpos);
+                     CompoundNBT compoundnbt = chunkloader.readChunk(chunkpos);
                      if (compoundnbt != null) {
                         int j = ChunkLoader.getDataVersion(compoundnbt);
                         CompoundNBT compoundnbt1 = chunkloader.updateChunkData(dimensiontype2, () -> {

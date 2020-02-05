@@ -87,11 +87,11 @@ public class EditWorldScreen extends Screen {
       String s = worldinfo == null ? "" : worldinfo.getWorldName();
       this.nameEdit = new TextFieldWidget(this.font, this.width / 2 - 100, 53, 200, 20, I18n.format("selectWorld.enterName"));
       this.nameEdit.setText(s);
-      this.nameEdit.func_212954_a((p_214301_1_) -> {
+      this.nameEdit.setResponder((p_214301_1_) -> {
          this.saveButton.active = !p_214301_1_.trim().isEmpty();
       });
       this.children.add(this.nameEdit);
-      this.func_212928_a(this.nameEdit);
+      this.setFocusedDefault(this.nameEdit);
    }
 
    public void resize(Minecraft p_resize_1_, int p_resize_2_, int p_resize_3_) {
